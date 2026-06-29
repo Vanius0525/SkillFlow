@@ -1,0 +1,5 @@
+{
+  "name": "web-search",
+  "version": "1.0.0",
+  "description": "Local SearXNG-backed web search + clean article extraction (no API keys)."
+}

@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(pip install:*)",
+      "Bash(pip show:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:clawskills.sh)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git --version)",
+      "Bash(curl --version)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(grep -ohP 'https://clawskills\\\\.sh/skills/[^\\\\\\)]+' /tmp/awesome-list/categories/*.md)",
+      "Bash(sed 's|https://clawskills.sh/skills/||')",
+      "Read(//tmp/**)",
+      "Bash(curl -s \"https://api.github.com/repos/openclaw/skills/contents/skills\")",
+      "WebSearch"
+    ]
+  }
+}

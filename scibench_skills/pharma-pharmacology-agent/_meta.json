@@ -1,0 +1,11 @@
+{
+  "owner": "cheminem",
+  "slug": "pharma-pharmacology-agent",
+  "displayName": "Pharmaclaw Pharmacology Agent",
+  "latest": {
+    "version": "1.1.0",
+    "publishedAt": 1771290076263,
+    "commit": "https://github.com/openclaw/skills/commit/a73e64f93795f9932ec4270d544356b6a55bc088"
+  },
+  "history": []
+}

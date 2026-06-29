@@ -1,0 +1,11 @@
+{
+  "owner": "aadipapp",
+  "slug": "optical-quantum-skill",
+  "displayName": "Tenqua OpticalQuantumSkill",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1771220985774,
+    "commit": "https://github.com/openclaw/skills/commit/5e5b469772f31b403c7045fc424e88ed66180859"
+  },
+  "history": []
+}

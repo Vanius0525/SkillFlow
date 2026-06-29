@@ -1,0 +1,17 @@
+{
+  "owner": "jzakirov",
+  "slug": "internet-search",
+  "displayName": "Internet Search",
+  "latest": {
+    "version": "0.3.4",
+    "publishedAt": 1772750693315,
+    "commit": "https://github.com/openclaw/skills/commit/aca86fb914fc2f76a3968a040fdb56798e066b14"
+  },
+  "history": [
+    {
+      "version": "0.3.3",
+      "publishedAt": 1771868312343,
+      "commit": "https://github.com/openclaw/skills/commit/8b1af0fd2e1f43d7b59b795f09a02380ad6d772d"
+    }
+  ]
+}

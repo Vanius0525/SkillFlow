@@ -1,0 +1,11 @@
+{
+  "owner": "huifer",
+  "slug": "admet-prediction",
+  "displayName": "Admet Prediction",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1771304706578,
+    "commit": "https://github.com/openclaw/skills/commit/fbaa144bf696c683c50d362042b209fa48a68877"
+  },
+  "history": []
+}
