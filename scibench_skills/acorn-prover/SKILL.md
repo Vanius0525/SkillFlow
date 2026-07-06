@@ -102,7 +102,7 @@ Argument: `DIR` - Directory to output documentation.
 2. Write proof file in `$ACORN_PROJECT/`
 3. Run the appropriate command (verify, reverify, training, docs)
 4. **Always show the full command output to the user** (success or error)
-5. Debug errors using the common errors table in [references/syntax.md](references/syntax.md)
+5. Debug errors using the common errors table in [~/agent-harness/scibench_skills/acorn-prover/references/syntax.md](~/agent-harness/scibench_skills/acorn-prover/references/syntax.md)
 6. Iterate until verification passes
 
 ## Quick Syntax Overview
@@ -146,5 +146,5 @@ Key modules in `$ACORN_LIB/src`:
 
 ## References
 
-- **Full syntax, error table, examples**: See [references/syntax.md](references/syntax.md)
+- **Full syntax, error table, examples**: See [~/agent-harness/scibench_skills/acorn-prover/references/syntax.md](~/agent-harness/scibench_skills/acorn-prover/references/syntax.md)
 - **Context7 docs**: Use `context7` MCP with `/acornprover/acorn` or `/acornprover/acornlib` for latest documentation

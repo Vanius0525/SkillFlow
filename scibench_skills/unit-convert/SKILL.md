@@ -18,25 +18,25 @@ Convert between different measurement units. Supports length, weight, temperatur
 
 ### Basic Conversions
 ```bash
-python3 scripts/unit-convert.py 100 cm m
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 cm m
 # Output: 100 cm = 1 m
 
-python3 scripts/unit-convert.py 10 kg lb
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 10 kg lb
 # Output: 10 kg = 22.05 lb
 
-python3 scripts/unit-convert.py 25 C F
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 25 C F
 # Output: 25 C = 77 F
 ```
 
 ### List Units
 ```bash
-python3 scripts/unit-convert.py list length
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py list length
 # Shows all length units
 ```
 
 ### Show Categories
 ```bash
-python3 scripts/unit-convert.py categories
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py categories
 ```
 
 ## Commands
@@ -47,39 +47,39 @@ Convert between units.
 **Examples:**
 ```bash
 # Length
-python3 scripts/unit-convert.py 100 cm m
-python3 scripts/unit-convert.py 5 ft cm
-python3 scripts/unit-convert.py 1 mi km
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 cm m
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 5 ft cm
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 mi km
 
 # Weight
-python3 scripts/unit-convert.py 10 kg lb
-python3 scripts/unit-convert.py 1000 g kg
-python3 scripts/unit-convert.py 16 oz lb
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 10 kg lb
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1000 g kg
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 16 oz lb
 
 # Temperature
-python3 scripts/unit-convert.py 25 C F
-python3 scripts/unit-convert.py 98.6 F C
-python3 scripts/unit-convert.py 300 K C
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 25 C F
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 98.6 F C
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 300 K C
 
 # Area
-python3 scripts/unit-convert.py 100 m2 ft2
-python3 scripts/unit-convert.py 1 acre m2
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 m2 ft2
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 acre m2
 
 # Volume
-python3 scripts/unit-convert.py 1000 ml l
-python3 scripts/unit-convert.py 1 gal l
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1000 ml l
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 gal l
 
 # Speed
-python3 scripts/unit-convert.py 100 km/h mph
-python3 scripts/unit-convert.py 10 m/s km/h
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 km/h mph
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 10 m/s km/h
 
 # Time
-python3 scripts/unit-convert.py 3600 s h
-python3 scripts/unit-convert.py 7 day h
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 3600 s h
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 7 day h
 
 # Data
-python3 scripts/unit-convert.py 1024 B KB
-python3 scripts/unit-convert.py 1 GB MB
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1024 B KB
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 GB MB
 ```
 
 ### `list <category>`
@@ -87,24 +87,24 @@ List all units in a category.
 
 **Examples:**
 ```bash
-python3 scripts/unit-convert.py list length
-python3 scripts/unit-convert.py list weight
-python3 scripts/unit-convert.py list temperature
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py list length
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py list weight
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py list temperature
 ```
 
 ### `categories`
 Show all supported categories.
 
 ```bash
-python3 scripts/unit-convert.py categories
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py categories
 ```
 
 ### `help <category>`
 Show help for a specific category.
 
 ```bash
-python3 scripts/unit-convert.py help temperature
-python3 scripts/unit-convert.py help length
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py help temperature
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py help length
 ```
 
 ## Supported Categories
@@ -171,62 +171,62 @@ The converter accepts common aliases:
 ### Everyday Conversions
 ```bash
 # Height conversions
-python3 scripts/unit-convert.py 180 cm ft
-python3 scripts/unit-convert.py 6 ft cm
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 180 cm ft
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 6 ft cm
 
 # Weight conversions
-python3 scripts/unit-convert.py 70 kg lb
-python3 scripts/unit-convert.py 150 lb kg
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 70 kg lb
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 150 lb kg
 
 # Temperature
-python3 scripts/unit-convert.py 32 F C
-python3 scripts/unit-convert.py 100 C F
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 32 F C
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 C F
 
 # Area (room size)
-python3 scripts/unit-convert.py 100 m2 ft2
-python3 scripts/unit-convert.py 1000 ft2 m2
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 m2 ft2
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1000 ft2 m2
 ```
 
 ### Cooking & Recipes
 ```bash
 # Volume conversions
-python3 scripts/unit-convert.py 1 cup ml
-python3 scripts/unit-convert.py 250 ml cup
-python3 scripts/unit-convert.py 1 gal l
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 cup ml
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 250 ml cup
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 gal l
 
 # Weight conversions
-python3 scripts/unit-convert.py 500 g lb
-python3 scripts/unit-convert.py 1 lb g
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 500 g lb
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 lb g
 ```
 
 ### Travel & Distance
 ```bash
 # Distance
-python3 scripts/unit-convert.py 100 km mi
-python3 scripts/unit-convert.py 50 mi km
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 km mi
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 50 mi km
 
 # Speed limits
-python3 scripts/unit-convert.py 60 mph km/h
-python3 scripts/unit-convert.py 100 km/h mph
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 60 mph km/h
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 km/h mph
 ```
 
 ### Digital Storage
 ```bash
 # File sizes
-python3 scripts/unit-convert.py 1 GB MB
-python3 scripts/unit-convert.py 1024 KB MB
-python3 scripts/unit-convert.py 1 TB GB
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 GB MB
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1024 KB MB
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1 TB GB
 ```
 
 ### Science & Engineering
 ```bash
 # Precise measurements
-python3 scripts/unit-convert.py 25.4 mm in
-python3 scripts/unit-convert.py 1000 mg g
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 25.4 mm in
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 1000 mg g
 
 # Time calculations
-python3 scripts/unit-convert.py 365 day h
-python3 scripts/unit-convert.py 86400 s day
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 365 day h
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 86400 s day
 ```
 
 ## Tips

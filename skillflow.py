@@ -326,13 +326,13 @@ def execute_tool(name: str, inputs: dict) -> str:
             return output.strip() or "(no output)"
 
         elif name == "read_file":
-            path = Path(inputs["path"])
+            path = Path(inputs["path"]).expanduser()
             if not path.is_absolute():
                 path = WORK_DIR / path
             return path.read_text(encoding="utf-8")
 
         elif name == "write_file":
-            path = Path(inputs["path"])
+            path = Path(inputs["path"]).expanduser()
             if not path.is_absolute():
                 path = WORK_DIR / path
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -340,7 +340,7 @@ def execute_tool(name: str, inputs: dict) -> str:
             return f"Written {len(inputs['content'])} bytes to {path}"
 
         elif name == "list_files":
-            path = Path(inputs.get("path", "."))
+            path = Path(inputs.get("path", ".")).expanduser()
             if not path.is_absolute():
                 path = WORK_DIR / path
             entries = [f"[{'d' if e.is_dir() else 'f'}] {e.name}" for e in sorted(path.iterdir())]

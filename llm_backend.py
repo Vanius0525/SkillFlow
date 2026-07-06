@@ -210,6 +210,13 @@ class _Messages:
             params["tools"] = _tools_to_openai(tools)
         if "temperature" in kwargs:
             params["temperature"] = kwargs["temperature"]
+        # Qwen3 hybrid-thinking models: disable <think> blocks unless
+        # QWEN_ENABLE_THINKING=1. The harness makes many small-max_tokens
+        # calls (plan=64, compress=256) that thinking would consume entirely.
+        if os.environ.get("QWEN_ENABLE_THINKING", "0") != "1":
+            params["extra_body"] = {
+                "chat_template_kwargs": {"enable_thinking": False}
+            }
         completion = self._client._openai.chat.completions.create(**params)
         return _response_from_openai(completion)
 

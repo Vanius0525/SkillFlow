@@ -145,16 +145,16 @@ Predict ADMET properties to prioritize compounds for development.
 
 ```bash
 # Full ADMET profile
-python scripts/admet_predict.py --smiles "CC1=CC=C..." --full
+python ~/agent-harness/scibench_skills/admet-prediction/scripts/admet_predict.py --smiles "CC1=CC=C..." --full
 
 # Batch prediction
-python scripts/admet_predict.py --library compounds.sdf --output results.csv
+python ~/agent-harness/scibench_skills/admet-prediction/scripts/admet_predict.py --library compounds.sdf --output results.csv
 
 # Specific properties
-python scripts/admet_predict.py --smiles "..." --properties hERG,DILI,CYP
+python ~/agent-harness/scibench_skills/admet-prediction/scripts/admet_predict.py --smiles "..." --properties hERG,DILI,CYP
 
 # Filter by criteria
-python scripts/admet_filter.py --library compounds.sdf --rules lipinski,veber
+python ~/agent-harness/scibench_skills/admet-prediction/scripts/admet_filter.py --library compounds.sdf --rules lipinski,veber
 ```
 
 ## Requirements
@@ -168,9 +168,9 @@ pip install deepchem admet-x
 
 ## Reference
 
-- [reference/admet-properties.md](reference/admet-properties.md) - Detailed property reference
-- [reference/toxicity-alerts.md](reference/toxicity-alerts.md) - Toxicity alerts reference
-- [reference/pk-models.md](reference/pk-models.md) - PK prediction models
+- [~/agent-harness/scibench_skills/admet-prediction/reference/admet-properties.md](~/agent-harness/scibench_skills/admet-prediction/reference/admet-properties.md) - Detailed property reference
+- [~/agent-harness/scibench_skills/admet-prediction/reference/toxicity-alerts.md](~/agent-harness/scibench_skills/admet-prediction/reference/toxicity-alerts.md) - Toxicity alerts reference
+- [~/agent-harness/scibench_skills/admet-prediction/reference/pk-models.md](~/agent-harness/scibench_skills/admet-prediction/reference/pk-models.md) - PK prediction models
 
 ## Best Practices
 

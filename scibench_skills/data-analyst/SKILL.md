@@ -36,7 +36,7 @@ Query databases, analyze spreadsheets, create visualizations, and generate insig
 
 2. Set up your workspace:
 ```bash
-./scripts/data-init.sh
+~/agent-harness/scibench_skills/data-analyst/scripts/data-init.sh
 ```
 
 3. Start analyzing!
@@ -369,13 +369,13 @@ Jun: █████████████████████████
 # generate-report.sh
 
 # Pull latest data
-python scripts/extract_data.py --output data/latest.csv
+python ~/agent-harness/scibench_skills/data-analyst/scripts/extract_data.py --output data/latest.csv
 
 # Run analysis
-python scripts/analyze.py --input data/latest.csv --output reports/
+python ~/agent-harness/scibench_skills/data-analyst/scripts/analyze.py --input data/latest.csv --output reports/
 
 # Generate report
-python scripts/format_report.py --template weekly --output reports/weekly-$(date +%Y-%m-%d).md
+python ~/agent-harness/scibench_skills/data-analyst/scripts/format_report.py --template weekly --output reports/weekly-$(date +%Y-%m-%d).md
 
 echo "Report generated: reports/weekly-$(date +%Y-%m-%d).md"
 ```
@@ -494,13 +494,13 @@ Quick SQL query execution.
 
 ```bash
 # Run query from file
-./scripts/query.sh --file queries/daily-report.sql
+~/agent-harness/scibench_skills/data-analyst/scripts/query.sh --file queries/daily-report.sql
 
 # Run inline query
-./scripts/query.sh "SELECT COUNT(*) FROM users"
+~/agent-harness/scibench_skills/data-analyst/scripts/query.sh "SELECT COUNT(*) FROM users"
 
 # Save output to file
-./scripts/query.sh --file queries/export.sql --output data/export.csv
+~/agent-harness/scibench_skills/data-analyst/scripts/query.sh --file queries/export.sql --output data/export.csv
 ```
 
 ### analyze.py
@@ -508,13 +508,13 @@ Python analysis toolkit.
 
 ```bash
 # Basic analysis
-python scripts/analyze.py --input data/sales.csv
+python ~/agent-harness/scibench_skills/data-analyst/scripts/analyze.py --input data/sales.csv
 
 # With specific analysis type
-python scripts/analyze.py --input data/sales.csv --type cohort
+python ~/agent-harness/scibench_skills/data-analyst/scripts/analyze.py --input data/sales.csv --type cohort
 
 # Generate report
-python scripts/analyze.py --input data/sales.csv --report weekly
+python ~/agent-harness/scibench_skills/data-analyst/scripts/analyze.py --input data/sales.csv --report weekly
 ```
 
 ---

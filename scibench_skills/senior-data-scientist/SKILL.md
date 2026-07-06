@@ -197,9 +197,9 @@ def diff_in_diff(df, outcome, treatment_col, post_col, controls=None):
 
 ## Reference Documentation
 
-- **Statistical Methods:** `references/statistical_methods_advanced.md`
-- **Experiment Design Frameworks:** `references/experiment_design_frameworks.md`
-- **Feature Engineering Patterns:** `references/feature_engineering_patterns.md`
+- **Statistical Methods:** `~/agent-harness/scibench_skills/senior-data-scientist/references/statistical_methods_advanced.md`
+- **Experiment Design Frameworks:** `~/agent-harness/scibench_skills/senior-data-scientist/references/experiment_design_frameworks.md`
+- **Feature Engineering Patterns:** `~/agent-harness/scibench_skills/senior-data-scientist/references/feature_engineering_patterns.md`
 
 ## Common Commands
 
@@ -209,8 +209,8 @@ python -m pytest tests/ -v --cov=src/
 python -m black src/ && python -m pylint src/
 
 # Training & evaluation
-python scripts/train.py --config prod.yaml
-python scripts/evaluate.py --model best.pth
+python ~/agent-harness/scibench_skills/senior-data-scientist/scripts/train.py --config prod.yaml
+python ~/agent-harness/scibench_skills/senior-data-scientist/scripts/evaluate.py --model best.pth
 
 # Deployment
 docker build -t service:v1 .
@@ -219,5 +219,5 @@ helm upgrade service ./charts/
 
 # Monitoring & health
 kubectl logs -f deployment/service
-python scripts/health_check.py
+python ~/agent-harness/scibench_skills/senior-data-scientist/scripts/health_check.py
 ```

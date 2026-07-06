@@ -1,0 +1,23 @@
+# vLLM inference server — install on the Linux 4090 box (driver 570.x / CUDA 12.8)
+#
+#   uv venv ~/vllm-env --python 3.12
+#   source ~/vllm-env/bin/activate
+#   uv pip install -r requirements-vllm-server.txt --torch-backend=cu128
+#
+# Notes:
+# - Do NOT install torch separately; vllm pins its own torch (2.8.x, cu128 wheels),
+#   which runs fine on a CUDA 12.8 driver. `--torch-backend=cu128` forces uv to
+#   resolve torch from the cu128 index and never pick a cu130 (CUDA 13) build.
+# - vllm 0.11.x default PyPI wheels are built against CUDA 12.8 — no source build needed.
+
+vllm==0.11.0
+# vllm 0.11.0 breaks with transformers 5.x
+# (AttributeError: Qwen2Tokenizer has no attribute all_special_tokens_extended)
+transformers<5
+
+# fast model downloads from HuggingFace
+huggingface_hub[cli]>=0.34
+hf_transfer>=0.1.8
+
+# optional: ModelScope as a China-friendly mirror source
+# modelscope>=1.20

@@ -21,15 +21,15 @@ Predictive pharmacology profiling for drug candidates using RDKit descriptors an
 
 ```bash
 # Profile a molecule from SMILES
-exec python scripts/chain_entry.py --input-json '{"smiles": "CC(=O)Oc1ccccc1C(=O)O", "context": "user"}'
+exec python ~/agent-harness/scibench_skills/pharma-pharmacology-agent/scripts/chain_entry.py --input-json '{"smiles": "CC(=O)Oc1ccccc1C(=O)O", "context": "user"}'
 
 # Chain from chemistry-query output
-exec python scripts/chain_entry.py --input-json '{"smiles": "<canonical_smiles>", "context": "from_chemistry"}'
+exec python ~/agent-harness/scibench_skills/pharma-pharmacology-agent/scripts/chain_entry.py --input-json '{"smiles": "<canonical_smiles>", "context": "from_chemistry"}'
 ```
 
 ## Scripts
 
-### `scripts/chain_entry.py`
+### `~/agent-harness/scibench_skills/pharma-pharmacology-agent/scripts/chain_entry.py`
 Main entry point. Accepts JSON with `smiles` field, returns full pharmacology profile.
 
 **Input:**
@@ -110,7 +110,7 @@ All features verified end-to-end with RDKit 2024.03+:
 
 ## Resources
 
-- `references/api_reference.md` — API and methodology references
+- `~/agent-harness/scibench_skills/pharma-pharmacology-agent/references/api_reference.md` — API and methodology references
 
 ## Changelog
 

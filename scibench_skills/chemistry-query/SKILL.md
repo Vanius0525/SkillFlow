@@ -23,21 +23,21 @@ Full-stack chemistry toolkit combining PubChem data retrieval with RDKit molecul
 
 ```bash
 # PubChem compound info
-exec python scripts/query_pubchem.py --compound "aspirin" --type info
+exec python ~/agent-harness/scibench_skills/chemistry-query/scripts/query_pubchem.py --compound "aspirin" --type info
 
 # Molecular properties from SMILES
-exec python scripts/rdkit_mol.py --smiles "CC(=O)Oc1ccccc1C(=O)O" --action props
+exec python ~/agent-harness/scibench_skills/chemistry-query/scripts/rdkit_mol.py --smiles "CC(=O)Oc1ccccc1C(=O)O" --action props
 
 # Retrosynthesis
-exec python scripts/rdkit_mol.py --target "CC(=O)Oc1ccccc1C(=O)O" --action retro --depth 2
+exec python ~/agent-harness/scibench_skills/chemistry-query/scripts/rdkit_mol.py --target "CC(=O)Oc1ccccc1C(=O)O" --action retro --depth 2
 
 # Full chain (name → props + draw + retro)
-exec python scripts/chain_entry.py --input-json '{"name": "caffeine", "context": "user"}'
+exec python ~/agent-harness/scibench_skills/chemistry-query/scripts/chain_entry.py --input-json '{"name": "caffeine", "context": "user"}'
 ```
 
 ## Scripts
 
-### `scripts/query_pubchem.py`
+### `~/agent-harness/scibench_skills/chemistry-query/scripts/query_pubchem.py`
 PubChem REST API queries with automatic name→CID resolution and timeout handling.
 
 ```
@@ -49,7 +49,7 @@ PubChem REST API queries with automatic name→CID resolution and timeout handli
 - **synthesis:** Synonyms/references for a compound
 - **similar:** Similar compounds by 2D fingerprint (top 20)
 
-### `scripts/rdkit_mol.py`
+### `~/agent-harness/scibench_skills/chemistry-query/scripts/rdkit_mol.py`
 RDKit cheminformatics engine. Resolves names via PubChem automatically.
 
 ```
@@ -68,11 +68,11 @@ RDKit cheminformatics engine. Resolves names via PubChem automatically.
 | substruct | Substructure matching | `--query_smiles --target_smiles "smi1,smi2"` |
 | xyz | 3D coordinates (MMFF optimized) | `--smiles` |
 
-### `scripts/chain_entry.py`
+### `~/agent-harness/scibench_skills/chemistry-query/scripts/chain_entry.py`
 Standard agent chain interface. Accepts `{"smiles": "...", "context": "..."}` or `{"name": "...", "context": "..."}`. Returns unified JSON with props, visualization, and retrosynthesis.
 
 ```bash
-python scripts/chain_entry.py --input-json '{"name": "sotorasib", "context": "user"}'
+python ~/agent-harness/scibench_skills/chemistry-query/scripts/chain_entry.py --input-json '{"name": "sotorasib", "context": "user"}'
 ```
 
 Output schema:
@@ -92,7 +92,7 @@ Output schema:
 }
 ```
 
-### `scripts/templates.json`
+### `~/agent-harness/scibench_skills/chemistry-query/scripts/templates.json`
 21 named reaction templates with SMARTS, expected yields, conditions, and references. Includes: Suzuki, Heck, Buchwald-Hartwig, Grignard, Wittig, Diels-Alder, Click, Sonogashira, Negishi, and more.
 
 ## Chaining
@@ -117,9 +117,9 @@ All features verified end-to-end with RDKit 2024.03+:
 
 ## Resources
 
-- `references/api_endpoints.md` — PubChem API endpoint reference and rate limits
-- `scripts/rdkit_reaction.py` — Legacy reaction module
-- `scripts/chembl_query.py`, `scripts/pubmed_search.py`, `scripts/admet_predict.py` — Additional query modules
+- `~/agent-harness/scibench_skills/chemistry-query/references/api_endpoints.md` — PubChem API endpoint reference and rate limits
+- `~/agent-harness/scibench_skills/chemistry-query/scripts/rdkit_reaction.py` — Legacy reaction module
+- `~/agent-harness/scibench_skills/chemistry-query/scripts/chembl_query.py`, `~/agent-harness/scibench_skills/chemistry-query/scripts/pubmed_search.py`, `~/agent-harness/scibench_skills/chemistry-query/scripts/admet_predict.py` — Additional query modules
 
 ## Changelog
 

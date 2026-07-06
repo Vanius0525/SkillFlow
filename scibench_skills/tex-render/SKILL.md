@@ -17,22 +17,22 @@ Renders LaTeX math to PNG, JPEG, WebP, or AVIF (and SVG). Use when you need a **
 The render script lives in the **same skill folder** as this `SKILL.md`:
 
 ```
-<skill_folder>/
+~/agent-harness/scibench_skills/tex-render/
 ├── SKILL.md
 ├── package.json
-└── scripts/
+└── ~/agent-harness/scibench_skills/tex-render/scripts/
     ├─── render.js
     └─── validate.js
 ```
 
-Use the **directory containing this SKILL.md** as the skill path. The script is at `scripts/render.js` relative to that folder. Invoke: `node <skill_folder>/scripts/render.js`. The agent loading this skill has the skill path—use it to run the script.
+Use the **directory containing this SKILL.md** as the skill path. The script is at `~/agent-harness/scibench_skills/tex-render/scripts/render.js` relative to that folder. Invoke: `node ~/agent-harness/scibench_skills/tex-render/scripts/render.js`. The agent loading this skill has the skill path—use it to run the script.
 
 ## Install
 
 One-time setup. After `clawhub install tex-render`, run `npm install` in the skill folder:
 
 ```bash
-cd <skill_folder>
+cd ~/agent-harness/scibench_skills/tex-render
 npm install
 ```
 
@@ -62,53 +62,53 @@ Do **not** output raw LaTeX. Do **not** ask the user for permission to render �
 
 ## Usage
 
-Run: `node <skill_folder>/scripts/render.js` (or `node scripts/render.js` when already in the skill folder).
+Run: `node ~/agent-harness/scibench_skills/tex-render/scripts/render.js` (or `node ~/agent-harness/scibench_skills/tex-render/scripts/render.js` when already in the skill folder).
 
 **Escaping:** When invoking via shell:
-- **Single quotes** for LaTeX without apostrophe: `node scripts/render.js '\frac{d}{dt}'`
-- **Stdin** when LaTeX contains apostrophe (e.g. `y'` for derivative): `printf '%s' "y' = f(t, y), \quad y(t_0)=y_0" | node scripts/render.js` — use double quotes so `'` is literal; backslashes like `\quad` stay intact.
+- **Single quotes** for LaTeX without apostrophe: `node ~/agent-harness/scibench_skills/tex-render/scripts/render.js '\frac{d}{dt}'`
+- **Stdin** when LaTeX contains apostrophe (e.g. `y'` for derivative): `printf '%s' "y' = f(t, y), \quad y(t_0)=y_0" | node ~/agent-harness/scibench_skills/tex-render/scripts/render.js` — use double quotes so `'` is literal; backslashes like `\quad` stay intact.
 
 ```bash
-node <skill_folder>/scripts/render.js --help
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js --help
 ```
 
 Default output is PNG to `~/.openclaw/media/tex-render/`. The script prints one JSON line with file paths: `{"svg":"...","png":"..."}` or `{"svg":"...","jpeg":"..."}`, etc. Use `--output dataurl` only when the conversation system explicitly supports Data URL images (otherwise it may show raw base64 text).
 
 ### Examples (validated by npm test)
 
-Use `<skill_folder>` = the directory containing this SKILL.md.
+Use `~/agent-harness/scibench_skills/tex-render` = the directory containing this SKILL.md.
 
 **Basic (PNG default):**
 ```bash
-node <skill_folder>/scripts/render.js 'E = mc^2'
-node <skill_folder>/scripts/render.js '$$\frac{F}{m}=a$$'
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js 'E = mc^2'
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js '$$\frac{F}{m}=a$$'
 ```
 
 **LaTeX with apostrophe (e.g. y'):** use stdin to avoid shell quoting issues:
 ```bash
-printf '%s' "y' = f(t, y), \quad y(t_0)=y_0" | node <skill_folder>/scripts/render.js
+printf '%s' "y' = f(t, y), \quad y(t_0)=y_0" | node ~/agent-harness/scibench_skills/tex-render/scripts/render.js
 ```
 
 **JPEG / WebP / AVIF:**
 ```bash
-node <skill_folder>/scripts/render.js --format jpeg --quality 80 '\frac{F}{m}=a' ./out/formula
-node <skill_folder>/scripts/render.js --format webp 'x^2 + y^2 = z^2'
-node <skill_folder>/scripts/render.js --format avif 'E = mc^2'
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js --format jpeg --quality 80 '\frac{F}{m}=a' ./out/formula
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js --format webp 'x^2 + y^2 = z^2'
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js --format avif 'E = mc^2'
 ```
 
 **Data URL (no file):**
 ```bash
-node <skill_folder>/scripts/render.js --output dataurl 'E = mc^2'
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js --output dataurl 'E = mc^2'
 ```
 
 **Scale by width:**
 ```bash
-node <skill_folder>/scripts/render.js --width 800 '\int_0^\infty e^{-x^2} dx'
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js --width 800 '\int_0^\infty e^{-x^2} dx'
 ```
 
 **Inline math (smaller rendering):**
 ```bash
-node <skill_folder>/scripts/render.js --inline 'a^2 + b^2 = c^2'
+node ~/agent-harness/scibench_skills/tex-render/scripts/render.js --inline 'a^2 + b^2 = c^2'
 ```
 
 **Height and zoom:** Use `--height N` or `--zoom N` as documented in `--help`.

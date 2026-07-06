@@ -1,0 +1,19 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# agent scratch output (recreated at runtime)
+agent_workspace/
+
+# HF download cache inside GAIA
+GAIA/.cache/
+
+# run artifacts
+logs/
+skillflow_results_*.jsonl
+*.log
+nul
+
+# local-only claude settings
+.claude/settings.local.json

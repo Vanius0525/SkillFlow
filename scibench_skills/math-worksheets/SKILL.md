@@ -13,16 +13,16 @@ This skill auto-detects the best available reasoning model and uses it for probl
 
 Model rankings are kept fresh via a three-layer fallback:
 1. **Hosted JSON** (fetched from GitHub, 7-day cache) — updated by maintainers as models ship
-2. **Bundled JSON** (`references/model-rankings.json`) — updated with each skill release on ClawhHub
+2. **Bundled JSON** (`~/agent-harness/scibench_skills/math-worksheets/references/model-rankings.json`) — updated with each skill release on ClawhHub
 3. **Hardcoded defaults** in the script — last-resort, never stale enough to cause failures
 
-To update rankings without waiting for a skill release: edit the hosted JSON at the GitHub URL in `references/model-rankings.md`. The skill picks it up within 7 days.
+To update rankings without waiting for a skill release: edit the hosted JSON at the GitHub URL in `~/agent-harness/scibench_skills/math-worksheets/references/model-rankings.md`. The skill picks it up within 7 days.
 
 **Step 0 — run model detection before anything else:**
 
 ```bash
 SKILL_DIR="$(dirname "$0")"
-result=$(bash "$SKILL_DIR/scripts/check_reasoning_model.sh")
+result=$(bash "$HOME/agent-harness/scibench_skills/math-worksheets/scripts/check_reasoning_model.sh")
 status=$(echo "$result" | awk '{print $1}')   # FOUND, FALLBACK, or NONE
 model_alias=$(echo "$result" | awk '{print $2}')
 model_full=$(echo "$result" | awk '{print $3}')
@@ -83,7 +83,7 @@ Ask (or infer from context):
 
 Design problems appropriate to the student's level. Increase difficulty gradually across the set. Every problem must be mathematically correct — verify your own solutions.
 
-See `references/problem-library.md` for topic-specific problem type menus.
+See `~/agent-harness/scibench_skills/math-worksheets/references/problem-library.md` for topic-specific problem type menus.
 
 ### 3. Write LaTeX source
 
@@ -99,9 +99,9 @@ The **skills summary** is a 1–2 page reference card the student can use while 
 - An optional **watch-out box** (orange) — common mistakes worth flagging
 - Optional **key vocabulary** section at the bottom
 
-See `references/latex-templates.md` → "Skills Summary / Study Guide Template" for the full shell and box macros.
+See `~/agent-harness/scibench_skills/math-worksheets/references/latex-templates.md` → "Skills Summary / Study Guide Template" for the full shell and box macros.
 
-See `references/latex-templates.md` for document templates, coordinate planes, tables, geometric figures, and answer key patterns.
+See `~/agent-harness/scibench_skills/math-worksheets/references/latex-templates.md` for document templates, coordinate planes, tables, geometric figures, and answer key patterns.
 
 **Required packages** (include in every document):
 ```latex
@@ -116,10 +116,10 @@ See `references/latex-templates.md` for document templates, coordinate planes, t
 
 ### 4. Write and run the verification file
 
-Before compiling, write `/tmp/verify_TOPIC_DATE.json` — a structured data file describing each problem and its expected answer. The bundled `scripts/verify.py` evaluates this using SymPy. No generated code is ever executed.
+Before compiling, write `/tmp/verify_TOPIC_DATE.json` — a structured data file describing each problem and its expected answer. The bundled `~/agent-harness/scibench_skills/math-worksheets/scripts/verify.py` evaluates this using SymPy. No generated code is ever executed.
 
 ```bash
-bash "$SKILL_DIR/scripts/run_verify.sh" /tmp/verify_TOPIC_DATE.json
+bash "$HOME/agent-harness/scibench_skills/math-worksheets/scripts/run_verify.sh" /tmp/verify_TOPIC_DATE.json
 ```
 
 **JSON format:**
@@ -156,9 +156,9 @@ Use `manual` for: graph sketches, sign charts, word problem setups, proofs.
 
 ```bash
 SKILL_DIR="$(dirname "$0")"
-bash "$SKILL_DIR/scripts/compile.sh" /tmp/ws_TOPIC_DATE.tex ~/Documents/Worksheets/
-bash "$SKILL_DIR/scripts/compile.sh" /tmp/ak_TOPIC_DATE.tex ~/Documents/Worksheets/
-bash "$SKILL_DIR/scripts/compile.sh" /tmp/ss_TOPIC_DATE.tex ~/Documents/Worksheets/
+bash "$HOME/agent-harness/scibench_skills/math-worksheets/scripts/compile.sh" /tmp/ws_TOPIC_DATE.tex ~/Documents/Worksheets/
+bash "$HOME/agent-harness/scibench_skills/math-worksheets/scripts/compile.sh" /tmp/ak_TOPIC_DATE.tex ~/Documents/Worksheets/
+bash "$HOME/agent-harness/scibench_skills/math-worksheets/scripts/compile.sh" /tmp/ss_TOPIC_DATE.tex ~/Documents/Worksheets/
 ```
 
 ### 5. Deliver
