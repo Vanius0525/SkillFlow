@@ -46,7 +46,10 @@ import anthropic
 from llm_backend import make_client
 
 # Backend selection (set from CLI in __main__; default = Claude API).
-_BACKEND = {"name": "claude", "base_url": None, "model": None}
+# context_window / compress_ratio are None until set from CLI; accessors below
+# fall back to the module defaults (see get_context_window / compress_ratio).
+_BACKEND = {"name": "claude", "base_url": None, "model": None,
+            "context_window": None, "compress_ratio": None}
 
 
 def _make_client(api_key: str | None = None):
@@ -95,6 +98,64 @@ REL_TOL = 0.05
 UNLIMITED_TOKENS = 10_000_000   # 10M output tokens (effectively infinite)
 UNLIMITED_TIMEOUT = 86400       # 24 hours
 
+# ---------------------------------------------------------------------------
+# Context-window-aware skill compression
+# ---------------------------------------------------------------------------
+# Skill docs are injected at FULL length by default. Task-aware compression
+# (SkillFlow Component 3) only kicks in once the assembled execution prompt
+# reaches CONTEXT_COMPRESS_RATIO of the model's context window — i.e. we
+# compress a skill only when we are actually about to run out of room. The
+# residual-context machinery (Component 4) is unchanged.
+DEFAULT_CONTEXT_WINDOW = int(os.environ.get("MODEL_CONTEXT_WINDOW", "200000"))
+CONTEXT_COMPRESS_RATIO = float(os.environ.get("CONTEXT_COMPRESS_RATIO", "0.8"))
+_CHARS_PER_TOKEN = 4   # rough heuristic; enough to gauge context pressure
+
+
+def _estimate_tokens(text: str) -> int:
+    """Cheap, dependency-free token estimate (~4 chars/token)."""
+    if not text:
+        return 0
+    return (len(text) + _CHARS_PER_TOKEN - 1) // _CHARS_PER_TOKEN
+
+
+def _content_to_text(content) -> str:
+    """Flatten a user-message content (str or list of blocks) to plain text."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for b in content:
+            if isinstance(b, dict):
+                if b.get("type") == "text":
+                    parts.append(b.get("text", ""))
+                elif b.get("type") == "image":
+                    parts.append("[image]")  # non-text; negligible for the estimate
+            else:
+                parts.append(str(b))
+        return "\n".join(parts)
+    return str(content)
+
+
+def get_context_window(client) -> int:
+    """
+    Resolve the model's max context window: explicit CLI override wins, then
+    a backend-provided attribute (QwenClient.context_window), then env, then
+    the module default (Claude ≈ 200k).
+    """
+    override = _BACKEND.get("context_window")
+    if override:
+        return int(override)
+    cw = getattr(client, "context_window", None)
+    if cw:
+        return int(cw)
+    return DEFAULT_CONTEXT_WINDOW
+
+
+def compress_ratio() -> float:
+    """Effective compression trigger ratio (CLI override, else module default)."""
+    r = _BACKEND.get("compress_ratio")
+    return float(r) if r is not None else CONTEXT_COMPRESS_RATIO
+
 ALL_SUBJECTS = [
     "atkins", "calculus", "chemmc", "class", "diff",
     "fund", "matter", "quan", "stat", "thermo",
@@ -117,13 +178,14 @@ class GoalAnchor:
 
 @dataclass
 class ExecMemoryItem:
-    """One compressed skill execution record m_i."""
+    """One skill execution record m_i (raw until compressed under context pressure)."""
     skill_name: str = ""
     subgoal: str = ""
-    key_outcome: str = ""
+    key_outcome: str = ""        # raw full output when compressed=False; summary when True
     evidence: str = ""           # raw snippet / file ref for bypass
     status: str = "pending"      # success | failed | pending
     unresolved: str = ""         # next-step dependencies
+    compressed: bool = True      # False = raw result awaiting lazy compression
 
 
 @dataclass
@@ -699,6 +761,78 @@ def update_residual(
     return new_r
 
 
+def add_raw_execution(
+    residual: ResidualContext,
+    skill_name: str,
+    raw_output: str,
+) -> ResidualContext:
+    """
+    Append a skill's RAW execution result to the residual WITHOUT any LLM call.
+
+    Execution-result compression is deferred: the raw output stays in the
+    execution channel at full length until context pressure crosses the compress
+    ratio, at which point compress_residual() folds it into a compact record.
+    """
+    new_r = copy.deepcopy(residual)
+    new_r.exec_items.append(asdict(ExecMemoryItem(
+        skill_name=skill_name or "direct",
+        subgoal="",
+        key_outcome=raw_output,      # full, uncompressed
+        evidence=raw_output,
+        status="success",
+        unresolved="",
+        compressed=False,
+    )))
+    new_r.raw_evidence.append({
+        "source": f"skill:{skill_name or 'direct'}",
+        "snippet": raw_output[:300],
+    })
+    if len(new_r.raw_evidence) > 10:
+        new_r.raw_evidence = new_r.raw_evidence[-10:]
+    return new_r
+
+
+def compress_residual(
+    client: anthropic.Anthropic,
+    residual: ResidualContext,
+    goal: GoalAnchor,
+) -> tuple[ResidualContext, int, int]:
+    """
+    Lazily compress any RAW (uncompressed) execution records in the residual into
+    structured memory items. Called ONLY under context pressure (see
+    assemble_execution_context), never on every step. Risk-channel bookkeeping
+    that used to live in update_residual happens here, at compression time.
+
+    Returns (new_residual, in_tokens, out_tokens).
+    """
+    in_tot = out_tot = 0
+    new_r = copy.deepcopy(residual)
+    new_items = []
+    for raw in new_r.exec_items:
+        item = raw if isinstance(raw, dict) else asdict(raw)
+        if item.get("compressed", True):
+            new_items.append(item)
+            continue
+        comp, cin, cout = compress_execution(
+            client, item.get("skill_name", ""), item.get("key_outcome", ""), goal
+        )
+        in_tot += cin
+        out_tot += cout
+        d = asdict(comp)
+        d["compressed"] = True
+        new_items.append(d)
+        # Risk channel (moved from update_residual → applied at compression time)
+        if comp.unresolved:
+            new_r.risk_items.append(f"From {comp.skill_name}: {comp.unresolved}")
+        if comp.status == "success" and comp.skill_name:
+            new_r.risk_items = [
+                r for r in new_r.risk_items
+                if comp.skill_name not in r or "unresolved" in r.lower()
+            ]
+    new_r.exec_items = new_items
+    return new_r, in_tot, out_tot
+
+
 # ---------------------------------------------------------------------------
 # SkillFlow Component 5: Local Skill Execution (Agent Loop)
 # ---------------------------------------------------------------------------
@@ -762,11 +896,79 @@ def build_execution_prompt(
     # Channel 1: Goal residual (always first, always present)
     parts.append(f"\n# Task Goal (Residual Channel)\n{residual.to_prompt_text()}")
 
-    # Compressed skill docs (task-aware compressed, not full text)
-    for skill_name, compressed_doc in compressed_skills.items():
-        parts.append(f"\n# Skill: {skill_name} (compressed for task)\n\n{compressed_doc}")
+    # Skill docs (full by default; task-aware compressed only under context pressure)
+    for skill_name, skill_doc in compressed_skills.items():
+        parts.append(f"\n# Skill: {skill_name}\n\n{skill_doc}")
 
     return "\n".join(parts)
+
+
+def assemble_execution_context(
+    client,
+    goal: GoalAnchor,
+    residual: ResidualContext,
+    skill_name: Optional[str],
+    msg_content,
+    base_system: str = BASE_SYSTEM,
+    verbose: bool = False,
+    prefix: str = "[SkillFlow]",
+    step: Optional[int] = None,
+) -> tuple[str, ResidualContext, int, int, int, int]:
+    """
+    Build the execution system prompt for one step. This is the SINGLE place any
+    compression happens, and it is entirely gated on context pressure.
+
+    The skill doc and the accumulated residual (raw execution results) go in at
+    FULL length first; the assembled prompt is then measured. Only if it reaches
+    compress_ratio() of the model's context window do we compress — the skill doc
+    (Component 3) AND any raw execution records in the residual (Component 4) —
+    and rebuild. Below the threshold nothing is compressed.
+
+    Returns (system, residual, orig_len, used_len, in_tok, out_tok).
+    `residual` is returned because it may have been compacted in place.
+    orig_len/used_len are 0 when no skill doc is in play.
+    """
+    skill_docs: dict[str, str] = {}
+    orig_len = used_len = 0
+    cin = cout = 0
+    has_skill = bool(skill_name and skill_name in SKILL_DOCS)
+
+    if has_skill:
+        orig_len = used_len = len(SKILL_DOCS[skill_name])
+        skill_docs[skill_name] = SKILL_DOCS[skill_name]
+
+    # Build once with full skill doc + full residual, then measure context pressure.
+    system = build_execution_prompt(goal, residual, skill_docs, base_system=base_system)
+
+    window = get_context_window(client)
+    ratio = compress_ratio()
+    threshold = int(window * ratio)
+    prompt_tokens = _estimate_tokens(system) + _estimate_tokens(_content_to_text(msg_content))
+
+    if prompt_tokens >= threshold:
+        # 1) Compress the skill doc (if any).
+        if has_skill:
+            compressed, sk_in, sk_out = compress_skill(
+                client, skill_name, SKILL_DOCS[skill_name], goal
+            )
+            skill_docs[skill_name] = compressed
+            used_len = len(compressed)
+            cin += sk_in
+            cout += sk_out
+        # 2) Compress raw execution records accumulated in the residual.
+        residual, r_in, r_out = compress_residual(client, residual, goal)
+        cin += r_in
+        cout += r_out
+        # Rebuild with the compacted skill doc + residual.
+        system = build_execution_prompt(goal, residual, skill_docs, base_system=base_system)
+        if verbose:
+            print(f"{prefix} Step {step}b: prompt ~{prompt_tokens}tok >= "
+                  f"{ratio:.0%}x{window} -> compressed skill+residual", flush=True)
+    elif verbose:
+        print(f"{prefix} Step {step}b: prompt ~{prompt_tokens}tok < "
+              f"{ratio:.0%}x{window} -> full context (no compression)", flush=True)
+
+    return system, residual, orig_len, used_len, cin, cout
 
 
 def _force_final_answer(
@@ -995,29 +1197,22 @@ def run_skillflow(
                     # Done after previous steps
                     break
 
-        # ---- Compress skill (Alg implicit: task-aware compression) ----
-        compressed_skills: dict[str, str] = {}
-        if skill_name and skill_name in SKILL_DOCS:
-            orig_len = len(SKILL_DOCS[skill_name])
-            all_original_lengths[skill_name] = orig_len
-            if verbose:
-                print(f"{p} Step {step}b: Compressing '{skill_name}' ({orig_len} chars)...", end="", flush=True)
-            compressed, cin, cout = compress_skill(
-                client, skill_name, SKILL_DOCS[skill_name], goal
-            )
-            compressed_skills[skill_name] = compressed
-            all_compressed_lengths[skill_name] = len(compressed)
-            total_in += cin
-            total_out += cout
-            if verbose:
-                ratio = len(compressed) / max(orig_len, 1) * 100
-                print(f" → {len(compressed)} chars ({ratio:.0f}%)", flush=True)
-
         # ---- Build local execution context (Alg line 9) ----
         # Each step gets a FRESH messages list — local context, not full history.
         # Prior step results are conveyed through the residual, not message history.
-        system = build_execution_prompt(goal, residual, compressed_skills, base_system=base_system)
+        # Skill docs AND the accumulated residual go in at full length; all
+        # compression (skill + execution results) triggers only when the
+        # assembled prompt reaches compress_ratio() of the context window.
+        system, residual, orig_len, used_len, cin, cout = assemble_execution_context(
+            client, goal, residual, skill_name, msg_content,
+            base_system=base_system, verbose=verbose, prefix=p, step=step,
+        )
         messages = [{"role": "user", "content": msg_content}]
+        total_in += cin
+        total_out += cout
+        if skill_name and skill_name in SKILL_DOCS:
+            all_original_lengths[skill_name] = orig_len
+            all_compressed_lengths[skill_name] = used_len
 
         # ---- Execute agent loop (Alg line 10) ----
         remaining_budget = token_budget if token_budget >= UNLIMITED_TOKENS else max(token_budget - total_out, FORCE_ANSWER_THRESHOLD)
@@ -1051,25 +1246,17 @@ def run_skillflow(
 
         step_responses.append(response_text)
 
-        # ---- Compress execution & update residual (Alg lines 11-15) ----
+        # ---- Record execution into residual (Alg lines 11-15) ----
+        # Store the RAW result only — no LLM call here. Execution-result
+        # compression is deferred to assemble_execution_context and runs only
+        # when context pressure crosses the compress ratio, not every step.
         exec_skill = skill_name or "direct"
         if response_text:
+            residual = add_raw_execution(residual, exec_skill, response_text)
             if verbose:
-                print(f"{p} Step {step}d: Compressing execution & updating residual...", flush=True)
-            try:
-                exec_item, ein, eout = compress_execution(
-                    client, exec_skill, response_text, goal
-                )
-                total_in += ein
-                total_out += eout
-                residual = update_residual(residual, exec_item, response_text)
-                if verbose:
-                    print(f"{p}   residual: exec_items={len(residual.exec_items)}, "
-                          f"risk_items={len(residual.risk_items)}, "
-                          f"raw_evidence={len(residual.raw_evidence)}", flush=True)
-            except Exception as e:
-                if verbose:
-                    print(f"{p}   [WARN] exec compression failed: {e}", flush=True)
+                print(f"{p} Step {step}d: recorded raw execution "
+                      f"(exec_items={len(residual.exec_items)}, "
+                      f"raw_evidence={len(residual.raw_evidence)})", flush=True)
 
         # If no skills (k=0), only run one iteration
         if skill_disabled:
@@ -2283,18 +2470,18 @@ def interactive_mode(api_key: str | None = None, k: int = 1, max_steps: int = MA
                 print(f"[skillflow] Planner: done after {step - 1} steps.")
                 break
 
-            # Compress skill
-            compressed_skills = {}
+            # Build system prompt with current residual. Skill docs go in at
+            # full length; compression only triggers under context pressure.
             if skill_name and skill_name in SKILL_DOCS:
-                compressed, _, _ = compress_skill(client, skill_name, SKILL_DOCS[skill_name], goal)
-                compressed_skills[skill_name] = compressed
                 print(f"[skillflow] Step {step}: executing skill '{skill_name}'")
-
-            # Build system prompt with current residual
-            system = build_execution_prompt(goal, residual, compressed_skills,
-                                            base_system=BASE_SYSTEM.replace(
-                                                "Your response must end with", "When you have a final numeric answer, end with"
-                                            ))
+            system, residual, _, _, _, _ = assemble_execution_context(
+                client, goal, residual, skill_name, user_input,
+                base_system=BASE_SYSTEM.replace(
+                    "Your response must end with",
+                    "When you have a final numeric answer, end with",
+                ),
+                verbose=True, prefix="[skillflow]", step=step,
+            )
 
             # Fresh messages — local context only
             messages = [{"role": "user", "content": user_input}]
@@ -2303,10 +2490,10 @@ def interactive_mode(api_key: str | None = None, k: int = 1, max_steps: int = MA
                 reply, _, _ = run_agent_loop(client, messages, system)
                 print(f"\n\033[35mAssistant>\033[0m {reply}\n")
 
-                # Compress and update residual
+                # Store the raw result; compression is deferred until context
+                # pressure (handled inside assemble_execution_context next step).
                 exec_skill = skill_name or "direct"
-                exec_item, _, _ = compress_execution(client, exec_skill, reply, goal)
-                residual = update_residual(residual, exec_item, reply)
+                residual = add_raw_execution(residual, exec_skill, reply)
 
             except Exception as e:
                 print(f"\n[error] {e}\n")
@@ -2653,6 +2840,15 @@ if __name__ == "__main__":
                        default=os.environ.get("QWEN_MODEL", "Qwen/Qwen3-30B-A3B-Instruct-2507"),
                        help="Model name served by the qwen backend (must match "
                             "what the server exposes).")
+        p.add_argument("--context-window", type=int, default=None,
+                       help="Model max context window (tokens). Overrides the "
+                            "backend default; used to decide when a skill doc is "
+                            "compressed (see --compress-ratio).")
+        p.add_argument("--compress-ratio", type=float,
+                       default=CONTEXT_COMPRESS_RATIO,
+                       help="Compress a skill doc once the assembled prompt "
+                            f"reaches this fraction of the context window "
+                            f"(default: {CONTEXT_COMPRESS_RATIO}, e.g. 0.9).")
 
     # Interactive mode
     interactive_parser = subparsers.add_parser("interactive", help="Interactive chat mode")
@@ -2737,6 +2933,14 @@ if __name__ == "__main__":
     _BACKEND["name"] = getattr(args, "backend", "claude")
     _BACKEND["base_url"] = getattr(args, "qwen_base_url", None)
     _BACKEND["model"] = getattr(args, "qwen_model", None)
+    _BACKEND["context_window"] = getattr(args, "context_window", None)
+    _BACKEND["compress_ratio"] = getattr(args, "compress_ratio", None)
+
+    # Display/logging: MODEL is the Claude id used for real Anthropic calls, but
+    # the qwen backend ignores it (see llm_backend.QwenClient). Reflect the model
+    # that actually runs so summaries and result records don't mislabel as Haiku.
+    if _BACKEND["name"] == "qwen":
+        MODEL = _BACKEND["model"] or os.environ.get("QWEN_MODEL", "Qwen/Qwen3-8B")
 
     def _resolve_limits(args_obj):
         """Resolve --no-limit and 0 values into sentinel constants."""

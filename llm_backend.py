@@ -224,7 +224,8 @@ class _Messages:
 class QwenClient:
     """Anthropic-API-shaped wrapper around an OpenAI-compatible endpoint."""
 
-    def __init__(self, base_url: str, model: str, api_key: str = "EMPTY"):
+    def __init__(self, base_url: str, model: str, api_key: str = "EMPTY",
+                 context_window: int | None = None):
         try:
             from openai import OpenAI
         except ImportError as e:
@@ -233,6 +234,12 @@ class QwenClient:
             ) from e
         self._openai = OpenAI(base_url=base_url, api_key=api_key or "EMPTY")
         self._model = model
+        # Max context window of the served model — used by the harness to decide
+        # when to compress skill docs. Qwen3 dense/MoE default to 32768; the
+        # -2507 variants serve up to 262144. Override via QWEN_CONTEXT_WINDOW.
+        self.context_window = int(
+            context_window or os.environ.get("QWEN_CONTEXT_WINDOW", "32768")
+        )
         self.messages = _Messages(self)
 
 
