@@ -907,6 +907,12 @@ if __name__ == "__main__":
     _BACKEND["base_url"] = getattr(args, "qwen_base_url", None)
     _BACKEND["model"] = getattr(args, "qwen_model", None)
 
+    # Display/logging: MODEL is the Claude id used for real Anthropic calls, but
+    # the qwen backend ignores it (see llm_backend.QwenClient). Reflect the model
+    # that actually runs so summaries and result records don't mislabel as Haiku.
+    if _BACKEND["name"] == "qwen":
+        MODEL = _BACKEND["model"] or os.environ.get("QWEN_MODEL", "Qwen/Qwen3-8B")
+
     evaluate(
         subjects=args.subjects,
         max_questions=args.max,
