@@ -133,46 +133,46 @@ engines:
   - name: wikidata
     disabled: true
 
-  # 域名可达但引擎实际不可用 —— 首页 200 不等于搜索接口能用，这两个是逐引擎
-  # 实测（!bing / !mojeek）之后才发现的:
-  #   mojeek 搜索接口返 403，每次查询都往 unresponsive_engines 里塞一条
-  #   bing 响应正常但结果为空，www.bing.com 的 302 应是跳到同意页/区域页
+  # 域名可达但引擎实际不可用 —— 首页返 200 不代表搜索接口能用。这几个是逐引擎
+  # 实测（!bing 之类的 bang 查询）才发现的，光看 curl 可达性会误判:
+  #   mojeek     搜索接口返 403，每次查询都往 unresponsive_engines 里塞一条
+  #   bing       响应正常但结果恒为 0，www.bing.com 的 302 应是跳到同意页/区域页
+  #   bing news  同上
+  #   lobste.rs  social 分类实测未产出结果
   - name: bing
+    disabled: true
+  - name: bing news
     disabled: true
   - name: mojeek
     disabled: true
   - name: mojeek news
     disabled: true
-
-  # 实测能返回结果的
-  - name: google cse
-    disabled: false
-  - name: yandex
-    disabled: false
-  # 只产 infobox，不进 results 数组，但作为背景信息有用
-  - name: wikipedia
-    disabled: false
-  - name: bing news
-    disabled: false
-  - name: google news
-    disabled: false
-  # academic 分类 —— arxiv / pubmed / scholar / semantic scholar / crossref 实测均可达
-  - name: arxiv
-    disabled: false
-  - name: pubmed
-    disabled: false
-  - name: google scholar
-    disabled: false
-  - name: semantic scholar
-    disabled: false
-  - name: crossref
-    disabled: false
-  # social 分类 —— 这个实例不带 reddit 引擎，reddit.com 也不通。
-  # boardreader 是论坛聚合，最接近原用途；lobste.rs 只有技术话题。
-  # lemmy 未启用: 默认指向已死的 lemmy.ml，改用 lemmy.world 要覆盖 base_url。
-  - name: boardreader
-    disabled: false
   - name: lobste.rs
+    disabled: true
+
+  # 以下全部经 bang 查询实测能返回结果（括号内为实测条数）
+  - name: google cse       # general 主力 (30)
+    disabled: false
+  - name: yandex           # general 补充 (10)
+    disabled: false
+  - name: wikipedia        # 只产 infobox，不进 results 数组，作背景信息有用
+    disabled: false
+  - name: google news      # news (36)
+    disabled: false
+  - name: arxiv            # academic (10)
+    disabled: false
+  - name: pubmed           # academic (20)
+    disabled: false
+  - name: google scholar   # academic (39)
+    disabled: false
+  - name: semantic scholar # academic (32)
+    disabled: false
+  - name: crossref         # academic (20)
+    disabled: false
+  # social: 这个实例不带 reddit 引擎，reddit.com 也不通。boardreader 是论坛聚合，
+  # 最接近原用途；该分类下 google cse 和 yandex 也会参与，实测合计 34 条。
+  # lemmy 未启用: 默认指向已死的 lemmy.ml，改用 lemmy.world 要覆盖 base_url。
+  - name: boardreader      # social (10)
     disabled: false
 EOF
 fi

@@ -27,8 +27,8 @@ JavaScript shells. Use the scripts below instead.
 
 ## Tool 1 — search.py
 
-Queries the local SearXNG (Bing + Mojeek + Yandex + Wikipedia for general
-search) and prints a JSON list of `{title, url, snippet, engine}`.
+Queries the local SearXNG (Google CSE + Yandex for general search, plus
+Wikipedia infoboxes) and prints a JSON list of `{title, url, snippet, engine}`.
 
 ```bash
 python3 ~/agent-harness/scibench_skills/web-search/scripts/search.py \
@@ -38,12 +38,12 @@ python3 ~/agent-harness/scibench_skills/web-search/scripts/search.py \
 Flags:
 - `-n N`         number of results (default 5; raise to 8–10 when you need to compare sources)
 - `--category C` one of `general` (default), `news`, `academic`, `social`, `images`, `videos`
-  - `news`     — recent events, breaking news (Bing News, Google News, Mojeek News)
+  - `news`     — recent events, breaking news (Google News)
   - `academic` — papers (arXiv, PubMed, Google Scholar, Semantic Scholar, Crossref)
-  - `social`   — forum discussion via Boardreader and lobste.rs. **No Reddit** on
-    this instance, so coverage of "what do people recommend" is thin. Try it once
-    for opinion questions, but fall back to `general` rather than reformulating
-    `social` queries repeatedly.
+  - `social`   — forum discussion, via Boardreader plus the general engines.
+    **No Reddit** on this instance, so coverage of "what do people recommend" is
+    thinner than you may expect. Try it once for opinion questions, then fall back
+    to `general` rather than reformulating `social` queries repeatedly.
 
 Query style: short keyword phrases beat full sentences.
 - Bad: `"what gyms near tompkins square park have early classes"`
