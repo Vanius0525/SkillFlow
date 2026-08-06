@@ -71,6 +71,23 @@ Flags:
 If `trafilatura` returns empty (rare — pure-JS SPAs), retry with `--raw`
 and `grep` / Python parse what you need.
 
+### When a fetch returns 403 Forbidden
+
+The block is on the **site**, not the URL. Some sites (TripAdvisor, Yelp and
+similar review aggregators) refuse automated requests from datacenter IPs
+outright — the request already carries a normal browser User-Agent, so there
+is nothing to fix by retrying.
+
+Do **not** try other URLs on that same domain: they will all return 403 and
+each attempt costs a turn. Instead, on the first 403 from a host:
+
+1. Go back to the search results and pick a URL on a **different** domain.
+2. If the answer only exists on the blocked site, use what the search snippets
+   already told you — snippets come from the search engine's own crawl and are
+   not affected by the block.
+3. State the answer you can support, rather than spending turns proving the
+   site is unreachable.
+
 ## Recommended pattern (3 commands)
 
 ```bash
