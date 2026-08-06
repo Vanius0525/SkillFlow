@@ -133,18 +133,26 @@ engines:
   - name: wikidata
     disabled: true
 
-  # 可达的，显式打开
+  # 域名可达但引擎实际不可用 —— 首页 200 不等于搜索接口能用，这两个是逐引擎
+  # 实测（!bing / !mojeek）之后才发现的:
+  #   mojeek 搜索接口返 403，每次查询都往 unresponsive_engines 里塞一条
+  #   bing 响应正常但结果为空，www.bing.com 的 302 应是跳到同意页/区域页
   - name: bing
-    disabled: false
-  - name: bing news
-    disabled: false
+    disabled: true
   - name: mojeek
-    disabled: false
+    disabled: true
   - name: mojeek news
-    disabled: false
-  - name: wikipedia
+    disabled: true
+
+  # 实测能返回结果的
+  - name: google cse
     disabled: false
   - name: yandex
+    disabled: false
+  # 只产 infobox，不进 results 数组，但作为背景信息有用
+  - name: wikipedia
+    disabled: false
+  - name: bing news
     disabled: false
   - name: google news
     disabled: false
