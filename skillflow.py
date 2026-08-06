@@ -102,6 +102,15 @@ REL_TOL = 0.05
 MAX_IDENTICAL_TOOL_CALLS = 5    # same tool+args this many times, then stop executing it
 MAX_TOOL_CALLS_PER_TURN = 40    # absolute cap on tool calls in one agent loop
 
+# One `curl` of a web page can put an entire HTML document into the transcript,
+# which then gets resent on every subsequent call. Cap what a tool may return.
+MAX_TOOL_OUTPUT_CHARS = int(os.environ.get("MAX_TOOL_OUTPUT_CHARS", "16000"))
+
+# max_tokens has to fit in whatever the context window has left, not just in the
+# output budget: asking for 4096 when the input is already 31k of a 32k window
+# is rejected outright with a 400, losing the whole task.
+CONTEXT_SAFETY_MARGIN = 512     # slack for estimation error and template overhead
+
 # "Unlimited" sentinel values — used when --no-limit or 0 is passed
 UNLIMITED_TOKENS = 10_000_000   # 10M output tokens (effectively infinite)
 UNLIMITED_TIMEOUT = 86400       # 24 hours
@@ -142,6 +151,61 @@ def _content_to_text(content) -> str:
                 parts.append(str(b))
         return "\n".join(parts)
     return str(content)
+
+
+def _estimate_block(b) -> str:
+    """
+    Flatten one content block for size estimation.
+
+    Separate from _content_to_text because that one only walks text/image
+    blocks — it is used where those are all that exist. Here the bulk of the
+    transcript is tool_result and tool_use payloads, and missing them would
+    under-estimate the request badly.
+    """
+    if isinstance(b, dict):
+        t = b.get("type")
+        if t == "text":
+            return b.get("text", "")
+        if t == "tool_result":
+            return _content_to_text(b.get("content"))
+        if t == "tool_use":
+            return json.dumps(b.get("input", {}), ensure_ascii=False, default=str)
+        if t == "image":
+            return "[image]"
+        return str(b)
+    if getattr(b, "text", None):
+        return b.text
+    inp = getattr(b, "input", None)
+    if inp is not None:
+        return json.dumps(inp, ensure_ascii=False, default=str)
+    return str(b)
+
+
+def _request_tokens(system: str, messages: list) -> int:
+    """Estimate the input size of the next request."""
+    total = _estimate_tokens(system)
+    for m in messages:
+        c = m.get("content")
+        if isinstance(c, list):
+            total += sum(_estimate_tokens(_estimate_block(b)) for b in c)
+        else:
+            total += _estimate_tokens(_content_to_text(c))
+    return total
+
+
+def _truncate_output(text: str, limit: int = MAX_TOOL_OUTPUT_CHARS) -> str:
+    """Keep the head and tail of an oversized tool result, drop the middle."""
+    if len(text) <= limit:
+        return text
+    head = limit * 2 // 3
+    tail = limit - head
+    return (
+        text[:head]
+        + f"\n\n[... {len(text) - limit} characters cut by the harness; a tool "
+          f"result may not exceed {limit}. Re-run with something narrower — "
+          f"grep, head, or a parser — rather than dumping the whole thing ...]\n\n"
+        + text[-tail:]
+    )
 
 
 def get_context_window(client) -> int:
@@ -418,13 +482,13 @@ def execute_tool(name: str, inputs: dict) -> str:
                 output += f"\n[stderr]\n{result.stderr}"
             if result.returncode != 0:
                 output += f"\n[exit code: {result.returncode}]"
-            return output.strip() or "(no output)"
+            return _truncate_output(output.strip()) or "(no output)"
 
         elif name == "read_file":
             path = Path(inputs["path"]).expanduser()
             if not path.is_absolute():
                 path = WORK_DIR / path
-            return path.read_text(encoding="utf-8")
+            return _truncate_output(path.read_text(encoding="utf-8"))
 
         elif name == "write_file":
             path = Path(inputs["path"]).expanduser()
@@ -1009,13 +1073,14 @@ def _force_final_answer(
     messages: list,
     system: str,
     reason: str,
+    max_tokens: int | None = None,
 ) -> tuple[str, int, int]:
     """Force the LLM to give a final answer based on what it has so far."""
     messages.append({"role": "user", "content": FORCE_ANSWER_MSG})
     try:
         response = client.messages.create(
             model=MODEL,
-            max_tokens=max(FORCE_ANSWER_THRESHOLD, 256),
+            max_tokens=max_tokens or max(FORCE_ANSWER_THRESHOLD, 256),
             system=system,
             messages=messages,
         )
@@ -1054,12 +1119,20 @@ def run_agent_loop(
     p = "    [agent]"
 
     while True:
+        # Room left in the context window for the reply. The transcript grows
+        # with every tool result, so this shrinks even when the output budget
+        # does not — and a max_tokens that does not fit is a hard 400.
+        ctx_room = (get_context_window(client)
+                    - _request_tokens(system, messages)
+                    - CONTEXT_SAFETY_MARGIN)
+        force_max = max(64, min(FORCE_ANSWER_THRESHOLD, ctx_room))
+
         # ---- Timeout check: force answer instead of raising ----
         if deadline is not None and time.time() >= deadline - TIMEOUT_GRACE_SECONDS:
             if verbose:
                 print(f"{p} approaching deadline, forcing final answer...", flush=True)
             text, fin, fout = _force_final_answer(
-                client, messages, system, "timeout"
+                client, messages, system, "timeout", force_max
             )
             total_in += fin
             total_out += fout
@@ -1067,12 +1140,27 @@ def run_agent_loop(
 
         remaining = token_budget - total_out
 
+        # ---- Context check: no room left for a useful reply ----
+        if ctx_room < FORCE_ANSWER_THRESHOLD:
+            if verbose:
+                print(f"{p} context nearly full ({ctx_room} tokens of room left), "
+                      f"forcing final answer...", flush=True)
+            if ctx_room < 64:
+                # Not even room for a forced answer; report rather than 400.
+                return "[context exhausted] ", total_in, total_out
+            text, fin, fout = _force_final_answer(
+                client, messages, system, "context exhausted", force_max
+            )
+            total_in += fin
+            total_out += fout
+            return text, total_in, total_out
+
         # ---- Budget check: force answer instead of truncating ----
         if budget_enabled and remaining <= FORCE_ANSWER_THRESHOLD:
             if verbose:
                 print(f"{p} budget nearly exhausted ({remaining} remaining), forcing final answer...", flush=True)
             text, fin, fout = _force_final_answer(
-                client, messages, system, "budget exceeded"
+                client, messages, system, "budget exceeded", force_max
             )
             total_in += fin
             total_out += fout
@@ -1080,6 +1168,7 @@ def run_agent_loop(
 
         # ---- Normal call with tools ----
         call_max = MAX_TOKENS_PER_CALL if not budget_enabled else min(MAX_TOKENS_PER_CALL, remaining)
+        call_max = max(1, min(call_max, ctx_room))
         response = client.messages.create(
             model=MODEL,
             max_tokens=call_max,

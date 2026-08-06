@@ -87,6 +87,17 @@ TASK_TIMEOUT           = 300    # per-task wall-clock time limit in seconds (5 m
 MAX_IDENTICAL_TOOL_CALLS = 5    # same tool+args this many times, then stop executing it
 MAX_TOOL_CALLS_PER_TURN  = 40   # absolute cap on tool calls in one agent turn
 
+# One `curl` of a web page can put an entire HTML document into the transcript,
+# which then gets resent on every subsequent call. Cap what a tool may return.
+MAX_TOOL_OUTPUT_CHARS = int(os.environ.get("MAX_TOOL_OUTPUT_CHARS", "16000"))
+
+# max_tokens has to fit in whatever the context window has left, not just in the
+# output budget: asking for 4096 when the input is already 31k of a 32k window
+# is rejected outright with a 400, losing the whole task.
+CONTEXT_SAFETY_MARGIN  = 512    # slack for estimation error and template overhead
+DEFAULT_CONTEXT_WINDOW = int(os.environ.get("MODEL_CONTEXT_WINDOW", "200000"))
+_CHARS_PER_TOKEN = 4
+
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
 TEXT_EXTS  = {".txt", ".py", ".json", ".jsonld", ".csv", ".md"}
 
@@ -329,6 +340,70 @@ TOOLS = [
 ]
 
 
+def _estimate_tokens(text: str) -> int:
+    """Cheap, dependency-free token estimate (~4 chars/token)."""
+    if not text:
+        return 0
+    return (len(text) + _CHARS_PER_TOKEN - 1) // _CHARS_PER_TOKEN
+
+
+def _block_text(b) -> str:
+    """Flatten one content block — dict from us, or an SDK object from a reply."""
+    if isinstance(b, dict):
+        t = b.get("type")
+        if t == "text":
+            return b.get("text", "")
+        if t == "tool_result":
+            return _content_to_text(b.get("content"))
+        if t == "tool_use":
+            return json.dumps(b.get("input", {}), ensure_ascii=False, default=str)
+        if t == "image":
+            return "[image]"
+        return str(b)
+    if getattr(b, "text", None):
+        return b.text
+    inp = getattr(b, "input", None)
+    if inp is not None:
+        return json.dumps(inp, ensure_ascii=False, default=str)
+    return str(b)
+
+
+def _content_to_text(content) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "\n".join(_block_text(b) for b in content)
+    return str(content)
+
+
+def _request_tokens(system: str, messages: list) -> int:
+    """Estimate the input size of the next request."""
+    return _estimate_tokens(system) + sum(
+        _estimate_tokens(_content_to_text(m.get("content"))) for m in messages
+    )
+
+
+def _context_window(client) -> int:
+    """QwenClient exposes the served model's window; Claude falls back to the default."""
+    cw = getattr(client, "context_window", None)
+    return int(cw) if cw else DEFAULT_CONTEXT_WINDOW
+
+
+def _truncate_output(text: str, limit: int = MAX_TOOL_OUTPUT_CHARS) -> str:
+    """Keep the head and tail of an oversized tool result, drop the middle."""
+    if len(text) <= limit:
+        return text
+    head = limit * 2 // 3
+    tail = limit - head
+    return (
+        text[:head]
+        + f"\n\n[... {len(text) - limit} characters cut by the harness; a tool "
+          f"result may not exceed {limit}. Re-run with something narrower — "
+          f"grep, head, or a parser — rather than dumping the whole thing ...]\n\n"
+        + text[-tail:]
+    )
+
+
 def _unknown_tool_error(name: str) -> str:
     """
     Explicit, actionable error for a tool this harness does not register.
@@ -370,13 +445,13 @@ def execute_tool(name: str, inputs: dict) -> str:
                 output += f"\n[stderr]\n{result.stderr}"
             if result.returncode != 0:
                 output += f"\n[exit code: {result.returncode}]"
-            return output.strip() or "(no output)"
+            return _truncate_output(output.strip()) or "(no output)"
 
         elif name == "read_file":
             path = Path(inputs["path"])
             if not path.is_absolute():
                 path = WORK_DIR / path
-            return path.read_text(encoding="utf-8")
+            return _truncate_output(path.read_text(encoding="utf-8"))
 
         elif name == "write_file":
             path = Path(inputs["path"])
@@ -441,13 +516,24 @@ def run_agent_turn(
 
         remaining = token_budget - total_out
 
+        # Room left in the context window for the reply. The transcript grows with
+        # every tool result, so this shrinks even when the output budget does not.
+        ctx_room = (_context_window(client)
+                    - _request_tokens(system, messages)
+                    - CONTEXT_SAFETY_MARGIN)
+        if not force_reason and ctx_room < FORCE_ANSWER_THRESHOLD:
+            force_reason = "context exhausted"
+
         # --- budget nearly exhausted (or loop broken out of): force final answer ---
         if force_reason or remaining <= FORCE_ANSWER_THRESHOLD:
             reason = force_reason or "budget exceeded"
+            if ctx_room < 64:
+                # Not even room for a forced answer; report rather than 400.
+                return f"[{reason}] ", total_in, total_out
             messages.append({"role": "user", "content": FORCE_ANSWER_MSG})
             response = client.messages.create(
                 model=MODEL,
-                max_tokens=max(FORCE_ANSWER_THRESHOLD, 64),
+                max_tokens=max(64, min(FORCE_ANSWER_THRESHOLD, ctx_room)),
                 system=system,
                 messages=messages,          # no tools= → text-only reply
             )
@@ -460,7 +546,7 @@ def run_agent_turn(
             return f"[{reason}] " + text, total_in, total_out
 
         # --- normal call ---
-        call_max = min(MAX_TOKENS_PER_CALL, remaining)
+        call_max = min(MAX_TOKENS_PER_CALL, remaining, ctx_room)
         response = client.messages.create(
             model=MODEL,
             max_tokens=call_max,
