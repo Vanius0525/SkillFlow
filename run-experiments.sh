@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# 顺序跑完整实验矩阵: 3 个 benchmark x 2 个 harness x 4 个 top-k = 24 组。
+# 顺序跑完整实验矩阵: 朴素 harness 扫 top-k 0/1/4/8，SkillFlow 只跑 k=8，
+# 三个 benchmark 各一套 —— 3 x (4 + 1) = 15 组。
 #
 #   source env.sh
 #   ./run-server.sh start          # 等它加载完
@@ -17,12 +18,18 @@ set -uo pipefail
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOGDIR=$BASE/logs
 DONEDIR=$LOGDIR/.done
-mkdir -p "$LOGDIR" "$DONEDIR"
+RESULTS=$BASE/results
+mkdir -p "$LOGDIR" "$DONEDIR" "$RESULTS"
+
+# 每组的三个产物同名，便于对照:
+#   results/<组名>.jsonl   logs/<组名>.log   logs/.done/<组名>
+# 例如 results/scibench_baseline_k4.jsonl / logs/scibench_baseline_k4.log
 
 # ---------------------------------------------------------------------------
 # 配置（都可以用环境变量覆盖，例如 TOPKS="0 1" ./run-experiments.sh）
 # ---------------------------------------------------------------------------
-TOPKS=${TOPKS:-"0 1 4 8"}
+TOPKS=${TOPKS:-"0 1 4 8"}              # 朴素 harness 扫描的 k
+SKILLFLOW_TOPKS=${SKILLFLOW_TOPKS:-"8"}  # SkillFlow 只跑 k=8
 WORKERS=${WORKERS:-3}
 DELAY=${DELAY:-0}                 # 本地 vLLM，不需要给 API 限速留间隔
 BACKEND=${BACKEND:-qwen}
@@ -67,7 +74,8 @@ fi
 echo "=============================================================="
 echo " 实验矩阵"
 echo "   backend=$BACKEND  workers=$WORKERS  delay=$DELAY"
-echo "   top-k = [$TOPKS]"
+echo "   朴素 harness top-k = [$TOPKS]"
+echo "   SkillFlow  top-k = [$SKILLFLOW_TOPKS]"
 echo "   AssistantBench/SciBench: budget=$FAST_BUDGET timeout=${FAST_TIMEOUT}s"
 echo "   GAIA:                    budget=$GAIA_BUDGET timeout=${GAIA_TIMEOUT}s"
 echo "   开始: $(date '+%F %T')"
@@ -84,9 +92,11 @@ run_stage() {
   STAGE=$((STAGE + 1))
   local marker=$DONEDIR/$name
   local log=$LOGDIR/$name.log
+  local out=$RESULTS/$name.jsonl
 
   if [ $DRYRUN -eq 1 ]; then
-    printf '[%2d] %-32s %s\n' "$STAGE" "$name" "$*"
+    printf '[%2d] %-30s -> results/%s.jsonl\n' "$STAGE" "$name" "$name"
+    printf '     %s\n' "$*"
     return 0
   fi
 
@@ -95,10 +105,15 @@ run_stage() {
     return 0
   fi
 
+  # 所有 eval 脚本都以 "a" 模式写结果。这一组要么没跑过、要么上次失败留下了
+  # 残缺文件，两种情况都必须先清掉，否则重跑会把新记录追加到旧记录后面。
+  rm -f "$out"
+
   echo
   echo "--------------------------------------------------------------"
   echo "[$STAGE] RUN   $name        $(date '+%F %T')"
   echo "        $*"
+  echo "        结果: $out"
   echo "        日志: $log"
   echo "--------------------------------------------------------------"
 
@@ -121,28 +136,34 @@ run_stage() {
   return 0
 }
 
+# eval_assistant_with_skill.py 只接受 --output-prefix，自己拼成
+# "<prefix>_k<K>.jsonl"，所以传去掉 _k<K> 的组名，拼出来正好等于组名。
 baseline_assistant() { python "$BASE/eval_assistant_with_skill.py" --backend "$BACKEND" \
     --top-k "$1" --workers "$WORKERS" --delay "$DELAY" \
-    --token-budget $FAST_BUDGET --task-timeout $FAST_TIMEOUT; }
+    --token-budget $FAST_BUDGET --task-timeout $FAST_TIMEOUT \
+    --output-prefix "$RESULTS/assistantbench_baseline"; }
 
 baseline_scibench() { python "$BASE/eval_scibench_with_skills.py" --backend "$BACKEND" \
     --top-k "$1" --workers "$WORKERS" --delay "$DELAY" \
-    --token-budget $FAST_BUDGET --task-timeout $FAST_TIMEOUT; }
+    --token-budget $FAST_BUDGET --task-timeout $FAST_TIMEOUT \
+    --output "$RESULTS/scibench_baseline_k$1.jsonl"; }
 
 baseline_gaia() { python "$BASE/eval_gaia_with_skills.py" --backend "$BACKEND" \
     --top-k "$1" --workers "$WORKERS" --delay "$DELAY" \
-    --token-budget $GAIA_BUDGET --task-timeout $GAIA_TIMEOUT; }
+    --token-budget $GAIA_BUDGET --task-timeout $GAIA_TIMEOUT \
+    --output "$RESULTS/gaia_baseline_k$1.jsonl"; }
 
 skillflow_run() { local bench=$1 k=$2 budget=$3 timeout=$4
   python "$BASE/skillflow.py" eval --backend "$BACKEND" --benchmark "$bench" \
     --top-k "$k" --workers "$WORKERS" --delay "$DELAY" \
-    --token-budget "$budget" --task-timeout "$timeout"; }
+    --token-budget "$budget" --task-timeout "$timeout" \
+    --output "$RESULTS/${bench}_skillflow_k$k.jsonl"; }
 
 # ---------------------------------------------------------------------------
 # 1. AssistantBench
 # ---------------------------------------------------------------------------
 for k in $TOPKS; do run_stage "assistantbench_baseline_k$k" baseline_assistant "$k"; done
-for k in $TOPKS; do
+for k in $SKILLFLOW_TOPKS; do
   run_stage "assistantbench_skillflow_k$k" skillflow_run assistantbench "$k" $FAST_BUDGET $FAST_TIMEOUT
 done
 
@@ -150,7 +171,7 @@ done
 # 2. SciBench
 # ---------------------------------------------------------------------------
 for k in $TOPKS; do run_stage "scibench_baseline_k$k" baseline_scibench "$k"; done
-for k in $TOPKS; do
+for k in $SKILLFLOW_TOPKS; do
   run_stage "scibench_skillflow_k$k" skillflow_run scibench "$k" $FAST_BUDGET $FAST_TIMEOUT
 done
 
@@ -163,7 +184,7 @@ done
 # 只能打 Anthropic API。
 # ---------------------------------------------------------------------------
 for k in $TOPKS; do run_stage "gaia_baseline_k$k" baseline_gaia "$k"; done
-for k in $TOPKS; do
+for k in $SKILLFLOW_TOPKS; do
   run_stage "gaia_skillflow_k$k" skillflow_run gaia "$k" $GAIA_BUDGET $GAIA_TIMEOUT
 done
 
@@ -180,5 +201,5 @@ else
   for f in "${FAILED[@]}"; do echo "   - $f   (日志: $LOGDIR/$f.log)"; done
   echo " 修好后重跑本脚本，已完成的组会自动跳过。"
 fi
-echo " 结果文件: $BASE/*.jsonl"
+echo " 结果文件: $RESULTS/"
 echo "=============================================================="

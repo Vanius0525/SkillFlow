@@ -27,6 +27,9 @@ nul
 /gaia_results_*.jsonl
 /*.submission.jsonl
 
+# run-experiments.sh writes here, one <stage>.jsonl per group
+/results/
+
 # server-local environment setup, deliberately not tracked
 env.sh
 
