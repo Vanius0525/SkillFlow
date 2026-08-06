@@ -81,9 +81,91 @@ search:
     - json
 
 outgoing:
-  request_timeout: 10.0
+  request_timeout: 8.0
+  max_request_timeout: 15.0
   pool_connections: 100
   pool_maxsize: 20
+
+# 引擎按 Inspire 容器的实际出网情况显式指定 —— 不依赖各版本的默认启用状态。
+# 实测 2026-08-07: duckduckgo / brave / startpage / qwant / yahoo 的域名全部
+# 连不上（ConnectTimeout），wikidata 的 SPARQL 端点返 403。留着它们的唯一效果
+# 是每次搜索白等一轮超时，日志也会被刷满。
+# 重新测: for h in <域名>; do curl -sS -m 8 -o /dev/null -w '%{http_code}\n' https://\$h/; done
+engines:
+  - name: duckduckgo
+    disabled: true
+  - name: duckduckgo images
+    disabled: true
+  - name: duckduckgo news
+    disabled: true
+  - name: duckduckgo videos
+    disabled: true
+  - name: duckduckgo weather
+    disabled: true
+  - name: duckduckgo web
+    disabled: true
+  - name: ddg definitions
+    disabled: true
+  - name: brave
+    disabled: true
+  - name: brave.images
+    disabled: true
+  - name: brave.news
+    disabled: true
+  - name: brave.videos
+    disabled: true
+  - name: startpage
+    disabled: true
+  - name: startpage images
+    disabled: true
+  - name: startpage news
+    disabled: true
+  - name: qwant
+    disabled: true
+  - name: qwant images
+    disabled: true
+  - name: qwant news
+    disabled: true
+  - name: qwant videos
+    disabled: true
+  - name: yahoo
+    disabled: true
+  - name: wikidata
+    disabled: true
+
+  # 可达的，显式打开
+  - name: bing
+    disabled: false
+  - name: bing news
+    disabled: false
+  - name: mojeek
+    disabled: false
+  - name: mojeek news
+    disabled: false
+  - name: wikipedia
+    disabled: false
+  - name: yandex
+    disabled: false
+  - name: google news
+    disabled: false
+  # academic 分类 —— arxiv / pubmed / scholar / semantic scholar / crossref 实测均可达
+  - name: arxiv
+    disabled: false
+  - name: pubmed
+    disabled: false
+  - name: google scholar
+    disabled: false
+  - name: semantic scholar
+    disabled: false
+  - name: crossref
+    disabled: false
+  # social 分类 —— 这个实例不带 reddit 引擎，reddit.com 也不通。
+  # boardreader 是论坛聚合，最接近原用途；lobste.rs 只有技术话题。
+  # lemmy 未启用: 默认指向已死的 lemmy.ml，改用 lemmy.world 要覆盖 base_url。
+  - name: boardreader
+    disabled: false
+  - name: lobste.rs
+    disabled: false
 EOF
 fi
 
