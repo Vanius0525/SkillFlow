@@ -43,19 +43,48 @@ case "${1:-start}" in
     fi
     ;;
   status)
-    if is_running; then
-      echo "进程运行中 (PID $(cat "$PIDFILE"))"
-      # 健康检查走 JSON —— 默认配置只开 html，这里能同时验出 formats 配错的情况
-      body=$(curl -sS -m 10 "http://127.0.0.1:$PORT/search?q=test&format=json" 2>&1)
-      if echo "$body" | head -c 200 | grep -q '"results"'; then
-        echo "JSON API: OK (http://127.0.0.1:$PORT/search)"
-      else
-        echo "JSON API: 异常 —— 检查 settings.yml 的 search.formats 是否含 json"
-        echo "响应前 200 字节: $(echo "$body" | head -c 200)"
-      fi
-    else
-      echo "未运行"
+    if ! is_running; then
+      echo "未运行"; exit 0
     fi
+    echo "进程运行中 (PID $(cat "$PIDFILE"))"
+
+    # 第一段: 服务起来没有。打首页，不触发真实搜索，所以很快。
+    if ! curl -sS -m 5 -o /dev/null "http://127.0.0.1:$PORT/" 2>/dev/null; then
+      echo "HTTP: 无响应 —— 进程活着但没在 $PORT 上服务"
+      echo "  刚启动的话等几秒重试；否则看日志: $0 log"
+      exit 1
+    fi
+    echo "HTTP: OK (http://127.0.0.1:$PORT/)"
+
+    # 第二段: JSON 接口。这一步会真的去查上游引擎，慢是正常的，
+    # 所以超时给到 30s —— 默认配置只开 html，403 就是 formats 没配对。
+    probe=$(mktemp)
+    code=$(curl -sS -m 30 -o "$probe" -w '%{http_code}' \
+             "http://127.0.0.1:$PORT/search?q=test&format=json" 2>/dev/null || echo "000")
+    case "$code" in
+      200)
+        if grep -q '"results"' "$probe"; then
+          echo "JSON API: OK"
+        else
+          echo "JSON API: 返回 200 但没有 results 字段"
+          echo "  响应前 200 字节: $(head -c 200 "$probe")"
+        fi
+        ;;
+      403)
+        echo "JSON API: 403 —— settings.yml 的 search.formats 缺 json，或 limiter 没关"
+        echo "  配置文件: $SETTINGS"
+        ;;
+      000)
+        echo "JSON API: 30s 内无响应 —— 上游搜索引擎慢或不可达"
+        echo "  验证出网: curl -sS -m 10 -o /dev/null -w '%{http_code}\\n' https://duckduckgo.com"
+        echo "  看日志:   $0 log"
+        ;;
+      *)
+        echo "JSON API: HTTP $code"
+        echo "  响应前 200 字节: $(head -c 200 "$probe")"
+        ;;
+    esac
+    rm -f "$probe"
     ;;
   log)
     tail -f "$LOG"
