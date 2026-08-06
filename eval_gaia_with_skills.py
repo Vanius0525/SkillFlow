@@ -61,7 +61,13 @@ def _make_client(api_key: str | None = None):
 
 VALIDATION_DIR = os.path.join(os.path.dirname(__file__), "GAIA/2023/validation")
 METADATA_FILE  = os.path.join(VALIDATION_DIR, "metadata.parquet")
-SKILLS_DIR     = Path.home() / "agent-harness" / "anthropic_skills" / "skills" / "skills"
+# Default matches skillflow.py, eval_scibench_with_skills.py and
+# eval_assistant_with_skill.py so GAIA results are comparable with the other
+# benchmarks — a different skill pool would confound any cross-benchmark
+# comparison. The Anthropic skill set this file used to hard-code is still
+# reachable with --skills-dir.
+SKILLS_DIR           = Path.home() / "agent-harness" / "scibench_skills"
+ANTHROPIC_SKILLS_DIR = Path.home() / "agent-harness" / "anthropic_skills" / "skills" / "skills"
 HARNESS_ROOT   = Path(__file__).parent
 # All files created by the agent (bash / write_file) land here, not in the
 # harness root. Reads/lists of relative paths are also resolved against it.
@@ -196,6 +202,11 @@ def select_skill(
     Returns (chosen_names, chosen_docs, input_tokens, output_tokens).
     chosen_names / chosen_docs are parallel lists of length 0..k.
     """
+    # k=0 means "no skills" — skip the selection API call completely, so results
+    # are directly comparable to a no-skills baseline.
+    if k <= 0:
+        return [], [], 0, 0
+
     if not skills_index or not SKILL_DOCS:
         return [], [], 0, 0
 
@@ -641,18 +652,22 @@ def run_task(
     q_preview = question if len(question) <= 80 else question[:77] + "..."
     print(f"\n{p} L{level} | {task_id}", flush=True)
     print(f"{p}   Q: {q_preview}", flush=True)
-    print(f"{p}   → selecting skill (k={k}) ...", end="", flush=True)
 
     # ------------------------------------------------------------------
-    # Step 1: skill selection  (first API call)
+    # Step 1: skill selection  (skipped entirely when k=0)
     # ------------------------------------------------------------------
-    chosen_skills, chosen_docs, sel_in, sel_out = select_skill(
-        client, question, skills_index, k=k
-    )
-    skill_label = ", ".join(chosen_skills) if chosen_skills else "none"
-    print(f" [{skill_label}]", flush=True)
-    if delay > 0:
-        time.sleep(delay)
+    if k > 0:
+        print(f"{p}   → selecting skill (k={k}) ...", end="", flush=True)
+        chosen_skills, chosen_docs, sel_in, sel_out = select_skill(
+            client, question, skills_index, k=k
+        )
+        skill_label = ", ".join(chosen_skills) if chosen_skills else "none"
+        print(f" [{skill_label}]", flush=True)
+        if delay > 0:
+            time.sleep(delay)
+    else:
+        chosen_skills, chosen_docs, sel_in, sel_out = [], [], 0, 0
+        print(f"{p}   → skills disabled (k=0)", flush=True)
 
     # ------------------------------------------------------------------
     # Step 2: compose system prompt with (optional) full skill context
@@ -767,8 +782,8 @@ def evaluate(
     client = _make_client(api_key)
 
     # Load skills index once (read-only after this point — safe to share across threads)
-    skills_index = load_skills(SKILLS_DIR)
-    skill_names  = sorted(SKILL_DOCS.keys())
+    skills_index = load_skills(SKILLS_DIR) if k > 0 else ""
+    skill_names  = sorted(SKILL_DOCS.keys()) if k > 0 else []
 
     df = pd.read_parquet(METADATA_FILE)
     df = df[df["Level"].isin([str(l) for l in levels])].reset_index(drop=True)
@@ -783,7 +798,11 @@ def evaluate(
     print(f"Levels   : {levels}")
     print(f"Questions: {n}")
     print(f"Workers  : {workers}")
-    print(f"Skills   : {', '.join(skill_names) if skill_names else '(none loaded)'}  (k={k})")
+    if k > 0:
+        print(f"Skills   : {', '.join(skill_names) if skill_names else '(none loaded)'}  (k={k})")
+        print(f"Skills dir: {SKILLS_DIR}")
+    else:
+        print(f"Skills   : disabled (k=0)")
     print(f"Tok budget: {token_budget} output tokens/task  |  timeout: {task_timeout}s/task")
     print(f"Output   : {output_file}\n")
 
@@ -931,7 +950,20 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--top-k", type=int, default=1,
-        help="Max number of skills the model may select per task (default: 1)",
+        help=(
+            "Max number of skills the model may select per task (default: 1). "
+            "Set to 0 to disable skill injection entirely — the skill-selection "
+            "API call is skipped, so results are directly comparable to a "
+            "no-skills baseline."
+        ),
+    )
+    parser.add_argument(
+        "--skills-dir", default=None,
+        help=(
+            f"Skill directory (default: {SKILLS_DIR}, matching skillflow.py and "
+            f"the other eval scripts). Pass 'anthropic' for the Anthropic skill "
+            f"set at {ANTHROPIC_SKILLS_DIR}, or any path."
+        ),
     )
     parser.add_argument(
         "--token-budget", type=int, default=TOKEN_BUDGET_PER_TASK,
@@ -962,8 +994,16 @@ if __name__ == "__main__":
     if _BACKEND["name"] == "qwen":
         MODEL = _BACKEND["model"] or os.environ.get("QWEN_MODEL", "Qwen/Qwen3-8B")
 
-    if args.top_k < 1:
-        parser.error("--top-k must be >= 1")
+    if args.top_k < 0:
+        parser.error("--top-k must be >= 0 (0 disables skill injection)")
+
+    if args.skills_dir:
+        SKILLS_DIR = (
+            ANTHROPIC_SKILLS_DIR if args.skills_dir == "anthropic"
+            else Path(args.skills_dir).expanduser()
+        )
+        if not SKILLS_DIR.is_dir():
+            parser.error(f"--skills-dir not a directory: {SKILLS_DIR}")
 
     evaluate(
         levels=args.levels,
