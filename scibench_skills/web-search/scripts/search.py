@@ -17,16 +17,25 @@ import time
 import urllib.parse
 import urllib.request
 
-DEFAULT_ENDPOINT = "http://127.0.0.1:8888/search"
 CATEGORIES = {"general", "news", "academic", "social", "images", "videos"}
 
-SEARXNG_HOST = "127.0.0.1"
-SEARXNG_PORT = 8888
-SEARXNG_PYTHON = "/home/vanius/searxng-venv/bin/python"
-SEARXNG_SRC = "/home/vanius/searxng"
-SEARXNG_SETTINGS = "/home/vanius/.config/searxng/settings.yml"
-SEARXNG_LOG = "/tmp/searxng.log"
-SEARXNG_PIDFILE = "/tmp/searxng.pid"
+# Every location is overridable, so the skill travels between machines. The
+# defaults describe the original workstation install; a deployment elsewhere
+# sets SEARXNG_HOME (or the individual vars) instead of editing this file.
+SEARXNG_HOST = os.environ.get("SEARXNG_HOST", "127.0.0.1")
+SEARXNG_PORT = int(os.environ.get("SEARXNG_PORT", "8888"))
+DEFAULT_ENDPOINT = os.environ.get(
+    "SEARXNG_ENDPOINT", f"http://{SEARXNG_HOST}:{SEARXNG_PORT}/search"
+)
+
+SEARXNG_HOME = os.environ.get("SEARXNG_HOME", "/home/vanius")
+SEARXNG_PYTHON = os.environ.get("SEARXNG_PYTHON", f"{SEARXNG_HOME}/searxng-venv/bin/python")
+SEARXNG_SRC = os.environ.get("SEARXNG_SRC", f"{SEARXNG_HOME}/searxng")
+SEARXNG_SETTINGS = os.environ.get(
+    "SEARXNG_SETTINGS", f"{SEARXNG_HOME}/.config/searxng/settings.yml"
+)
+SEARXNG_LOG = os.environ.get("SEARXNG_LOG", "/tmp/searxng.log")
+SEARXNG_PIDFILE = os.environ.get("SEARXNG_PIDFILE", "/tmp/searxng.pid")
 
 
 def _port_open(host: str, port: int, timeout: float = 0.5) -> bool:
@@ -37,9 +46,19 @@ def _port_open(host: str, port: int, timeout: float = 0.5) -> bool:
         return False
 
 
+def _local_install_present() -> bool:
+    return os.path.exists(SEARXNG_PYTHON) and os.path.isdir(SEARXNG_SRC)
+
+
 def _ensure_searxng(wait_seconds: int = 25) -> None:
-    """If SearXNG isn't responding on 127.0.0.1:8888, start it (detached)."""
+    """If SearXNG isn't responding, start it (detached) — when it is installed."""
     if _port_open(SEARXNG_HOST, SEARXNG_PORT):
+        return
+
+    if not _local_install_present():
+        # Nothing to spawn. Return immediately rather than polling a port that
+        # nobody is going to open — that wait used to cost every single search
+        # 25s of the task's wall-clock budget on machines without SearXNG.
         return
 
     # Avoid duplicate spawns when several callers race.
@@ -113,8 +132,22 @@ def main() -> int:
     try:
         results = search(args.query, n=args.n, category=args.category, endpoint=args.endpoint)
     except Exception as e:
-        print(json.dumps({"error": f"{type(e).__name__}: {e}",
-                          "hint": "Is SearXNG running on 127.0.0.1:8888?"}),
+        if os.environ.get("SEARXNG_ENDPOINT") or args.endpoint != DEFAULT_ENDPOINT:
+            hint = (
+                f"The configured SearXNG endpoint ({args.endpoint}) is unreachable. "
+                f"Web search is unavailable — do not retry, answer from what you "
+                f"already have."
+            )
+        elif _local_install_present():
+            hint = f"Is SearXNG running on {SEARXNG_HOST}:{SEARXNG_PORT}?"
+        else:
+            hint = (
+                f"SearXNG is not installed here (looked for {SEARXNG_PYTHON} and "
+                f"{SEARXNG_SRC}). Web search is unavailable on this machine — do "
+                f"not retry, answer from what you already have. To enable it, set "
+                f"SEARXNG_HOME/SEARXNG_ENDPOINT or install SearXNG."
+            )
+        print(json.dumps({"error": f"{type(e).__name__}: {e}", "hint": hint}),
               file=sys.stderr)
         return 2
     print(json.dumps(results, ensure_ascii=False, indent=2))

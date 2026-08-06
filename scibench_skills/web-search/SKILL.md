@@ -84,13 +84,17 @@ python3 ~/agent-harness/scibench_skills/web-search/scripts/fetch.py \
 
 ## Notes
 
-- The SearXNG instance runs on `http://127.0.0.1:8888`. If `search.py`
-  errors with "Connection refused", restart it:
+- The SearXNG instance runs on `http://127.0.0.1:8888` by default. `search.py`
+  starts it automatically when it is installed locally.
+- If `search.py` reports `"SearXNG is not installed here"`, web search is
+  unavailable on this machine. Do **not** retry the search or fall back to
+  `curl` against Google/DuckDuckGo — answer from what you already have.
+- Deployment (not something the agent does mid-task): the install location is
+  read from the environment, so nothing in this skill needs editing per machine.
   ```bash
-  PYTHONPATH=/home/vanius/searxng \
-  SEARXNG_SETTINGS_PATH=/home/vanius/.config/searxng/settings.yml \
-  nohup /home/vanius/searxng-venv/bin/python -m searx.webapp \
-    > /tmp/searxng.log 2>&1 &
+  export SEARXNG_HOME=/path/to/install      # expects $SEARXNG_HOME/searxng
+  #                                         # and  $SEARXNG_HOME/searxng-venv
+  export SEARXNG_ENDPOINT=http://host:8888/search   # or point at a running instance
   ```
 - For numeric/list answers, fetch the actual source page and extract the
   number yourself rather than trusting the snippet — snippets are often
