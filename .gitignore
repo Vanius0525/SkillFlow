@@ -11,9 +11,24 @@ GAIA/.cache/
 
 # run artifacts
 logs/
-skillflow_results_*.jsonl
 *.log
 nul
+
+# eval result files, written to the repo root by the eval entrypoints.
+# Anchored to the root so the tracked datasets in AssistantBench/, GAIA/ and
+# SciBench/ are untouched.
+/skillflow_results_*.jsonl
+/skillflow_gaia_*.jsonl
+/skillflow_dabstep_*.jsonl
+/skillflow_assistantbench_*.jsonl
+/scibench_results_*.jsonl
+/assistantbench_skills_results_*.jsonl
+/gaia_skills_results_*.jsonl
+/gaia_results_*.jsonl
+/*.submission.jsonl
+
+# server-local environment setup, deliberately not tracked
+env.sh
 
 # local-only claude settings
 .claude/settings.local.json
