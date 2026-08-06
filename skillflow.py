@@ -94,6 +94,14 @@ FORCE_ANSWER_THRESHOLD = 400
 TASK_TIMEOUT = 300
 REL_TOL = 0.05
 
+# Circuit breakers for the agent loop. A small model that calls a tool the
+# harness does not have (e.g. a skill doc written for a different harness)
+# will otherwise repeat the identical call until the whole token budget is gone.
+# Counted per identical (tool, args) signature across the whole turn, so varying
+# the arguments is never penalised and genuine retries have room.
+MAX_IDENTICAL_TOOL_CALLS = 5    # same tool+args this many times, then stop executing it
+MAX_TOOL_CALLS_PER_TURN = 40    # absolute cap on tool calls in one agent loop
+
 # "Unlimited" sentinel values — used when --no-limit or 0 is passed
 UNLIMITED_TOKENS = 10_000_000   # 10M output tokens (effectively infinite)
 UNLIMITED_TIMEOUT = 86400       # 24 hours
@@ -367,6 +375,31 @@ TOOLS = [
 ]
 
 
+def _unknown_tool_error(name: str) -> str:
+    """
+    Explicit, actionable error for a tool this harness does not register.
+
+    Skill docs imported from other harnesses may document tools (e.g.
+    `internet_search`) that do not exist here. A bland "Unknown tool: X" reads
+    like ordinary output to a small model, which then retries verbatim, so name
+    the constraint and the way forward instead.
+    """
+    available = ", ".join(t["name"] for t in TOOLS)
+    return (
+        f"[error] No such tool: '{name}'. This harness provides only: {available}. "
+        f"Calling '{name}' again will always fail — use one of the available tools "
+        f"instead (shell commands and scripts go through bash)."
+    )
+
+
+def _tool_signature(name: str, inputs: dict) -> str:
+    """Stable key for detecting the model repeating an identical tool call."""
+    try:
+        return f"{name}:{json.dumps(inputs, sort_keys=True, ensure_ascii=False)}"
+    except TypeError:
+        return f"{name}:{inputs!r}"
+
+
 def execute_tool(name: str, inputs: dict) -> str:
     try:
         if name == "bash":
@@ -409,7 +442,7 @@ def execute_tool(name: str, inputs: dict) -> str:
             return "\n".join(entries) if entries else "(empty directory)"
 
         else:
-            return f"Unknown tool: {name}"
+            return _unknown_tool_error(name)
 
     except subprocess.TimeoutExpired:
         return f"[error] Command timed out after {inputs.get('timeout', 30)}s"
@@ -1017,6 +1050,7 @@ def run_agent_loop(
     total_in = total_out = 0
     budget_enabled = token_budget < UNLIMITED_TOKENS
     tool_call_count = 0
+    repeat_counts: dict[str, int] = {}
     p = "    [agent]"
 
     while True:
@@ -1067,9 +1101,14 @@ def run_agent_loop(
 
         if response.stop_reason == "tool_use":
             tool_results = []
+            stuck = False
             for block in response.content:
                 if block.type == "tool_use":
                     tool_call_count += 1
+                    sig = _tool_signature(block.name, block.input)
+                    repeat_counts[sig] = repeat_counts.get(sig, 0) + 1
+                    repeats = repeat_counts[sig]
+
                     # ---- Log each tool call ----
                     input_summary = json.dumps(block.input, ensure_ascii=False)
                     if len(input_summary) > 120:
@@ -1077,7 +1116,19 @@ def run_agent_loop(
                     if verbose:
                         print(f"{p} tool[{tool_call_count}] {block.name}({input_summary})", flush=True)
 
-                    result = execute_tool(block.name, block.input)
+                    if repeats > MAX_IDENTICAL_TOOL_CALLS:
+                        # Refuse the call but let the turn continue: the model can
+                        # still change approach or answer. Only a further repeat
+                        # after this warning is treated as a hard loop.
+                        result = (
+                            f"[error] This exact {block.name} call has already been made "
+                            f"{repeats - 1} times with no progress, so it was not executed. "
+                            f"Do not repeat it. Change your approach, or give your FINAL "
+                            f"ANSWER now based on what you already have."
+                        )
+                        stuck = stuck or repeats > MAX_IDENTICAL_TOOL_CALLS + 1
+                    else:
+                        result = execute_tool(block.name, block.input)
 
                     if verbose:
                         result_preview = result[:150].replace("\n", "\\n") if result else "(empty)"
@@ -1090,6 +1141,17 @@ def run_agent_loop(
                     })
             messages.append({"role": "assistant", "content": response.content})
             messages.append({"role": "user", "content": tool_results})
+
+            # ---- Circuit breaker: force an answer instead of burning the budget ----
+            if stuck or tool_call_count >= MAX_TOOL_CALLS_PER_TURN:
+                reason = "tool loop" if stuck else "tool call limit"
+                if verbose:
+                    print(f"{p} {reason} after {tool_call_count} tool calls, "
+                          f"forcing final answer...", flush=True)
+                text, fin, fout = _force_final_answer(client, messages, system, reason)
+                total_in += fin
+                total_out += fout
+                return text, total_in, total_out
         else:
             messages.append({"role": "assistant", "content": response.content})
             if verbose:
