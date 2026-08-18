@@ -64,9 +64,18 @@ DEST=$CACHE/gaia_dataset/GAIA
 if [ -f "$DEST/2023/validation/metadata.parquet" ]; then
   [ -L "$DEST" ] && ok "GAIA 已就位(软链 -> $(readlink "$DEST"))" \
                  || ok "GAIA 已就位(实体副本)"
+elif [ -e "$DEST" ]; then
+  # 被 403 打断的 snapshot_download 会留下一个半截目录。它有两重坑:挡住 ln -s,
+  # 而且 `ln -s 源 已存在的目录` 会把软链建到那个目录*里面*(GAIA/GAIA),命令
+  # 退出 0,看着像成功,实际没接上。所以这里单独报,不和"压根没填"混为一谈。
+  bad "$DEST 存在但不完整 —— 多半是中断的下载留下的"
+  hint "先看清楚要删什么: find '$DEST' -type f | head; du -sh '$DEST'"
+  hint "确认无用后:       rm -rf '$DEST' && ln -s '$BASE/GAIA' '$DEST'"
+  die 2
 else
-  bad "$DEST 读不到 metadata.parquet"
+  bad "$DEST 不存在"
   hint "./setup-external.sh --only gaia"
+  hint "或直接: mkdir -p '$(dirname "$DEST")' && ln -s '$BASE/GAIA' '$DEST'"
   die 2
 fi
 # 软链指向别处、或副本本身是 LFS 指针,都会在这里现形
