@@ -34,6 +34,12 @@ set -uo pipefail
 
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# 重新执行自己时不能用 $0:`bash 脚本名` 启动的话 $0 是裸文件名,没有目录部分,
+# 而 setsid 走 execvp —— 它按 PATH 找,而 . 不在 PATH 上,于是
+# "failed to execute: No such file or directory"。用 ./脚本 启动时碰不到,所以
+# 这个坑只在换一种调用方式时才现形。绝对路径两种方式都对。
+SELF="$BASE/$(basename "${BASH_SOURCE[0]}")"
+
 # --fg 是本脚本自己的开关,不能透传 —— experiments-agents.sh 见到不认识的参数
 # 会直接报用法并退出。
 FG=0
@@ -51,7 +57,7 @@ done
 if [ "${ALLOW_SOLO:-0}" != "1" ] && ! python -c 'import smolagents' >/dev/null 2>&1; then
   echo "[FATAL] smolagents 没装 —— 这一批会只剩 SkillFlow,没有对照组。" >&2
   echo "        装上: ./setup-external.sh --only smolagents" >&2
-  echo "        确实要单跑 SkillFlow: ALLOW_SOLO=1 $0 $*" >&2
+  echo "        确实要单跑 SkillFlow: ALLOW_SOLO=1 $SELF $*" >&2
   exit 1
 fi
 
@@ -74,6 +80,10 @@ if [ $FG -eq 0 ] && [ "${AGENTS_DETACHED:-0}" != "1" ]; then
   # 那意味着你看到"已转入后台"就关了终端,而它两秒后就死了。所以把最容易挂的
   # 两项提到脱离之前、在前台查 —— 剩下的(LFS、scorer 契约)慢一些也罕见,留给
   # 子进程,由下面那句"确认真的起来了"兜底。
+  # 万一 SELF 算错(奇怪的调用方式),现在就说清楚 —— 否则报错会是 setsid 那句
+  # 难懂的 "failed to execute ...: No such file or directory"。
+  [ -f "$SELF" ] || { echo "[FATAL] 找不到自身: $SELF" >&2; exit 1; }
+
   QWEN_URL=${QWEN_BASE_URL:-http://localhost:8000/v1}
   python -c 'import anthropic' 2>/dev/null \
     || { echo "[FATAL] venv 没激活 —— source env.sh" >&2; exit 1; }
@@ -89,10 +99,10 @@ if [ $FG -eq 0 ] && [ "${AGENTS_DETACHED:-0}" != "1" ]; then
   # setsid 开新会话,彻底没有控制终端;没有 setsid 就退回 nohup(忽略 SIGHUP,
   # 效果够了)。stdin 接 /dev/null,免得后台进程去读终端被 SIGTTIN 停住。
   if command -v setsid >/dev/null 2>&1; then
-    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" setsid "$0" "${PASS[@]+"${PASS[@]}"}" \
+    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" setsid "$SELF" "${PASS[@]+"${PASS[@]}"}" \
       > "$CONSOLE" 2>&1 < /dev/null &
   else
-    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" nohup "$0" "${PASS[@]+"${PASS[@]}"}" \
+    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" nohup "$SELF" "${PASS[@]+"${PASS[@]}"}" \
       > "$CONSOLE" 2>&1 < /dev/null &
     disown 2>/dev/null || true
   fi
@@ -105,7 +115,7 @@ if [ $FG -eq 0 ] && [ "${AGENTS_DETACHED:-0}" != "1" ]; then
   echo "   单 cell: tail -f logs/$RUN_ID/agents_smolagents.log"
   echo "   还活着 : pgrep -af experiments-agents"
   echo "   停止   : kill \$(cat logs/$RUN_ID/run.pid)"
-  echo "   续跑   : RUN_ID=$RUN_ID $0"
+  echo "   续跑   : RUN_ID=$RUN_ID $SELF"
   echo
   echo " 关之前先确认它真起来了(等几秒):"
   echo "   tail -5 logs/$RUN_ID/console.log"
