@@ -51,7 +51,7 @@ RESULTS=$BASE/results
 mkdir -p "$LOGDIR" "$DONEDIR" "$RESULTS"
 
 # ---------------------------------------------------------------------------
-# 配置(都可以用环境变量覆盖,例如 REPEATS=3 TOPKS="0 8" ./run-experiments.sh)
+# 配置(都可以用环境变量覆盖,例如 TOPKS="0 8" LEVELS="1 2 3" ./run-experiments.sh)
 # ---------------------------------------------------------------------------
 BACKEND=${BACKEND:-qwen}
 WORKERS=${WORKERS:-3}
@@ -82,8 +82,9 @@ KEEP_FIRST=${KEEP_FIRST:-1}
 ATTN_WINDOW=${ATTN_WINDOW:-2}
 COND_MAX_CALLS=${COND_MAX_CALLS:-4}
 
-REPEATS=${REPEATS:-1}                  # 建议 3 —— 同模型内 scaffold 差异可达
-                                       # 28 个点,单次运行的结论站不住
+# 每题只跑一次。想要方差估计就 REPEATS=3 —— 已有工作报告同模型内 scaffold
+# 差异可达 28 个点,重复跑才能把噪声和效应分开;单次跑省时间,但误差条无从谈起。
+REPEATS=${REPEATS:-1}
 
 FORCE=0
 DRYRUN=0

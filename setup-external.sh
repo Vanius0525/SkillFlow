@@ -16,7 +16,8 @@
 #                   填进去,不用申请授权、不用 HF_TOKEN。
 #                 - 官方 GAIA eval 默认在 Docker 里跑 bash,容器里起不了 daemon
 #                   时用 --sandbox local。
-#   magentic-one 需要 Playwright + 浏览器二进制。目前没有接 runner,只装依赖。
+#   magentic-one 默认跳过 —— 需要 Playwright + 浏览器二进制,而且 runner 还没接。
+#                想装再 --only magentic。
 set -uo pipefail
 
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -32,7 +33,14 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-want() { [ -z "$ONLY" ] || [ "$ONLY" = "$1" ]; }
+# 默认只处理这两个。magentic 不在默认集里:它要 Playwright 加一整套浏览器
+# 二进制(在缺系统依赖的容器里经常装不上),而 runner 还没接,装了也跑不了。
+# 真要装就显式 --only magentic。
+DEFAULT_TARGETS="smolagents inspect"
+want() {
+  if [ -n "$ONLY" ]; then [ "$ONLY" = "$1" ]; return; fi
+  case " $DEFAULT_TARGETS " in *" $1 "*) return 0 ;; *) return 1 ;; esac
+}
 
 PASS=0; WARN=0; FAILN=0
 ok()   { echo "  [ OK ]  $*"; PASS=$((PASS+1)); }
@@ -208,7 +216,7 @@ fi
 # ---------------------------------------------------------------------------
 if want magentic; then
 echo
-echo "--- 3. Magentic-One (未接 runner,仅装依赖) ---"
+echo "--- 3. Magentic-One (默认跳过;--only magentic 才装) ---"
 if [ $CHECK_ONLY -eq 0 ] && ! pyhas autogen_agentchat; then
   pipinstall autogen-agentchat 'autogen-ext[openai,magentic-one]' \
     || bad "autogen 安装失败"

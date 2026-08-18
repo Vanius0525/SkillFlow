@@ -49,7 +49,8 @@ BACKEND=${BACKEND:-qwen}
 # 时间而不是增加区分度 —— 想要就显式打开。
 LEVELS=${LEVELS:-"1 2"}
 MAXQ=${MAXQ:-0}                        # 0 = 全量
-REPEATS=${REPEATS:-1}                  # 建议 3
+# 每题只跑一次。想要方差估计就 REPEATS=3(见 run-experiments.sh 里的说明)。
+REPEATS=${REPEATS:-1}
 
 TIMEOUT=${TIMEOUT:-600}                # 每题墙钟上限,三个 scaffold 共用
 BUDGET=${BUDGET:-20000}                # 只有我们自己的 harness 认 token 预算
