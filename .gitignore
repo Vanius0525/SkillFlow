@@ -46,4 +46,4 @@ env.sh
 
 # 白盒实验的产物（每次跑一个 run 目录，和 results/ 同理不进 git）
 whitebox/results/
-whitebox/tasks/*/tasks.filtered.jsonl
+whitebox/tasks/*/tasks.filtered*.jsonl
