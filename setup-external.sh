@@ -266,23 +266,41 @@ fi
 # snapshot_download 换成"直接返回本地目录"。这里只负责填数据。
 INSPECT_CACHE=${INSPECT_EVALS_CACHE_DIR:-$BASE/.inspect_cache}
 GAIA_DEST=$INSPECT_CACHE/gaia_dataset/GAIA
-# 这个副本有 ~80MB,和 tracked 的 GAIA/ 一模一样。默认位置 $BASE/.inspect_cache
-# 在 .gitignore 里;若外部把 INSPECT_EVALS_CACHE_DIR 指到了仓库内的别处,提前
-# 说出来,别等它被 git add 进去。
+# 默认位置 $BASE/.inspect_cache 在 .gitignore 里;若外部把 INSPECT_EVALS_CACHE_DIR
+# 指到了仓库内的别处,提前说出来,别等它被 git add 进去。
 case "$INSPECT_CACHE" in
   "$BASE/.inspect_cache"*) : ;;
   "$BASE"/*) warn "缓存在仓库内的非默认位置: $INSPECT_CACHE"
              hint "建议 export INSPECT_EVALS_CACHE_DIR=$BASE/.inspect_cache" ;;
 esac
 if [ -f "$GAIA_DEST/2023/validation/metadata.parquet" ]; then
-  ok "inspect 的 GAIA 副本已就位 ($GAIA_DEST)"
+  if [ -L "$GAIA_DEST" ]; then ok "GAIA 已就位($GAIA_DEST -> $(readlink "$GAIA_DEST"))"
+  else ok "GAIA 副本已就位 ($GAIA_DEST)"; fi
 elif [ $CHECK_ONLY -eq 0 ] && [ -d "$BASE/GAIA/2023" ]; then
-  echo "  从仓库副本填充 inspect 的 GAIA 缓存..."
   mkdir -p "$(dirname "$GAIA_DEST")"
-  cp -r "$BASE/GAIA" "$GAIA_DEST" 2>/dev/null && ok "已填充 $GAIA_DEST" \
-    || bad "复制失败 —— 手动: cp -r $BASE/GAIA $GAIA_DEST"
+  # 坏软链会挡住 ln,而它本身没有内容可丢,直接换掉。真目录不碰 —— 那可能是
+  # 一次没下完的 snapshot_download,该不该删由人来判断,脚本不替你 rm -rf。
+  [ -L "$GAIA_DEST" ] && rm -f "$GAIA_DEST"
+  if [ -e "$GAIA_DEST" ]; then
+    warn "$GAIA_DEST 已存在却缺 metadata.parquet(下载残留?) —— 保持原样"
+    hint "确认没用之后: rm -rf $GAIA_DEST,再重跑本脚本"
+  # 软链优先。run_inspect_gaia.py 已经把 snapshot_download 换掉了,没有任何东西
+  # 会往这个目录写,所以不需要再留一份 ~80MB 的独立副本,也就没有两份数据漂移的
+  # 问题。文件系统不支持软链(某些容器挂载)时退回真拷贝。
+  elif ln -s "$BASE/GAIA" "$GAIA_DEST" 2>/dev/null \
+       && [ -f "$GAIA_DEST/2023/validation/metadata.parquet" ]; then
+    # 有些环境(MSYS、部分容器挂载)的 ln -s 对目录会静默退化成拷贝,所以按落地
+    # 后的实际状态报,别把拷贝说成软链。
+    [ -L "$GAIA_DEST" ] && ok "已软链 $GAIA_DEST -> $BASE/GAIA" \
+                        || ok "已填充 $GAIA_DEST(ln -s 在此退化为拷贝)"
+  else
+    rm -f "$GAIA_DEST"
+    echo "  软链不可用,改为拷贝(~80MB)..."
+    cp -r "$BASE/GAIA" "$GAIA_DEST" 2>/dev/null && ok "已拷贝到 $GAIA_DEST" \
+      || bad "填充失败 —— 手动: ln -s $BASE/GAIA $GAIA_DEST"
+  fi
 else
-  warn "inspect 的 GAIA 副本不在 $GAIA_DEST"
+  warn "inspect 的 GAIA 不在 $GAIA_DEST"
   hint "跑一次不带 --check 的 setup-external.sh 让它自动填充"
 fi
 echo "          需要在 env.sh 里导出(experiments-agents.sh 也会用):"

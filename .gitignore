@@ -30,8 +30,9 @@ nul
 # run-experiments.sh / experiments-agents.sh write here, one <cell>.jsonl each
 /results/
 
-# GAIA copy that setup-external.sh stages for inspect_evals' snapshot_download.
-# It is a duplicate of the tracked GAIA/ tree, so it must never be committed.
+# Where setup-external.sh stages GAIA for inspect_evals. Normally a symlink to
+# the tracked GAIA/ tree, a full copy where the filesystem has no symlinks --
+# either way it is machine-local and must never be committed.
 .inspect_cache/
 
 # smolagents / new runner output written to the repo root
