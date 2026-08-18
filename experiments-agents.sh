@@ -74,10 +74,12 @@ SMOL_MAX_STEPS=${SMOL_MAX_STEPS:-20}
 # 有可用的 Docker 就设 INSPECT_SANDBOX=docker 换回官方默认配置。
 INSPECT_SANDBOX=${INSPECT_SANDBOX:-local}
 INSPECT_MODEL=${INSPECT_MODEL:-openai-api/local/${QWEN_MODEL:-Qwen/Qwen3-8B}}
-# inspect_evals 用 snapshot_download(..., local_dir=...) 取 GAIA,填好了就不下载。
-# 指到仓库副本填充出来的缓存,这样不需要 HF_TOKEN。见 setup-external.sh。
-INSPECT_EVALS_CACHE_PATH=${INSPECT_EVALS_CACHE_PATH:-$BASE/.inspect_cache}
-export INSPECT_EVALS_CACHE_PATH
+# inspect_evals 从这个缓存目录下的 gaia_dataset/GAIA 读 GAIA(见 constants.py:
+# INSPECT_EVALS_CACHE_DIR,不设则是 platformdirs 的 user_cache_dir)。指到仓库
+# 副本填充出来的缓存,再配合 run_inspect_gaia.py 换掉那个无条件的
+# snapshot_download,才不需要 HF_TOKEN。见 setup-external.sh。
+INSPECT_EVALS_CACHE_DIR=${INSPECT_EVALS_CACHE_DIR:-$BASE/.inspect_cache}
+export INSPECT_EVALS_CACHE_DIR
 
 QWEN_URL=${QWEN_BASE_URL:-http://localhost:8000/v1}
 MODEL_ID=${QWEN_MODEL:-Qwen/Qwen3-8B}
@@ -187,10 +189,14 @@ inspect_run() {
   for l in $LEVELS; do tasks="$tasks inspect_evals/gaia_level$l"; done
   local limit=()
   [ "$MAXQ" -gt 0 ] 2>/dev/null && limit=(--limit "$MAXQ")
-  # HF_HUB_OFFLINE 只在本地副本齐全时设,避免它偷偷回去连 HF。
-  local offline=""
-  [ -f "$INSPECT_EVALS_CACHE_PATH/gaia_dataset/GAIA/2023/validation/metadata.parquet" ] \
-    && offline=1
+
+  # 不设 HF_HUB_OFFLINE。inspect_evals 无条件调用
+  #   snapshot_download(..., local_dir=GAIA_DATASET_DIR)
+  # 而带 local_dir 的调用必须先列远端文件树才知道该放哪些文件,所以离线模式并
+  # 不会让它改读本地副本 —— 只会让它直接失败(OfflineModeIsEnabled)。
+  # 改由 run_inspect_gaia.py 处理:本地副本齐全就把 snapshot_download 换成
+  # "返回本地目录",副本不在就原样退回上游的下载逻辑。
+  unset HF_HUB_OFFLINE
 
   # openai-api/<provider>/<model> 的凭据来自 <PROVIDER>_API_KEY 和
   # <PROVIDER>_BASE_URL,不是 OPENAI_*。provider 名取模型串的第二段并大写,
@@ -207,8 +213,7 @@ inspect_run() {
   env "${prov}_API_KEY=${OPENAI_API_KEY:-EMPTY}" \
       "${prov}_BASE_URL=$QWEN_URL" \
       OPENAI_BASE_URL="$QWEN_URL" OPENAI_API_KEY="${OPENAI_API_KEY:-EMPTY}" \
-      HF_HUB_OFFLINE="${offline:-${HF_HUB_OFFLINE:-0}}" \
-  inspect eval $tasks \
+  python "$BASE/run_inspect_gaia.py" eval $tasks \
     --model "$INSPECT_MODEL" \
     --sandbox "$INSPECT_SANDBOX" \
     --time-limit "$TIMEOUT" \
@@ -217,6 +222,7 @@ inspect_run() {
     --log-dir "$RESULTS/inspect_logs" \
     "${limit[@]+"${limit[@]}"}"
 }
+
 
 # ---------------------------------------------------------------------------
 echo "=============================================================="
@@ -247,7 +253,7 @@ for rep in $(seq 1 "$REPEATS"); do
         fi ;;
       inspect)
         if [ $DRYRUN -eq 1 ] || { have inspect_ai && have inspect_evals; }; then
-          GAIA_LOCAL=$INSPECT_EVALS_CACHE_PATH/gaia_dataset/GAIA/2023/validation/metadata.parquet
+          GAIA_LOCAL=$INSPECT_EVALS_CACHE_DIR/gaia_dataset/GAIA/2023/validation/metadata.parquet
           if [ $DRYRUN -eq 0 ] && [ -z "${HF_TOKEN:-}" ] && [ ! -f "$GAIA_LOCAL" ]; then
             echo "[--] SKIP  agents_inspect${SUF} —— 既没有 HF_TOKEN 也没有本地 GAIA 副本"
             echo "           跑 ./setup-external.sh 填充本地副本即可,不必申请授权"

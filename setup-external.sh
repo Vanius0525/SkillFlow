@@ -5,15 +5,17 @@
 #   ./setup-external.sh              # 装 + 查
 #   ./setup-external.sh --check      # 只查,不装
 #   ./setup-external.sh --only smolagents
+#   ./setup-external.sh --only gaia   # 只填 GAIA 数据(第 4 节不受 --only 影响)
 #
 # 三个外部 scaffold 的要求差别很大,这个脚本把差别都摊开、逐项检查,并且在
 # 检查不过时直接给出修复命令,而不是让你到跑了三小时之后才发现缺东西。
 #
 #   smolagents   pip 一条命令,不需要 Docker。最容易接。
 #   inspect      两个看起来吓人、其实都能绕过的门槛:
-#                 - GAIA 数据在 HF 上是 gated 的,但它用 snapshot_download 且
-#                   local_dir 填好就不下载,所以本脚本直接拿仓库里的 GAIA/ 副本
-#                   填进去,不用申请授权、不用 HF_TOKEN。
+#                 - GAIA 数据在 HF 上是 gated 的。它的 snapshot_download 是无
+#                   条件调的,本地填好也照下,所以由 run_inspect_gaia.py 把这个
+#                   调用换掉;本脚本负责把仓库里的 GAIA/ 副本填到位。两者一起
+#                   才不用申请授权、不用 HF_TOKEN。
 #                 - 官方 GAIA eval 默认在 Docker 里跑 bash,容器里起不了 daemon
 #                   时用 --sandbox local。
 #   magentic-one 默认跳过 —— 需要 Playwright + 浏览器二进制,而且 runner 还没接。
@@ -28,7 +30,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --check) CHECK_ONLY=1 ;;
     --only)  ONLY="${2:-}"; shift ;;
-    *) echo "用法: $0 [--check] [--only smolagents|inspect|magentic]" >&2; exit 1 ;;
+    *) echo "用法: $0 [--check] [--only smolagents|inspect|magentic|gaia]" >&2; exit 1 ;;
   esac
   shift
 done
@@ -201,7 +203,7 @@ echo "          手工跑时: export ${PROV_HINT}_API_KEY=EMPTY ${PROV_HINT}_BAS
 if command -v docker >/dev/null 2>&1; then
   if docker info >/dev/null 2>&1; then
     ok "Docker 可用 —— 可以用官方默认沙箱"
-    echo "          inspect eval inspect_evals/gaia --model openai-api/local/\$MODEL"
+    echo "          python run_inspect_gaia.py eval inspect_evals/gaia --model openai-api/local/\$MODEL"
   else
     warn "有 docker 命令但 daemon 连不上(容器里通常就是这样)"
     hint "改用 --sandbox local(见下)"
@@ -214,7 +216,7 @@ cat <<'EOF'
           说明:inspect_evals/gaia 默认在 Docker 容器里执行 bash。租来的
           容器里一般起不了 Docker daemon。Inspect 本身支持 local 沙箱:
 
-              inspect eval inspect_evals/gaia --sandbox local ...
+              python run_inspect_gaia.py eval inspect_evals/gaia --sandbox local ...
 
           local 沙箱直接在 Inspect 进程里跑命令,官方文档说明它只应在
           "整个评测已经跑在另一层沙箱里" 时使用 —— 你租的容器正好就是那一层,
@@ -255,20 +257,22 @@ else
   bad "$PARQUET 不是有效 parquet(LFS 指针?)"; hint "git lfs pull"
 fi
 
-# GAIA 数据。inspect_evals 用
+# GAIA 数据。inspect_evals/gaia/dataset.py 无条件调
 #   snapshot_download(repo_id="gaia-benchmark/GAIA", local_dir=GAIA_DATASET_DIR)
-# 而 snapshot_download 在 local_dir 已经填好时会直接复用,不去下载。仓库里
-# GAIA/ 就是这个数据集的完整副本,所以把它放到那个位置就不需要 HF_TOKEN —
-# 授权在当初把数据 commit 进仓库时就已经付过一次了。
-INSPECT_CACHE=${INSPECT_EVALS_CACHE_PATH:-$BASE/.inspect_cache}
+# —— 没有"本地已就位就跳过"的分支,而且 local_dir 一填,huggingface_hub 连离线
+# 捷径都走不了:它得先列出 repo tree 才知道该有哪些文件,所以在看磁盘之前就已经
+# 上网了。仓库里 GAIA/ 是这个数据集的完整副本,授权在当初 commit 进来时就付过一
+# 次了,但光把它放到位并不能免掉那次联网 —— 还需要 run_inspect_gaia.py 把
+# snapshot_download 换成"直接返回本地目录"。这里只负责填数据。
+INSPECT_CACHE=${INSPECT_EVALS_CACHE_DIR:-$BASE/.inspect_cache}
 GAIA_DEST=$INSPECT_CACHE/gaia_dataset/GAIA
 # 这个副本有 ~80MB,和 tracked 的 GAIA/ 一模一样。默认位置 $BASE/.inspect_cache
-# 在 .gitignore 里;若外部把 INSPECT_EVALS_CACHE_PATH 指到了仓库内的别处,提前
+# 在 .gitignore 里;若外部把 INSPECT_EVALS_CACHE_DIR 指到了仓库内的别处,提前
 # 说出来,别等它被 git add 进去。
 case "$INSPECT_CACHE" in
   "$BASE/.inspect_cache"*) : ;;
   "$BASE"/*) warn "缓存在仓库内的非默认位置: $INSPECT_CACHE"
-             hint "建议 export INSPECT_EVALS_CACHE_PATH=$BASE/.inspect_cache" ;;
+             hint "建议 export INSPECT_EVALS_CACHE_DIR=$BASE/.inspect_cache" ;;
 esac
 if [ -f "$GAIA_DEST/2023/validation/metadata.parquet" ]; then
   ok "inspect 的 GAIA 副本已就位 ($GAIA_DEST)"
@@ -282,17 +286,18 @@ else
   hint "跑一次不带 --check 的 setup-external.sh 让它自动填充"
 fi
 echo "          需要在 env.sh 里导出(experiments-agents.sh 也会用):"
-echo "              export INSPECT_EVALS_CACHE_PATH=$INSPECT_CACHE"
-echo "              export HF_HUB_OFFLINE=1     # 强制只用本地副本"
+echo "              export INSPECT_EVALS_CACHE_DIR=$INSPECT_CACHE"
+echo "          不要设 HF_HUB_OFFLINE —— 它救不了这里,只会让下载直接失败,"
+echo "          原因见 run_inspect_gaia.py 顶部说明。"
 
-if [ -n "${HF_TOKEN:-}" ]; then
-  ok "HF_TOKEN 已设(有本地副本时其实用不上)"
-elif [ -f "$GAIA_DEST/2023/validation/metadata.parquet" ]; then
-  ok "HF_TOKEN 未设,但有本地 GAIA 副本 —— 够用了"
+if [ -f "$GAIA_DEST/2023/validation/metadata.parquet" ]; then
+  ok "有本地 GAIA 副本 —— run_inspect_gaia.py 会跳过下载,不需要 HF_TOKEN"
+elif [ -n "${HF_TOKEN:-}" ]; then
+  ok "HF_TOKEN 已设 —— 没有本地副本时靠它下载(GAIA 是 gated 数据集)"
 else
-  warn "HF_TOKEN 未设,本地副本也没就位 —— 二选一"
-  hint "要么让本脚本填充本地副本(推荐,不用申请)"
-  hint "要么去 https://huggingface.co/datasets/gaia-benchmark/GAIA 填表并 export HF_TOKEN"
+  warn "既没有本地副本也没有 HF_TOKEN —— inspect 那一格会起不来"
+  hint "推荐: ./setup-external.sh --only gaia   (从仓库副本填充,不用申请)"
+  hint "或者: 去 https://huggingface.co/datasets/gaia-benchmark/GAIA 填表并 export HF_TOKEN"
 fi
 
 
