@@ -42,6 +42,17 @@ hint() { echo "          -> $*"; }
 
 pyhas() { python -c "import $1" >/dev/null 2>&1; }
 
+# Always install with the SAME interpreter we then import with. Plain `pip` is
+# whatever is first on PATH -- with a venv and conda base both active that is
+# usually conda's, so the install lands in another environment, exits 0, and the
+# import check fails with nothing on screen to explain why.
+PIP=(python -m pip install --root-user-action=ignore)
+pipinstall() {
+  echo "  安装中: python -m pip install $*"
+  "${PIP[@]}" "$@" 2>&1 | tail -3
+  return "${PIPESTATUS[0]}"
+}
+
 echo "=============================================================="
 echo " 外部 harness 环境配置"
 echo " python : $(command -v python || echo '(缺)')"
@@ -81,8 +92,7 @@ if want smolagents; then
 echo
 echo "--- 1. smolagents (CodeAct 维度;不需要 Docker) ---"
 if [ $CHECK_ONLY -eq 0 ] && ! pyhas smolagents; then
-  echo "  安装中: pip install 'smolagents[toolkit]'"
-  pip install -q 'smolagents[toolkit]' || bad "smolagents 安装失败"
+  pipinstall 'smolagents[toolkit]' || bad "smolagents 安装失败"
 fi
 if pyhas smolagents; then
   VER=$(python -c 'import smolagents;print(getattr(smolagents,"__version__","?"))' 2>/dev/null)
@@ -95,7 +105,8 @@ PY
   # run_smolagents_gaia.py 里已经强制 flatten_messages_as_text=True。
   ok "vLLM 兼容性:已在 run_smolagents_gaia.py 里强制 flatten_messages_as_text"
 else
-  bad "smolagents 不可用"; hint "pip install 'smolagents[toolkit]'"
+  bad "smolagents 不可用"; hint "python -m pip install 'smolagents[toolkit]'"
+  hint "(若刚装完仍导不进来: pip 装到了别的解释器 —— 用 python -m pip)"
 fi
 fi
 
@@ -104,18 +115,19 @@ if want inspect; then
 echo
 echo "--- 2. Inspect AI + inspect_evals (参考基线) ---"
 if [ $CHECK_ONLY -eq 0 ] && ! pyhas inspect_ai; then
-  echo "  安装中: pip install inspect-ai inspect-evals"
-  pip install -q inspect-ai 'inspect-evals' || bad "inspect 安装失败"
+  pipinstall inspect-ai 'inspect-evals' || bad "inspect 安装失败"
 fi
 if pyhas inspect_ai; then
   ok "inspect_ai 已装"
   command -v inspect >/dev/null 2>&1 && ok "inspect CLI 在 PATH 上" \
     || warn "inspect CLI 不在 PATH —— 用 python -m inspect_ai 代替"
 else
-  bad "inspect_ai 不可用"; hint "pip install inspect-ai inspect-evals"
+  bad "inspect_ai 不可用"; hint "python -m pip install inspect-ai inspect-evals"
+  hint "(若刚装完仍导不进来: pip 装到了别的解释器 —— 用 python -m pip)"
 fi
 pyhas inspect_evals && ok "inspect_evals 已装" \
-  || { bad "inspect_evals 不可用"; hint "pip install inspect-evals"; }
+  || { bad "inspect_evals 不可用"; hint "python -m pip install inspect-evals"
+  hint "(若刚装完仍导不进来: pip 装到了别的解释器 —— 用 python -m pip)"; }
 
 # GAIA 数据的处理见下面第 4 节 —— 它不受 --only 影响,所以填充本地副本
 # 不需要先把 inspect 装上。
@@ -150,8 +162,7 @@ if want magentic; then
 echo
 echo "--- 3. Magentic-One (未接 runner,仅装依赖) ---"
 if [ $CHECK_ONLY -eq 0 ] && ! pyhas autogen_agentchat; then
-  echo "  安装中: pip install autogen-agentchat 'autogen-ext[openai,magentic-one]'"
-  pip install -q autogen-agentchat 'autogen-ext[openai,magentic-one]' \
+  pipinstall autogen-agentchat 'autogen-ext[openai,magentic-one]' \
     || bad "autogen 安装失败"
 fi
 if pyhas autogen_agentchat; then
@@ -186,6 +197,14 @@ fi
 # 授权在当初把数据 commit 进仓库时就已经付过一次了。
 INSPECT_CACHE=${INSPECT_EVALS_CACHE_PATH:-$BASE/.inspect_cache}
 GAIA_DEST=$INSPECT_CACHE/gaia_dataset/GAIA
+# 这个副本有 ~80MB,和 tracked 的 GAIA/ 一模一样。默认位置 $BASE/.inspect_cache
+# 在 .gitignore 里;若外部把 INSPECT_EVALS_CACHE_PATH 指到了仓库内的别处,提前
+# 说出来,别等它被 git add 进去。
+case "$INSPECT_CACHE" in
+  "$BASE/.inspect_cache"*) : ;;
+  "$BASE"/*) warn "缓存在仓库内的非默认位置: $INSPECT_CACHE"
+             hint "建议 export INSPECT_EVALS_CACHE_PATH=$BASE/.inspect_cache" ;;
+esac
 if [ -f "$GAIA_DEST/2023/validation/metadata.parquet" ]; then
   ok "inspect 的 GAIA 副本已就位 ($GAIA_DEST)"
 elif [ $CHECK_ONLY -eq 0 ] && [ -d "$BASE/GAIA/2023" ]; then

@@ -32,7 +32,7 @@ nul
 
 # GAIA copy that setup-external.sh stages for inspect_evals' snapshot_download.
 # It is a duplicate of the tracked GAIA/ tree, so it must never be committed.
-/.inspect_cache/
+.inspect_cache/
 
 # smolagents / new runner output written to the repo root
 /smolagents_gaia_*.jsonl
