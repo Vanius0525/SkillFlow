@@ -191,8 +191,23 @@ inspect_run() {
   local offline=""
   [ -f "$INSPECT_EVALS_CACHE_PATH/gaia_dataset/GAIA/2023/validation/metadata.parquet" ] \
     && offline=1
-  OPENAI_BASE_URL="$QWEN_URL" OPENAI_API_KEY="${OPENAI_API_KEY:-EMPTY}" \
-  HF_HUB_OFFLINE="${offline:-${HF_HUB_OFFLINE:-0}}" \
+
+  # openai-api/<provider>/<model> 的凭据来自 <PROVIDER>_API_KEY 和
+  # <PROVIDER>_BASE_URL,不是 OPENAI_*。provider 名取模型串的第二段并大写,
+  # 连字符换下划线(环境变量名不允许连字符)。所以 .../local/... 要的是
+  # LOCAL_API_KEY / LOCAL_BASE_URL。名字从 $INSPECT_MODEL 推导而不是写死,
+  # 这样换 provider 名也不会再撞一次同样的墙。
+  local prov
+  prov=$(printf '%s' "$INSPECT_MODEL" | awk -F/ '{print $2}' | tr 'a-z-' 'A-Z_')
+  if [ -z "$prov" ]; then
+    echo "[FATAL] INSPECT_MODEL='$INSPECT_MODEL' 不是 openai-api/<provider>/<model> 形式" >&2
+    return 1
+  fi
+
+  env "${prov}_API_KEY=${OPENAI_API_KEY:-EMPTY}" \
+      "${prov}_BASE_URL=$QWEN_URL" \
+      OPENAI_BASE_URL="$QWEN_URL" OPENAI_API_KEY="${OPENAI_API_KEY:-EMPTY}" \
+      HF_HUB_OFFLINE="${offline:-${HF_HUB_OFFLINE:-0}}" \
   inspect eval $tasks \
     --model "$INSPECT_MODEL" \
     --sandbox "$INSPECT_SANDBOX" \

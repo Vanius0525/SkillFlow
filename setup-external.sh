@@ -188,6 +188,15 @@ pyhas inspect_evals && ok "inspect_evals 已装" \
 # GAIA 数据的处理见下面第 4 节 —— 它不受 --only 影响,所以填充本地副本
 # 不需要先把 inspect 装上。
 
+# openai-api provider 的凭据命名:openai-api/<provider>/<model> 读的是
+# <PROVIDER>_API_KEY / <PROVIDER>_BASE_URL,不是 OPENAI_*。
+# experiments-agents.sh 会自己从 $INSPECT_MODEL 推导并设好,这里只是说明,
+# 手工跑 inspect eval 时需要自己 export。
+INSPECT_MODEL_HINT=${INSPECT_MODEL:-openai-api/local/${QWEN_MODEL:-Qwen/Qwen3-8B}}
+PROV_HINT=$(printf '%s' "$INSPECT_MODEL_HINT" | awk -F/ '{print $2}' | tr 'a-z-' 'A-Z_')
+ok "inspect 凭据变量: ${PROV_HINT}_API_KEY / ${PROV_HINT}_BASE_URL(脚本会自动设)"
+echo "          手工跑时: export ${PROV_HINT}_API_KEY=EMPTY ${PROV_HINT}_BASE_URL=$QWEN_URL"
+
 # Docker:官方 GAIA eval 默认把 bash 放容器里跑
 if command -v docker >/dev/null 2>&1; then
   if docker info >/dev/null 2>&1; then
