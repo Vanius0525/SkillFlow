@@ -778,6 +778,40 @@ SAPO 的 skill bank 每条记录是 `e = (s_e, l_e, z_e)`，其中
 
 ## 11. 任务与 skill 的选择建议
 
+### 11.0 知识型 skill 与工具型 skill 是两种东西
+
+**这是选任务时最先撞上的墙，也是一条必须写进论文的外部效度边界。**
+
+仓库里 `scibench_skills/` 的 skill 绝大多数是**工具型**的：正文教 agent 去执行
+命令。`unit-convert` 的正文不含换算表，它写的是
+
+```bash
+python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100 cm m
+```
+
+`senior-data-scientist`、`paramus-chemistry`、`pharma-pharmacology-agent` 同样。
+
+| | 工具型 skill | 知识型 skill |
+|---|---|---|
+| 正文内容 | 命令、脚本路径、参数说明 | 数值、规则、流程 |
+| 起效方式 | agent 执行它，**结果**回到上下文 | 模型**直接读**上下文 |
+| 需要 | 多轮 + 工具执行环境 | 单轮即可 |
+| 白盒可测吗 | 否——起效发生在模型外部 | **是** |
+
+单轮无工具的设定下注入工具型 skill，模型拿不到任何可用信息，效应大概率为零。
+**这不是"skill 没用"，是这类 skill 的作用机制根本不在模型内部**，白盒看不到。
+
+所以 Tier B 的两份 skill 是**为白盒重写的知识型文档**
+（`whitebox/tasks/tier_b/SKILL.pchem-*.md`），不是仓库里那些。
+
+**必须声明的边界**：本项目的结论适用于**知识型 skill**。SkillFlow 主线用的是工具
+型 agent skill，两者的"skill 有用"不是同一个机制，结论不能直接互推。这一条和 §9.2
+里 SAPO 那条边界（RL 训练过 vs 冻结模型）性质相同，都要写进相关工作。
+
+> 顺带一个教训：上一版的 §11.1 是照着 `description:` 字段给 skill 分类的，没读正文，
+> 结论全错。skill 的 description 描述的是**用途**，不是**形式**——判断一份 skill 能
+> 不能做白盒底座，必须读正文看它是"给信息"还是"给命令"。
+
 ### 11.1 仓库里现成 skill 的分类
 
 `scibench_skills/` 有 17 个，但**大部分不能用于单轮白盒**——它们要真的执行工具

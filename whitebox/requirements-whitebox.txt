@@ -1,0 +1,5 @@
+# 白盒实验的依赖。torch 故意不在这里 —— 它的版本归 vLLM 管，
+# 在共用的 venv 里升级 torch 会弄坏黑盒那批实验。
+transformers>=4.51
+accelerate
+huggingface_hub
