@@ -48,6 +48,30 @@ import os
 import pathlib
 import sys
 
+REPO_DIR = pathlib.Path(__file__).resolve().parent
+
+
+def ensure_cache_dir() -> None:
+    """
+    Default INSPECT_EVALS_CACHE_DIR to the location setup-external.sh populates.
+
+    This has to run before inspect_evals is imported: constants.py resolves the
+    variable once, at import, and every eval derives its module-level paths from
+    the result. Left unset, inspect_evals falls back to
+    platformdirs.user_cache_dir("inspect_evals") -- ~/.cache/inspect_evals on
+    Linux -- which is not where setup-external.sh stages the copy, so the copy
+    reads as missing and the gated download runs.
+
+    Only experiments-agents.sh used to export this, so running the launcher by
+    hand looked in the wrong place. Defaulting it here keeps both entry points
+    on the same directory. An explicit value always wins.
+    """
+    if os.environ.get("INSPECT_EVALS_CACHE_DIR"):
+        return
+    default = REPO_DIR / ".inspect_cache"
+    os.environ["INSPECT_EVALS_CACHE_DIR"] = str(default)
+    print(f"[inspect] INSPECT_EVALS_CACHE_DIR unset — defaulting to {default}")
+
 
 def load_gaia_dataset_module():
     """
@@ -120,6 +144,8 @@ def main() -> int:
     if not args:
         print(__doc__)
         return 2
+
+    ensure_cache_dir()
 
     gaia_ds = load_gaia_dataset_module()
     if gaia_ds is None:
