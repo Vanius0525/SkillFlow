@@ -1,0 +1,254 @@
+#!/usr/bin/env bash
+# GAIA 上的 scaffold 横向对比:SkillFlow vs 外部权威 harness。
+#
+#   source env.sh
+#   ./run-server.sh start
+#   ./setup-external.sh              # 先把外部依赖装好、体检过
+#   ./experiments-agents.sh --dry-run
+#   nohup ./experiments-agents.sh > logs/agents.log 2>&1 &
+#
+# ---------------------------------------------------------------------------
+# 这个脚本和 run-experiments.sh 的区别
+# ---------------------------------------------------------------------------
+# run-experiments.sh 跑的是内部消融:我们自己的 baseline 在不同上下文管理策略
+# 下的表现,回答"SkillFlow 的收益从哪来"。
+#
+# 这个脚本一个自家 baseline 都不跑。它回答另一个问题:把 SkillFlow 放到公开
+# 的、别人也在用的 scaffold 旁边,它站得住吗。所以这里的每一行都是一个完整的
+# 独立 harness,各跑各的 agent loop、各自的工具、各自的终止方式:
+#
+#   skillflow    我们的方法                          (JSON tool call)
+#   smolagents   HF CodeAgent,GAIA 上最强的开源 scaffold (Python 代码动作)
+#   inspect      UK AISI 的 react agent + 官方 GAIA eval  (中立参考实现)
+#
+# 四件事严格对齐,其余一概不干预:
+#   1. 同一个模型、同一个 vLLM 端点     —— 差的是 scaffold,不是权重
+#   2. 同一批 GAIA 题目(同 levels)
+#   3. 官方 GAIA scorer
+#   4. 同样的每题墙钟上限
+#
+# 注意:三者的 token 口径不完全可比(各自的 prompt 开销不同),所以 token 只
+# 作为成本参考,结论看准确率。
+#
+# Magentic-One 没有接 —— 它要 Playwright + 浏览器,而且 1+4 个 agent 的 GAIA
+# adapter 是另一份工作量。setup-external.sh --only magentic 只负责装依赖。
+set -uo pipefail
+
+BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOGDIR=$BASE/logs
+DONEDIR=$LOGDIR/.done
+RESULTS=$BASE/results
+mkdir -p "$LOGDIR" "$DONEDIR" "$RESULTS"
+
+# ---------------------------------------------------------------------------
+# 配置
+# ---------------------------------------------------------------------------
+BACKEND=${BACKEND:-qwen}
+# 默认只跑 L1+L2。L3 是可选的:LEVELS="1 2 3"。
+# 它是 scaffold 差异最大的一档,但 8B 在上面基本是 0 分,加进来主要是拉长运行
+# 时间而不是增加区分度 —— 想要就显式打开。
+LEVELS=${LEVELS:-"1 2"}
+MAXQ=${MAXQ:-0}                        # 0 = 全量
+REPEATS=${REPEATS:-1}                  # 建议 3
+
+TIMEOUT=${TIMEOUT:-600}                # 每题墙钟上限,三个 scaffold 共用
+BUDGET=${BUDGET:-20000}                # 只有我们自己的 harness 认 token 预算
+WORKERS=${WORKERS:-3}                  # 只作用于 skillflow;外部 scaffold 串行
+K=${K:-8}
+RATIO=${RATIO:-0.5}
+
+SMOL_MAX_STEPS=${SMOL_MAX_STEPS:-20}
+
+# Inspect:容器里通常起不了 Docker daemon,所以默认 local 沙箱。
+# 有可用的 Docker 就设 INSPECT_SANDBOX=docker 换回官方默认配置。
+INSPECT_SANDBOX=${INSPECT_SANDBOX:-local}
+INSPECT_MODEL=${INSPECT_MODEL:-openai-api/local/${QWEN_MODEL:-Qwen/Qwen3-8B}}
+# inspect_evals 用 snapshot_download(..., local_dir=...) 取 GAIA,填好了就不下载。
+# 指到仓库副本填充出来的缓存,这样不需要 HF_TOKEN。见 setup-external.sh。
+INSPECT_EVALS_CACHE_PATH=${INSPECT_EVALS_CACHE_PATH:-$BASE/.inspect_cache}
+export INSPECT_EVALS_CACHE_PATH
+
+QWEN_URL=${QWEN_BASE_URL:-http://localhost:8000/v1}
+MODEL_ID=${QWEN_MODEL:-Qwen/Qwen3-8B}
+
+SCAFFOLDS=${SCAFFOLDS:-"skillflow smolagents inspect"}
+
+FORCE=0
+DRYRUN=0
+for arg in "$@"; do
+  case "$arg" in
+    --force)   FORCE=1 ;;
+    --dry-run) DRYRUN=1 ;;
+    *) echo "用法: $0 [--force] [--dry-run]" >&2; exit 1 ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# 前置检查
+# ---------------------------------------------------------------------------
+fail() { echo "[FATAL] $*" >&2; exit 1; }
+have() { python -c "import $1" >/dev/null 2>&1; }
+
+if [ $DRYRUN -eq 0 ]; then
+  python -c 'import anthropic' 2>/dev/null || fail "venv 没激活 —— source env.sh"
+  curl -sf -m 5 "${QWEN_URL%/v1}/health" >/dev/null 2>&1 \
+    || fail "vLLM 没响应 ($QWEN_URL) —— ./run-server.sh start"
+  PARQUET=$BASE/GAIA/2023/validation/metadata.parquet
+  [ "$(head -c 4 "$PARQUET" 2>/dev/null)" = "PAR1" ] \
+    || fail "GAIA metadata.parquet 是 LFS 指针 —— git lfs pull"
+  python "$BASE/test_contract_and_scorer.py" >/dev/null 2>&1 \
+    || fail "test_contract_and_scorer.py 失败 —— scorer/契约有回退,先修"
+  echo "[预检] 通过。"
+fi
+
+# ---------------------------------------------------------------------------
+# 阶段执行器
+# ---------------------------------------------------------------------------
+# cell 名一律加 agents_ 前缀:run-experiments.sh 里也有一个 gaia_skillflow_k8,
+# 同名会互相覆盖 results/ 并共用 logs/.done 标记,两边结果就串了。
+STAGE=0; FAILED=(); SKIPPED=()
+
+run_stage() {
+  local name=$1; shift
+  STAGE=$((STAGE + 1))
+  local marker=$DONEDIR/$name log=$LOGDIR/$name.log
+  OUT=$RESULTS/$name.jsonl
+
+  if [ $DRYRUN -eq 1 ]; then
+    printf '[%2d] %-36s -> results/%s.jsonl\n' "$STAGE" "$name" "$name"
+    return 0
+  fi
+  if [ $FORCE -eq 0 ] && [ -f "$marker" ]; then
+    echo "[$STAGE] SKIP  $name  (完成于 $(cat "$marker"))"; return 0
+  fi
+  rm -f "$OUT"
+
+  echo
+  echo "--------------------------------------------------------------"
+  echo "[$STAGE] RUN   $name        $(date '+%F %T')"
+  echo "        日志: $log"
+  echo "--------------------------------------------------------------"
+
+  local t0=$SECONDS
+  "$@" > "$log" 2>&1
+  local rc=$? mins=$(( (SECONDS - t0) / 60 ))
+
+  if [ $rc -eq 0 ]; then
+    date '+%F %T' > "$marker"
+    echo "[$STAGE] DONE  $name  (${mins} 分钟)"
+    sed -n '/RESULTS SUMMARY/,/^Saved to/p' "$log" | tail -20
+  else
+    echo "[$STAGE] FAIL  $name  (exit $rc, ${mins} 分钟)"
+    tail -20 "$log"
+    FAILED+=("$name")
+  fi
+  return 0
+}
+
+MAXQ_ARG=(); [ "$MAXQ" -gt 0 ] 2>/dev/null && MAXQ_ARG=(--max "$MAXQ")
+
+# --- 1. SkillFlow (我们的方法) ---------------------------------------------
+sf_run() {
+  python "$BASE/skillflow.py" eval --benchmark gaia --framework skillflow \
+    --backend "$BACKEND" --levels $LEVELS --top-k "$K" \
+    --workers "$WORKERS" --delay 0 --compress-ratio "$RATIO" \
+    --token-budget "$BUDGET" --task-timeout "$TIMEOUT" \
+    "${MAXQ_ARG[@]+"${MAXQ_ARG[@]}"}" --output "$OUT"
+}
+
+# --- 2. smolagents CodeAgent ------------------------------------------------
+smol_run() {
+  python "$BASE/run_smolagents_gaia.py" \
+    --levels $LEVELS --model "$MODEL_ID" --base-url "$QWEN_URL" \
+    --max-steps "$SMOL_MAX_STEPS" --task-timeout "$TIMEOUT" \
+    "${MAXQ_ARG[@]+"${MAXQ_ARG[@]}"}" --output "$OUT"
+}
+
+# --- 3. Inspect AI + inspect_evals -----------------------------------------
+# Inspect 自带 GAIA task、自带 scorer、自带日志格式,所以这里只是把它启动起来,
+# 结果留在它自己的 ./logs/ 里(.eval 文件),用 `inspect view` 看。
+# 它的 level 是靠不同 task 名区分的,不是一个 --levels 参数。
+inspect_run() {
+  local tasks=""
+  for l in $LEVELS; do tasks="$tasks inspect_evals/gaia_level$l"; done
+  local limit=()
+  [ "$MAXQ" -gt 0 ] 2>/dev/null && limit=(--limit "$MAXQ")
+  # HF_HUB_OFFLINE 只在本地副本齐全时设,避免它偷偷回去连 HF。
+  local offline=""
+  [ -f "$INSPECT_EVALS_CACHE_PATH/gaia_dataset/GAIA/2023/validation/metadata.parquet" ] \
+    && offline=1
+  OPENAI_BASE_URL="$QWEN_URL" OPENAI_API_KEY="${OPENAI_API_KEY:-EMPTY}" \
+  HF_HUB_OFFLINE="${offline:-${HF_HUB_OFFLINE:-0}}" \
+  inspect eval $tasks \
+    --model "$INSPECT_MODEL" \
+    --sandbox "$INSPECT_SANDBOX" \
+    --time-limit "$TIMEOUT" \
+    --log-dir "$RESULTS/inspect_logs" \
+    "${limit[@]+"${limit[@]}"}"
+}
+
+# ---------------------------------------------------------------------------
+echo "=============================================================="
+echo " GAIA scaffold 横向对比"
+echo "   模型     : $MODEL_ID @ $QWEN_URL"
+echo "   levels   : [$LEVELS]   repeats=$REPEATS   timeout=${TIMEOUT}s/题"
+echo "   scaffolds: $SCAFFOLDS"
+echo "   inspect  : sandbox=$INSPECT_SANDBOX  model=$INSPECT_MODEL"
+[ "$MAXQ" -gt 0 ] 2>/dev/null && echo "   [!] MAXQ=$MAXQ —— 冒烟测试,不是正式结果"
+echo "   开始     : $(date '+%F %T')"
+case " $LEVELS " in *" 3 "*) echo "   [!] 含 GAIA L3 —— 8B 在这一档接近 0 分,运行时间显著变长" ;; esac
+echo "=============================================================="
+
+for rep in $(seq 1 "$REPEATS"); do
+  if [ "$REPEATS" -gt 1 ]; then SUF="_r$rep"; echo; echo "##### 第 $rep/$REPEATS 轮 #####"; else SUF=""; fi
+
+  for sc in $SCAFFOLDS; do
+    case "$sc" in
+      skillflow)
+        run_stage "agents_skillflow_k${K}${SUF}" sf_run ;;
+      smolagents)
+        if [ $DRYRUN -eq 1 ] || have smolagents; then
+          run_stage "agents_smolagents${SUF}" smol_run
+        else
+          echo "[--] SKIP  agents_smolagents${SUF} —— 未安装 (./setup-external.sh --only smolagents)"
+          SKIPPED+=("agents_smolagents${SUF}")
+        fi ;;
+      inspect)
+        if [ $DRYRUN -eq 1 ] || { have inspect_ai && have inspect_evals; }; then
+          GAIA_LOCAL=$INSPECT_EVALS_CACHE_PATH/gaia_dataset/GAIA/2023/validation/metadata.parquet
+          if [ $DRYRUN -eq 0 ] && [ -z "${HF_TOKEN:-}" ] && [ ! -f "$GAIA_LOCAL" ]; then
+            echo "[--] SKIP  agents_inspect${SUF} —— 既没有 HF_TOKEN 也没有本地 GAIA 副本"
+            echo "           跑 ./setup-external.sh 填充本地副本即可,不必申请授权"
+            SKIPPED+=("agents_inspect${SUF}")
+          else
+            run_stage "agents_inspect${SUF}" inspect_run
+          fi
+        else
+          echo "[--] SKIP  agents_inspect${SUF} —— 未安装 (./setup-external.sh --only inspect)"
+          SKIPPED+=("agents_inspect${SUF}")
+        fi ;;
+      *) echo "[WARN] 未知 scaffold: $sc" ;;
+    esac
+  done
+done
+
+[ $DRYRUN -eq 1 ] && { echo; echo "(dry-run,未执行) 共 $STAGE 个 cell"; exit 0; }
+
+echo
+echo "=============================================================="
+echo " 全部结束: $(date '+%F %T')"
+[ ${#SKIPPED[@]} -gt 0 ] && { echo " 跳过 ${#SKIPPED[@]} 个:"; for s in "${SKIPPED[@]}"; do echo "   - $s"; done; }
+if [ ${#FAILED[@]} -eq 0 ]; then
+  echo " ${STAGE} 个 cell 全部成功。"
+else
+  echo " ${#FAILED[@]}/${STAGE} 个失败:"
+  for f in "${FAILED[@]}"; do echo "   - $f   (日志: $LOGDIR/$f.log)"; done
+fi
+echo
+echo " 结果:"
+echo "   skillflow / smolagents : $RESULTS/*.jsonl(同一套格式,官方 scorer)"
+echo "   inspect                : $RESULTS/inspect_logs/  ->  inspect view --log-dir $RESULTS/inspect_logs"
+echo
+echo " 提醒:三者 token 口径不同(各自 prompt 开销不同),结论看准确率,"
+echo "       token 只作成本参考。"
+echo "=============================================================="

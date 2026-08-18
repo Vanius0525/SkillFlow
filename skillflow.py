@@ -44,12 +44,48 @@ from typing import Optional
 import anthropic
 
 from llm_backend import make_client
+import condenser as cond
+import agent_contract as ac
+import gaia_scorer
+import appworld_adapter as aw
 
 # Backend selection (set from CLI in __main__; default = Claude API).
 # context_window / compress_ratio are None until set from CLI; accessors below
 # fall back to the module defaults (see get_context_window / compress_ratio).
 _BACKEND = {"name": "claude", "base_url": None, "model": None,
             "context_window": None, "compress_ratio": None}
+
+# Transcript condenser, set from the CLI. Kept as module state (like _BACKEND)
+# so every run_skillflow call site picks it up without a signature change; each
+# task still builds its own condenser instance, so worker threads never share.
+_CONDENSER = {"name": "none", "keep_first": 1, "attention_window": 2,
+              "max_size": 0, "ratio": 0.8, "max_calls": 4}
+
+# Termination contract and GAIA judge, both set from the CLI.
+_CONTRACT = {"submit_tool": True, "max_continues": ac.MAX_CONTINUES}
+_JUDGE = {"mode": "official"}
+
+
+def _make_condenser(stats, client=None, task_hint=""):
+    """
+    Build this task's condenser.
+
+    `client`/`task_hint` are only used by --condenser llm, which needs a model
+    to summarise with. They are threaded through rather than read from module
+    state so that the summariser is per task, like the condenser itself.
+    """
+    kwargs = {}
+    if _CONDENSER["name"] == "llm" and client is not None:
+        kwargs["summarize"] = cond.make_summarizer(client, MODEL, task_hint)
+        kwargs["max_calls_per_condensation"] = _CONDENSER["max_calls"]
+    return cond.make_condenser(
+        _CONDENSER["name"], stats=stats,
+        keep_first=_CONDENSER["keep_first"],
+        attention_window=_CONDENSER["attention_window"],
+        max_size=_CONDENSER["max_size"],
+        ratio=_CONDENSER["ratio"],
+        **kwargs,
+    )
 
 
 def _make_client(api_key: str | None = None):
@@ -99,8 +135,12 @@ REL_TOL = 0.05
 # will otherwise repeat the identical call until the whole token budget is gone.
 # Counted per identical (tool, args) signature across the whole turn, so varying
 # the arguments is never penalised and genuine retries have room.
-MAX_IDENTICAL_TOOL_CALLS = 5    # same tool+args this many times, then stop executing it
-MAX_TOOL_CALLS_PER_TURN = 40    # absolute cap on tool calls in one agent loop
+# Both are env-overridable because the right value is benchmark-dependent: 40
+# is generous for GAIA, where a task is 5-15 steps, but truncates AppWorld,
+# which allows up to 2000 API calls and whose tasks routinely need dozens of
+# them. Capping there would measure the circuit breaker, not the agent.
+MAX_IDENTICAL_TOOL_CALLS = int(os.environ.get("MAX_IDENTICAL_TOOL_CALLS", "5"))
+MAX_TOOL_CALLS_PER_TURN = int(os.environ.get("MAX_TOOL_CALLS_PER_TURN", "40"))
 
 # One `curl` of a web page can put an entire HTML document into the transcript,
 # which then gets resent on every subsequent call. Cap what a tool may return.
@@ -227,6 +267,128 @@ def compress_ratio() -> float:
     """Effective compression trigger ratio (CLI override, else module default)."""
     r = _BACKEND.get("compress_ratio")
     return float(r) if r is not None else CONTEXT_COMPRESS_RATIO
+
+# ---------------------------------------------------------------------------
+# Compression instrumentation
+# ---------------------------------------------------------------------------
+# Both compression components (3: task-aware skill compression, 4: residual
+# compaction) are gated on context pressure. Whether that gate ever opens is an
+# empirical question, not a given — with a 32k window and a 15k-char skill doc
+# it may not — so every pressure reading is counted and reported next to
+# accuracy. A run where `compression fired` is 0 measured planning and local
+# context only, whatever the pipeline description says.
+
+
+@dataclass
+class CompressionStats:
+    """Per-task record of when context pressure was checked and what fired."""
+    window: int = 0
+    threshold: int = 0
+    checks: int = 0                 # pressure evaluated this many times
+    fired: int = 0                  # ... and compression actually ran this many
+    skill_compressions: int = 0
+    residual_compressions: int = 0
+    peak_prompt_tokens: int = 0     # largest request seen, transcript included
+    chars_saved: int = 0
+    fired_at_step_start: int = 0
+    fired_in_loop: int = 0
+
+    def observe(self, prompt_tokens: int) -> None:
+        self.checks += 1
+        self.peak_prompt_tokens = max(self.peak_prompt_tokens, prompt_tokens)
+
+
+def compression_threshold(client) -> int:
+    """Prompt size (tokens) at which skill + residual compression triggers."""
+    return int(get_context_window(client) * compress_ratio())
+
+
+class _CompressionAggregate:
+    """
+    Process-wide compression counters. One eval run is one process (see
+    run-experiments.sh, which is strictly serial), so a module-level aggregate
+    is enough; worker threads add to it under a lock.
+    """
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.reset()
+
+    def reset(self) -> None:
+        self.tasks = 0
+        self.tasks_fired = 0
+        self.checks = 0
+        self.fired = 0
+        self.skill_compressions = 0
+        self.residual_compressions = 0
+        self.chars_saved = 0
+        self.peak_prompt_tokens = 0
+        self.window = 0
+        self.threshold = 0
+
+    def add(self, s: CompressionStats) -> None:
+        with self._lock:
+            self.tasks += 1
+            if s.fired:
+                self.tasks_fired += 1
+            self.checks += s.checks
+            self.fired += s.fired
+            self.skill_compressions += s.skill_compressions
+            self.residual_compressions += s.residual_compressions
+            self.chars_saved += s.chars_saved
+            self.peak_prompt_tokens = max(self.peak_prompt_tokens, s.peak_prompt_tokens)
+            self.window = s.window or self.window
+            self.threshold = s.threshold or self.threshold
+
+    def summary(self) -> dict:
+        with self._lock:
+            return {
+                "tasks": self.tasks,
+                "tasks_where_compression_fired": self.tasks_fired,
+                "pressure_checks": self.checks,
+                "compressions_fired": self.fired,
+                "skill_compressions": self.skill_compressions,
+                "residual_compressions": self.residual_compressions,
+                "chars_saved": self.chars_saved,
+                "peak_prompt_tokens": self.peak_prompt_tokens,
+                "context_window": self.window,
+                "trigger_threshold": self.threshold,
+                "peak_over_threshold": (
+                    round(self.peak_prompt_tokens / self.threshold, 3)
+                    if self.threshold else None
+                ),
+            }
+
+    def render(self) -> str:
+        s = self.summary()
+        if not s["tasks"]:
+            return "  compression        : (no tasks recorded)"
+        lines = [
+            f"  compression fired  : {s['tasks_where_compression_fired']}/{s['tasks']} tasks"
+            f"  ({s['compressions_fired']} times in {s['pressure_checks']} pressure checks)",
+            f"  trigger threshold  : {s['trigger_threshold']:,} tok"
+            f"  ({compress_ratio():.0%} of {s['context_window']:,})",
+            f"  peak request seen  : {s['peak_prompt_tokens']:,} tok"
+            + (f"  ({s['peak_over_threshold']:.2f}x threshold)"
+               if s["peak_over_threshold"] is not None else ""),
+        ]
+        if s["compressions_fired"]:
+            lines.append(
+                f"  skill/residual     : {s['skill_compressions']} skill docs, "
+                f"{s['residual_compressions']} exec records, "
+                f"{s['chars_saved']:,} chars saved"
+            )
+        else:
+            lines.append(
+                "  [!] compression NEVER fired: components 3 and 4 were inactive for "
+                "this entire run. Any measured effect comes from goal anchoring, "
+                "iterative planning and per-step local context only."
+            )
+        return chr(10).join(lines)
+
+
+COMPRESSION_AGG = _CompressionAggregate()
+
 
 ALL_SUBJECTS = [
     "atkins", "calculus", "chemmc", "class", "diff",
@@ -439,6 +601,50 @@ TOOLS = [
 ]
 
 
+class Toolset:
+    """
+    The tool surface for one task, and how a call to it is executed.
+
+    Benchmarks do not share an action space. GAIA and SciBench act on a
+    filesystem through bash; AppWorld's action space IS a Python interpreter
+    bound to a live environment, and handing that agent a bash tool only invites
+    it to spend its budget on calls the environment cannot serve. Rather than
+    branching inside the agent loop, each benchmark supplies a Toolset.
+
+    `should_stop` exists because completion is not always a message: AppWorld
+    ends when the environment says the task is done, not when the model says so.
+    """
+
+    def base_tools(self) -> list:
+        return TOOLS
+
+    def tools(self) -> list:
+        """Base tools, plus `submit` when the termination contract is on."""
+        if _CONTRACT["submit_tool"]:
+            return self.base_tools() + [ac.SUBMIT_TOOL]
+        return self.base_tools()
+
+    def execute(self, name: str, inputs: dict) -> str:
+        return execute_tool(name, inputs)
+
+    def should_stop(self) -> bool:
+        """Checked after each tool call; True ends the turn."""
+        return False
+
+
+DEFAULT_TOOLSET = Toolset()
+
+
+def active_tools() -> list:
+    """
+    Tool schemas for this run: the harness tools, plus `submit` when the
+    termination contract is on. Built per call rather than baked into TOOLS so
+    that both `--no-submit-tool` and the default agree about what exists —
+    including in the "no such tool" message below.
+    """
+    return DEFAULT_TOOLSET.tools()
+
+
 def _unknown_tool_error(name: str) -> str:
     """
     Explicit, actionable error for a tool this harness does not register.
@@ -448,7 +654,7 @@ def _unknown_tool_error(name: str) -> str:
     like ordinary output to a small model, which then retries verbatim, so name
     the constraint and the way forward instead.
     """
-    available = ", ".join(t["name"] for t in TOOLS)
+    available = ", ".join(t["name"] for t in active_tools())
     return (
         f"[error] No such tool: '{name}'. This harness provides only: {available}. "
         f"Calling '{name}' again will always fail — use one of the available tools "
@@ -1000,6 +1206,125 @@ def build_execution_prompt(
     return "\n".join(parts)
 
 
+class ContextCompressor:
+    """
+    Owns the execution system prompt for one skill step and compresses it when a
+    request crosses the context-pressure threshold.
+
+    The pressure check used to run only at step assembly, which measures the
+    emptiest moment of the step: the transcript is empty there, so the estimate
+    was little more than base_system + one skill doc + the residual. With a 32k
+    window that never reached 80%, and components 3 and 4 never ran.
+
+    What actually fills the window is the transcript — a single bash result may
+    be MAX_TOOL_OUTPUT_CHARS long and is resent on every subsequent call — so
+    the same compressor is handed to run_agent_loop, which re-checks before
+    every model call with the live transcript included in the estimate.
+
+    Compression is idempotent: the skill doc is compressed at most once, and
+    residual records are only compressed while raw ones remain, so a check that
+    has nothing left to shrink is free and is not counted as a firing.
+    """
+
+    def __init__(self, client, goal: GoalAnchor, residual: ResidualContext,
+                 skill_name: Optional[str], base_system: str,
+                 stats: "CompressionStats", verbose: bool = False,
+                 prefix: str = "[SkillFlow]", step: Optional[int] = None):
+        self.client = client
+        self.goal = goal
+        self.residual = residual
+        self.base_system = base_system
+        self.stats = stats
+        self.verbose = verbose
+        self.prefix = prefix
+        self.step = step
+
+        self.skill_name = skill_name if (skill_name and skill_name in SKILL_DOCS) else None
+        self.threshold = compression_threshold(client)
+        stats.window = get_context_window(client)
+        stats.threshold = self.threshold
+
+        self._skill_docs: dict[str, str] = {}
+        self.orig_len = self.used_len = 0
+        if self.skill_name:
+            doc = SKILL_DOCS[self.skill_name]
+            self._skill_docs[self.skill_name] = doc
+            self.orig_len = self.used_len = len(doc)
+        self._skill_compressed = False
+
+    def system(self) -> str:
+        """Current execution system prompt (compressed or not)."""
+        return build_execution_prompt(
+            self.goal, self.residual, self._skill_docs, base_system=self.base_system
+        )
+
+    def _raw_exec_count(self) -> int:
+        """Execution records still held at full length in the residual."""
+        return sum(
+            1 for it in self.residual.exec_items
+            if not (it if isinstance(it, dict) else asdict(it)).get("compressed", True)
+        )
+
+    def _has_work(self) -> bool:
+        """Is there anything left that compression could still shrink?"""
+        if self.skill_name and not self._skill_compressed:
+            return True
+        return self._raw_exec_count() > 0
+
+    def check(self, prompt_tokens: int, where: str) -> tuple[Optional[str], int, int]:
+        """
+        Record a pressure reading and compress if it crosses the threshold.
+
+        Returns (new_system or None when nothing changed, in_tok, out_tok).
+        Every call is counted, so `stats.checks` is the denominator for "how
+        often did we look" and `stats.fired` the numerator for "how often did
+        it matter".
+        """
+        self.stats.observe(prompt_tokens)
+        if prompt_tokens < self.threshold or not self._has_work():
+            return None, 0, 0
+
+        before = len(self.system())
+        cin = cout = 0
+
+        # 1) Compress the skill doc (Component 3) — once per step.
+        if self.skill_name and not self._skill_compressed:
+            compressed, sk_in, sk_out = compress_skill(
+                self.client, self.skill_name, SKILL_DOCS[self.skill_name], self.goal
+            )
+            self._skill_docs[self.skill_name] = compressed
+            self.used_len = len(compressed)
+            self._skill_compressed = True
+            self.stats.skill_compressions += 1
+            cin += sk_in
+            cout += sk_out
+
+        # 2) Compress raw execution records in the residual (Component 4).
+        n_raw = self._raw_exec_count()
+        if n_raw:
+            self.residual, r_in, r_out = compress_residual(
+                self.client, self.residual, self.goal
+            )
+            self.stats.residual_compressions += n_raw
+            cin += r_in
+            cout += r_out
+
+        system = self.system()
+        self.stats.fired += 1
+        self.stats.chars_saved += max(0, before - len(system))
+        if where == "loop":
+            self.stats.fired_in_loop += 1
+        else:
+            self.stats.fired_at_step_start += 1
+
+        if self.verbose:
+            print(f"{self.prefix} [compress@{where}] step={self.step} "
+                  f"~{prompt_tokens}tok >= {self.threshold} -> system "
+                  f"{before} -> {len(system)} chars "
+                  f"(skill={self.stats.skill_compressions}, exec={n_raw})", flush=True)
+        return system, cin, cout
+
+
 def assemble_execution_context(
     client,
     goal: GoalAnchor,
@@ -1010,62 +1335,41 @@ def assemble_execution_context(
     verbose: bool = False,
     prefix: str = "[SkillFlow]",
     step: Optional[int] = None,
-) -> tuple[str, ResidualContext, int, int, int, int]:
+    stats: Optional["CompressionStats"] = None,
+) -> tuple[str, ContextCompressor, int, int, int, int]:
     """
-    Build the execution system prompt for one step. This is the SINGLE place any
-    compression happens, and it is entirely gated on context pressure.
+    Build the execution system prompt for one step and return the compressor
+    that owns it.
 
-    The skill doc and the accumulated residual (raw execution results) go in at
-    FULL length first; the assembled prompt is then measured. Only if it reaches
-    compress_ratio() of the model's context window do we compress — the skill doc
-    (Component 3) AND any raw execution records in the residual (Component 4) —
-    and rebuild. Below the threshold nothing is compressed.
+    The skill doc and the accumulated residual go in at FULL length first; the
+    assembled prompt is then measured. Only if it reaches compress_ratio() of
+    the model's context window do we compress. This is the step-start reading
+    only — the returned compressor must be passed to run_agent_loop, which
+    re-checks before every model call with the transcript included. That is
+    where the window actually fills up.
 
-    Returns (system, residual, orig_len, used_len, in_tok, out_tok).
-    `residual` is returned because it may have been compacted in place.
+    Returns (system, compressor, orig_len, used_len, in_tok, out_tok).
     orig_len/used_len are 0 when no skill doc is in play.
     """
-    skill_docs: dict[str, str] = {}
-    orig_len = used_len = 0
-    cin = cout = 0
-    has_skill = bool(skill_name and skill_name in SKILL_DOCS)
+    compressor = ContextCompressor(
+        client, goal, residual, skill_name, base_system,
+        stats if stats is not None else CompressionStats(),
+        verbose=verbose, prefix=prefix, step=step,
+    )
+    system = compressor.system()
+    prompt_tokens = (_estimate_tokens(system)
+                     + _estimate_tokens(_content_to_text(msg_content)))
 
-    if has_skill:
-        orig_len = used_len = len(SKILL_DOCS[skill_name])
-        skill_docs[skill_name] = SKILL_DOCS[skill_name]
-
-    # Build once with full skill doc + full residual, then measure context pressure.
-    system = build_execution_prompt(goal, residual, skill_docs, base_system=base_system)
-
-    window = get_context_window(client)
-    ratio = compress_ratio()
-    threshold = int(window * ratio)
-    prompt_tokens = _estimate_tokens(system) + _estimate_tokens(_content_to_text(msg_content))
-
-    if prompt_tokens >= threshold:
-        # 1) Compress the skill doc (if any).
-        if has_skill:
-            compressed, sk_in, sk_out = compress_skill(
-                client, skill_name, SKILL_DOCS[skill_name], goal
-            )
-            skill_docs[skill_name] = compressed
-            used_len = len(compressed)
-            cin += sk_in
-            cout += sk_out
-        # 2) Compress raw execution records accumulated in the residual.
-        residual, r_in, r_out = compress_residual(client, residual, goal)
-        cin += r_in
-        cout += r_out
-        # Rebuild with the compacted skill doc + residual.
-        system = build_execution_prompt(goal, residual, skill_docs, base_system=base_system)
-        if verbose:
-            print(f"{prefix} Step {step}b: prompt ~{prompt_tokens}tok >= "
-                  f"{ratio:.0%}x{window} -> compressed skill+residual", flush=True)
+    new_system, cin, cout = compressor.check(prompt_tokens, where="step-start")
+    if new_system is not None:
+        system = new_system
     elif verbose:
         print(f"{prefix} Step {step}b: prompt ~{prompt_tokens}tok < "
-              f"{ratio:.0%}x{window} -> full context (no compression)", flush=True)
+              f"{compressor.threshold} ({compress_ratio():.0%} of "
+              f"{get_context_window(client)}) -> full context "
+              f"(no compression)", flush=True)
 
-    return system, residual, orig_len, used_len, cin, cout
+    return system, compressor, compressor.orig_len, compressor.used_len, cin, cout
 
 
 def _force_final_answer(
@@ -1105,11 +1409,21 @@ def run_agent_loop(
     token_budget: int = TOKEN_BUDGET_PER_TASK,
     deadline: float | None = None,
     verbose: bool = True,
+    compressor: Optional[ContextCompressor] = None,
+    condenser: Optional["cond.Condenser"] = None,
+    contract_stats: Optional["ac.ContractStats"] = None,
+    toolset: Optional[Toolset] = None,
 ) -> tuple[str, int, int]:
     """
     Run the agentic tool-use loop.
     On timeout or budget exhaustion, forces LLM to give a final answer
     instead of raising an exception.
+
+    When `compressor` is supplied, context pressure is re-evaluated before every
+    model call and the system prompt is compressed in place once it crosses the
+    threshold. Without it the loop still refuses to overflow the window, but its
+    only recourse is to abandon the turn and force an answer.
+
     Returns (final_text, total_input_tokens, total_output_tokens).
     """
     total_in = total_out = 0
@@ -1117,8 +1431,41 @@ def run_agent_loop(
     tool_call_count = 0
     repeat_counts: dict[str, int] = {}
     p = "    [agent]"
+    submit_enabled = _CONTRACT["submit_tool"]
+    max_continues = _CONTRACT["max_continues"]
+    continues = 0
+    tools = toolset if toolset is not None else DEFAULT_TOOLSET
+    if contract_stats is not None:
+        contract_stats.submit_enabled = submit_enabled
 
     while True:
+        # ---- Context pressure: bound the request before measuring the room ----
+        # This is the point where the window actually fills: the transcript
+        # carries every tool result (each up to MAX_TOOL_OUTPUT_CHARS) and is
+        # resent on every call, so it dwarfs the system prompt long before step
+        # assembly would notice. Acting here is what keeps the "context
+        # exhausted" bail-out below a last resort rather than the normal exit.
+        #
+        # Cheapest first: the condenser masks old observations for free, and
+        # only what it cannot recover is worth spending a compression call on.
+        # Either may be absent — that is what makes the ablation cells
+        # (condenser only / compressor only / both / neither) possible.
+        if condenser is not None:
+            condenser.condense(
+                messages, _request_tokens(system, messages),
+                condenser.threshold_for(get_context_window(client)),
+                verbose=verbose, prefix=p + " ",
+            )
+
+        if compressor is not None:
+            new_system, comp_in, comp_out = compressor.check(
+                _request_tokens(system, messages), where="loop"
+            )
+            total_in += comp_in
+            total_out += comp_out
+            if new_system is not None:
+                system = new_system
+
         # Room left in the context window for the reply. The transcript grows
         # with every tool result, so this shrinks even when the output budget
         # does not — and a max_tokens that does not fit is a hard 400.
@@ -1173,7 +1520,7 @@ def run_agent_loop(
             model=MODEL,
             max_tokens=call_max,
             system=system,
-            tools=TOOLS,
+            tools=tools.tools(),
             messages=messages,
         )
         total_in += response.usage.input_tokens
@@ -1183,12 +1530,46 @@ def run_agent_loop(
 
         if response.stop_reason == "end_turn":
             messages.append({"role": "assistant", "content": response.content})
+            text = "\n".join(text_parts)
+
+            # Stopping is not the same as finishing. A model that trails off
+            # mid-plan gets nudged rather than scored on its last line.
+            if (submit_enabled and not ac.has_explicit_answer(text)
+                    and continues < max_continues):
+                continues += 1
+                if contract_stats is not None:
+                    contract_stats.continues += 1
+                messages.append({"role": "user", "content": ac.CONTINUE_MSG})
+                if verbose:
+                    print(f"{p} end_turn with no answer, nudging "
+                          f"({continues}/{max_continues})", flush=True)
+                continue
+
+            if contract_stats is not None:
+                if not ac.has_explicit_answer(text):
+                    contract_stats.ended_without_answer += 1
+                elif continues:
+                    contract_stats.rescued += 1
             if verbose:
                 print(f"{p} end_turn after {tool_call_count} tool calls, "
                       f"tokens={total_in}in/{total_out}out", flush=True)
-            return "\n".join(text_parts), total_in, total_out
+            return text, total_in, total_out
 
         if response.stop_reason == "tool_use":
+            # `submit` ends the turn: it is the contract, not a tool to execute.
+            submit_block = ac.find_submit_block(response.content) if submit_enabled else None
+            if submit_block is not None:
+                messages.append({"role": "assistant", "content": response.content})
+                answer = ac.answer_from_submit(submit_block)
+                if contract_stats is not None:
+                    contract_stats.submitted += 1
+                    if continues:
+                        contract_stats.rescued += 1
+                if verbose:
+                    print(f"{p} submit({answer[:60]!r}) after {tool_call_count} "
+                          f"tool calls, tokens={total_in}in/{total_out}out", flush=True)
+                return ac.as_final_answer(answer), total_in, total_out
+
             tool_results = []
             stuck = False
             for block in response.content:
@@ -1217,7 +1598,7 @@ def run_agent_loop(
                         )
                         stuck = stuck or repeats > MAX_IDENTICAL_TOOL_CALLS + 1
                     else:
-                        result = execute_tool(block.name, block.input)
+                        result = tools.execute(block.name, block.input)
 
                     if verbose:
                         result_preview = result[:150].replace("\n", "\\n") if result else "(empty)"
@@ -1230,6 +1611,16 @@ def run_agent_loop(
                     })
             messages.append({"role": "assistant", "content": response.content})
             messages.append({"role": "user", "content": tool_results})
+
+            # ---- Environment-signalled completion ----
+            # AppWorld ends when the environment reports the task done, which
+            # can happen without the model saying anything at all.
+            if tools.should_stop():
+                if verbose:
+                    print(f"{p} environment reports task complete after "
+                          f"{tool_call_count} tool calls", flush=True)
+                return ("\n".join(text_parts) or "[task completed]",
+                        total_in, total_out)
 
             # ---- Circuit breaker: force an answer instead of burning the budget ----
             if stuck or tool_call_count >= MAX_TOOL_CALLS_PER_TURN:
@@ -1269,6 +1660,7 @@ def run_skillflow(
     verbose: bool = True,
     base_system: str = BASE_SYSTEM_SCIBENCH,
     user_content: str | list | None = None,
+    toolset: Optional[Toolset] = None,
 ) -> dict:
     """
     Run the full SkillFlow pipeline on a single task.
@@ -1282,6 +1674,12 @@ def run_skillflow(
     deadline = None if task_timeout >= UNLIMITED_TIMEOUT else time.time() + task_timeout
     total_in = total_out = 0
     p = "[SkillFlow]"
+    # One stats object per task: shared across this task's steps, never across
+    # tasks, so the worker threads need no lock of their own.
+    comp_stats = CompressionStats()
+    cond_stats = cond.CondenserStats()
+    condenser = _make_condenser(cond_stats, client, user_request)
+    contract_stats = ac.ContractStats()
 
     # ---- Step 1: Goal Anchoring (Alg line 1) ----
     if verbose:
@@ -1354,10 +1752,12 @@ def run_skillflow(
         # Skill docs AND the accumulated residual go in at full length; all
         # compression (skill + execution results) triggers only when the
         # assembled prompt reaches compress_ratio() of the context window.
-        system, residual, orig_len, used_len, cin, cout = assemble_execution_context(
+        system, compressor, orig_len, used_len, cin, cout = assemble_execution_context(
             client, goal, residual, skill_name, msg_content,
             base_system=base_system, verbose=verbose, prefix=p, step=step,
+            stats=comp_stats,
         )
+        residual = compressor.residual
         messages = [{"role": "user", "content": msg_content}]
         total_in += cin
         total_out += cout
@@ -1377,6 +1777,10 @@ def run_skillflow(
                 token_budget=remaining_budget,
                 deadline=deadline,
                 verbose=verbose,
+                compressor=compressor,
+                condenser=condenser,
+                contract_stats=contract_stats,
+                toolset=toolset,
             )
             total_in += ain
             total_out += aout
@@ -1384,6 +1788,9 @@ def run_skillflow(
             if verbose:
                 print(f"{p} [ERROR] {type(e).__name__}: {e}", flush=True)
             response_text = ""
+
+        # The loop may have compacted the residual mid-turn; keep that work.
+        residual = compressor.residual
 
         # Track whether timeout/budget was hit (from agent loop's response prefix)
         if response_text.startswith("[timeout]"):
@@ -1428,8 +1835,18 @@ def run_skillflow(
             break
 
     # ---- Compose final response from all steps ----
-    # The last step's response is the primary answer; earlier steps contribute context
-    final_response = step_responses[-1] if step_responses else ""
+    # Usually the last step holds the answer, but a step can end on a tool
+    # result, a nudge limit or an exception and carry none. Taking it blindly
+    # discards an answer an earlier step already produced and scores a solved
+    # task as unsolved, so prefer the most recent step that actually answered.
+    final_response = next(
+        (r for r in reversed(step_responses) if ac.has_explicit_answer(r)), "")
+    if not final_response:
+        final_response = next((r for r in reversed(step_responses) if r.strip()), "")
+
+    COMPRESSION_AGG.add(comp_stats)
+    cond.CONDENSER_AGG.add(cond_stats)
+    ac.CONTRACT_AGG.add(contract_stats)
 
     return {
         "response": final_response,
@@ -1444,6 +1861,9 @@ def run_skillflow(
         "chosen_skills": all_chosen_skills,
         "compressed_skill_lengths": all_compressed_lengths,
         "original_skill_lengths": all_original_lengths,
+        "compression": asdict(comp_stats),
+        "condenser": asdict(cond_stats),
+        "contract": asdict(contract_stats),
         "skill_steps": len(step_responses),
         "step_responses": [r[:500] for r in step_responses],  # for debugging
         "timed_out": timed_out,
@@ -1454,6 +1874,392 @@ def run_skillflow(
             "total": total_in + total_out,
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# AppWorld toolset
+# ---------------------------------------------------------------------------
+
+
+class AppWorldToolset(Toolset):
+    """
+    AppWorld's action space: one `execute` tool bound to a live session.
+
+    The filesystem tools are withheld deliberately. They cannot reach the
+    environment, and offering them to a small model reliably produces a run of
+    bash calls that accomplish nothing but fill the transcript.
+    """
+
+    def __init__(self, session: "aw.AppWorldSession"):
+        self.session = session
+
+    def base_tools(self) -> list:
+        return [aw.EXECUTE_TOOL]
+
+    def execute(self, name: str, inputs: dict) -> str:
+        if name == "execute":
+            return self.session.execute(inputs.get("code", ""))
+        return _unknown_tool_error(name)
+
+    def should_stop(self) -> bool:
+        return self.session.completed()
+
+
+# ---------------------------------------------------------------------------
+# Plain framework (the baseline SkillFlow is measured against)
+# ---------------------------------------------------------------------------
+
+SKILL_SELECTION_SYSTEM = """\
+You are a skill selection assistant. Given a task and a list of available \
+skills, pick the skills most relevant to completing it. Reply with skill names \
+only, one per line, or 'none'."""
+
+
+def select_skills(client, question: str, skills_index: str, k: int = 1):
+    """
+    One-shot top-k skill selection: the whole of the plain harness's skill logic.
+
+    Returns (chosen_names, in_tok, out_tok). k<=0 skips the call entirely, so a
+    no-skills baseline costs nothing extra.
+    """
+    if k <= 0 or not skills_index or not SKILL_DOCS:
+        return [], 0, 0
+
+    instruction = (
+        "Which ONE skill above is most relevant to completing this task? "
+        "Reply with the exact skill name, or 'none'."
+        if k == 1 else
+        f"Which up to {k} skills above are most relevant to completing this task? "
+        f"List each chosen skill name on its own line (most relevant first), "
+        f"or reply with 'none' if no skill applies."
+    )
+    try:
+        response = client.messages.create(
+            model=MODEL,
+            max_tokens=min(32 * k + 32, 256),
+            system=SKILL_SELECTION_SYSTEM,
+            messages=[{"role": "user", "content":
+                       f"Task:\n{question}\n\n{skills_index}\n\n{instruction}"}],
+        )
+        raw = response.content[0].text.strip()
+        chosen, seen = [], set()
+        for line in raw.splitlines():
+            line = line.strip().strip("-•* ").lower()
+            for name in SKILL_DOCS:
+                if name.lower() in line and name not in seen:
+                    chosen.append(name)
+                    seen.add(name)
+                    break
+            if len(chosen) == k:
+                break
+        return chosen, response.usage.input_tokens, response.usage.output_tokens
+    except Exception as e:
+        print(f"  [WARN] skill selection failed: {e}", flush=True)
+        return [], 0, 0
+
+
+def run_plain(
+    client,
+    user_request: str,
+    skills_index: str,
+    k: int = 1,
+    token_budget: int = TOKEN_BUDGET_PER_TASK,
+    task_timeout: int = TASK_TIMEOUT,
+    max_steps: int = MAX_SKILL_STEPS,     # unused; kept for signature parity
+    verbose: bool = True,
+    base_system: str = BASE_SYSTEM_SCIBENCH,
+    user_content: str | list | None = None,
+    toolset: Optional[Toolset] = None,
+) -> dict:
+    """
+    The plain harness: select top-k skills once, inject them whole, run one
+    agent loop. No goal anchoring, no planning loop, no residual.
+
+    This exists so every benchmark has a baseline built from the same agent
+    loop, tool surface, termination contract and condenser as SkillFlow. A
+    baseline that differs from the method in those respects measures the
+    difference in plumbing, not in method — which is exactly the trap this
+    whole comparison is trying to avoid.
+
+    Returns the same dict shape as run_skillflow so all downstream reporting
+    works unchanged.
+    """
+    deadline = None if task_timeout >= UNLIMITED_TIMEOUT else time.time() + task_timeout
+    total_in = total_out = 0
+    comp_stats = CompressionStats()
+    cond_stats = cond.CondenserStats()
+    condenser = _make_condenser(cond_stats, client, user_request)
+    contract_stats = ac.ContractStats()
+
+    chosen, sel_in, sel_out = select_skills(client, user_request, skills_index, k)
+    total_in += sel_in
+    total_out += sel_out
+    if verbose:
+        print(f"[plain] skills: {', '.join(chosen) if chosen else '(none)'}", flush=True)
+
+    system = base_system
+    original_lengths, used_lengths = {}, {}
+    for name in chosen:
+        doc = SKILL_DOCS[name]
+        system += f"\n\n# Skill: {name}\n\n{doc}"
+        original_lengths[name] = used_lengths[name] = len(doc)
+
+    msg_content = user_content if user_content is not None else user_request
+    messages = [{"role": "user", "content": msg_content}]
+    comp_stats.window = get_context_window(client)
+    comp_stats.threshold = compression_threshold(client)
+
+    try:
+        response_text, ain, aout = run_agent_loop(
+            client, messages, system,
+            token_budget=token_budget, deadline=deadline, verbose=verbose,
+            condenser=condenser, contract_stats=contract_stats, toolset=toolset,
+        )
+        total_in += ain
+        total_out += aout
+    except Exception as e:
+        if verbose:
+            print(f"[plain] [ERROR] {type(e).__name__}: {e}", flush=True)
+        response_text = ""
+
+    COMPRESSION_AGG.add(comp_stats)
+    cond.CONDENSER_AGG.add(cond_stats)
+    ac.CONTRACT_AGG.add(contract_stats)
+
+    return {
+        "response": response_text,
+        "goal": {},
+        "residual": {"goal_text": "", "hard_constraints": [], "exec_items": [],
+                     "risk_items": [], "raw_evidence": []},
+        "chosen_skills": chosen,
+        "compressed_skill_lengths": used_lengths,
+        "original_skill_lengths": original_lengths,
+        "compression": asdict(comp_stats),
+        "condenser": asdict(cond_stats),
+        "contract": asdict(contract_stats),
+        "skill_steps": 1,
+        "step_responses": [response_text[:500]],
+        "timed_out": response_text.startswith("[timeout]"),
+        "budget_exceeded": response_text.startswith("[budget exceeded]"),
+        "tokens": {"input": total_in, "output": total_out,
+                   "total": total_in + total_out},
+    }
+
+
+def run_framework(framework: str, **kwargs) -> dict:
+    """Dispatch to the configured framework. Both return the same dict shape."""
+    if framework == "plain":
+        return run_plain(**kwargs)
+    return run_skillflow(**kwargs)
+
+
+# ---------------------------------------------------------------------------
+# AppWorld evaluation
+# ---------------------------------------------------------------------------
+
+
+def run_appworld_task(
+    idx: int, n: int, task: dict,
+    client, skills_index: str,
+    k: int, token_budget: int, delay: float,
+    output_file: str, file_lock: threading.Lock,
+    stats: dict, stats_lock: threading.Lock,
+    task_timeout: int = TASK_TIMEOUT,
+    max_steps: int = MAX_SKILL_STEPS,
+    framework: str = "skillflow",
+    experiment_name: str = "skillflow",
+) -> dict:
+    """Run one AppWorld task inside its own environment session."""
+    p = f"[T{idx:3d}/{n}]"
+    task_id = task["task_id"]
+    print(f"\n{p} appworld {task_id}", flush=True)
+
+    result: dict = {}
+    evaluation: dict = {"success": False, "error": "session never opened"}
+    try:
+        with aw.AppWorldSession(task_id, experiment_name) as session:
+            request = session.prompt()
+            preview = session.instruction.replace("\n", " ")[:77]
+            print(f"{p}   Q: {preview}{'...' if len(preview) == 77 else ''}", flush=True)
+
+            result = run_framework(
+                framework,
+                client=client,
+                user_request=request,
+                skills_index=skills_index,
+                k=k,
+                token_budget=token_budget,
+                task_timeout=task_timeout,
+                max_steps=max_steps,
+                verbose=True,
+                base_system=aw.BASE_SYSTEM_APPWORLD,
+                toolset=AppWorldToolset(session),
+            )
+            # Score inside the session: evaluation reads environment state, and
+            # that state is gone once the context manager exits.
+            evaluation = session.evaluate()
+    except ImportError as e:
+        print(f"{p}   [FATAL] {e}", flush=True)
+        raise
+    except Exception as e:
+        print(f"{p}   [ERROR] {type(e).__name__}: {e}", flush=True)
+        evaluation = {"success": False, "error": f"{type(e).__name__}: {e}"}
+
+    correct = bool(evaluation.get("success"))
+    tok = result.get("tokens", {"input": 0, "output": 0, "total": 0})
+
+    task_result = {
+        "benchmark": "appworld",
+        "framework": framework,
+        "task_id": task_id,
+        "split": task.get("split", ""),
+        "chosen_skills": result.get("chosen_skills", []),
+        "skill_steps": result.get("skill_steps", 0),
+        "correct": correct,
+        "evaluation": evaluation,
+        "response": result.get("response", ""),
+        "timed_out": result.get("timed_out", False),
+        "budget_exceeded": result.get("budget_exceeded", False),
+        "tokens": tok,
+        "compression": result.get("compression", {}),
+        "condenser": result.get("condenser", {}),
+        "contract": result.get("contract", {}),
+    }
+
+    with stats_lock:
+        stats["all"]["total"] += 1
+        stats["all"]["tokens_input"] += tok.get("input", 0)
+        stats["all"]["tokens_output"] += tok.get("output", 0)
+        if correct:
+            stats["all"]["correct"] += 1
+
+    with file_lock:
+        with open(output_file, "a") as f:
+            f.write(json.dumps(task_result, ensure_ascii=False) + "\n")
+
+    status = "✓ PASS" if correct else "✗ FAIL"
+    print(f"{p}   {status}  tok={tok.get('input', 0)}in/{tok.get('output', 0)}out", flush=True)
+
+    if delay > 0:
+        time.sleep(delay)
+    return task_result
+
+
+def evaluate_appworld(
+    split: str = "dev",
+    max_questions: int | None = None,
+    output_file: str | None = None,
+    api_key: str | None = None,
+    delay: float = 0.0,
+    k: int = 1,
+    token_budget: int = TOKEN_BUDGET_PER_TASK,
+    workers: int = 1,
+    task_timeout: int = TASK_TIMEOUT,
+    max_steps: int = MAX_SKILL_STEPS,
+    framework: str = "skillflow",
+):
+    """
+    Run AppWorld.
+
+    Note on workers: each task opens its own environment, so parallelism is
+    bounded by what the AppWorld backend tolerates rather than by the model
+    server. Start at 1 and raise it only after a clean run.
+    """
+    client = _make_client(api_key)
+
+    skills_index = load_skills(SKILLS_DIR) if k > 0 else ""
+    tasks = aw.load_appworld_tasks(split=split, max_questions=max_questions)
+    n = len(tasks)
+
+    if output_file is None:
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"{framework}_appworld_{split}_{n}q_k{k}_{ts}.jsonl"
+    experiment_name = aw.experiment_name_for(output_file, f"{framework}_appworld")
+
+    budget_s = "unlimited" if token_budget >= UNLIMITED_TOKENS else f"{token_budget}"
+    timeout_s = "unlimited" if task_timeout >= UNLIMITED_TIMEOUT else f"{task_timeout}s"
+
+    print(f"=== AppWorld Evaluation ({framework}) ===")
+    print(f"Model    : {MODEL}")
+    print(f"Split    : {split}")
+    print(f"Tasks    : {n}")
+    print(f"Workers  : {workers}")
+    print(f"Skills   : {'k=' + str(k) if k > 0 else 'disabled (k=0)'}")
+    print(f"Tok budget: {budget_s} output tokens/task  |  timeout: {timeout_s}/task")
+    print(f"Experiment: {experiment_name}")
+    print(f"Output   : {output_file}\n")
+
+    stats = {"all": {"correct": 0, "total": 0, "tokens_input": 0, "tokens_output": 0}}
+    stats_lock = threading.Lock()
+    file_lock = threading.Lock()
+
+    task_kwargs = dict(
+        client=client, skills_index=skills_index, k=k,
+        token_budget=token_budget, delay=delay,
+        output_file=output_file, file_lock=file_lock,
+        stats=stats, stats_lock=stats_lock,
+        task_timeout=task_timeout, max_steps=max_steps,
+        framework=framework, experiment_name=experiment_name,
+    )
+
+    indexed = list(enumerate(tasks, start=1))
+    if workers <= 1:
+        for idx, task in indexed:
+            run_appworld_task(idx=idx, n=n, task=task, **task_kwargs)
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {
+                executor.submit(run_appworld_task, idx=idx, n=n, task=task,
+                                **task_kwargs): idx
+                for idx, task in indexed
+            }
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    print(f"[T{futures[future]:3d}/{n}] [UNHANDLED ERROR] {e}", flush=True)
+
+    s = stats["all"]
+    total, correct = s["total"], s["correct"]
+    acc = correct / total * 100 if total else 0.0
+
+    print("\n" + "=" * 60)
+    print("APPWORLD RESULTS SUMMARY")
+    print("=" * 60)
+    print(f"  {framework:10s}: {correct}/{total}  ({acc:.1f}%)  "
+          f"tokens {s['tokens_input']:,}in/{s['tokens_output']:,}out")
+    print("-" * 60)
+    print(COMPRESSION_AGG.render())
+    print(cond.CONDENSER_AGG.render())
+    print(ac.CONTRACT_AGG.render())
+    print("=" * 60)
+    print(f"Saved to : {output_file}")
+    print(f"Official aggregate: appworld evaluate {experiment_name} {split}")
+
+    summary = {
+        "_type": "summary",
+        "compression": COMPRESSION_AGG.summary(),
+        "condenser": cond.CONDENSER_AGG.summary(),
+        "contract": ac.CONTRACT_AGG.summary(),
+        "framework": framework,
+        "benchmark": "appworld",
+        "model": MODEL,
+        "split": split,
+        "k": k,
+        "workers": workers,
+        "token_budget": token_budget,
+        "task_timeout": task_timeout,
+        "experiment_name": experiment_name,
+        "scorer": "appworld-official (per-task); run `appworld evaluate` for TGC/SGC",
+        "overall": {
+            "correct": correct, "total": total, "accuracy": round(acc, 2),
+            "tokens_input": s["tokens_input"], "tokens_output": s["tokens_output"],
+        },
+    }
+    with open(output_file, "a") as f:
+        f.write(json.dumps(summary, ensure_ascii=False) + "\n")
+
+    return stats
 
 
 # ---------------------------------------------------------------------------
@@ -1530,13 +2336,22 @@ def _try_numeric_gaia(predicted: str, gold: str, rel_tol: float = 0.02) -> bool 
 
 def is_correct_gaia(predicted: str, gold: str, client: anthropic.Anthropic | None = None) -> bool:
     """
-    GAIA scoring:
-    - If both answers are numeric: correct iff within 2% relative tolerance.
-    - Otherwise: use LLM to judge semantic equivalence.
-    Falls back to normalized exact-match if LLM call fails.
+    GAIA scoring.
+
+    Default (`--judge official`) is the official leaderboard scorer: exact match
+    under GAIA's own normalisation. It is the only mode whose numbers can be put
+    next to a published GAIA result.
+
+    `--judge llm` restores the previous behaviour — 2% relative tolerance on
+    numbers, then an LLM equivalence judge. It is strictly more lenient than the
+    official scorer and is kept only to reproduce pre-fix numbers; anything
+    measured with it is comparable with nothing but itself.
     """
     if not predicted:
         return False
+
+    if _JUDGE["mode"] == "official":
+        return gaia_scorer.question_scorer(predicted, gold)
 
     # 1. Numeric fast-path
     numeric_result = _try_numeric_gaia(predicted, gold)
@@ -1704,6 +2519,9 @@ def run_scibench_task(
         "budget_exceeded": result["budget_exceeded"],
         "tokens": result["tokens"],
         "residual": result["residual"],
+        "compression": result.get("compression", {}),
+        "condenser": result.get("condenser", {}),
+        "contract": result.get("contract", {}),
     }
 
     with stats_lock:
@@ -1845,11 +2663,18 @@ def evaluate_scibench(
 
     overall = total_correct / total_total * 100 if total_total else 0
     print(f"  {'Overall':10s}: {total_correct}/{total_total}  ({overall:.1f}%)")
+    print("-" * 60)
+    print(COMPRESSION_AGG.render())
+    print(cond.CONDENSER_AGG.render())
+    print(ac.CONTRACT_AGG.render())
     print("=" * 60)
     print(f"Saved to : {output_file}")
 
     summary = {
         "_type": "summary",
+        "compression": COMPRESSION_AGG.summary(),
+        "condenser": cond.CONDENSER_AGG.summary(),
+        "contract": ac.CONTRACT_AGG.summary(),
         "framework": "skillflow",
         "model": MODEL,
         "k": k,
@@ -1949,6 +2774,9 @@ def run_gaia_task(
         "budget_exceeded": result["budget_exceeded"],
         "tokens": result["tokens"],
         "residual": result["residual"],
+        "compression": result.get("compression", {}),
+        "condenser": result.get("condenser", {}),
+        "contract": result.get("contract", {}),
     }
 
     with stats_lock:
@@ -2083,11 +2911,18 @@ def evaluate_gaia(
 
     overall = total_correct / total_total * 100 if total_total else 0
     print(f"  Overall : {total_correct}/{total_total}  ({overall:.1f}%)")
+    print("-" * 60)
+    print(COMPRESSION_AGG.render())
+    print(cond.CONDENSER_AGG.render())
+    print(ac.CONTRACT_AGG.render())
     print("=" * 60)
     print(f"Saved to : {output_file}")
 
     summary = {
         "_type": "summary",
+        "compression": COMPRESSION_AGG.summary(),
+        "condenser": cond.CONDENSER_AGG.summary(),
+        "contract": ac.CONTRACT_AGG.summary(),
         "framework": "skillflow",
         "benchmark": "gaia",
         "model": MODEL,
@@ -2233,6 +3068,9 @@ def run_dabstep_task(
         "budget_exceeded": result["budget_exceeded"],
         "tokens": result["tokens"],
         "residual": result["residual"],
+        "compression": result.get("compression", {}),
+        "condenser": result.get("condenser", {}),
+        "contract": result.get("contract", {}),
     }
 
     with stats_lock:
@@ -2383,6 +3221,10 @@ def evaluate_dabstep(
         overall = None
         print(f"  Overall : N/A — gold answers not public for split='{split}';")
         print(f"            use 'dabstep-submit' to upload to leaderboard for grading.")
+    print("-" * 60)
+    print(COMPRESSION_AGG.render())
+    print(cond.CONDENSER_AGG.render())
+    print(ac.CONTRACT_AGG.render())
     print("=" * 60)
     print(f"Saved to : {output_file}")
 
@@ -2396,6 +3238,9 @@ def evaluate_dabstep(
 
     summary = {
         "_type": "summary",
+        "compression": COMPRESSION_AGG.summary(),
+        "condenser": cond.CONDENSER_AGG.summary(),
+        "contract": ac.CONTRACT_AGG.summary(),
         "framework": "skillflow",
         "benchmark": "dabstep",
         "model": MODEL,
@@ -2789,6 +3634,9 @@ def run_assistantbench_task(
         "budget_exceeded": result["budget_exceeded"],
         "tokens": result["tokens"],
         "residual": result["residual"],
+        "compression": result.get("compression", {}),
+        "condenser": result.get("condenser", {}),
+        "contract": result.get("contract", {}),
     }
 
     with stats_lock:
@@ -2945,11 +3793,18 @@ def evaluate_assistantbench(
                    "tokens_input": grand_in, "tokens_output": grand_out}
     else:
         print(f"  Overall : N/A — gold answers not public for split='{split}'.")
+    print("-" * 60)
+    print(COMPRESSION_AGG.render())
+    print(cond.CONDENSER_AGG.render())
+    print(ac.CONTRACT_AGG.render())
     print("=" * 60)
     print(f"Saved to : {output_file}")
 
     summary = {
         "_type": "summary",
+        "compression": COMPRESSION_AGG.summary(),
+        "condenser": cond.CONDENSER_AGG.summary(),
+        "contract": ac.CONTRACT_AGG.summary(),
         "framework": "skillflow",
         "benchmark": "assistantbench",
         "model": MODEL,
@@ -2995,6 +3850,20 @@ if __name__ == "__main__":
                        help="Model max context window (tokens). Overrides the "
                             "backend default; used to decide when a skill doc is "
                             "compressed (see --compress-ratio).")
+        cond.add_condenser_args(p)
+        ac.add_contract_args(p)
+        p.add_argument("--framework", choices=["skillflow", "plain"],
+                       default="skillflow",
+                       help="which framework to run (default: skillflow). "
+                            "'plain' is the baseline: one-shot top-k skill "
+                            "selection, whole docs injected, a single agent "
+                            "loop — same tools, contract and condenser as "
+                            "SkillFlow, so only the framework differs.")
+        p.add_argument("--judge", choices=["official", "llm"], default="official",
+                       help="GAIA answer judge (default: official). 'official' is "
+                            "the GAIA leaderboard scorer and the only mode "
+                            "comparable with published results; 'llm' is the old "
+                            "lenient tolerance+LLM judge, kept for reproduction.")
         p.add_argument("--compress-ratio", type=float,
                        default=CONTEXT_COMPRESS_RATIO,
                        help="Compress a skill doc once the assembled prompt "
@@ -3022,7 +3891,10 @@ if __name__ == "__main__":
 
     # Evaluation mode (SciBench or GAIA)
     eval_parser = subparsers.add_parser("eval", help="Benchmark evaluation")
-    eval_parser.add_argument("--benchmark", choices=["scibench", "gaia", "dabstep", "assistantbench"], default="scibench",
+    eval_parser.add_argument("--benchmark",
+                             choices=["scibench", "gaia", "dabstep",
+                                      "assistantbench", "appworld"],
+                             default="scibench",
                              help="Which benchmark to evaluate (default: scibench)")
     # SciBench-specific
     eval_parser.add_argument("--subjects", nargs="+", default=ALL_SUBJECTS, choices=ALL_SUBJECTS,
@@ -3031,6 +3903,10 @@ if __name__ == "__main__":
     eval_parser.add_argument("--levels", nargs="+", type=int, default=[1, 2],
                              help="GAIA levels to evaluate (default: 1 2, ignored for scibench/dabstep)")
     # DABstep-specific
+    eval_parser.add_argument(
+        "--appworld-split", choices=list(aw.SPLITS), default="dev",
+        help="AppWorld split (default: dev). test_normal/test_challenge are "
+             "for final numbers only.")
     eval_parser.add_argument("--dabstep-split", choices=["dev", "all"], default="dev",
                              help="DABstep split to evaluate (default: dev, ignored for scibench/gaia)")
     # AssistantBench-specific
@@ -3086,6 +3962,15 @@ if __name__ == "__main__":
     _BACKEND["model"] = getattr(args, "qwen_model", None)
     _BACKEND["context_window"] = getattr(args, "context_window", None)
     _BACKEND["compress_ratio"] = getattr(args, "compress_ratio", None)
+    _CONDENSER["name"] = getattr(args, "condenser", "none")
+    _CONDENSER["keep_first"] = getattr(args, "keep_first", 1)
+    _CONDENSER["attention_window"] = getattr(args, "attention_window", 2)
+    _CONDENSER["max_size"] = getattr(args, "condenser_max_size", 0)
+    _CONDENSER["ratio"] = getattr(args, "condense_ratio", 0.8)
+    _CONDENSER["max_calls"] = getattr(args, "condenser_max_calls", 4)
+    _CONTRACT["submit_tool"] = getattr(args, "submit_tool", True)
+    _CONTRACT["max_continues"] = getattr(args, "max_continues", ac.MAX_CONTINUES)
+    _JUDGE["mode"] = getattr(args, "judge", "official")
 
     # Display/logging: MODEL is the Claude id used for real Anthropic calls, but
     # the qwen backend ignores it (see llm_backend.QwenClient). Reflect the model
@@ -3172,6 +4057,20 @@ if __name__ == "__main__":
                 workers=args.workers,
                 task_timeout=timeout,
                 max_steps=max_steps,
+            )
+        elif args.benchmark == "appworld":
+            evaluate_appworld(
+                split=args.appworld_split,
+                max_questions=args.max,
+                output_file=args.output,
+                api_key=args.api_key,
+                delay=args.delay,
+                k=args.top_k,
+                token_budget=budget,
+                workers=args.workers,
+                task_timeout=timeout,
+                max_steps=max_steps,
+                framework=args.framework,
             )
         elif args.benchmark == "assistantbench":
             evaluate_assistantbench(

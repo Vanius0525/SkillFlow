@@ -37,9 +37,14 @@ from pathlib import Path
 import anthropic
 
 from llm_backend import make_client
+import agent_contract as ac
 
 # Backend selection (set from CLI in __main__; default = Claude API).
 _BACKEND = {"name": "claude", "base_url": None, "model": None}
+
+# Termination contract, mirroring skillflow.py and eval_gaia_with_skills.py so
+# every cell of the comparison ends a turn the same way.
+_CONTRACT = {"submit_tool": True, "max_continues": ac.MAX_CONTINUES}
 
 
 def _make_client(api_key: str | None = None):
@@ -371,6 +376,13 @@ def _truncate_output(text: str, limit: int = MAX_TOOL_OUTPUT_CHARS) -> str:
     )
 
 
+def active_tools() -> list:
+    """Harness tools, plus `submit` when the termination contract is on."""
+    if _CONTRACT["submit_tool"]:
+        return TOOLS + [ac.SUBMIT_TOOL]
+    return TOOLS
+
+
 def _unknown_tool_error(name: str) -> str:
     """
     Explicit, actionable error for a tool this harness does not register.
@@ -380,7 +392,7 @@ def _unknown_tool_error(name: str) -> str:
     like ordinary output to a small model, which then retries verbatim, so name
     the constraint and the way forward instead.
     """
-    available = ", ".join(t["name"] for t in TOOLS)
+    available = ", ".join(t["name"] for t in active_tools())
     return (
         f"[error] No such tool: '{name}'. This harness provides only: {available}. "
         f"Calling '{name}' again will always fail — use one of the available tools "
@@ -458,12 +470,18 @@ def run_agent_turn(
     system: str,
     token_budget: int = TOKEN_BUDGET_PER_TASK,
     deadline: float | None = None,
+    contract_stats: "ac.ContractStats | None" = None,
 ) -> tuple[str, int, int]:
     """Returns (final_text, total_input_tokens, total_output_tokens)."""
     total_in = total_out = 0
     tool_call_count = 0
     repeat_counts: dict[str, int] = {}
     force_reason = ""
+    submit_enabled = _CONTRACT["submit_tool"]
+    max_continues = _CONTRACT["max_continues"]
+    continues = 0
+    if contract_stats is not None:
+        contract_stats.submit_enabled = submit_enabled
 
     while True:
         if deadline is not None and time.time() >= deadline:
@@ -502,7 +520,7 @@ def run_agent_turn(
             model=MODEL,
             max_tokens=call_max,
             system=system,
-            tools=TOOLS,
+            tools=active_tools(),
             messages=messages,
         )
         total_in  += resp.usage.input_tokens
@@ -511,9 +529,37 @@ def run_agent_turn(
 
         if resp.stop_reason == "end_turn":
             messages.append({"role": "assistant", "content": resp.content})
-            return "\n".join(text_parts), total_in, total_out
+            text = "\n".join(text_parts)
+
+            # Stopping is not the same as finishing: nudge before scoring the
+            # model on whatever its last line happened to be.
+            if (submit_enabled and not ac.has_explicit_answer(text)
+                    and continues < max_continues):
+                continues += 1
+                if contract_stats is not None:
+                    contract_stats.continues += 1
+                messages.append({"role": "user", "content": ac.CONTINUE_MSG})
+                continue
+
+            if contract_stats is not None:
+                if not ac.has_explicit_answer(text):
+                    contract_stats.ended_without_answer += 1
+                elif continues:
+                    contract_stats.rescued += 1
+            return text, total_in, total_out
 
         if resp.stop_reason == "tool_use":
+            # `submit` ends the turn: it is the contract, not a tool to execute.
+            submit_block = ac.find_submit_block(resp.content) if submit_enabled else None
+            if submit_block is not None:
+                messages.append({"role": "assistant", "content": resp.content})
+                answer = ac.answer_from_submit(submit_block)
+                if contract_stats is not None:
+                    contract_stats.submitted += 1
+                    if continues:
+                        contract_stats.rescued += 1
+                return ac.as_final_answer(answer), total_in, total_out
+
             tool_results = []
             stuck = False
             for block in resp.content:

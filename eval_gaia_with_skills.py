@@ -35,15 +35,53 @@ import subprocess
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from dataclasses import asdict
 from pathlib import Path
 
 import pandas as pd
 import anthropic
 
 from llm_backend import make_client
+import condenser as cond
+import agent_contract as ac
+import gaia_scorer
 
 # Backend selection (set from CLI in __main__; default = Claude API).
 _BACKEND = {"name": "claude", "base_url": None, "model": None}
+
+# Transcript condenser, set from the CLI. Mirrors skillflow.py so the same flags
+# mean the same thing on both sides of the comparison; each task still builds
+# its own instance, so worker threads never share one.
+_CONDENSER = {"name": "none", "keep_first": 1, "attention_window": 2,
+              "max_size": 0, "ratio": 0.8, "max_calls": 4}
+
+# Termination contract, mirroring skillflow.py so both sides of the comparison
+# end a turn the same way. Without this the baseline scores an unfinished turn
+# as a wrong answer while SkillFlow gets extra chances to speak, and the gap
+# between them is partly a harness artefact.
+_CONTRACT = {"submit_tool": True, "max_continues": ac.MAX_CONTINUES}
+
+
+def _make_condenser(stats, client=None, task_hint=""):
+    """
+    Build this task's condenser.
+
+    `client`/`task_hint` are only used by --condenser llm, which needs a model
+    to summarise with. They are threaded through rather than read from module
+    state so that the summariser is per task, like the condenser itself.
+    """
+    kwargs = {}
+    if _CONDENSER["name"] == "llm" and client is not None:
+        kwargs["summarize"] = cond.make_summarizer(client, MODEL, task_hint)
+        kwargs["max_calls_per_condensation"] = _CONDENSER["max_calls"]
+    return cond.make_condenser(
+        _CONDENSER["name"], stats=stats,
+        keep_first=_CONDENSER["keep_first"],
+        attention_window=_CONDENSER["attention_window"],
+        max_size=_CONDENSER["max_size"],
+        ratio=_CONDENSER["ratio"],
+        **kwargs,
+    )
 
 
 def _make_client(api_key: str | None = None):
@@ -404,6 +442,13 @@ def _truncate_output(text: str, limit: int = MAX_TOOL_OUTPUT_CHARS) -> str:
     )
 
 
+def active_tools() -> list:
+    """Harness tools, plus `submit` when the termination contract is on."""
+    if _CONTRACT["submit_tool"]:
+        return TOOLS + [ac.SUBMIT_TOOL]
+    return TOOLS
+
+
 def _unknown_tool_error(name: str) -> str:
     """
     Explicit, actionable error for a tool this harness does not register.
@@ -413,7 +458,7 @@ def _unknown_tool_error(name: str) -> str:
     like ordinary output to a small model, which then retries verbatim, so name
     the constraint and the way forward instead.
     """
-    available = ", ".join(t["name"] for t in TOOLS)
+    available = ", ".join(t["name"] for t in active_tools())
     return (
         f"[error] No such tool: '{name}'. This harness provides only: {available}. "
         f"Calling '{name}' again will always fail — use one of the available tools "
@@ -492,6 +537,8 @@ def run_agent_turn(
     system: str,
     token_budget: int = TOKEN_BUDGET_PER_TASK,
     deadline: float | None = None,
+    condenser: "cond.Condenser | None" = None,
+    contract_stats: "ac.ContractStats | None" = None,
 ) -> tuple[str, int, int]:
     """
     Run one full agent turn (may involve multiple tool calls).
@@ -509,12 +556,28 @@ def run_agent_turn(
     tool_call_count = 0
     repeat_counts: dict[str, int] = {}
     force_reason = ""
+    submit_enabled = _CONTRACT["submit_tool"]
+    max_continues = _CONTRACT["max_continues"]
+    continues = 0
+    if contract_stats is not None:
+        contract_stats.submit_enabled = submit_enabled
 
     while True:
         if deadline is not None and time.time() >= deadline:
             raise TimeoutError(f"task exceeded {TASK_TIMEOUT}s wall-clock limit")
 
         remaining = token_budget - total_out
+
+        # Bound the transcript before measuring the room left. Without this the
+        # only response to a full window is to abandon the turn, which is what
+        # "context exhausted" below does — a condenser turns that into a
+        # recoverable event at no extra model call.
+        if condenser is not None:
+            condenser.condense(
+                messages, _request_tokens(system, messages),
+                condenser.threshold_for(_context_window(client)),
+                verbose=True, prefix="    ",
+            )
 
         # Room left in the context window for the reply. The transcript grows with
         # every tool result, so this shrinks even when the output budget does not.
@@ -551,7 +614,7 @@ def run_agent_turn(
             model=MODEL,
             max_tokens=call_max,
             system=system,
-            tools=TOOLS,
+            tools=active_tools(),
             messages=messages,
         )
         total_in  += response.usage.input_tokens
@@ -561,9 +624,37 @@ def run_agent_turn(
 
         if response.stop_reason == "end_turn":
             messages.append({"role": "assistant", "content": response.content})
-            return "\n".join(text_parts), total_in, total_out
+            text = "\n".join(text_parts)
+
+            # Stopping is not the same as finishing: nudge before scoring the
+            # model on whatever its last line happened to be.
+            if (submit_enabled and not ac.has_explicit_answer(text)
+                    and continues < max_continues):
+                continues += 1
+                if contract_stats is not None:
+                    contract_stats.continues += 1
+                messages.append({"role": "user", "content": ac.CONTINUE_MSG})
+                continue
+
+            if contract_stats is not None:
+                if not ac.has_explicit_answer(text):
+                    contract_stats.ended_without_answer += 1
+                elif continues:
+                    contract_stats.rescued += 1
+            return text, total_in, total_out
 
         if response.stop_reason == "tool_use":
+            # `submit` ends the turn: it is the contract, not a tool to execute.
+            submit_block = ac.find_submit_block(response.content) if submit_enabled else None
+            if submit_block is not None:
+                messages.append({"role": "assistant", "content": response.content})
+                answer = ac.answer_from_submit(submit_block)
+                if contract_stats is not None:
+                    contract_stats.submitted += 1
+                    if continues:
+                        contract_stats.rescued += 1
+                return ac.as_final_answer(answer), total_in, total_out
+
             tool_results = []
             stuck = False
             for block in response.content:
@@ -639,7 +730,18 @@ def extract_final_answer(response_text: str) -> str:
 
 
 def is_correct(predicted: str, gold: str) -> bool:
-    return normalize_answer(predicted) == normalize_answer(gold)
+    """
+    Official GAIA scoring.
+
+    The previous implementation compared `normalize_answer` on both sides, which
+    strips leading articles and trailing punctuation and coerces anything
+    float-parseable through `str(float(...))`. That is more lenient than the
+    leaderboard in some places and stricter in others, so its numbers were not
+    comparable with published GAIA results — nor, more importantly, with
+    skillflow.py, which used a different scorer again. Both now call the same
+    official one.
+    """
+    return gaia_scorer.question_scorer(predicted, gold)
 
 
 # ---------------------------------------------------------------------------
@@ -774,11 +876,17 @@ def run_task(
           end="", flush=True)
     messages = [{"role": "user", "content": user_content}]
     timed_out = False
+    # One condenser per task: never shared across worker threads.
+    cond_stats = cond.CondenserStats()
+    condenser = _make_condenser(cond_stats, client, question)
+    contract_stats = ac.ContractStats()
     try:
         response_text, agent_in, agent_out = run_agent_turn(
             client, messages, system,
             token_budget=token_budget,
             deadline=deadline,
+            condenser=condenser,
+            contract_stats=contract_stats,
         )
         predicted = extract_final_answer(response_text)
         correct   = is_correct(predicted, gold)
@@ -822,7 +930,11 @@ def run_task(
             "agent_in":      agent_in,
             "agent_out":     agent_out,
         },
+        "condenser": asdict(cond_stats),
+        "contract": asdict(contract_stats),
     }
+    cond.CONDENSER_AGG.add(cond_stats)
+    ac.CONTRACT_AGG.add(contract_stats)
 
     # --- thread-safe stats update ---
     with stats_lock:
@@ -965,11 +1077,17 @@ def evaluate(
     grand_avg_out = grand_out // total_total if total_total else 0
     print(f"  Overall : {total_correct}/{total_total}  ({overall:.1f}%)  "
           f"tokens avg {grand_avg_in}in/{grand_avg_out}out  total {grand_in+grand_out:,}")
+    print("-" * 60)
+    print(cond.CONDENSER_AGG.render())
+    print(ac.CONTRACT_AGG.render())
     print("=" * 60)
     print(f"Saved to : {output_file}")
 
     summary = {
         "_type":        "summary",
+        "condenser":    cond.CONDENSER_AGG.summary(),
+        "contract":     ac.CONTRACT_AGG.summary(),
+        "scorer":       "gaia-official",
         "model":        MODEL,
         "k":            k,
         "workers":      workers,
@@ -1058,6 +1176,8 @@ if __name__ == "__main__":
              f"drops below {FORCE_ANSWER_THRESHOLD}, the model is forced to "
              f"give its final answer immediately.",
     )
+    cond.add_condenser_args(parser)
+    ac.add_contract_args(parser)
     parser.add_argument("--backend", choices=["claude", "qwen"], default="claude",
                         help="LLM backend (default: claude). 'qwen' = local "
                              "OpenAI-compatible server (vLLM/SGLang/Ollama).")
@@ -1070,6 +1190,16 @@ if __name__ == "__main__":
                         help="Model name served by the qwen backend.")
     args = parser.parse_args()
 
+    _CONDENSER.update(
+        max_calls=getattr(args, "condenser_max_calls", 4),
+        name=getattr(args, "condenser", "none"),
+        keep_first=getattr(args, "keep_first", 1),
+        attention_window=getattr(args, "attention_window", 2),
+        max_size=getattr(args, "condenser_max_size", 0),
+        ratio=getattr(args, "condense_ratio", 0.8),
+    )
+    _CONTRACT["submit_tool"] = getattr(args, "submit_tool", True)
+    _CONTRACT["max_continues"] = getattr(args, "max_continues", ac.MAX_CONTINUES)
     _BACKEND["name"] = getattr(args, "backend", "claude")
     _BACKEND["base_url"] = getattr(args, "qwen_base_url", None)
     _BACKEND["model"] = getattr(args, "qwen_model", None)
