@@ -52,10 +52,13 @@ MAXQ=${MAXQ:-0}                        # 0 = 全量
 # 每题只跑一次。想要方差估计就 REPEATS=3(见 run-experiments.sh 里的说明)。
 REPEATS=${REPEATS:-1}
 
-TIMEOUT=${TIMEOUT:-600}                # 每题墙钟上限,三个 scaffold 共用
+# 每题墙钟上限,三个 scaffold 共用。300s 是为了让整批跑得完,代价是更多题会被
+# 截断而不是答错 —— 两者在准确率里长得一样,所以跑完务必看一眼截断率(见脚本
+# 末尾提示),截断率高的话这批数字反映的是时间预算,不是 scaffold。
+TIMEOUT=${TIMEOUT:-300}
 
 # 并发必须三家一致,否则比的不只是 scaffold。三家共用一台 vLLM:并发一高,
-# 单个请求排队变慢,同样 600s 的墙钟上限就会砍掉更多题 —— 那个准确率差是
+# 单个请求排队变慢,同样的墙钟上限就会砍掉更多题 —— 那个准确率差是
 # 并发造成的,不是 scaffold 造成的。
 #
 # 特别注意 inspect:它默认自适应并发(min=10 start=20 max=100),不显式限制的话
@@ -262,6 +265,10 @@ echo
 echo " 结果:"
 echo "   skillflow / smolagents : $RESULTS/*.jsonl(同一套格式,官方 scorer)"
 echo "   inspect                : $RESULTS/inspect_logs/  ->  inspect view --log-dir $RESULTS/inspect_logs"
+echo
+echo " 截断率(TIMEOUT=${TIMEOUT}s 砍掉了多少题)—— 高的话这批数字反映的是"
+echo " 时间预算而不是 scaffold:"
+echo "   python summarize-agents.py"
 echo
 echo " 提醒:三者 token 口径不同(各自 prompt 开销不同),结论看准确率,"
 echo "       token 只作成本参考。"
