@@ -15,7 +15,9 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 |---|---|
 | `model.py` | **唯一碰权重的模块**。加载、hook、激活补丁、注意力敲除、打分 |
 | `selftest.py` | 七项自检。跑实验前必须全过 |
-| `e0_effect.py` | Phase 0 效应筛查（第 3 步） |
+| `e0_effect.py` | Phase 0 效应筛查（第 3 步）。**行为层，无层间数据** |
+| `e2_patch.py` | **E2 激活补丁层扫描 —— 第一个真正的层间实验** |
+| `run-whitebox.sh` | 服务器端一键运行（体检 → 自检 → Tier A → Tier B） |
 | `contamination.py` | skill 是否泄漏答案 |
 | `setup-whitebox.sh` | 服务器端体检 + 可选安装 |
 | `tasks/tier_a/` | 合成任务（正对照）：虚构 Zorb 单位制 |
@@ -158,6 +160,65 @@ D. 36
 SciBench 有些题把比例因子放在单位字段里（答案 `1.602`，单位 `10⁻¹⁷ J`）。不声明
 单位的话模型答 `1.602e-17`，scorer 判错，测到的就成了约定不一致而不是化学。
 `model.py:build_messages` 会把单位加进用户轮。
+
+---
+
+## E2：第一个层间实验
+
+`e0_effect.py` 全是行为层测量，不产生任何层间数据。**`e2_patch.py` 才是。**
+
+```bash
+# 先在 Tier A 上跑 —— 正对照，效应必然大，用来确认曲线可读
+python e2_patch.py --model ../models/Qwen3-1.7B \
+  --tasks tasks/tier_a/tasks.jsonl --skill tasks/tier_a/SKILL.zorb-units.md \
+  --mode mc --limit 40 --run-id e2-tierA
+
+# Tier B，用 e0 筛过的题（--filter-known 的产物）
+python e2_patch.py --model ../models/Qwen3-8B \
+  --tasks tasks/tier_b/tasks.filtered.pchem-procedure.jsonl \
+  --skill tasks/tier_b/SKILL.pchem-procedure.md \
+  --mode num --limit 60 --layer-step 2 --run-id e2-tierB-proc
+```
+
+它做的事：对每一层 ℓ，跑有 skill 缓存最后一个 prompt token 的 residual → 跑无
+skill 时把那个向量补进第 ℓ 层同一位置 → 算恢复率
+
+```
+恢复率 = (补丁后 − 无skill) / (有skill − 无skill)
+```
+
+输出是三条曲线（终端里用 sparkline 画出来，ssh 上可读）：
+
+| 条件 | 作用 |
+|---|---|
+| `real` | 本题自己缓存的向量 |
+| `mismatched` | **别的题**的向量。它要是也能恢复,说明测到的是"扰动"而不是 skill |
+| `mean` | 所有题的**平均**向量。它要是和 real 一样好,说明效应是一个全局方向,不是逐题内容 —— 比 H2 更强的结论 |
+
+后两条不是装饰。**缺了它们,恢复率这个数没法解释。**
+
+### 跑之前必须满足的前提
+
+**这对 (任务, skill) 必须已经过了 Phase 0 门槛。** 恢复率是以行为差值为分母的比
+值；分母是噪声的话，这个比值不是"小"，是**没有定义**。脚本会在分母过小时打印警告，
+但它不会替你停下来。
+
+### 预注册的预测（跑之前就写死）
+
+| skill | 抽象层级 | 预测 |
+|---|---|---|
+| `pchem-procedure` | principle | **压得进**向量（高恢复率）|
+| `pchem-constants` | example | 压不进 |
+| `zorb-units` | example | 压不进 |
+
+来源见 HANDOFF §9.2（SAPO 的 principle/pattern/example 三分）。写在跑之前，跑完
+直接对照 —— 避免在多重比较里挑显著的讲故事。
+
+### 一个实现上的关键点
+
+补丁必须落在**最后一个 prompt token**，不是序列最后一个 token。打分时 prompt 和
+答案是拼在一起做一次前向的，所以位置用的是 `prompt_len - 1` 的绝对下标；用 `-1`
+会补到答案内部，测的就完全是另一回事了。
 
 ---
 

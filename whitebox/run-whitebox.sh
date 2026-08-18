@@ -163,13 +163,19 @@ PY
 fi
 cat <<EOF
 
+ 注意:本脚本跑的全是**行为层**测量(准确率、logprob),不产生任何层间数据。
+       层间实验是 e2_patch.py,它没有放进本脚本 —— 因为它的前提是这一对
+       (任务, skill) 已经过了门槛。恢复率是以行为差值为分母的比值,分母是
+       噪声时那个比值不是"小",是没有定义。所以先看上面的数,再决定跑不跑。
+
  接着做什么:
-   - 门槛过了 -> 层间实验(E2 激活补丁)。目前**还没有实现**,见下。
+   - 门槛过了 -> 跑 E2:
+       python e2_patch.py --model $DEV_MODEL \\
+         --tasks tasks/tier_a/tasks.jsonl \\
+         --skill tasks/tier_a/SKILL.zorb-units.md \\
+         --mode mc --limit 40 --run-id $RUN_ID/e2-tierA
+     Tier B 用上面 --filter-known 产出的 tasks.filtered.*.jsonl。
    - 门槛没过 -> 换任务/skill 对;连续四对 < 10pp 就转向"瓶颈在哪一层"
                  (../HANDOFF-whitebox.md 第 6 节第 3 步)
-
- 注意:本脚本跑的全是**行为层**测量(准确率、logprob)。它不产生任何层间数据。
-       model.py 里的 patch_layer / knockout_mask 已经写好并被 selftest 验证过,
-       但把它们扫成层曲线的 e2_patch.py 还没写。
 EOF
 echo "=============================================================="
