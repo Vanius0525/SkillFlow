@@ -16,7 +16,9 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 | `model.py` | **唯一碰权重的模块**。加载、hook、激活补丁、注意力敲除、打分 |
 | `selftest.py` | 七项自检。跑实验前必须全过 |
 | `e0_effect.py` | Phase 0 效应筛查（第 3 步）。**行为层，无层间数据** |
-| `e2_patch.py` | **E2 激活补丁层扫描 —— 第一个真正的层间实验** |
+| `e2_patch.py` | **E2 激活补丁层扫描 —— 恢复率 vs 层** |
+| `e1_knockout.py` | **E1 注意力敲除层扫描 —— 依赖度 vs 层** |
+| `tasks/filler-neutral.md` | E1 的对照文档（结构相似、任务无关） |
 | `run-whitebox.sh` | 服务器端一键运行（体检 → 自检 → Tier A → Tier B） |
 | `contamination.py` | skill 是否泄漏答案 |
 | `setup-whitebox.sh` | 服务器端体检 + 可选安装 |
@@ -219,6 +221,64 @@ skill 时把那个向量补进第 ℓ 层同一位置 → 算恢复率
 补丁必须落在**最后一个 prompt token**，不是序列最后一个 token。打分时 prompt 和
 答案是拼在一起做一次前向的，所以位置用的是 `prompt_len - 1` 的绝对下标；用 `-1`
 会补到答案内部，测的就完全是另一回事了。
+
+---
+
+## E1：注意力敲除层扫描
+
+```bash
+python e1_knockout.py --model ../models/Qwen3-1.7B \
+  --tasks tasks/tier_a/tasks.jsonl --skill tasks/tier_a/SKILL.zorb-units.md \
+  --mode mc --limit 40 --run-id e1-tierA
+
+# 8B 先粗扫（每 4 层一组），定位到热点再用 --group 1 细扫那一段
+python e1_knockout.py --model ../models/Qwen3-8B \
+  --tasks tasks/tier_b/tasks.filtered.pchem-constants.jsonl \
+  --skill tasks/tier_b/SKILL.pchem-constants.md \
+  --mode num --limit 60 --group 4 --run-id e1-tierB-const
+```
+
+把所有位置**指向 skill token span 的注意力**屏蔽掉，一层（或一组层）一次，测正确
+答案 logprob 掉多少。掉得最多的层 = 真正读 skill 的层。
+
+### 对照才是设计的核心
+
+屏蔽任何一段都会扰动注意力，扰动大小随屏蔽的 key 数量增长。所以 prompt 里**同时**
+放着 skill 和一份中性填充文档（`tasks/filler-neutral.md`），每层测两次：
+
+```
+effect  = lp(不屏蔽) − lp(屏蔽 skill)
+control = lp(不屏蔽) − lp(屏蔽 filler)
+net     = effect − control     ← 只有这个可解释
+```
+
+两段屏蔽的 token 数取**二者较小值精确对齐**，所以对照是构造出来的，不是靠两份文档
+碰巧差不多长。两个条件下模型看到的内容完全一样，唯一差别是挡住了哪一段。
+
+单报 `effect` 等于把"挡住任意同长度片段都会造成的损伤"算到 skill 头上。
+
+### 和 E2 互相校验
+
+两个实验对同一件事做出**可以互相矛盾**的预测：
+
+| E2 恢复率 | E1 峰值位置 | 一致吗 | 读作 |
+|---|---|---|---|
+| 高 | 早层 | ✓ | H2：一次性读入，之后不再需要 |
+| 低 | 中后层持续 | ✓ | H1：反复回看 skill 文本 |
+| 高 | 中后层持续 | ✗ | **矛盾** —— 其中一个是仪器问题，先查 selftest |
+| 低 | 无显著峰 | ✗ | 多半效应量不够，回去看 e0 |
+
+**先跑 E2**，它的结果决定 E1 是主线还是验证。两个都跑完再用上表对一次，比单看任何
+一条曲线可靠。
+
+### 最脆弱的一处
+
+按层敲除靠 hook `self_attn` 改写 `attention_mask` 关键字 —— 把 4D mask 当模型参数
+传下去是**全层生效**的，回答不了"哪些层读了它"。这个 hook **最依赖 transformers
+版本**，所以它自己数调用次数，`e1_knockout.py` 在计数为 0 时直接报错退出。
+
+原因是：**一个从不触发的 hook 会给出完全平坦的层曲线，而那看起来和"没有任何层依赖
+它"一模一样。** `selftest.py` 第 5b 项专门守这个。
 
 ---
 

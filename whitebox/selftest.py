@@ -105,6 +105,25 @@ def main():
     ko_delta = (ko.logits[:, -1].float() - ref_logits).abs().max().item()
     check("knockout changes the output", ko_delta > 1.0, f"max |dlogit| = {ko_delta:.4g}")
 
+    # --- 5b. PER-LAYER knockout ------------------------------------------
+    # The global mask above blocks at every layer. E1 sweeps one layer at a
+    # time, which goes through a different mechanism (a hook that rewrites the
+    # attention_mask kwarg on self_attn), and that mechanism is the single most
+    # version-fragile thing in this repo. A hook that never fires produces a
+    # perfectly flat layer curve, which reads exactly like "no layer depends on
+    # this text" -- so the fire count is checked, not just the output.
+    print("\n5b. per-layer attention knockout")
+    with M.knockout_layers(r, [layer], blocked, n) as fired:
+        with torch.no_grad():
+            one = r.model(ids, use_cache=False)
+    check("per-layer hook fired", fired["n"] > 0,
+          "self_attn signature may differ in this transformers version")
+    one_delta = (one.logits[:, -1].float() - ref_logits).abs().max().item()
+    check("single-layer knockout changes output", one_delta > 0.01,
+          f"max |dlogit| = {one_delta:.4g}")
+    check("single-layer effect is smaller than all-layer", one_delta < ko_delta,
+          f"one-layer {one_delta:.3g} vs all-layer {ko_delta:.3g}")
+
     # --- 6. span location -------------------------------------------------
     print("\n6. span location")
     needle = "What is 2+2?"

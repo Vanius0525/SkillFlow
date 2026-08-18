@@ -221,6 +221,43 @@ def knockout_mask(seq_len: int, blocked: Iterable[tuple[int, int]],
     return m.to(dtype).unsqueeze(0).unsqueeze(0)
 
 
+@contextmanager
+def knockout_layers(r: Runner, layers: Iterable[int],
+                    blocked: Iterable[tuple[int, int]], seq_len: int):
+    """
+    Block attention into `blocked` key ranges, at the listed layers only.
+
+    Passing a 4D mask as the model's `attention_mask` argument applies it at
+    every layer, which answers "does the model need this text at all" but not
+    "which layers read it". A layer sweep needs the mask injected into one
+    attention module at a time, so this hooks self_attn and rewrites the
+    attention_mask keyword for those calls.
+
+    The hook counts its own invocations. A knockout that silently never fires is
+    indistinguishable from one that fires and changes nothing -- both give a flat
+    curve -- so callers should assert on `fired["n"]`.
+    """
+    dtype = next(r.model.parameters()).dtype
+    full = knockout_mask(seq_len, blocked, r.device, dtype)
+    fired = {"n": 0}
+    handles = []
+
+    def pre(_mod, a, kw):
+        q = a[0].shape[1] if a else kw["hidden_states"].shape[1]
+        kw["attention_mask"] = full[..., :q, :q]
+        fired["n"] += 1
+        return a, kw
+
+    for L in layers:
+        handles.append(
+            r.layers[L].self_attn.register_forward_pre_hook(pre, with_kwargs=True))
+    try:
+        yield fired
+    finally:
+        for h in handles:
+            h.remove()
+
+
 # ---------------------------------------------------------------------------
 # scoring
 # ---------------------------------------------------------------------------
