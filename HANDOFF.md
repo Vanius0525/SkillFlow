@@ -140,37 +140,48 @@ MAXQ=3 ./experiments-agents-noinspect.sh       # 冒烟，每 level 3 题
 | `K` | `8` | SkillFlow 的 top-k |
 | `RUN_ID` | 时间戳 | 见下 |
 
-### 后台跑（全量要几小时，别占着终端）
+### 后台跑（全量要几小时）
 
-直接跑然后关终端会被 SIGHUP 杀掉。用 `nohup`，和 `run-server.sh` /
-`run-searxng.sh` 一致：
+`experiments-agents-noinspect.sh` **默认自动转后台**，直接跑就行，起来之后可以
+关终端：
+
+```bash
+./experiments-agents-noinspect.sh
+```
+
+它会打印 run id 和一组跟进命令，然后立刻把终端还给你。产物、日志、pid 都在
+`logs/<run id>/` 和 `results/<run id>/` 下。
+
+```bash
+tail -f logs/$RUN_ID/console.log             # 总进度（哪个 cell 在跑）
+tail -f logs/$RUN_ID/agents_smolagents.log   # 单个 cell 的实时输出
+pgrep -af experiments-agents                 # 还活着没
+kill $(cat logs/$RUN_ID/run.pid)             # 停掉
+```
+
+> **关终端之前先 `tail -5 logs/$RUN_ID/console.log` 确认它真起来了。**
+> venv 和 vLLM 这两项在脱离**之前**就在前台查了，挂了会当场报错、不会转后台；
+> 但 LFS 指针和 scorer 契约那两项慢一些，跑在子进程里，失败只会落进
+> console.log。
+
+例外情况：
+
+- `--dry-run` 自动留在前台（它就是给你看输出的）
+- `--fg` 强制前台，在 tmux 里跑或者调试时用
+
+```bash
+tmux new -s gaia
+./experiments-agents-noinspect.sh --fg
+# Ctrl-B 然后 D 脱离；tmux attach -t gaia 接回来
+```
+
+`experiments-agents.sh`（三家模式）**没有**这个自动行为，要手动 nohup：
 
 ```bash
 RUN_ID=$(date +%Y%m%d-%H%M%S)
 mkdir -p logs/$RUN_ID
-RUN_ID=$RUN_ID nohup ./experiments-agents-noinspect.sh > logs/$RUN_ID/console.log 2>&1 &
+RUN_ID=$RUN_ID nohup ./experiments-agents.sh > logs/$RUN_ID/console.log 2>&1 &
 disown
-echo "run: $RUN_ID   pid: $!"
-```
-
-**显式定 `RUN_ID` 是关键**：不定的话时间戳在脚本内部生成，nohup 之后你不知道结
-果落到哪个目录了，得去翻 console.log。定死之后所有产物路径当场就知道。
-
-关掉终端之后看进度：
-
-```bash
-tail -f logs/$RUN_ID/console.log        # 总进度（哪个 cell 在跑）
-tail -f logs/$RUN_ID/agents_smolagents.log   # 单个 cell 的实时输出
-ls results/$RUN_ID/                     # 已经产出的 jsonl
-pgrep -af experiments-agents            # 还活着没
-```
-
-有 tmux/screen 的话更方便，能重新接回去看：
-
-```bash
-tmux new -s gaia
-./experiments-agents-noinspect.sh
-# Ctrl-B 然后 D 脱离；tmux attach -t gaia 接回来
 ```
 
 中途断了不用从头来 —— `.done` 标记在 run 目录里，同一个 `RUN_ID` 续跑会跳过已
