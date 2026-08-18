@@ -25,7 +25,7 @@
 #   1. 同一个模型、同一个 vLLM 端点     —— 差的是 scaffold,不是权重
 #   2. 同一批 GAIA 题目(同 levels)
 #   3. 官方 GAIA scorer
-#   4. 同样的每题墙钟上限
+#   4. 同样的每题墙钟上限 + 同样的并发(CONCURRENCY)
 #
 # 注意:三者的 token 口径不完全可比(各自的 prompt 开销不同),所以 token 只
 # 作为成本参考,结论看准确率。
@@ -53,8 +53,15 @@ MAXQ=${MAXQ:-0}                        # 0 = 全量
 REPEATS=${REPEATS:-1}
 
 TIMEOUT=${TIMEOUT:-600}                # 每题墙钟上限,三个 scaffold 共用
+
+# 并发必须三家一致,否则比的不只是 scaffold。三家共用一台 vLLM:并发一高,
+# 单个请求排队变慢,同样 600s 的墙钟上限就会砍掉更多题 —— 那个准确率差是
+# 并发造成的,不是 scaffold 造成的。
+#
+# 特别注意 inspect:它默认自适应并发(min=10 start=20 max=100),不显式限制的话
+# 会拿 20+ 路并发去打这台 4090,既拖垮服务也把它自己的题跑超时。
+CONCURRENCY=${CONCURRENCY:-3}
 BUDGET=${BUDGET:-20000}                # 只有我们自己的 harness 认 token 预算
-WORKERS=${WORKERS:-3}                  # 只作用于 skillflow;外部 scaffold 串行
 K=${K:-8}
 RATIO=${RATIO:-0.5}
 
@@ -72,7 +79,9 @@ export INSPECT_EVALS_CACHE_PATH
 QWEN_URL=${QWEN_BASE_URL:-http://localhost:8000/v1}
 MODEL_ID=${QWEN_MODEL:-Qwen/Qwen3-8B}
 
-SCAFFOLDS=${SCAFFOLDS:-"skillflow smolagents inspect"}
+# 顺序有意为之:先跑两个外部 baseline,最后跑 skillflow。外部 scaffold 更容易
+# 因为版本/依赖问题当场炸,早跑早发现;把自己的方法放最后,前面挂了也不影响它。
+SCAFFOLDS=${SCAFFOLDS:-"smolagents inspect skillflow"}
 
 FORCE=0
 DRYRUN=0
@@ -152,7 +161,7 @@ MAXQ_ARG=(); [ "$MAXQ" -gt 0 ] 2>/dev/null && MAXQ_ARG=(--max "$MAXQ")
 sf_run() {
   python "$BASE/skillflow.py" eval --benchmark gaia --framework skillflow \
     --backend "$BACKEND" --levels $LEVELS --top-k "$K" \
-    --workers "$WORKERS" --delay 0 --compress-ratio "$RATIO" \
+    --workers "$CONCURRENCY" --delay 0 --compress-ratio "$RATIO" \
     --token-budget "$BUDGET" --task-timeout "$TIMEOUT" \
     "${MAXQ_ARG[@]+"${MAXQ_ARG[@]}"}" --output "$OUT"
 }
@@ -162,6 +171,7 @@ smol_run() {
   python "$BASE/run_smolagents_gaia.py" \
     --levels $LEVELS --model "$MODEL_ID" --base-url "$QWEN_URL" \
     --max-steps "$SMOL_MAX_STEPS" --task-timeout "$TIMEOUT" \
+    --workers "$CONCURRENCY" \
     "${MAXQ_ARG[@]+"${MAXQ_ARG[@]}"}" --output "$OUT"
 }
 
@@ -184,6 +194,8 @@ inspect_run() {
     --model "$INSPECT_MODEL" \
     --sandbox "$INSPECT_SANDBOX" \
     --time-limit "$TIMEOUT" \
+    --max-connections "$CONCURRENCY" \
+    --max-samples "$CONCURRENCY" \
     --log-dir "$RESULTS/inspect_logs" \
     "${limit[@]+"${limit[@]}"}"
 }
@@ -193,6 +205,7 @@ echo "=============================================================="
 echo " GAIA scaffold 横向对比"
 echo "   模型     : $MODEL_ID @ $QWEN_URL"
 echo "   levels   : [$LEVELS]   repeats=$REPEATS   timeout=${TIMEOUT}s/题"
+echo "   并发     : $CONCURRENCY(三家一致 —— 不一致的话准确率差里会混进排队效应)"
 echo "   scaffolds: $SCAFFOLDS"
 echo "   inspect  : sandbox=$INSPECT_SANDBOX  model=$INSPECT_MODEL"
 [ "$MAXQ" -gt 0 ] 2>/dev/null && echo "   [!] MAXQ=$MAXQ —— 冒烟测试,不是正式结果"

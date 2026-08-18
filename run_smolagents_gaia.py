@@ -29,7 +29,9 @@ import argparse
 import json
 import os
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
@@ -287,6 +289,12 @@ def main() -> int:
                     help="smolagents max steps per task (default: 20)")
     ap.add_argument("--task-timeout", type=int, default=600,
                     help="wall-clock seconds per task, 0 to disable")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="tasks in flight at once (default: 1). Must match the "
+                         "other scaffolds in a comparison: a shared model server "
+                         "slows every request under load, so a per-task wall-clock "
+                         "limit truncates more tasks at higher concurrency, and "
+                         "the resulting accuracy gap would be an artefact.")
     ap.add_argument("--no-search", action="store_true",
                     help="drop the web search tool (offline runs)")
     ap.add_argument("--verbosity", type=int, default=1)
@@ -305,23 +313,47 @@ def main() -> int:
     print(f"Levels    : {sorted(args.levels)}")
     print(f"Tasks     : {n}")
     print(f"Max steps : {args.max_steps}   timeout: {args.task_timeout}s/task")
+    print(f"Workers   : {args.workers}")
     print(f"Scorer    : official GAIA")
     print(f"Output    : {output}\n")
 
-    # Sequential on purpose: smolagents runs a code executor per task, and the
-    # point of this cell is the scaffold, not throughput.
+    # Each task builds its own CodeAgent with its own executor and its own
+    # deadline, so tasks share nothing and can run in parallel. The file and the
+    # counters are the only shared state; both are locked.
     stats: dict[str, dict] = {}
-    with open(output, "a") as fh:
-        for idx, (_, row) in enumerate(df.iterrows(), start=1):
-            result = run_one(idx, n, row, args)
+    stats_lock = threading.Lock()
+    file_lock = threading.Lock()
+    fh = open(output, "a")
+
+    def record(result: dict) -> None:
+        with file_lock:
             fh.write(json.dumps(result, ensure_ascii=False) + "\n")
             fh.flush()
-            lvl = result["level"]
-            s = stats.setdefault(lvl, {"correct": 0, "total": 0, "in": 0, "out": 0})
+        with stats_lock:
+            s = stats.setdefault(result["level"],
+                                 {"correct": 0, "total": 0, "in": 0, "out": 0})
             s["total"] += 1
             s["correct"] += int(result["correct"])
             s["in"] += result["tokens"]["input"]
             s["out"] += result["tokens"]["output"]
+
+    rows = list(enumerate(df.iterrows(), start=1))
+    try:
+        if args.workers <= 1:
+            for idx, (_, row) in rows:
+                record(run_one(idx, n, row, args))
+        else:
+            with ThreadPoolExecutor(max_workers=args.workers) as pool:
+                futures = {pool.submit(run_one, idx, n, row, args): idx
+                           for idx, (_, row) in rows}
+                for future in as_completed(futures):
+                    try:
+                        record(future.result())
+                    except Exception as e:
+                        print(f"[T{futures[future]:3d}/{n}] [UNHANDLED] "
+                              f"{type(e).__name__}: {e}", flush=True)
+    finally:
+        fh.close()
 
     print("\n" + "=" * 60)
     print("SMOLAGENTS GAIA RESULTS SUMMARY")
@@ -355,6 +387,7 @@ def main() -> int:
             "base_url": args.base_url,
             "max_steps": args.max_steps,
             "task_timeout": args.task_timeout,
+            "workers": args.workers,
             "scorer": "gaia-official",
             "levels": sorted(str(l) for l in args.levels),
             "per_level": per_level,
