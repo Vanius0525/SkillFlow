@@ -140,6 +140,46 @@ MAXQ=3 ./experiments-agents-noinspect.sh       # 冒烟，每 level 3 题
 | `K` | `8` | SkillFlow 的 top-k |
 | `RUN_ID` | 时间戳 | 见下 |
 
+### 后台跑（全量要几小时，别占着终端）
+
+直接跑然后关终端会被 SIGHUP 杀掉。用 `nohup`，和 `run-server.sh` /
+`run-searxng.sh` 一致：
+
+```bash
+RUN_ID=$(date +%Y%m%d-%H%M%S)
+mkdir -p logs/$RUN_ID
+RUN_ID=$RUN_ID nohup ./experiments-agents-noinspect.sh > logs/$RUN_ID/console.log 2>&1 &
+disown
+echo "run: $RUN_ID   pid: $!"
+```
+
+**显式定 `RUN_ID` 是关键**：不定的话时间戳在脚本内部生成，nohup 之后你不知道结
+果落到哪个目录了，得去翻 console.log。定死之后所有产物路径当场就知道。
+
+关掉终端之后看进度：
+
+```bash
+tail -f logs/$RUN_ID/console.log        # 总进度（哪个 cell 在跑）
+tail -f logs/$RUN_ID/agents_smolagents.log   # 单个 cell 的实时输出
+ls results/$RUN_ID/                     # 已经产出的 jsonl
+pgrep -af experiments-agents            # 还活着没
+```
+
+有 tmux/screen 的话更方便，能重新接回去看：
+
+```bash
+tmux new -s gaia
+./experiments-agents-noinspect.sh
+# Ctrl-B 然后 D 脱离；tmux attach -t gaia 接回来
+```
+
+中途断了不用从头来 —— `.done` 标记在 run 目录里，同一个 `RUN_ID` 续跑会跳过已
+完成的 cell：
+
+```bash
+RUN_ID=<那次的> ./experiments-agents-noinspect.sh
+```
+
 ### run 目录
 
 每次调用落到自己的目录，跑第二遍不会盖掉第一遍：
