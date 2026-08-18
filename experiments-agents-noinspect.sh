@@ -98,11 +98,16 @@ if [ $FG -eq 0 ] && [ "${AGENTS_DETACHED:-0}" != "1" ]; then
 
   # setsid 开新会话,彻底没有控制终端;没有 setsid 就退回 nohup(忽略 SIGHUP,
   # 效果够了)。stdin 接 /dev/null,免得后台进程去读终端被 SIGTTIN 停住。
+  #
+  # 显式用 bash 起,而不是直接执行 $SELF:执行位在 Windows 上 chmod 进不了 git
+  # index、zip 下载和某些挂载也会丢,丢了的话 setsid 会报 Permission denied ——
+  # 而那时父进程已经打印完"可以关终端了"并退出了。重新执行自己是关键路径,不该
+  # 押在一个文件模式位上。
   if command -v setsid >/dev/null 2>&1; then
-    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" setsid "$SELF" "${PASS[@]+"${PASS[@]}"}" \
+    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" setsid "${BASH:-bash}" "$SELF" "${PASS[@]+"${PASS[@]}"}" \
       > "$CONSOLE" 2>&1 < /dev/null &
   else
-    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" nohup "$SELF" "${PASS[@]+"${PASS[@]}"}" \
+    AGENTS_DETACHED=1 RUN_ID="$RUN_ID" nohup "${BASH:-bash}" "$SELF" "${PASS[@]+"${PASS[@]}"}" \
       > "$CONSOLE" 2>&1 < /dev/null &
     disown 2>/dev/null || true
   fi
