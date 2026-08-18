@@ -35,10 +35,25 @@
 set -uo pipefail
 
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOGDIR=$BASE/logs
+
+# 每次调用落到自己的 run 目录,跑第二遍不会盖掉第一遍。时间戳排序即时间序,
+# 不用另存元数据就能看出先后。
+#
+# .done 标记也放在 run 目录里,于是"续跑"和"重跑"由 RUN_ID 一个变量决定:
+#   ./experiments-agents.sh                      新的一次,全跑
+#   RUN_ID=20260818-175613 ./experiments-agents.sh   接着那次跑,已完成的跳过
+# 这一点是有意的 —— 如果 .done 留在全局位置,新 run 目录会是空的、标记却说
+# 做完了,于是产出一批空结果还报成功。
+RUN_ID=${RUN_ID:-$(date '+%Y%m%d-%H%M%S')}
+LOGDIR=$BASE/logs/$RUN_ID
 DONEDIR=$LOGDIR/.done
-RESULTS=$BASE/results
+RESULTS=$BASE/results/$RUN_ID
 mkdir -p "$LOGDIR" "$DONEDIR" "$RESULTS"
+
+# latest 软链省得每次记时间戳。指向最近一次*启动*的 run,不是最近一次成功的。
+# 软链建不了(比如同名实体目录挡着)就算了,只是便利,不该因此中断整批。
+ln -sfn "$RESULTS" "$BASE/results/latest" 2>/dev/null || true
+ln -sfn "$LOGDIR"  "$BASE/logs/latest"    2>/dev/null || true
 
 # ---------------------------------------------------------------------------
 # 配置
@@ -130,7 +145,7 @@ run_stage() {
   OUT=$RESULTS/$name.jsonl
 
   if [ $DRYRUN -eq 1 ]; then
-    printf '[%2d] %-36s -> results/%s.jsonl\n' "$STAGE" "$name" "$name"
+    printf '[%2d] %-36s -> results/%s/%s.jsonl\n' "$STAGE" "$name" "$RUN_ID" "$name"
     return 0
   fi
   if [ $FORCE -eq 0 ] && [ -f "$marker" ]; then
@@ -233,9 +248,28 @@ echo "   并发     : $CONCURRENCY(三家一致 —— 不一致的话准确率�
 echo "   scaffolds: $SCAFFOLDS"
 echo "   inspect  : sandbox=$INSPECT_SANDBOX  model=$INSPECT_MODEL"
 [ "$MAXQ" -gt 0 ] 2>/dev/null && echo "   [!] MAXQ=$MAXQ —— 冒烟测试,不是正式结果"
+echo "   run id   : $RUN_ID   ->  results/$RUN_ID/"
 echo "   开始     : $(date '+%F %T')"
 case " $LEVELS " in *" 3 "*) echo "   [!] 含 GAIA L3 —— 8B 在这一档接近 0 分,运行时间显著变长" ;; esac
 echo "=============================================================="
+
+# 配置快照。几周后回头看一堆 run 目录时,光靠目录名分不出哪个是 MAXQ=3 的冒烟、
+# 哪个是全量;记下 git commit 是因为 scaffold 代码本身也在动。
+{
+  echo "run_id      : $RUN_ID"
+  echo "started     : $(date '+%F %T %z')"
+  echo "git_commit  : $(git -C "$BASE" rev-parse --short HEAD 2>/dev/null || echo '(not a git repo)')"
+  echo "git_dirty   : $(git -C "$BASE" status --porcelain 2>/dev/null | wc -l) files modified"
+  echo "model       : $MODEL_ID @ $QWEN_URL"
+  echo "levels      : $LEVELS"
+  echo "maxq        : $MAXQ  (0 = 全量)"
+  echo "repeats     : $REPEATS"
+  echo "timeout     : ${TIMEOUT}s/题"
+  echo "concurrency : $CONCURRENCY"
+  echo "scaffolds   : $SCAFFOLDS"
+  echo "inspect     : sandbox=$INSPECT_SANDBOX model=$INSPECT_MODEL"
+  echo "host        : $(hostname 2>/dev/null || echo '?')"
+} > "$RESULTS/run-info.txt"
 
 for rep in $(seq 1 "$REPEATS"); do
   if [ "$REPEATS" -gt 1 ]; then SUF="_r$rep"; echo; echo "##### 第 $rep/$REPEATS 轮 #####"; else SUF=""; fi
@@ -283,13 +317,19 @@ else
   for f in "${FAILED[@]}"; do echo "   - $f   (日志: $LOGDIR/$f.log)"; done
 fi
 echo
-echo " 结果:"
-echo "   skillflow / smolagents : $RESULTS/*.jsonl(同一套格式,官方 scorer)"
-echo "   inspect                : $RESULTS/inspect_logs/  ->  inspect view --log-dir $RESULTS/inspect_logs"
+echo " 本次 run: $RUN_ID   (配置快照: results/$RUN_ID/run-info.txt)"
+echo "   skillflow / smolagents : results/$RUN_ID/*.jsonl(同一套格式,官方 scorer)"
+echo "   inspect                : inspect view --log-dir results/$RUN_ID/inspect_logs"
+if [ ${#FAILED[@]} -gt 0 ]; then
+  echo
+  echo " 修好之后接着这次跑(已完成的 cell 会跳过,不用从头来):"
+  echo "   RUN_ID=$RUN_ID ./experiments-agents.sh"
+fi
 echo
 echo " 截断率(TIMEOUT=${TIMEOUT}s 砍掉了多少题)—— 高的话这批数字反映的是"
 echo " 时间预算而不是 scaffold:"
-echo "   python summarize-agents.py"
+echo "   python summarize-agents.py --results-dir results/$RUN_ID"
+echo "   (results/latest 指向最近一次启动的 run)"
 echo
 echo " 提醒:三者 token 口径不同(各自 prompt 开销不同),结论看准确率,"
 echo "       token 只作成本参考。"
