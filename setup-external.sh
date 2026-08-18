@@ -76,6 +76,49 @@ else
   bad "vLLM 没响应 ($QWEN_URL)"; hint "./run-server.sh start"
 fi
 
+# openai SDK 版本。inspect 的 openai-api provider 要 >= 3.1.0,而 llm_backend
+# 用的是同一个包 —— 升级会同时影响每一个 SkillFlow cell,所以升完立刻拿真端点
+# 验一次,而不是等跑到一半才发现整批白跑。
+OPENAI_MIN=3.1.0
+OPENAI_VER=$(python -c 'import openai;print(openai.__version__)' 2>/dev/null)
+if [ -z "$OPENAI_VER" ]; then
+  bad "openai 包缺失"; hint "python -m pip install 'openai>=$OPENAI_MIN'"
+elif python -c "
+import sys
+from importlib.metadata import version
+def t(v): return tuple(int(x) for x in v.split('.')[:3] if x.isdigit())
+sys.exit(0 if t('$OPENAI_VER') >= t('$OPENAI_MIN') else 1)" 2>/dev/null; then
+  ok "openai $OPENAI_VER (>= $OPENAI_MIN)"
+elif [ $CHECK_ONLY -eq 0 ]; then
+  warn "openai $OPENAI_VER < $OPENAI_MIN —— inspect 的 openai-api provider 会拒绝启动"
+  pipinstall --upgrade "openai>=$OPENAI_MIN" && \
+    ok "已升级到 $(python -c 'import openai;print(openai.__version__)' 2>/dev/null)" || \
+    bad "openai 升级失败"
+else
+  bad "openai $OPENAI_VER < $OPENAI_MIN"; hint "python -m pip install --upgrade 'openai>=$OPENAI_MIN'"
+fi
+
+# 升级 openai 之后最要紧的一件事:确认我们自己的 qwen backend 还能用。
+# 这条不是可选的礼节 —— llm_backend 是每个 SkillFlow cell 的唯一出口。
+if curl -sf -m 5 "${QWEN_URL%/v1}/health" >/dev/null 2>&1; then
+  if BASE_DIR="$BASE" QWEN_URL="$QWEN_URL" MODEL_ID="${SERVED:-${QWEN_MODEL:-Qwen/Qwen3-8B}}" \
+     python - <<'PY' >/dev/null 2>&1
+import os, sys
+sys.path.insert(0, os.environ["BASE_DIR"])
+from llm_backend import make_client
+c = make_client("qwen", base_url=os.environ["QWEN_URL"], model=os.environ["MODEL_ID"])
+r = c.messages.create(model="ignored", max_tokens=8,
+                      messages=[{"role": "user", "content": "Reply with the word ok."}])
+assert r.usage.input_tokens > 0, "no usage reported"
+assert any(getattr(b, "text", None) for b in r.content), "no text returned"
+PY
+  then ok "llm_backend 在当前 openai 版本下仍可用(已打真端点验证)"
+  else
+    bad "llm_backend 打 vLLM 失败 —— openai 升级可能破坏了 qwen backend"
+    hint "手动复现: python skillflow.py task --backend qwen --task 'what is 2+2'"
+  fi
+fi
+
 # 外部 harness 全都走 OpenAI 协议,统一用这两个环境变量指过去
 if [ -z "${OPENAI_API_KEY:-}" ]; then
   warn "OPENAI_API_KEY 未设 —— 本地 vLLM 不校验,但很多客户端要求非空"
@@ -93,6 +136,11 @@ echo
 echo "--- 1. smolagents (CodeAct 维度;不需要 Docker) ---"
 if [ $CHECK_ONLY -eq 0 ] && ! pyhas smolagents; then
   pipinstall 'smolagents[toolkit]' || bad "smolagents 安装失败"
+  # GAIA 附件含 .xlsx / .pdf。smolagents 在构造 agent 时会校验每一个 authorized
+  # import 是否装上,缺一个就直接拒绝建 agent(不是运行时才报),所以这些要先装。
+  # 两边 harness 的 Python 都用得上它们。
+  pipinstall openpyxl pypdf chess sympy numpy \
+    || warn "附件解析库没装全 —— agent 能跑,但 xlsx/pdf 题会答不好"
 fi
 if pyhas smolagents; then
   VER=$(python -c 'import smolagents;print(getattr(smolagents,"__version__","?"))' 2>/dev/null)

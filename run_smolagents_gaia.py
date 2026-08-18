@@ -64,14 +64,34 @@ ANSWER_INSTRUCTION = (
 )
 
 # CodeAgent runs real Python, so what it can import IS its capability surface.
-# These cover GAIA's attachment types (xlsx, pdf, csv, json, images, audio) and
-# nothing that would let it wander outside the task.
-DEFAULT_IMPORTS = [
+# These cover GAIA's attachment types (xlsx, pdf, csv, json, images) plus the
+# odd domain library its questions reach for, and nothing that would let the
+# agent wander outside the task.
+#
+# The list is a wish, not a requirement: smolagents validates every authorized
+# import at construction and refuses to build the agent if one is missing, so
+# naming a package that is merely nice to have would take the whole run down.
+# `available_imports()` filters it against what is actually installed.
+WISHED_IMPORTS = [
     "pandas", "numpy", "json", "csv", "re", "math", "statistics", "itertools",
     "collections", "datetime", "os", "pathlib", "zipfile", "io", "string",
     "openpyxl", "pypdf", "PyPDF2", "bs4", "requests", "PIL", "chess",
     "unicodedata", "fractions", "urllib", "urllib.parse", "sympy",
 ]
+
+
+def available_imports(wished: list[str] | None = None) -> tuple[list[str], list[str]]:
+    """Split the wished imports into (installed, missing) without importing them."""
+    import importlib.util
+
+    installed, missing = [], []
+    for name in wished if wished is not None else WISHED_IMPORTS:
+        try:
+            found = importlib.util.find_spec(name) is not None
+        except (ImportError, ValueError, AttributeError):
+            found = False
+        (installed if found else missing).append(name)
+    return installed, missing
 
 
 class _Deadline:
@@ -116,14 +136,34 @@ def build_agent(args, deadline: _Deadline):
     # the ability to fetch a URL the question or an attachment names.
     tools.append(VisitWebpageTool())
 
+    imports, missing = available_imports()
+    if missing and not getattr(build_agent, "_warned", False):
+        print(f"[INFO] not authorising {len(missing)} uninstalled module(s): "
+              f"{', '.join(missing)}")
+        print(f"       install them to widen what the agent can do: "
+              f"python -m pip install {' '.join(_pip_names(missing))}")
+        build_agent._warned = True
+
     return CodeAgent(
         tools=tools,
         model=model,
         max_steps=args.max_steps,
-        additional_authorized_imports=DEFAULT_IMPORTS,
+        additional_authorized_imports=imports,
         verbosity_level=args.verbosity,
         step_callbacks=[deadline],
     )
+
+
+# Import name and distribution name differ often enough to be worth mapping,
+# so the hint above is a command that actually works.
+_DIST_NAMES = {
+    "PIL": "pillow", "bs4": "beautifulsoup4", "chess": "chess",
+    "PyPDF2": "pypdf2", "pypdf": "pypdf", "openpyxl": "openpyxl",
+}
+
+
+def _pip_names(modules: list[str]) -> list[str]:
+    return sorted({_DIST_NAMES.get(m, m) for m in modules})
 
 
 def _token_counts(agent) -> dict:

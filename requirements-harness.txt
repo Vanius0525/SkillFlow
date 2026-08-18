@@ -5,9 +5,12 @@
 #   .venv\Scripts\activate          (Windows)   /   source .venv/bin/activate (Linux)
 #   uv pip install -r requirements-harness.txt
 
-# llm_backend.py: claude backend + qwen (OpenAI-compatible) backend
+# llm_backend.py: claude backend + qwen (OpenAI-compatible) backend.
+# The 3.1 floor is not ours: inspect_ai's openai-api provider refuses to start
+# below it, and both share this one package. Pinning lower reintroduces the
+# conflict on the next clean install.
 anthropic>=0.40
-openai>=1.60
+openai>=3.1
 
 # GAIA metadata.parquet loading
 pandas>=2.0
@@ -17,3 +20,11 @@ pyarrow>=15.0
 numpy
 scipy
 sympy
+
+# GAIA attachment parsing (.xlsx, .pdf) plus the odd domain library its
+# questions reach for. smolagents validates every authorized import when the
+# agent is constructed, so a missing one there is a hard failure, not a
+# degraded answer.
+openpyxl
+pypdf
+chess
