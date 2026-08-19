@@ -859,6 +859,42 @@ python3 ~/agent-harness/scibench_skills/unit-convert/scripts/unit-convert.py 100
 
 篇幅也合适：878w / 1062w ≈ 1.2–1.5k token，和 SkillsBench 报的中位数 ~1.5k 同量级。
 
+### 11.1b Tier B 的任务是真的，skill 是我们写的 —— 必须分开说
+
+这两件事的性质完全不同，论文里不能混在一起讲。
+
+| | 来源 | 性质 |
+|---|---|---|
+| **任务** | SciBench（ICML 2024），大学教材原题 | **外部的、公开的**。只做了筛选和过滤，题干一字未改 |
+| **skill** | `SKILL.pchem-constants.md` / `SKILL.pchem-procedure.md` | **本项目新写的** |
+
+skill 必须新写的原因见 §11.0：仓库里现成的全是工具型，单轮无工具的设定下注入它们
+模型拿不到可用信息。没有现成的知识型 skill 可选。
+
+**由此产生的效度问题，必须主动声明**：这两份 skill 是**在知道任务领域的前提下写
+的**。这不是答案泄漏（`contamination.py` 已排除），但它是"skill 照着测试集裁过"。
+
+具体程度：写的时候只看过每个科目的**第一题**（4 题 / 196 题）；常数表里是标准物化
+常数，任何教材附录都有；procedure 那份的决策表更贴合这类题。
+
+**正确的表述方式**：这两份 skill 是**实验操纵**——在 principle/example 轴上刻意构造
+的对照（§9.2），**不是自然存在的 skill 的样本**。
+
+- 对"机制是什么"：裁剪过反而是好的，需要它真有效才有东西可解释
+- 对"skill 一般有多大用"：会高估，**不能这样引用**
+
+**离域负对照**（`tasks/tier_b/tasks.offdomain.jsonl`，SciBench 的 stat 科目 69 题）：
+同样两份 skill 注进统计题，它们不覆盖这个领域，效应**应当接近零**。
+
+```bash
+cd tasks/tier_b && python build.py --subjects stat --out tasks.offdomain.jsonl
+python e0_effect.py --tasks tasks/tier_b/tasks.offdomain.jsonl   --skill tasks/tier_b/SKILL.pchem-constants.md --mode num ...
+```
+
+这里出现大效应，说明测到的是"上下文里多了一份长而权威的文档"，而不是 skill 的内容
+——那样主实验的数字全都要重新解释。这是 skill 内容层面的负对照，和 E1 里那份填充
+文档（span 层面的负对照）是同一个思路的两个位置。
+
 ### 11.2 两层任务集：先要一个正对照
 
 **这是整节最重要的一条。** 如果补丁代码在一个"skill 明确必要"的任务上都测不出

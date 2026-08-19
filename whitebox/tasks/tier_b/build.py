@@ -46,6 +46,17 @@ OUT = HERE / "tasks.jsonl"
 # chemmc = quantum chemistry. All three are covered by the two Tier B skills.
 SUBJECTS = ["atkins", "thermo", "chemmc"]
 
+# Off-domain negative control. The Tier B skills were written knowing the domain,
+# which is a deliberate manipulation but also a degree of freedom: a document
+# that happens to help everything would look like a skill effect. Statistics
+# problems are in SciBench but outside what either skill covers, so injecting the
+# same skills here should produce roughly nothing. A large effect on this pool
+# means the measurement is picking up "a long authoritative document is present"
+# rather than the skill's content.
+#
+#   python build.py --subjects stat --out tasks.offdomain.jsonl
+OFFDOMAIN_DEFAULT = ["stat"]
+
 MIN_TEXT_CHARS = 60
 
 
@@ -82,10 +93,10 @@ def skill_numbers() -> set:
     return out
 
 
-def build():
+def build(subjects=None):
     banned = skill_numbers()
     items, idx, skipped = [], 0, 0
-    for subj in SUBJECTS:
+    for subj in (subjects or SUBJECTS):
         p = SRC / f"{subj}.json"
         if not p.exists():
             print(f"[WARN] missing {p} -- skipped")
@@ -124,31 +135,37 @@ def digest(items) -> str:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--subjects", nargs="+", default=None,
+                    help=f"override subjects; off-domain control is "
+                         f"{' '.join(OFFDOMAIN_DEFAULT)}")
+    ap.add_argument("--out", default=None, help="output path (default tasks.jsonl)")
     args = ap.parse_args()
 
-    items = build()
+    out_path = pathlib.Path(args.out) if args.out else OUT
+    items = build(args.subjects)
     if not items:
         print(f"[FAIL] no items -- is {SRC} present? (git lfs pull)")
         raise SystemExit(1)
     d = digest(items)
 
     if args.check:
-        if not OUT.exists():
+        if not out_path.exists():
             print("[FAIL] tasks.jsonl missing -- run without --check first")
             raise SystemExit(1)
-        have = [json.loads(l) for l in io.open(OUT, encoding="utf-8") if l.strip()]
+        have = [json.loads(l) for l in io.open(out_path, encoding="utf-8") if l.strip()]
         if digest(have) != d:
             print(f"[FAIL] tasks.jsonl does not match ({digest(have)} vs {d})")
             raise SystemExit(1)
         print(f"[ OK ] tasks.jsonl matches, {len(have)} items, sha {d}")
         return
 
-    with io.open(OUT, "w", encoding="utf-8", newline="\n") as f:
+    with io.open(out_path, "w", encoding="utf-8", newline="\n") as f:
         for it in items:
             f.write(json.dumps(it, ensure_ascii=False, sort_keys=True) + "\n")
 
-    print(f"wrote {OUT} -- {len(items)} items, sha {d}")
-    print("by subject:", {s: sum(1 for i in items if i["subject"] == s) for s in SUBJECTS})
+    subs = args.subjects or SUBJECTS
+    print(f"wrote {out_path} -- {len(items)} items, sha {d}")
+    print("by subject:", {s: sum(1 for i in items if i["subject"] == s) for s in subs})
     withunit = sum(1 for i in items if i["unit"])
     print(f"with a unit: {withunit}/{len(items)}")
     print("\nNOTE: this is the candidate pool. e0_effect.py --filter-known drops the")
