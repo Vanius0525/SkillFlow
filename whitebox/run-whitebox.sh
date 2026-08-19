@@ -71,7 +71,7 @@ echo "   Tier B 题数: $LIMIT"
 echo "   开始       : $(date '+%F %T')"
 echo "=============================================================="
 
-# 显存:一张 24GB 卡装不下 vLLM 的 8B 加 HF 的 8B。
+# 显存:总量够(48GB),但 vLLM 默认预留 90%,所以仍然先 stop。
 if command -v nvidia-smi >/dev/null 2>&1; then
   USED=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1)
   if [ "${USED:-0}" -gt 4000 ] 2>/dev/null && [ $DRYRUN -eq 0 ]; then

@@ -32,7 +32,7 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 ```bash
 cd /inspire/qb-dev/project/multi-agent/czxs253130660/agent-harness/whitebox
-../run-server.sh stop          # 24GB 卡装不下 vLLM 的 8B 加 HF 的 8B
+../run-server.sh stop          # vLLM 按 gpu_memory_utilization 预留显存,先让开
 ./setup-whitebox.sh            # 只检查，不动环境
 ./setup-whitebox.sh --install --download
 ```

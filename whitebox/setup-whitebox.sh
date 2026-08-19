@@ -10,7 +10,9 @@
 # 一次顺手的 `pip install -U` 就可能把黑盒那批实验弄坏。所以除非你显式说要装,
 # 这个脚本一个包都不碰。
 #
-# 显存:一张 24GB 卡装不下 vLLM 的 8B 加上 HF 的 8B。跑白盒前先 ./run-server.sh stop。
+# 显存:这台是 48GB 的 4090 变体,总量够两个 8B。但 vLLM 默认按
+# gpu_memory_utilization(通常 0.9)预留,不管用不用得上,所以跑白盒前仍然先
+# ./run-server.sh stop —— 是预留策略的问题,不是总量不够。
 # 开发用 1.7B 的话可以和 vLLM 共存(1.7B bf16 约 3.4GB),但仍然建议错开。
 set -uo pipefail
 
