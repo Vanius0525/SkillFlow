@@ -7,7 +7,10 @@ Every one of them fails loudly on a specific bug that otherwise produces
 plausible-looking numbers:
 
   1  structure         config read, not assumed
-  2  thinking off      no <think> in the rendered prompt
+  2  thinking off      the think block is closed and EMPTY, and generation
+                       does not open a new one. Qwen3 disables thinking by
+                       emitting an empty pair, not by omitting the markers --
+                       asserting absence fails on a correct configuration
   3  no-op patch       patching a layer with its OWN value changes nothing.
                        Catches the prefill-vs-decode-step error: a hook that
                        fires on every step still passes a "does it change
@@ -20,7 +23,8 @@ plausible-looking numbers:
   6  span location     find_span returns a span that decodes back to the needle
   7  logprob sanity    a plausible continuation scores above an implausible one
 
-Run on the smallest model available; it is seconds there and minutes at 8B.
+Nine checks. Run on the smallest model available; it is seconds there and
+minutes at 8B.
 
     python selftest.py --model Qwen/Qwen3-1.7B
 """
@@ -28,6 +32,7 @@ Run on the smallest model available; it is seconds there and minutes at 8B.
 from __future__ import annotations
 
 import argparse
+import re
 
 import torch
 
@@ -60,14 +65,35 @@ def main():
           f"{len(r.layers)} vs {d['n_layers']}")
 
     # --- 2. thinking mode -------------------------------------------------
+    # Qwen3 turns thinking OFF by emitting an EMPTY <think></think> pair, not by
+    # omitting the markers: the closed empty block is what tells the model its
+    # reasoning turn is already finished. An earlier version of this check
+    # asserted the substring was absent and failed on a correctly configured
+    # model. What matters is that the block is closed and empty, and that
+    # generation does not open a new one.
     print("\n2. thinking mode")
     msgs = M.build_messages("What is 2+2?", None, "num")
     text = M.render(r, msgs)
-    check("no <think> block in rendered prompt", "<think>" not in text,
-          "rendered prompt still contains <think>")
+    print(f"     rendered tail: {text[-120:]!r}")
+
+    m = re.search(r"<think>(.*?)</think>", text, re.S)
+    if m is not None:
+        check("think block is closed and empty", m.group(1).strip() == "",
+              f"contains {m.group(1)[:60]!r} -- thinking is ON")
+    elif "<think>" in text:
+        check("think block is closed and empty", False,
+              "an unclosed <think> -- thinking is ON")
+    else:
+        check("no think markers at all (thinking not templated)", True)
 
     ids = M.encode(r, text)
     print(f"     prompt tokens: {ids.shape[1]}")
+
+    # empirical: the model must not start reasoning despite the template
+    gen = M.generate(r, ids, max_new_tokens=48)
+    check("generation opens no new think block", "<think>" not in gen,
+          f"generated: {gen[:80]!r}")
+    print(f"     generated: {gen.strip()[:60]!r}")
 
     # --- 3/4. activation patching ----------------------------------------
     print("\n3/4. activation patching")

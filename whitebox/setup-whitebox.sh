@@ -160,7 +160,7 @@ cat <<EOF
 
    1. 自检(先在小模型上,秒级):
         python selftest.py --model $REPO/models/$(basename "$DEV_MODEL")
-      七项全过才往下走。任何一项失败都意味着干预代码是坏的 ——
+      九项全过才往下走。任何一项失败都意味着干预代码是坏的 ——
       坏的干预照样出数字,只是没有意义。
 
    2. Tier A 正对照(skill 必然有用,效应必然大):

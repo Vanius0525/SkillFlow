@@ -14,7 +14,7 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 | 文件 | 作用 |
 |---|---|
 | `model.py` | **唯一碰权重的模块**。加载、hook、激活补丁、注意力敲除、打分 |
-| `selftest.py` | 七项自检。跑实验前必须全过 |
+| `selftest.py` | 九项自检。跑实验前必须全过 |
 | `e0_effect.py` | Phase 0 效应筛查（第 3 步）。**行为层，无层间数据** |
 | `e2_patch.py` | **E2 激活补丁层扫描 —— 恢复率 vs 层** |
 | `e1_knockout.py` | **E1 注意力敲除层扫描 —— 依赖度 vs 层** |
@@ -44,7 +44,7 @@ torch 版本很挑；一次顺手的 `pip install -U` 就可能把黑盒那批�
 然后按顺序：
 
 ```bash
-# 1. 自检 —— 七项全过才往下走
+# 1. 自检 —— 九项全过才往下走
 python selftest.py --model ../models/Qwen3-1.7B
 
 # 2. Tier A 正对照 —— 这里没有大效应 = 流水线坏了，不是假设错了
@@ -59,7 +59,7 @@ python e0_effect.py --model ../models/Qwen3-8B \
   --filter-known tasks/tier_b/tasks.filtered.jsonl
 ```
 
-**第 1 步不能跳。** 七项自检测的不是假设，是代码有没有做它声称的事。坏掉的干预照样
+**第 1 步不能跳。** 九项自检测的不是假设，是代码有没有做它声称的事。坏掉的干预照样
 产出数字，只是没有意义。
 
 ---

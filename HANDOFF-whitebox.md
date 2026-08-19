@@ -62,8 +62,17 @@ python -c "import json;c=json.load(open('models/Qwen3-8B/config.json'));print({k
 Qwen3 有 thinking / non-thinking 两种模式，思维链长度不定。白盒实验里这是致命的
 混杂因素：CoT 一长，"skill 的作用"就和"多想了几百个 token"混在一起分不开。
 
-**默认关闭 thinking**，把它作为**独立的一个实验条件**放到后期，而不是让它污染主
-实验。关闭方式和 chat template 有关，实测确认，不要假设。
+**默认关闭 thinking**，把它作为**独立的一个实验条件**放到后期。
+
+**实测结论（2026-08-19，Qwen3-1.7B）**：`enable_thinking=False` 的关闭方式是**在
+prompt 里插入一个空的 `<think>
+
+</think>`**，用闭合的空块告诉模型思考已结束 ——
+**不是让 think 标记消失**。
+
+所以判断"关掉了没有"要看**块是否闭合且为空**，不是看有没有这个子串。
+`selftest.py` 第 2 项最初就是照后者写的，在一个配置完全正确的模型上报了失败。
+另外它现在还会实测生成一段，确认模型没有自己再开一个 think 块。
 
 ---
 
@@ -908,7 +917,7 @@ Tier B：unit-convert + senior-data-scientist，各 ~100 题（SciBench 里挑�
 | 设计 | 代码 | 产出什么 | 状态 |
 |---|---|---|---|
 | §6 第 1 步 链路 | `model.py` | 加载、hook、补丁、敲除、打分 | 写好，只做过静态检查 |
-| §6 第 1 步 自检 | `selftest.py` | 八项 | 写好，**没在 GPU 上跑过** |
+| §6 第 1 步 自检 | `selftest.py` | 九项 | **服务器上 9/9 通过（1.7B）** |
 | §6 第 2 步 任务集 | `tasks/tier_{a,b}/build.py` | Tier A 47 题、Tier B 196 题池 | **本地跑通并冻结** |
 | §6 第 2 步 污染 | `contamination.py` | 重叠报告 | **本地跑通，三行全 OK** |
 | §6 第 3 步 效应筛查 | `e0_effect.py` | 准确率 + logprob，配对 CI | 写好 |

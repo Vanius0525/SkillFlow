@@ -65,10 +65,13 @@ class Runner:
 def load(model_id: str, device: str = "cuda", dtype=torch.bfloat16,
          attn: str = "eager") -> Runner:
     tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id, torch_dtype=dtype, attn_implementation=attn,
-        trust_remote_code=True,
-    ).to(device).eval()
+    common = dict(attn_implementation=attn, trust_remote_code=True)
+    try:
+        # transformers renamed torch_dtype -> dtype and warns on the old name
+        model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype, **common)
+    except TypeError:
+        model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype, **common)
+    model = model.to(device).eval()
     return Runner(model=model, tok=tok, model_id=model_id, device=device)
 
 

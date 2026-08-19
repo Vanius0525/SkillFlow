@@ -99,7 +99,7 @@ cd "$BASE"
 stage check bash "$BASE/setup-whitebox.sh" || exit 1
 
 # --- 2. 自检:硬门槛 --------------------------------------------------------
-# 这一步测的不是假设,是代码有没有做它声称的事。七项里任何一项失败,后面所有
+# 这一步测的不是假设,是代码有没有做它声称的事。九项里任何一项失败,后面所有
 # 数字都不可信 —— 而且是"看起来正常但没有意义"那种不可信。
 if ! stage selftest python "$BASE/selftest.py" --model "$DEV_MODEL"; then
   echo
