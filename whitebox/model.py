@@ -292,12 +292,16 @@ def answer_logprob(r: Runner, ids: torch.Tensor, answer: str,
 def generate(r: Runner, ids: torch.Tensor, max_new_tokens: int = 24,
              attention_mask: torch.Tensor | None = None) -> str:
     """Greedy only. Sampling would mix 'the skill helped' with 'this draw was lucky'."""
-    kw = {}
-    if attention_mask is not None:
-        kw["attention_mask"] = attention_mask
+    if attention_mask is None:
+        # Qwen3 has pad == eos, so without an explicit mask generate() warns that
+        # it cannot tell padding from content. Nothing is padded here (batch=1),
+        # making the correct mask all ones -- but an unexplained warning in the
+        # log of a real run is a doubt nobody should have to resolve later.
+        attention_mask = torch.ones_like(ids)
     out = r.model.generate(ids, max_new_tokens=max_new_tokens, do_sample=False,
                            temperature=None, top_p=None, top_k=None,
-                           pad_token_id=r.tok.eos_token_id, **kw)
+                           pad_token_id=r.tok.eos_token_id,
+                           attention_mask=attention_mask)
     return r.tok.decode(out[0, ids.shape[1]:], skip_special_tokens=True)
 
 
