@@ -205,8 +205,19 @@ def main():
         print("      is a ratio over this number -- it will be noise. Check the")
         print("      Phase 0 gate (e0_effect.py) before reading anything below.")
 
-    # mean vector per layer, and a derangement for the mismatched control
-    mean_vec = {L: torch.stack([b["vecs"][L] for b in base]).mean(0) for L in layers}
+    # Mean vector per layer, rescaled to the typical norm at that layer.
+    #
+    # A plain mean is not a usable residual state. Norms grow with depth and the
+    # directions partly cancel, so the average is short and off-manifold; the
+    # first run of this produced "recovery" of -136 at late layers, which is not
+    # a control failing to recover but a forward pass being destroyed. Keeping
+    # the mean DIRECTION and restoring a plausible MAGNITUDE makes the condition
+    # answer the question it was meant to ask: is one shared direction enough?
+    mean_vec = {}
+    for L in layers:
+        stack = torch.stack([b["vecs"][L] for b in base])
+        mv = stack.mean(0)
+        mean_vec[L] = mv / (mv.norm() + 1e-6) * stack.norm(dim=-1).mean()
     # rotate by one: a derangement, so no item is ever paired with itself
     order = list(range(len(base)))
     shifted = order[1:] + order[:1]
@@ -256,9 +267,20 @@ def main():
     curve = [per_layer[L]["recovery"]["real"] for L in layers]
     ctrl = [per_layer[L]["recovery"]["mismatched"] for L in layers]
     mcur = [per_layer[L]["recovery"]["mean"] for L in layers]
-    best = max(layers, key=lambda L: per_layer[L]["recovery"]["real"])
+    # Exclude the final layers from "best layer".
+    #
+    # Patching the last layer at the last prompt token overwrites the state that
+    # directly produces the next token, so for a single-token answer the recovery
+    # is high by construction rather than by finding anything. The first Tier A
+    # run scored +1.465 there -- above 100% -- with the MISMATCHED control also at
+    # +0.799, which is the tell: another item's vector should not help, and does
+    # only because the position is degenerate. Reported separately below.
+    TAIL = 2
+    candidates = layers[:-TAIL] if len(layers) > TAIL + 2 else layers
+    best = max(candidates, key=lambda L: per_layer[L]["recovery"]["real"])
     br = per_layer[best]["recovery"]
     bci = per_layer[best]["ci95"]["real"]
+    tail_layers = [L for L in layers if L not in candidates]
 
     summary = {
         "run_id": run_id, "n_items": len(items), "layers": layers,
@@ -276,10 +298,26 @@ def main():
     print(f"  real        {sparkline(curve)}")
     print(f"  mismatched  {sparkline(ctrl)}")
     print(f"  mean vector {sparkline(mcur)}")
-    print(f"\n  best layer {best}: recovery {br['real']:+.3f} "
-          f"CI95 [{bci[0]:+.3f}, {bci[1]:+.3f}]")
+    print(f"\n  best layer {best} (final {len(tail_layers)} excluded): "
+          f"recovery {br['real']:+.3f} CI95 [{bci[0]:+.3f}, {bci[1]:+.3f}]")
     print(f"    mismatched control at that layer: {br['mismatched']:+.3f}")
     print(f"    mean-vector       at that layer: {br['mean']:+.3f}")
+    if tail_layers:
+        print(f"    excluded (degenerate: overwrites the state that emits the "
+              f"answer token):")
+        for L in tail_layers:
+            rr = per_layer[L]["recovery"]
+            print(f"      layer {L}: real {rr['real']:+.3f}  "
+                  f"mismatched {rr['mismatched']:+.3f}")
+
+    # A layer where the mismatched control also recovers is not evidence of
+    # anything: it means patching that position helps regardless of content.
+    degenerate = [L for L in candidates
+                  if per_layer[L]["recovery"]["mismatched"] > 0.4]
+    if degenerate:
+        print(f"\n  [!] mismatched also recovers > 0.4 at layers {degenerate}. "
+              f"Patching there\n      helps whatever vector is used, so those "
+              f"layers carry no information about the skill.")
 
     print(f"\n  reading it:")
     margin = br["real"] - br["mismatched"]
