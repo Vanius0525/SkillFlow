@@ -105,12 +105,31 @@ fi
 DEV_MODEL=${WB_DEV_MODEL:-Qwen/Qwen3-1.7B}
 if [ $DO_DOWNLOAD -eq 1 ]; then
   echo "  下载开发用小模型 $DEV_MODEL ..."
-  echo "  (HF_ENDPOINT=${HF_ENDPOINT:-<未设>})"
+  echo "  HF_ENDPOINT=${HF_ENDPOINT:-<未设 —— 会直连 huggingface.co,国内通常很慢>}"
   python -m pip show huggingface_hub >/dev/null 2>&1 || \
     python -m pip install --root-user-action=ignore huggingface_hub 2>&1 | tail -1
-  huggingface-cli download "$DEV_MODEL" --local-dir "$REPO/models/$(basename "$DEV_MODEL")" \
+
+  # hf_transfer 做分块并行下载。默认的单流实现在这台机器上跑出过 230kB/s,
+  # 3.4GB 要四个小时;开了之后通常是十倍量级的差别。装不上就照旧,不致命。
+  if python -c "import hf_transfer" >/dev/null 2>&1; then
+    ok "hf_transfer 可用(并行分块下载)"
+  else
+    echo "  装 hf_transfer 加速..."
+    python -m pip install --root-user-action=ignore hf_transfer 2>&1 | tail -1
+  fi
+  export HF_HUB_ENABLE_HF_TRANSFER=1
+
+  huggingface-cli download "$DEV_MODEL" \
+      --local-dir "$REPO/models/$(basename "$DEV_MODEL")" --max-workers 8 \
     && ok "已下载到 models/$(basename "$DEV_MODEL")" \
-    || bad "下载失败 —— Qwen3 不是 gated,失败多半是网络/HF_ENDPOINT"
+    || {
+      bad "下载失败或过慢 —— Qwen3 不是 gated,问题在网络"
+      hint "export HF_ENDPOINT=https://hf-mirror.com"
+      hint "或走 ModelScope(Qwen 是阿里的模型,国内带宽通常好得多):"
+      hint "  pip install modelscope"
+      hint "  modelscope download --model Qwen/Qwen3-1.7B --local_dir models/Qwen3-1.7B"
+      hint "或干脆用更小的 WB_DEV_MODEL=Qwen/Qwen3-0.6B —— 自检不关心模型好坏"
+    }
 else
   hint "开发用小模型: $0 --download   (默认 $DEV_MODEL,改用 WB_DEV_MODEL=...)"
 fi
