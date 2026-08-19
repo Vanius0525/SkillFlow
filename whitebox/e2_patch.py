@@ -237,26 +237,52 @@ def main():
             rows.append({"id": b["id"], "lp_real": real, "lp_mismatched": mism,
                          "lp_mean": meanp, "lp_no": b["lp_no"], "lp_yes": b["lp_yes"]})
 
+        # Ratio of MEANS, not the mean of per-item ratios.
+        #
+        # Per item the denominator is that item's own skill effect, which can be
+        # near zero, so one item with a tiny denominator and a large numerator
+        # dominates the average. Aggregating first is the standard form in the
+        # patching literature and is bounded by the data rather than by the
+        # smallest denominator in it.
         def recov(key):
-            out = []
-            for x in rows:
-                den = x["lp_yes"] - x["lp_no"]
-                if abs(den) > 1e-6:
-                    out.append((x[key] - x["lp_no"]) / den)
-            return out
+            num = sum(x[key] - x["lp_no"] for x in rows) / len(rows)
+            den = sum(x["lp_yes"] - x["lp_no"] for x in rows) / len(rows)
+            return num / den if abs(den) > 1e-6 else float("nan")
 
-        rec = {k: recov(f"lp_{k}") for k in ("real", "mismatched", "mean")}
+        def recov_boot(key, n=2000, seed=0):
+            rng = random.Random(seed)
+            k = len(rows)
+            out = []
+            for _ in range(n):
+                s = [rows[rng.randrange(k)] for _ in range(k)]
+                num = sum(x[key] - x["lp_no"] for x in s) / k
+                den = sum(x["lp_yes"] - x["lp_no"] for x in s) / k
+                if abs(den) > 1e-6:
+                    out.append(num / den)
+            out.sort()
+            return (out[int(0.025 * len(out))], out[int(0.975 * len(out))]) if out \
+                else (float("nan"), float("nan"))
+
+        # An injected vector can push the forward pass off-manifold entirely, and
+        # a logprob of -800 is a broken run rather than a low score. Counting them
+        # keeps that distinct from "this condition recovers little".
+        def destroyed(key):
+            return sum(1 for x in rows if x[key] < x["lp_no"] - 20)
+
+        keys = ("real", "mismatched", "mean")
         per_layer[L] = {
             "layer": L, "rows": rows,
-            "recovery": {k: (sum(v) / len(v) if v else float("nan"))
-                         for k, v in rec.items()},
-            "ci95": {k: bootstrap_ci(v) for k, v in rec.items()},
+            "recovery": {k: recov(f"lp_{k}") for k in keys},
+            "ci95": {k: recov_boot(f"lp_{k}") for k in keys},
+            "destroyed": {k: destroyed(f"lp_{k}") for k in keys},
         }
         el = time.time() - t0
         rr = per_layer[L]["recovery"]
+        dd = per_layer[L]["destroyed"]
+        broke = "".join(f" [{k[:4]}:{dd[k]} broken]" for k in dd if dd[k])
         print(f"    layer {L:>3}  real {rr['real']:+.3f}  "
               f"mismatched {rr['mismatched']:+.3f}  mean {rr['mean']:+.3f}"
-              f"   [{n+1}/{len(layers)}, {el:.0f}s]", flush=True)
+              f"{broke}   [{n+1}/{len(layers)}, {el:.0f}s]", flush=True)
 
     # ---- report ------------------------------------------------------------
     with io.open(out_dir / "per_layer.jsonl", "w", encoding="utf-8", newline="\n") as f:
