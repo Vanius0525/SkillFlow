@@ -377,6 +377,48 @@ python run_inspect_gaia.py eval inspect_evals/gaia_level1 \
 
 ---
 
+## 8.5 待处理：对比里 skill 这个变量没有被隔离
+
+**记录于 2026-08-19，之后处理。**
+
+核过代码：`run_smolagents_gaia.py` **完全不注入 skill**，全文只有 `from skillflow
+import load_gaia_tasks`（共用题目加载器）。所以三家现在是这样：
+
+| | JSON 工具调用 | Python 代码动作 |
+|---|---|---|
+| **无 skill** | inspect（**目前被 web_browser 卡住**） | smolagents |
+| **有 skill** | SkillFlow | 空缺 |
+
+smolagents 那一格是**有意**只隔离 CodeAct 轴的（见 `run_smolagents_gaia.py` 头部：
+CodeAct 论文报告光动作格式就值约 20 点）。但结果是 SkillFlow vs smolagents 同时
+变了两个东西：
+
+```
+SkillFlow  = 有 skill + JSON 工具调用
+smolagents = 无 skill + Python 代码动作
+```
+
+**SkillFlow 赢了分不清是不是 skill 的功劳；smolagents 赢了分不清是不是 CodeAct。**
+
+### 这让修 inspect 的价值变了
+
+inspect 是"react agent + JSON 工具 + 无 skill"，正好落在左上角那格。**它不只是
+第三个参照，它是补齐 2×2 的那一块。** §5 那个 `web_browser` 问题因此比原先看起来
+更值得解决。
+
+### 还差一个更省事的臂
+
+`skillflow.py --framework plain` 存在，但它**仍然注入 skill**（一次性 top-k、整
+文档注入），是编排方式的消融，**不是 skill 的消融**。
+
+最省事的补法是给 skillflow 加一个 `--no-skills` 臂：同一套工具、同一个契约、同一个
+循环，只是不注入 skill。那样"skill 值多少"就能在**同一个 scaffold 内部**读出来，
+不用跨 scaffold 比较——跨 scaffold 永远混着别的差异。
+
+**优先级建议**：`--no-skills` 臂 > 修 inspect。前者更便宜，而且它测的正是主线问题。
+
+---
+
 ## 9. 论文里必须声明的偏离
 
 1. **数据集**：上游的 eval，同一个 gated release 的**本地副本**，而不是按 pin 住
