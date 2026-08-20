@@ -2,11 +2,15 @@
 # 白盒实验流水线：按顺序把多个实验跑完,每个阶段一份日志,最后汇总成一页。
 #
 #   ./run-whitebox.sh --list            # 有哪些阶段,各自回答什么问题
+#   ./run-whitebox.sh --smoke --phase a # 几题几层跑通全流程（先做这个,一两分钟）
 #   ./run-whitebox.sh --phase a         # 第一梯：知识型 skill + 单步（1.7B,分钟级）
 #   ./run-whitebox.sh --phase b         # 第二梯：真实任务（8B,小时级）
 #   ./run-whitebox.sh --only e2-tierA   # 只跑一个阶段
 #   ./run-whitebox.sh --from e6-tierA   # 从某个阶段往后
-#   ./run-whitebox.sh --dry-run         # 只打印会跑什么
+#   ./run-whitebox.sh --skip e1-tierA   # 排除某个阶段（可重复）
+#   ./run-whitebox.sh --dry-run         # 只打印会跑什么,不产生任何文件
+#   ./run-whitebox.sh --force           # 忽略"已经跑过",重跑
+#   ./run-whitebox.sh --no-gate         # 跳过 Phase 0 门槛检查（分母你自己确认过）
 #
 # 服务器上没有 tmux,长跑用 nohup：
 #   nohup ./run-whitebox.sh --phase b > logs/wb-$(date +%m%d).log 2>&1 &
@@ -73,7 +77,8 @@ STAGES=(
   "e1-tierB-proc|b|流程型 skill 是不是只在早层被读一次"
 )
 
-PHASE=""; ONLY=""; FROM=""; SKIP=""; DRYRUN=0; FORCE=0; LIST=0
+PHASE=""; ONLY=""; FROM=""; SKIP=""; DRYRUN=0; FORCE=0; LIST=0; NOGATE=0
+SMOKE=0; FAILED=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --list)    LIST=1 ;;
@@ -84,6 +89,8 @@ while [ $# -gt 0 ]; do
     --config)  shift ;;
     --dry-run) DRYRUN=1 ;;
     --force)   FORCE=1 ;;
+    --no-gate) NOGATE=1 ;;
+    --smoke)   SMOKE=1 ;;
     -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
     *) echo "未知参数: $1（--help 看用法）" >&2; exit 1 ;;
   esac
@@ -120,10 +127,15 @@ sys.exit(0 if (acc or lp) else 1)
 PY
 }
 
-mkdir -p "$LOGS"
-[ -f "$STATUS" ] || printf "stage\tstatus\tseconds\tstarted\n" > "$STATUS"
+if [ $DRYRUN -eq 0 ]; then
+  mkdir -p "$LOGS"
+  [ -f "$STATUS" ] || printf "stage\tstatus\tseconds\tstarted\n" > "$STATUS"
+fi
 
-record() { printf "%s\t%s\t%s\t%s\n" "$1" "$2" "$3" "$(date '+%F %T')" >> "$STATUS"; }
+record() {
+  [ $DRYRUN -eq 1 ] && return 0
+  printf "%s\t%s\t%s\t%s\n" "$1" "$2" "$3" "$(date '+%F %T')" >> "$STATUS"
+}
 
 STAGE_N=0
 run_stage() {
@@ -150,6 +162,7 @@ run_stage() {
   if [ "$rc" -ne 0 ]; then
     echo "[$STAGE_N] FAIL  $name (exit $rc, $((t1-t0))s)"
     record "$name" "fail:$rc" "$((t1-t0))"
+    FAILED=$((FAILED+1))
     return "$rc"
   fi
   echo "[$STAGE_N] DONE  $name  ($((t1-t0))s)"
@@ -191,7 +204,7 @@ if command -v nvidia-smi >/dev/null 2>&1 && [ $DRYRUN -eq 0 ]; then
   fi
 fi
 
-{
+[ $DRYRUN -eq 0 ] && {
   echo "run_id     : $RUN_ID"
   echo "started    : $(date '+%F %T %z')"
   echo "git_commit : $(git -C "$REPO" rev-parse --short HEAD 2>/dev/null || echo '?')"
@@ -205,6 +218,19 @@ cd "$BASE" || exit 1
 A_TASKS=$BASE/tasks/tier_a/tasks.jsonl
 A_SKILL=$BASE/tasks/tier_a/SKILL.zorb-units.md
 B_TASKS=$BASE/tasks/tier_b/tasks.jsonl
+
+# --smoke：几道题、几层，跑通全流程用的。数字全是错的,唯一的问题是
+# "每一步会不会跑起来"。真跑之前先 smoke 一遍,比在第 40 分钟撞到一个
+# 参数拼错要便宜得多。
+A_LIMIT=(); E2_STEP=(); E1_GROUP=()
+if [ $SMOKE -eq 1 ]; then
+  A_LIMIT=(--limit 8); E2_N=4; E1_N=4; TIERB_N=8
+  E2_STEP=(--layer-step 8); E1_GROUP=(--group 8)
+  LAYER_STEP_B=8; GROUP_B=8
+  echo
+  echo "[smoke] 每个阶段只跑几题几层。这一轮的数字没有意义,看的是能不能跑通。"
+fi
+# 空数组在 set -u 下直接展开会报错(bash < 4.4),所以下面一律写成 ${a[@]+"${a[@]}"}
 
 for entry in "${STAGES[@]}"; do
   nm=$(name_of "$entry"); wh=$(what_of "$entry")
@@ -233,16 +259,16 @@ for entry in "${STAGES[@]}"; do
   e0-tierA)
     run_stage "$nm" "$wh" "$PY" "$BASE/e0_effect.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
-      --tasks "$A_TASKS" --skill "$A_SKILL" \
+      --tasks "$A_TASKS" --skill "$A_SKILL" ${A_LIMIT[@]+"${A_LIMIT[@]}"} \
       --mode mc --run-id "$RUN_ID/$nm"
-    if [ $DRYRUN -eq 0 ] && ! gate_ok "$OUT/$nm/summary.json"; then
+    if [ $DRYRUN -eq 0 ] && [ $NOGATE -eq 0 ] && ! gate_ok "$OUT/$nm/summary.json"; then
       echo
       echo "[!] Tier A 是**正对照**：这批题不查表答不出来,所以没有大效应"
       echo "    只有一个解释 —— 流水线坏了,不是假设错了。后面的层间实验先别看。"
     fi ;;
 
   errors-tierA)
-    mkdir -p "$OUT/$nm"
+    [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/$nm"
     run_stage "$nm" "$wh" "$PY" "$BASE/errors.py" \
       --per-item "$OUT/e0-tierA/per_item.jsonl" --tasks "$A_TASKS" \
       --out "$OUT/$nm/errors.json" ;;
@@ -251,35 +277,38 @@ for entry in "${STAGES[@]}"; do
     run_stage "$nm" "$wh" "$PY" "$BASE/e7_repr.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --probe family \
-      --run-id "$RUN_ID/$nm" ;;
+      ${A_LIMIT[@]+"${A_LIMIT[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   e6-tierA)
     run_stage "$nm" "$wh" "$PY" "$BASE/e6_counterfactual.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
-      --tasks "$A_TASKS" --flavour far --run-id "$RUN_ID/$nm" ;;
+      --tasks "$A_TASKS" --flavour far ${A_LIMIT[@]+"${A_LIMIT[@]}"} \
+      --run-id "$RUN_ID/$nm" ;;
 
   e6-tierA-near)
     run_stage "$nm" "$wh" "$PY" "$BASE/e6_counterfactual.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
-      --tasks "$A_TASKS" --flavour near --run-id "$RUN_ID/$nm" ;;
+      --tasks "$A_TASKS" --flavour near ${A_LIMIT[@]+"${A_LIMIT[@]}"} \
+      --run-id "$RUN_ID/$nm" ;;
 
   e2-tierA)
     run_stage "$nm" "$wh" "$PY" "$BASE/e2_patch.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E2_N" \
-      --run-id "$RUN_ID/$nm" ;;
+      ${E2_STEP[@]+"${E2_STEP[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   e2-tierA-k4)
     run_stage "$nm" "$wh" "$PY" "$BASE/e2_patch.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E2_N" \
-      --tail-k "$TAIL_K" --run-id "$RUN_ID/$nm" ;;
+      ${E2_STEP[@]+"${E2_STEP[@]}"} --tail-k "$TAIL_K" \
+      --run-id "$RUN_ID/$nm" ;;
 
   e1-tierA)
     run_stage "$nm" "$wh" "$PY" "$BASE/e1_knockout.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E1_N" \
-      --run-id "$RUN_ID/$nm" ;;
+      ${E1_GROUP[@]+"${E1_GROUP[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   e0-tierB-const|e0-tierB-proc)
     sk=pchem-constants; [ "$nm" = "e0-tierB-proc" ] && sk=pchem-procedure
@@ -302,10 +331,11 @@ for entry in "${STAGES[@]}"; do
     filtered=$BASE/tasks/tier_b/tasks.filtered.$sk.jsonl
     # 层间实验的分母是行为效应。分母是噪声时,恢复率不是"小",是没有定义 ——
     # 所以门槛没过就跳过,而不是照跑然后在报告里解释。
-    if [ $DRYRUN -eq 0 ] && ! gate_ok "$OUT/e0-tierB-${nm##*-}/summary.json"; then
+    if [ $DRYRUN -eq 0 ] && [ $NOGATE -eq 0 ] && ! gate_ok "$OUT/e0-tierB-${nm##*-}/summary.json"; then
       echo
-      echo "[跳过] $nm —— $sk 没过 Phase 0 门槛（或还没跑）。"
+      echo "[跳过] $nm —— $sk 没过 Phase 0 门槛（或这个 RUN_ID 下还没跑过 e0）。"
       echo "        层间实验的因变量差值是恢复率的分母,分母是噪声时那个比值没有定义。"
+      echo "        确实想跑（比如分母是在别的 run 里确认的）: 加 --no-gate"
       record "$nm" skipped-gate 0
       continue
     fi
@@ -341,5 +371,12 @@ if [ $DRYRUN -eq 0 ]; then
   "$PY" "$BASE/report.py" "$OUT"
   echo
   echo " 单独再看一次汇总: $PY report.py results/$RUN_ID"
+  if [ $FAILED -gt 0 ]; then
+    echo
+    echo " [!] $FAILED 个阶段失败,日志在 results/$RUN_ID/logs/。"
+    echo "     修完之后重跑同一个 RUN_ID 就行,跑成功的阶段会跳过:"
+    echo "       RUN_ID=$RUN_ID $0 ${ARGS[*]}"
+  fi
 fi
 echo "=============================================================="
+[ $FAILED -eq 0 ] || exit 1

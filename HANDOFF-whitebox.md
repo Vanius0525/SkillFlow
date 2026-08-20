@@ -1387,10 +1387,15 @@ Tier A 的干扰项本来就编码了这个区分（错表 = 选择，错行 = �
 ```bash
 cp whitebox.conf.example whitebox.conf     # 改模型路径，一次就好
 ./run-whitebox.sh --list                   # 有哪些阶段，各自回答什么问题
+./run-whitebox.sh --smoke --phase a        # 几题几层跑通全流程，一两分钟
 ./run-whitebox.sh --phase a                # 梯队 0 + a，1.7B，十几分钟
 nohup ./run-whitebox.sh --phase b > logs/wb.log 2>&1 &     # 梯队 b，长跑
 python report.py results/<run-id>          # 汇总成一页
 ```
+
+服务器上完整的一串（含 `source env.sh`、`git lfs pull`、让开显存、跑完把 vLLM
+放回去）见 [`whitebox/README.md`](whitebox/README.md) 的「远程那台机器上：从零到
+出结果」。
 
 设计上的三个决定：
 
@@ -1399,6 +1404,9 @@ python report.py results/<run-id>          # 汇总成一页
 - **门槛是硬的**。自检不过直接退出；Tier B 的层间实验在对应的 Phase 0 门槛没过时
   **跳过并说明原因**，而不是照跑然后在报告里解释——恢复率的分母是行为效应差值，
   分母是噪声时那个比值没有定义。
+- **`--smoke` 是真跑之前的那一步**。每阶段几题几层，一两分钟走完 11 个阶段；
+  这一轮的数字全是错的，它验的是"每一步会不会跑起来"。在第 40 分钟撞到一个拼错的
+  参数，比这贵得多。
 - **最后跑 `report.py`**。它做的不只是汇总：**交叉校验只有把几个结果放在同一页上
   才做得出来**（E2 说压得进 + E1 说中后层持续依赖 = 矛盾；E6 说在逐行读表 +
   E1 说没有哪一层依赖 = E1 坏了）。

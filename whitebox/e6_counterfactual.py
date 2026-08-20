@@ -132,7 +132,11 @@ def prepare(items, flavour, true_banned):
         if not (clean(gold_true) and clean(gold_cf)):
             skipped["not_clean"] += 1
             continue
-        if round(gold_true) == round(gold_cf):
+        # The two values have to be separated by more than the scorer's own
+        # tolerance, several times over. num_correct accepts 2% error, so two
+        # golds 1% apart would both match the same answer and "which one did it
+        # follow" would have no answer -- silently, as a stable-looking number.
+        if abs(gold_cf - gold_true) <= 0.10 * max(abs(gold_true), 1.0):
             skipped["same_answer"] += 1
             continue
         cf_body = RS.render(fams)

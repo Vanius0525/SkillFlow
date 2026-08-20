@@ -60,6 +60,62 @@ cd /inspire/qb-dev/project/multi-agent/czxs253130660/agent-harness/whitebox
 ./setup-whitebox.sh --install --download
 ```
 
+### 远程那台机器上：从零到出结果
+
+这台是 Inspire 的 4090（48GB）容器。`/root` 每次重启都会被清空,持久目录是
+`$BASE`,所以第一条命令永远是 `source env.sh`。
+
+```bash
+BASE=/inspire/qb-dev/project/multi-agent/czxs253130660/agent-harness
+source $BASE/env.sh                 # venv、HF 镜像、PATH 都在这里面
+
+# 1. 同步代码。注意 git lfs pull —— reset --hard 不会更新 LFS 内容,
+#    少了它 SciBench 的 parquet 是 131 字节的指针,Tier B 会莫名其妙地空
+cd $BASE && git fetch && git reset --hard origin/master && git lfs pull
+
+# 2. 让开显存。vLLM 按 gpu_memory_utilization 预留,不管用不用得上
+$BASE/run-server.sh stop
+
+# 3. 体检（只检查,一个包都不装）
+cd $BASE/whitebox
+./setup-whitebox.sh
+#    缺依赖 / 缺小模型时再加参数,torch 无论如何不由它安装或升级：
+#    ./setup-whitebox.sh --install --download
+
+# 4. 配置（只做一次；这个文件不进 git）
+cp whitebox.conf.example whitebox.conf
+$EDITOR whitebox.conf               # 确认 WB_DEV_MODEL / WB_MAIN_MODEL 路径
+
+# 5. 先 smoke 一遍：每阶段几题几层,一两分钟,数字没意义,看能不能跑通
+./run-whitebox.sh --smoke --phase a
+
+# 6. 真跑梯队 a（1.7B,十几分钟,可以在前台看）
+./run-whitebox.sh --phase a
+
+# 7. 梯队 b（8B,小时级）。容器里没有 tmux,所以 nohup
+mkdir -p logs
+nohup ./run-whitebox.sh --phase b > logs/wb-$(date +%m%d).log 2>&1 &
+tail -f logs/wb-*.log
+
+# 8. 汇总（随时可以再看一次,不用重跑）
+python report.py results/<run-id>
+
+# 9. 跑完把 vLLM 放回去（黑盒那批实验要用）
+$BASE/run-server.sh start
+```
+
+几条这台机器上的具体注意事项：
+
+- **不要往终端里粘贴多行内容**（heredoc 在这个终端里会被吃掉字符）。所有脚本和
+  文档都在仓库里,用 `git` 同步,不要手工粘。
+- **中断了不用从头开始**：`RUN_ID=<上次那个> ./run-whitebox.sh --phase a`,已经有
+  `summary.json` 的阶段会跳过。run id 就是 `results/` 下的目录名。
+- **显存不够时**先降 `WB_E1_LIMIT`,不要降 `WB_TIERB_GROUP`——分组只影响一次敲几层,
+  不省显存。E1 的 prompt 同时含 skill 和等长填充文档,是全流程里最长的。
+- **只想重跑某一个阶段**：`./run-whitebox.sh --only e2-tierA --force`（不带
+  `--force` 会因为已有结果而跳过）。
+- 梯队 a 用 1.7B,可以和 vLLM 共存;梯队 b 用 8B,一定要先 stop。
+
 ### 一条命令跑完一梯队
 
 ```bash
@@ -78,6 +134,8 @@ python report.py results/<run-id>        # 随时再看一次汇总
 | `--only NAME` / `--from NAME` / `--skip NAME` | 单跑 / 从某阶段起 / 排除某阶段 |
 | `--dry-run` | 只打印会执行的命令 |
 | `--force` | 忽略"已经跑过"，重跑 |
+| `--smoke` | 每阶段几题几层，一两分钟跑通全流程（数字无意义，只验能不能跑）|
+| `--no-gate` | 跳过 Phase 0 门槛检查（分母是在别的 run 里确认的时候用）|
 | `RUN_ID=xxx` | 接着上次那个 run 继续（默认按时间戳新建）|
 
 **断点续跑是默认行为**：某阶段的 `summary.json` 已经在了就跳过，所以中断之后重跑

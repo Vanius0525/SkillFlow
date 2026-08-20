@@ -143,6 +143,10 @@ echo "--- 4. 任务集(应当和生成器一致)---"
   || bad "Tier A 任务集和生成器对不上"
 ( cd "$BASE/tasks/tier_b" && python build.py --check ) 2>&1 | sed 's/^/  /' \
   || bad "Tier B 任务集和生成器对不上(SciBench 数据在不在?git lfs pull)"
+# 渲染器:E6 的反事实文档是从同一张表渲染出来的。渲染器和仓库里那份 skill 一旦
+# 对不上,"两份文档只差一个因子"就不再成立,而这件事不会有任何报错。
+( cd "$BASE/tasks/tier_a" && python render_skill.py --check ) 2>&1 | sed 's/^/  /' \
+  || bad "SKILL.zorb-units.md 和渲染器对不上 —— E6 的前提不成立"
 
 # --- 5. 污染检查 -----------------------------------------------------------
 echo
@@ -156,26 +160,18 @@ echo " 通过 $PASS,警告 $WARN,失败 $FAILN"
 if [ $FAILN -eq 0 ]; then
 cat <<EOF
 
- 下一步,按顺序:
+ 下一步:用流水线跑,不用手敲每个命令。
 
-   1. 自检(先在小模型上,秒级):
-        python selftest.py --model $REPO/models/$(basename "$DEV_MODEL")
-      九项全过才往下走。任何一项失败都意味着干预代码是坏的 ——
-      坏的干预照样出数字,只是没有意义。
+   cp whitebox.conf.example whitebox.conf   # 改模型路径,一次就好
+   ./run-whitebox.sh --list                 # 有哪些阶段、各自回答什么问题
+   ./run-whitebox.sh --phase a              # 梯队 0+a: $(basename "$DEV_MODEL"),十几分钟
+   nohup ./run-whitebox.sh --phase b > logs/wb.log 2>&1 &    # 梯队 b: 8B,长跑
 
-   2. Tier A 正对照(skill 必然有用,效应必然大):
-        python e0_effect.py --model $REPO/models/$(basename "$DEV_MODEL") \\
-          --tasks tasks/tier_a/tasks.jsonl \\
-          --skill tasks/tier_a/SKILL.zorb-units.md \\
-          --mode mc --run-id tierA-dev
-      这里没有大效应 = 流水线坏了,不是假设错了。
+ 中断了直接重跑同一个 RUN_ID,已经跑完的阶段自动跳过:
+   RUN_ID=<上次那个> ./run-whitebox.sh --phase a
 
-   3. Tier B 效应筛查(真实问题所在):
-        python e0_effect.py --model $REPO/models/Qwen3-8B \\
-          --tasks tasks/tier_b/tasks.jsonl \\
-          --skill tasks/tier_b/SKILL.pchem-constants.md \\
-          --mode num --limit 120 --run-id tierB-const-8b \\
-          --filter-known tasks/tier_b/tasks.filtered.jsonl
+ 汇总(随时可以再看一次):
+   python report.py results/<run-id>
 
  细节见 README.md,研究设计见 ../HANDOFF-whitebox.md
 EOF
