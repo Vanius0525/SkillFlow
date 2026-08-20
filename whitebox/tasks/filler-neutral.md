@@ -79,3 +79,60 @@ changed between the original and revision A do not.
   a document reproduces external material verbatim.
 - Where two rules conflict, the rule appearing later in this document governs.
 - Queries about house style go to the archive, not to the depositor.
+
+## Citation of Deposited Material
+
+A deposited document is cited by depositor code, sequence, and revision letter,
+in that order, followed by the deposit date in parentheses. The title is not
+part of the citation. A citation to a superseded revision keeps that revision's
+letter; it is never silently updated to the current one.
+
+| Element | Included | Note |
+| ------- | -------- | ---- |
+| depositor code | yes | as deposited, never expanded |
+| sequence | yes | zero padded, as deposited |
+| revision letter | yes | the revision actually consulted |
+| deposit date | yes | in parentheses, written out |
+| title | no | consult the catalogue instead |
+| page or section | only for a quotation | after the date, preceded by a comma |
+
+## Physical Deposit
+
+Paper deposits are accepted unbound, single sided, with no staples or adhesive
+fixings. A cover sheet repeating the header block accompanies each paper
+deposit; the cover sheet is not part of the document and carries no revision
+mark. Oversize sheets are folded to the standard size along the right edge
+only, so that the binding margin remains free.
+
+## Access Copies
+
+An access copy is produced from the deposited original and carries a footer
+naming the copy date. Access copies are not themselves deposited and are not
+given a sequence. Where an access copy is annotated by a reader, the annotated
+copy is retained with the correspondence rather than with the document.
+
+## Checking Before Deposit
+
+Work through the following before a document is presented at the archive:
+
+1. Confirm the name matches the assembled prefix, sequence, and revision.
+2. Confirm the header block has all five elements, in order, unindented.
+3. Confirm the margins, leading, and paragraph spacing against the table above.
+4. Confirm marginal bars mark only passages changed in the current cycle.
+5. Confirm appended material appears in the prescribed order, each section
+   restarting its own numbering.
+6. Confirm the revision note records deletions, which carry no marginal mark.
+
+A document failing any of these is returned to the depositor with the failing
+item named. The archive does not correct a deposit on the depositor's behalf.
+
+## Frequent Reasons for Return
+
+| Reason | Rule concerned |
+| ------ | -------------- |
+| sequence not padded to five digits | file naming |
+| revision letter omitted from the header block | header block |
+| first-line indent used in place of paragraph spacing | margins and spacing |
+| bars retained from an earlier revision cycle | revision marks |
+| correspondence ordered by reference rather than by date | order of appended material |
+| access copy presented in place of the original | access copies |

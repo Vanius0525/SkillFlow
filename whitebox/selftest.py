@@ -21,10 +21,13 @@ plausible-looking numbers:
   5  knockout          a 4D mask actually blocks attention. Catches the sdpa
                        path ignoring the custom mask.
   6  span location     find_span returns a span that decodes back to the needle
+  6b whole document    the span of a full skill body reaches the END of it. A
+                       prefix span covers only the frontmatter, so the knockout
+                       blocks the skill's description and leaves its content
+                       readable -- and reports a flat curve for it
   7  logprob sanity    a plausible continuation scores above an implausible one
 
-Nine checks. Run on the smallest model available; it is seconds there and
-minutes at 8B.
+Run on the smallest model available; it is seconds there and minutes at 8B.
 
     python selftest.py --model Qwen/Qwen3-1.7B
 """
@@ -32,6 +35,7 @@ minutes at 8B.
 from __future__ import annotations
 
 import argparse
+import pathlib
 import re
 
 import torch
@@ -161,6 +165,37 @@ def main():
         check("find_span covers the needle", ok, f"span={span} decodes to {got!r}")
     else:
         check("find_span covers the needle", False, "needle not found")
+
+    # --- 6b. span location over a WHOLE document -------------------------
+    # E1 blocks the entire skill body, so the span has to reach the end of the
+    # document, not just its opening. The bug this guards produced no error and
+    # no warning: locating a 400-character prefix returned a span covering the
+    # YAML frontmatter -- the description of the skill -- while the conversion
+    # table it describes stayed visible at every layer. A knockout that blocks
+    # nothing relevant reports a flat curve, and a flat curve reads as "no layer
+    # depends on the skill".
+    print("\n6b. span location over a whole document")
+    skill_path = pathlib.Path(__file__).resolve().parent / "tasks" / "tier_a" / \
+        "SKILL.zorb-units.md"
+    if not skill_path.exists():
+        check("whole-document span", False, f"missing {skill_path}")
+    else:
+        body = skill_path.read_text(encoding="utf-8").strip()
+        doc_ids = M.encode(r, M.render(r, M.build_messages(
+            "What is 2+2?", M.load_skill(skill_path), "num")))
+        dspan = M.find_span(r, doc_ids, body)
+        if dspan is None:
+            check("whole-document span located", False, "body not found in prompt")
+        else:
+            got = r.tok.decode(doc_ids[0, dspan[0]:dspan[1]],
+                               skip_special_tokens=False)
+            first, last = body.splitlines()[0], body.splitlines()[-1]
+            check("whole-document span located", True,
+                  f"{dspan[1] - dspan[0]} tokens")
+            check("span reaches the end of the document", last in got,
+                  f"last line {last[:40]!r} missing -- span stops early")
+            check("span starts at the document", first in got,
+                  f"first line {first[:40]!r} missing")
 
     # --- 7. logprob sanity ------------------------------------------------
     print("\n7. logprob sanity")

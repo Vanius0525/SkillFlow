@@ -18,9 +18,24 @@ skill, and every layer is measured twice:
 Only `net` is interpretable. Reporting `effect` alone would credit the skill for
 damage that blocking any span of that length does.
 
-Both spans are blocked at exactly the same token count -- the shorter of the two
--- so the control is matched by construction rather than by the two documents
-happening to be a similar length.
+Two things the control has to get right, both of which were wrong here once:
+
+  what is blocked   The ENTIRE skill body, not a prefix of it. An earlier
+                    version located the span of the first 400 characters, which
+                    for every skill in this repo is the YAML frontmatter and the
+                    opening heading -- the conversion table, the constants and
+                    the decision procedure all sat outside the blocked span. That
+                    version could only have reported "no layer depends on the
+                    skill", and it would have looked like a finding.
+  where it sits     Blocking an early span is not the same perturbation as
+                    blocking a late one, so with a fixed document order the
+                    position of the two documents is confounded with their
+                    content. Items alternate which document comes first, and the
+                    two halves are reported separately at the peak.
+
+The filler is blocked at exactly the skill's token count, taken from the filler's
+start. That requires the filler to be the longer document; if it is not, the run
+stops rather than quietly shrinking the skill side to match.
 
 Read it against E2. If E2 showed the effect compresses into a vector, E1 is a
 check and the interesting layers should be early. If E2 showed it does not, E1 is
@@ -120,6 +135,10 @@ def main():
     ap.add_argument("--limit", type=int, default=40)
     ap.add_argument("--group", type=int, default=1,
                     help="layers knocked out together; 4 for a coarse first pass")
+    ap.add_argument("--order", choices=["alternate", "skill-first", "filler-first"],
+                    default="alternate",
+                    help="document order in the prompt; alternate counterbalances "
+                         "it across items so position is not confounded with content")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
@@ -136,8 +155,14 @@ def main():
     # Both documents are in the prompt for every measurement, so the two
     # conditions differ only in which span is blocked -- not in what the model
     # was given to read.
-    combined = (f"\n# Skill: {skill_name}\n\n{skill_body}"
-                f"\n# Skill: archive-formatting\n\n{filler_body}")
+    skill_doc = f"\n# Skill: {skill_name}\n\n{skill_body}"
+    filler_doc = f"\n# Skill: archive-formatting\n\n{filler_body}"
+
+    def combined_for(i: int) -> tuple[str, str]:
+        skill_first = (args.order == "skill-first" or
+                       (args.order == "alternate" and i % 2 == 0))
+        docs = (skill_doc, filler_doc) if skill_first else (filler_doc, skill_doc)
+        return docs[0] + docs[1], ("skill_first" if skill_first else "filler_first")
 
     r = M.load(args.model, device=args.device)
     groups = [list(range(i, min(i + args.group, r.n_layers)))
@@ -147,30 +172,45 @@ def main():
     print(f"tasks  : {args.tasks}  ({len(items)} items, mode={args.mode})")
     print(f"skill  : {args.skill}")
     print(f"filler : {FILLER.name}")
+    print(f"order  : {args.order}")
     print(f"groups : {len(groups)} x {args.group} layers of {r.n_layers}")
     print(f"run id : {run_id}\n")
     M.write_run_info(out_dir, r, {
         "experiment": "e1_knockout", "run_id": run_id, "tasks": str(args.tasks),
         "skill": str(args.skill), "filler": str(FILLER), "mode": args.mode,
-        "n_items": len(items), "group": args.group, "dv": "answer_logprob",
+        "n_items": len(items), "group": args.group, "order": args.order,
+        "dv": "answer_logprob",
     })
 
     # ---- pass 1: locate both spans, and the unblocked baseline ------------
+    #
+    # The needle is the WHOLE document body. Blocking a prefix of it answers a
+    # question nobody asked: in every skill here the first few hundred
+    # characters are frontmatter, so a prefix span contains the description and
+    # none of the content the answer depends on.
     print("[1/2] spans + baseline")
     base, dropped = [], 0
-    for it in items:
+    for i, it in enumerate(items):
         q, gold, unit = fields(it, args.mode)
+        combined, order = combined_for(i)
         ids = M.encode(r, M.render(r, M.build_messages(q, combined, args.mode, unit)))
-        s_span = M.find_span(r, ids, skill_body[:400])
-        f_span = M.find_span(r, ids, filler_body[:400])
+        s_span = M.find_span(r, ids, skill_body.strip())
+        f_span = M.find_span(r, ids, filler_body.strip())
         if s_span is None or f_span is None:
             dropped += 1
             continue
-        # match the blocked width exactly, so the control differs only in content
-        width = min(s_span[1] - s_span[0], f_span[1] - f_span[0])
+        width = s_span[1] - s_span[0]                  # the whole skill body
+        if f_span[1] - f_span[0] < width:
+            print(f"  [FAIL] the filler is shorter than the skill "
+                  f"({f_span[1] - f_span[0]} vs {width} tokens). The control "
+                  f"cannot be\n         width-matched without truncating the "
+                  f"skill, which would leave its\n         content unblocked. "
+                  f"Lengthen {FILLER.name} and re-run.")
+            raise SystemExit(1)
         lp0, _ = logprob_blocked(r, ids, gold)
         base.append({"id": it["id"], "gold": gold, "ids": ids, "lp0": lp0,
-                     "skill": (s_span[0], s_span[0] + width),
+                     "order": order,
+                     "skill": (s_span[0], s_span[1]),
                      "filler": (f_span[0], f_span[0] + width),
                      "width": width})
     if dropped:
@@ -178,14 +218,18 @@ def main():
               f"tokenised prompt")
     if not base:
         print("  [FAIL] no usable items"); raise SystemExit(1)
-    print(f"  blocked width: {base[0]['width']} tokens "
-          f"(matched between skill and filler)")
+    n_first = sum(1 for b in base if b["order"] == "skill_first")
+    print(f"  blocked width: {base[0]['width']} tokens -- the entire skill body, "
+          f"matched\n                 against the same count from the filler")
+    print(f"  document order: {n_first} skill-first, {len(base) - n_first} "
+          f"filler-first")
 
     # ---- pass 2: the sweep -------------------------------------------------
     print("\n[2/2] layer sweep")
     per_group, t0 = {}, time.time()
     for gi, g in enumerate(groups):
         eff, ctl, net = [], [], []
+        by_order = {"skill_first": [], "filler_first": []}
         fired_total = 0
         for b in base:
             lp_s, f1 = logprob_blocked(r, b["ids"], b["gold"], g, [b["skill"]])
@@ -193,6 +237,7 @@ def main():
             fired_total += (f1 or 0) + (f2 or 0)
             e, c = b["lp0"] - lp_s, b["lp0"] - lp_f
             eff.append(e); ctl.append(c); net.append(e - c)
+            by_order[b["order"]].append(e - c)
 
         if fired_total == 0:
             print(f"  [FAIL] layers {g[0]}-{g[-1]}: the knockout hook never fired.")
@@ -206,6 +251,8 @@ def main():
             "control": sum(ctl) / len(ctl),
             "net": sum(net) / len(net),
             "net_ci95": bootstrap_ci(net),
+            "net_by_order": {k: (sum(v) / len(v) if v else float("nan"))
+                             for k, v in by_order.items()},
         }
         d = per_group[gi]
         el = time.time() - t0
@@ -230,7 +277,10 @@ def main():
         "net": nets, "effect": effs, "control": ctls,
         "best_layers": bd["layers"], "best_net": bd["net"],
         "best_net_ci95": list(bd["net_ci95"]),
+        "best_net_by_order": bd["net_by_order"],
         "blocked_width_tokens": base[0]["width"],
+        "order": args.order,
+        "n_skill_first": n_first,
     }
     (out_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -244,6 +294,16 @@ def main():
     print(f"\n  peak: layers {bd['layers'][0]}-{bd['layers'][-1]}  "
           f"net {bd['net']:+.3f} CI95 "
           f"[{bd['net_ci95'][0]:+.3f}, {bd['net_ci95'][1]:+.3f}]")
+
+    # The two document orders are the same measurement with the two spans swapped
+    # in position. They should agree; if they do not, what the peak is tracking is
+    # where the blocked span sits, not what is in it.
+    bo = bd["net_by_order"]
+    sf, ff = bo["skill_first"], bo["filler_first"]
+    print(f"    by document order: skill-first {sf:+.3f}, filler-first {ff:+.3f}")
+    if sf == sf and ff == ff and (sf > 0) != (ff > 0):
+        print("    [!] The two orders disagree in sign. Position, not content, is")
+        print("        driving this -- do not read the peak as a skill-reading site.")
 
     print("\n  reading it:")
     if bd["net_ci95"][0] <= 0:

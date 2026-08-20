@@ -39,6 +39,7 @@ import io
 import json
 import pathlib
 import random
+import re
 import time
 
 import torch
@@ -71,11 +72,17 @@ def run_condition(r, items, skill, mode, max_new):
         lp = M.answer_logprob(r, ids, gold)
 
         if mode == "mc":
-            ok = M.extract_mc(text) == gold
+            pred = M.extract_mc(text)
+            ok = pred == gold
         else:
-            ok = M.num_correct(M.extract_num(text), float(gold))
+            pred = M.extract_num(text)
+            ok = M.num_correct(pred, float(gold))
 
+        # Whether an answer was found at all, kept separate from whether it was
+        # right. A model that answers in prose scores zero and looks like a model
+        # that answers wrongly; the two call for completely different fixes.
         out.append({"id": it["id"], "correct": bool(ok), "logprob": lp,
+                    "parsed": pred is not None, "pred": None if pred is None else str(pred),
                     "raw": text.strip()[:200], "gold": gold,
                     "n_prompt_tokens": int(ids.shape[1])})
         if (i + 1) % 20 == 0:
@@ -83,6 +90,17 @@ def run_condition(r, items, skill, mode, max_new):
             print(f"    {i+1}/{len(items)}  {el:.0f}s  "
                   f"({el/(i+1):.1f}s/item)", flush=True)
     return out
+
+
+def chance_level(items, mode):
+    """Accuracy a model gets by guessing. None when there is nothing to guess from."""
+    if mode != "mc":
+        return None
+    letters = set()
+    for it in items[:20]:
+        q = it.get("question_mc") or it.get("question") or ""
+        letters |= set(re.findall(r"(?m)^\s*([A-Z])[.)]\s", q))
+    return 1.0 / len(letters) if letters else None
 
 
 def paired_bootstrap(a, b, n=5000, seed=0):
@@ -147,6 +165,10 @@ def main():
     b = sum(1 for x, y in zip(no, yes) if not x["correct"] and y["correct"])
     c = sum(1 for x, y in zip(no, yes) if x["correct"] and not y["correct"])
 
+    parse_no = sum(x["parsed"] for x in no) / len(no)
+    parse_yes = sum(x["parsed"] for x in yes) / len(yes)
+    chance = chance_level(items, args.mode)
+
     with io.open(out_dir / "per_item.jsonl", "w", encoding="utf-8", newline="\n") as f:
         for x, y in zip(no, yes):
             f.write(json.dumps({"id": x["id"], "gold": x["gold"],
@@ -164,6 +186,8 @@ def main():
         "mean_logprob_with_skill": sum(lp_yes) / len(lp_yes),
         "delta_logprob": d_lp, "delta_logprob_ci95": [lp_lo, lp_hi],
         "mcnemar_gained": b, "mcnemar_lost": c,
+        "parse_rate_no_skill": parse_no, "parse_rate_with_skill": parse_yes,
+        "chance_level": chance,
     }
     (out_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -176,7 +200,29 @@ def main():
           f"{summary['mean_logprob_with_skill']:.3f}   "
           f"delta {d_lp:+.3f}  CI95 [{lp_lo:+.3f}, {lp_hi:+.3f}]")
     print(f"  discordant gained {b}, lost {c}")
+    print(f"  answer found in output: {parse_no:.3f} without skill, "
+          f"{parse_yes:.3f} with"
+          + (f"   (chance = {chance:.3f})" if chance else ""))
     print(f"{'='*64}")
+
+    # A baseline below chance is not a hard task, it is an unparsed one: the
+    # model answered in a form the extractor does not recognise, and every such
+    # item counts as wrong. The delta then partly measures "the skill made the
+    # output parseable" (H3, formatting) rather than "the skill supplied the
+    # missing knowledge" -- a different mechanism, and not the one being studied.
+    if chance and acc_no < chance * 0.8:
+        print(f"  [!] Baseline {acc_no:.3f} is below chance ({chance:.3f}).")
+        print(f"      Answers were found in only {parse_no:.0%} of the no-skill "
+              f"outputs.")
+        print("      Read the `raw` field of per_item.jsonl before treating the")
+        print("      delta as mechanistic. See HANDOFF-whitebox.md 12.3b.")
+        unparsed = [x for x in no if not x["parsed"]][:3]
+        for x in unparsed:
+            print(f"        {x['id']}: {x['raw'][:70]!r}")
+    elif parse_no < 0.9 or parse_yes < 0.9:
+        print(f"  [!] Some outputs carry no extractable answer "
+              f"({1-parse_no:.0%} without skill, {1-parse_yes:.0%} with). Part of")
+        print("      any delta is formatting compliance rather than task content.")
 
     # gate, per HANDOFF-whitebox.md section 2
     acc_gate = d_acc >= 15 and acc_lo * 100 > 5
