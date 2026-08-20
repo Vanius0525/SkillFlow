@@ -276,6 +276,7 @@ def main():
     kept = share("cf", "true")
     decided = followed + kept
     summary = {
+        "experiment": "e6_counterfactual",
         "run_id": run_id, "n": n, "flavour": args.flavour,
         "follow_rate": followed / decided if decided else float("nan"),
         "shares": {c: {w: share(c, w) for w in ("true", "cf", "neither", "unparsed")}

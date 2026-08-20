@@ -1,0 +1,46 @@
+# 白盒实验的机器配置。复制成 whitebox.conf 再改，run-whitebox.sh 会自动读。
+#
+#   cp whitebox.conf.example whitebox.conf
+#   $EDITOR whitebox.conf
+#   ./run-whitebox.sh --list
+#
+# whitebox.conf 不进 git：它是这台机器的部署状态，不是源码。改了路径之后
+# git reset --hard 不会把它覆盖掉，这正是要的。
+#
+# 每一项都可以用环境变量临时覆盖，环境变量优先：
+#   WB_TIERB_LIMIT=40 ./run-whitebox.sh --phase b
+
+# ---- 模型 -----------------------------------------------------------------
+# 开发底座。所有 Tier A（梯队 a）都用它：1.7B 上一次全层扫描是分钟级，8B 是
+# 小时级，而 Tier A 的作用是校验仪器，不是出结论。
+WB_DEV_MODEL="$REPO/models/Qwen3-1.7B"
+
+# 下结论用的模型。Tier B（梯队 b）用它。
+WB_MAIN_MODEL="$REPO/models/Qwen3-8B"
+
+# 解释器。venv 同时供着 vLLM，不要在这个 venv 里随手升级 torch。
+WB_PYTHON="python"
+
+WB_DEVICE="cuda"
+
+# ---- 题数 -----------------------------------------------------------------
+# Tier B 效应筛查的题数上限。196 题池，120 是够用的默认值。
+WB_TIERB_LIMIT=120
+
+# 层扫描的题数。层扫描的代价是 层数 x 题数 x 条件数，所以这个数比筛查小。
+WB_E2_LIMIT=40
+WB_E1_LIMIT=40
+
+# ---- 层扫描的粒度 ---------------------------------------------------------
+# 8B 上先粗扫，定位到热点再回来细扫那一段。
+WB_TIERB_LAYER_STEP=2      # E2：每隔几层扫一次
+WB_TIERB_GROUP=4           # E1：几层一组一起敲掉
+
+# E2 的多位置变体补几个位置。K=1 的低恢复率有二义性（可能只是一个位置装不下），
+# 所以流水线里固定跑一次 K>1。
+WB_TAIL_K=4
+
+# ---- 显存不够时 -----------------------------------------------------------
+# eager attention 的注意力矩阵是 seq^2 x heads，E1 的 prompt 同时含 skill 和
+# 等长的填充文档，是全流程里最长的。先降 WB_E1_LIMIT，不要降 WB_TIERB_GROUP
+# —— 分组只影响一次敲掉几层，不省显存。

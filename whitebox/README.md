@@ -10,7 +10,7 @@ Qwen3-1.7B + Tier A 上跑过（结果与两处修正见 HANDOFF §12.3b / §12.
 **`e1_knockout.py` 一次都没跑过**——跑之前刚做过一次代码审查，改掉了一个会让它
 必然报出空结果的缺陷，见 HANDOFF §12.3d。
 
-下一步在服务器上按这个顺序跑：
+现在有流水线了（`./run-whitebox.sh --phase a`），下面这个顺序它会自动走完：
 
 1. `selftest.py` —— 现在多了第 6b 项（全文 span），旧的通过记录不作数
 2. **重跑 E2 Tier A** —— §12.3c/§12.3d 三处修正之后的数才是可引用的
@@ -35,6 +35,10 @@ Qwen3-1.7B + Tier A 上跑过（结果与两处修正见 HANDOFF §12.3b / §12.
 | `e2_patch.py` | **E2 激活补丁层扫描 —— 恢复率 vs 层** |
 | `e1_knockout.py` | **E1 注意力敲除层扫描 —— 依赖度 vs 层** |
 | `e6_counterfactual.py` | **E6 反事实 skill —— 答案跟着改过的表走吗**（不用 hook）|
+| `e7_repr.py` | **E7 表示层几何 —— 注入之后出现了什么 pattern**（最便宜的那个）|
+| `run-whitebox.sh` | **流水线：按顺序跑完多个实验**，断点续跑、逐阶段日志 |
+| `report.py` | 把一次 run 的所有 summary.json 汇总成一页 + **交叉校验** |
+| `whitebox.conf.example` | 机器配置模板（复制成 `whitebox.conf`，不进 git）|
 | `errors.py` | 错误类型学（第 4 步）。**纯后处理，不用 GPU** |
 | `tasks/tier_a/render_skill.py` | 从换算表渲染 skill；E6 的反事实文档由它生成 |
 | `tasks/filler-neutral.md` | E1 的对照文档（结构相似、任务无关） |
@@ -55,6 +59,38 @@ cd /inspire/qb-dev/project/multi-agent/czxs253130660/agent-harness/whitebox
 ./setup-whitebox.sh            # 只检查，不动环境
 ./setup-whitebox.sh --install --download
 ```
+
+### 一条命令跑完一梯队
+
+```bash
+cp whitebox.conf.example whitebox.conf   # 改模型路径，一次就好
+./run-whitebox.sh --list                 # 有哪些阶段、各自回答什么问题
+./run-whitebox.sh --phase a              # 梯队 0+a：1.7B，十几分钟
+nohup ./run-whitebox.sh --phase b > logs/wb.log 2>&1 &   # 梯队 b：8B，长跑
+tail -f logs/wb.log
+python report.py results/<run-id>        # 随时再看一次汇总
+```
+
+| 参数 | 作用 |
+|---|---|
+| `--list` | 列出阶段和每个阶段回答的问题，不跑任何东西 |
+| `--phase a\|b\|all` | 按梯队跑（梯队 0 的门槛永远跑）|
+| `--only NAME` / `--from NAME` / `--skip NAME` | 单跑 / 从某阶段起 / 排除某阶段 |
+| `--dry-run` | 只打印会执行的命令 |
+| `--force` | 忽略"已经跑过"，重跑 |
+| `RUN_ID=xxx` | 接着上次那个 run 继续（默认按时间戳新建）|
+
+**断点续跑是默认行为**：某阶段的 `summary.json` 已经在了就跳过，所以中断之后重跑
+同一个 `RUN_ID` 就行。服务器上没有 tmux，长跑用 `nohup`。
+
+配置全在 `whitebox.conf`（模型路径、题数、层扫描粒度、K 值），环境变量优先，
+`--config` 可以指定别的文件。这个文件**不进 git** —— 和 `env.sh` 同理，它是这台
+机器的部署状态，不是源码。
+
+阶段之间的门槛是硬的：自检不过直接退出；Tier B 的层间实验在对应的 Phase 0 门槛
+没过时**跳过并说明原因**，因为恢复率的分母就是那个行为效应差值。
+
+梯队怎么划分、每个阶段大概会得到什么结论，见 HANDOFF §13。
 
 `setup-whitebox.sh` **默认一个包都不装**。这个 venv 同时供着 vLLM，而 vLLM 对
 torch 版本很挑；一次顺手的 `pip install -U` 就可能把黑盒那批实验弄坏。torch 无论
@@ -251,6 +287,36 @@ skill 段落在哪儿都对不上）。`selftest` 第 4b 项守着行和位置�
 补丁必须落在**最后一个 prompt token**，不是序列最后一个 token。打分时 prompt 和
 答案是拼在一起做一次前向的，所以位置用的是 `prompt_len - 1` 的绝对下标；用 `-1`
 会补到答案内部，测的就完全是另一回事了。
+
+---
+
+## E7：表示层几何 —— 最便宜的那个
+
+```bash
+python e7_repr.py --selftest                     # 指标自检，不用 GPU，几秒
+python e7_repr.py --model ../models/Qwen3-1.7B   --tasks tasks/tier_a/tasks.jsonl --skill tasks/tier_a/SKILL.zorb-units.md   --mode mc --probe family --run-id e7-tierA
+```
+
+不干预，只看有 skill / 无 skill 两次前向在 prompt 最后一个 token 上的差
+`d = h_有 − h_无`，逐层算四个量：
+
+| 量 | 高说明什么 |
+|---|---|
+| `‖d‖/‖h‖` | 那一层被推得最狠（平坦 = 只是"多了段文本"的普遍扰动）|
+| 各题 d 的平均余弦 | **一个共享方向** —— "有 skill 在"是个状态，不是内容 |
+| participation ratio | 有效维数；≈1 是单轴，≈题数是没有结构 |
+| 两份 skill 的平均方向夹角 | 注入有没有**通用签名**，与是哪份 skill 无关 |
+
+每题两次前向，没有 hook，没有层扫描——1.7B 上几十秒。它直接回答"内部表示有没有
+pattern"，而不是从干预结果反推。
+
+**它和 E2 可以互相矛盾**：E2 的 `mean` 条件如果恢复得和 `real` 一样好，E7 的平均
+余弦就必须高。`report.py` 会把这条矛盾直接打出来。
+
+`--probe family` 另问一件事：任务需要的那个变量（该查哪张表）在表示里线性可读吗，
+skill 有没有让它更早可读。**读这条要小心**：47 题、2048 维，不正则的探针能分开
+任何标签。脚本先降维、交叉验证、并打印**打乱标签的基线**；真值不明显高于打乱值时，
+那不是结论，是容量。
 
 ---
 

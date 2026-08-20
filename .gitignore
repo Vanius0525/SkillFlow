@@ -46,4 +46,7 @@ env.sh
 
 # 白盒实验的产物（每次跑一个 run 目录，和 results/ 同理不进 git）
 whitebox/results/
+
+# 机器配置（和 env.sh 同理：部署状态，不是源码）
+whitebox/whitebox.conf
 whitebox/tasks/*/tasks.filtered*.jsonl
