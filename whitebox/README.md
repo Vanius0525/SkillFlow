@@ -15,6 +15,7 @@ Qwen3-1.7B + Tier A 上跑过（结果与两处修正见 HANDOFF §12.3b / §12.
 1. `selftest.py` —— 现在多了第 6b 项（全文 span），旧的通过记录不作数
 2. **重跑 E2 Tier A** —— §12.3c/§12.3d 三处修正之后的数才是可引用的
 3. **首跑 E1 Tier A** —— 全文 span + 交替顺序之后的第一次
+3b. **首跑 E6 Tier A** —— 不用 hook 的那条证据，跑完用它校验 1–3 的结论
 4. 用 HANDOFF §12.3 那张交叉校验表把两条曲线对一次
 5. 重跑一次 `e0_effect.py` Tier A，看新加的可解析率——基线 0.085 低于随机的事还没
    查完（§12.3e）
@@ -33,6 +34,9 @@ Qwen3-1.7B + Tier A 上跑过（结果与两处修正见 HANDOFF §12.3b / §12.
 | `e0_effect.py` | Phase 0 效应筛查（第 3 步）。**行为层，无层间数据** |
 | `e2_patch.py` | **E2 激活补丁层扫描 —— 恢复率 vs 层** |
 | `e1_knockout.py` | **E1 注意力敲除层扫描 —— 依赖度 vs 层** |
+| `e6_counterfactual.py` | **E6 反事实 skill —— 答案跟着改过的表走吗**（不用 hook）|
+| `errors.py` | 错误类型学（第 4 步）。**纯后处理，不用 GPU** |
+| `tasks/tier_a/render_skill.py` | 从换算表渲染 skill；E6 的反事实文档由它生成 |
 | `tasks/filler-neutral.md` | E1 的对照文档（结构相似、任务无关） |
 | `run-whitebox.sh` | 服务器端一键运行（体检 → 自检 → Tier A → Tier B） |
 | `contamination.py` | skill 是否泄漏答案 |
@@ -231,11 +235,76 @@ skill 时把那个向量补进第 ℓ 层同一位置 → 算恢复率
 来源见 HANDOFF §9.2（SAPO 的 principle/pattern/example 三分）。写在跑之前，跑完
 直接对照 —— 避免在多重比较里挑显著的讲故事。
 
+### 补一个位置还是补 K 个
+
+`--tail-k`（默认 1）。低恢复率有两种读法：效应压不进向量（H1），或者**一个位置装
+不下**——单位置是脚本选的容量上限，不是模型选的。所以 K=1 报出低恢复时，脚本会提示
+用 `--tail-k 4` 再跑一次：多位置也压不进，H1 才立得住。
+
+两份 prompt 长度不同，所以 K 个位置**从末尾对齐**（问题和 chat 后缀在那里对得上，
+skill 段落在哪儿都对不上）。`selftest` 第 4b 项守着行和位置的绑定：用自己的值补 K
+个位置必须是空操作，而把这 K 行**倒过来**必须改变输出——只测空操作的话，任何对称的
+错位都能蒙混过去。
+
 ### 一个实现上的关键点
 
 补丁必须落在**最后一个 prompt token**，不是序列最后一个 token。打分时 prompt 和
 答案是拼在一起做一次前向的，所以位置用的是 `prompt_len - 1` 的绝对下标；用 `-1`
 会补到答案内部，测的就完全是另一回事了。
+
+---
+
+## E6：反事实 skill —— 不用 hook 的那个实验
+
+```bash
+python e6_counterfactual.py --model unused --dry-run     # 不用 GPU，先看能用几题
+python e6_counterfactual.py --model ../models/Qwen3-1.7B --run-id e6-tierA
+python e6_counterfactual.py --model ../models/Qwen3-1.7B --flavour near --run-id e6-tierA-near
+```
+
+把 skill 里的一个换算因子改掉（`glorn 7 → 42`），题目不动，看答案跟谁走：跟改过的
+值 = 模型真的在读那张表（H1）；跟原值 = 它没在读；两个都不是 = 冲突把计算打乱了
+（H5）。
+
+**为什么值得单独跑**：E1 和 E2 都依赖 hook，而 hook 会静默失效（§12.3d 就是一次）。
+E6 只用普通前向，所以它能**证伪** E1/E2：E6 说模型在逐行读表、E1 却报"没有哪一层
+依赖 skill"，那是 E1 坏了。它还给出**逐题标签**，可以用来切分 E1/E2 的曲线，而不是
+只比较平均值。
+
+反事实文档是**渲染**出来的，不是手改的：`tasks/tier_a/render_skill.py` 从换算表
+重建整份 skill，worked examples 里的数跟着一起变，所以两份文档只差那个因子。
+`render_skill.py --check` 会先验证"用未扰动的表渲染 = 仓库里那份 skill，逐字节
+相同"，不通过就拒绝往下跑——这条是"只差一个因子"能当事实用的前提。
+
+`--flavour near` 把因子改成**最小的相容改动**，`far` 改成表允许的最远值。
+SWE-Skills-Bench 里真正有害的 skill 都是"近似匹配"的（HANDOFF §9.2b），
+如果 near 比 far 更能锚住模型，那就是在可控条件下复现了他们的机制。
+
+---
+
+## 错误类型学（第 4 步）：skill 消掉的是哪一类错
+
+```bash
+python errors.py --per-item results/tierA-dev/per_item.jsonl   --tasks tasks/tier_a/tasks.jsonl
+```
+
+**不用 GPU，不用模型**——它只读 `e0_effect.py` 的产物。Tier A 的每个干扰项都对应
+一种具体的读错方式，所以答错本身就说明错在哪：
+
+| 类别 | 含义 | 指向 |
+|---|---|---|
+| `unparsed` | 输出里根本没有答案 | H3 格式 |
+| `wrong_row` | 找对了表、取错了行 | H1 检索 |
+| `wrong_family` | 读了错的那张表 | H2 选择 |
+| `inverted` | 该乘的除了 | H2 选择 |
+
+配对设计让"哪一类错被修好了"是精确的：逐题跟踪它从无 skill 的类别搬到了有 skill 的
+哪一类。Tier B 走另一套（数值残差：`const_version` 比值 101.325、`unit_prefix`
+比值 1000、`kelvin` 差 273.15 …），因为"答案差一个常数因子"不是推理错，是拿错了
+常数的版本。
+
+**这一步该在层扫描之前跑**：它不花算力，却能告诉你四个假设的大致份额。如果修好的
+题里八成是 `unparsed`，那主线是 H3，激活补丁扫层是在解释别的东西。
 
 ---
 

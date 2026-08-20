@@ -144,6 +144,11 @@ def main():
     ap.add_argument("--limit", type=int, default=40)
     ap.add_argument("--layer-step", type=int, default=1,
                     help="sweep every Nth layer; use 2-4 for a first pass at 8B")
+    ap.add_argument("--tail-k", type=int, default=1,
+                    help="patch the last K prompt positions instead of only the "
+                         "last one. A low recovery at K=1 can mean the effect does "
+                         "not compress, or just that one position is too small a "
+                         "container; K>1 tells those apart")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
@@ -161,11 +166,13 @@ def main():
     print(f"tasks  : {args.tasks}  ({len(items)} items, mode={args.mode})")
     print(f"skill  : {args.skill}")
     print(f"layers : {len(layers)} of {r.n_layers} (step {args.layer_step})")
+    print(f"patch  : last {args.tail_k} prompt position"
+          f"{'s' if args.tail_k > 1 else ''}")
     print(f"run id : {run_id}\n")
     M.write_run_info(out_dir, r, {
         "experiment": "e2_patch", "run_id": run_id, "tasks": str(args.tasks),
         "skill": str(args.skill), "mode": args.mode, "n_items": len(items),
-        "layers": layers, "dv": "answer_logprob",
+        "layers": layers, "dv": "answer_logprob", "tail_k": args.tail_k,
     })
 
     # ---- pass 1: baselines and the cached vectors -------------------------
@@ -183,8 +190,12 @@ def main():
         lp_yes = logprob_with_patch(r, ids_yes, gold)
 
         cap = M.capture(r, ids_yes)
-        # hidden_states[L+1] is the output of layer L; last prompt token
-        vecs = {L: cap.hidden_states[L + 1][0, -1].detach().clone() for L in layers}
+        # hidden_states[L+1] is the output of layer L; the last K prompt tokens.
+        # The two prompts differ in length, so the positions are aligned from the
+        # END -- the question and the chat suffix line up there, the skill block
+        # does not line up anywhere.
+        k = args.tail_k
+        vecs = {L: cap.hidden_states[L + 1][0, -k:].detach().clone() for L in layers}
         del cap
 
         base.append({
@@ -215,9 +226,10 @@ def main():
     # answer the question it was meant to ask: is one shared direction enough?
     mean_vec = {}
     for L in layers:
-        stack = torch.stack([b["vecs"][L] for b in base])
-        mv = stack.mean(0)
-        mean_vec[L] = mv / (mv.norm() + 1e-6) * stack.norm(dim=-1).mean()
+        stack = torch.stack([b["vecs"][L] for b in base])       # [n, k, d]
+        mv = stack.mean(0)                                      # [k, d]
+        norms = stack.norm(dim=-1).mean(0).unsqueeze(-1)        # [k, 1]
+        mean_vec[L] = mv / (mv.norm(dim=-1, keepdim=True) + 1e-6) * norms
     # rotate by one: a derangement, so no item is ever paired with itself
     order = list(range(len(base)))
     shifted = order[1:] + order[:1]
@@ -229,7 +241,8 @@ def main():
     for n, L in enumerate(layers):
         rows = []
         for i, b in enumerate(base):
-            pos = b["prompt_len_no"] - 1          # last PROMPT token
+            # last K PROMPT tokens, absolute indices into prompt+answer
+            pos = list(range(b["prompt_len_no"] - args.tail_k, b["prompt_len_no"]))
             real = logprob_with_patch(r, b["ids_no"], b["gold"], L, pos, b["vecs"][L])
             mism = logprob_with_patch(r, b["ids_no"], b["gold"], L, pos,
                                       base[shifted[i]]["vecs"][L])
@@ -310,6 +323,7 @@ def main():
 
     summary = {
         "run_id": run_id, "n_items": len(items), "layers": layers,
+        "tail_k": args.tail_k,
         "mean_logprob_delta": mean_delta,
         "recovery_real": curve, "recovery_mismatched": ctrl, "recovery_mean": mcur,
         "best_layer": best, "best_recovery": br["real"],
@@ -320,7 +334,8 @@ def main():
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
 
     print(f"\n{'='*64}")
-    print(f"  layers {layers[0]}..{layers[-1]} step {args.layer_step}, n={len(items)}")
+    print(f"  layers {layers[0]}..{layers[-1]} step {args.layer_step}, "
+          f"n={len(items)}, K={args.tail_k}")
     print(f"  real        {sparkline(curve)}")
     print(f"  mismatched  {sparkline(ctrl)}")
     print(f"  mean vector {sparkline(mcur)}")
@@ -357,6 +372,11 @@ def main():
     elif br["real"] < 0.2:
         print("    Does not compress at any layer -> H1 (the model keeps reading")
         print("    the skill text). Next: E1 attention knockout becomes the main line.")
+        if args.tail_k == 1:
+            print("    Before concluding that: re-run with --tail-k 4. One position")
+            print("    is a container size this script chose, not one the model did,")
+            print("    and 'does not fit in one vector' is a weaker claim than 'does")
+            print("    not compress'.")
     elif margin < 0.1:
         print("    Real and mismatched are close. The number is measuring the")
         print("    disturbance of patching, not the skill. Do not report recovery;")

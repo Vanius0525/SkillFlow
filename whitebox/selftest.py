@@ -18,6 +18,9 @@ plausible-looking numbers:
   4  destructive patch  patching with zeros DOES change the output. Catches a
                        hook that silently never fires -- which otherwise looks
                        exactly like "the intervention had no effect".
+  4b multi-position   patching K positions with their own values is a no-op,
+                       and REVERSING those rows is not. The second half is the
+                       real test: it pins each row to its position
   5  knockout          a 4D mask actually blocks attention. Catches the sdpa
                        path ignoring the custom mask.
   6  span location     find_span returns a span that decodes back to the needle
@@ -118,6 +121,28 @@ def main():
     zero_delta = (out0.logits[:, -1].float() - ref_logits).abs().max().item()
     check("zero patch does change output", zero_delta > 1.0,
           f"max |dlogit| = {zero_delta:.4g} -- if ~0 the hook never fired")
+
+    # --- 4b. multi-position patch ----------------------------------------
+    # E2 can patch the last K prompt positions (--tail-k). The same no-op
+    # guarantee has to hold there, and the rows of the [K, d] vector have to line
+    # up with the positions: a transposed or reversed assignment patches real
+    # activations into the wrong tokens, which is not detectable downstream --
+    # every number still looks like a number. The reversal check is what pins the
+    # ordering, since a no-op test alone passes under any symmetric mistake.
+    print("\n4b. multi-position patch")
+    kk = 4
+    own_k = base.hidden_states[layer + 1][0, -kk:].clone()
+    pos_k = list(range(ids.shape[1] - kk, ids.shape[1]))
+    with M.patch_layer(r, layer, pos_k, own_k):
+        outk = r.model(ids, use_cache=False)
+    noop_k = (outk.logits[:, -1].float() - ref_logits).abs().max().item()
+    check("no-op patch over K positions leaves output unchanged", noop_k < 1e-2,
+          f"max |dlogit| = {noop_k:.4g}")
+    with M.patch_layer(r, layer, pos_k, own_k.flip(0)):
+        outr = r.model(ids, use_cache=False)
+    rev_k = (outr.logits[:, -1].float() - ref_logits).abs().max().item()
+    check("reversing the rows does change the output", rev_k > 0.01,
+          f"max |dlogit| = {rev_k:.4g} -- rows may not be bound to positions")
 
     # --- 5. attention knockout -------------------------------------------
     print("\n5. attention knockout")

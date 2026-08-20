@@ -1,0 +1,266 @@
+#!/usr/bin/env python3
+"""
+Step 4: error typology. What KIND of error does the skill remove?
+
+Post-processing only -- it reads an existing e0_effect.py run and needs no GPU
+and no model. That is the point: the design (HANDOFF-whitebox.md section 6 step
+4) puts this before the mechanistic experiments because it costs nothing and it
+tells you which hypothesis is worth instrumenting. If 80% of the errors are
+formatting, H3 is the story and a layer sweep of activation patching is the wrong
+next month.
+
+    python errors.py --per-item results/tierA-dev/per_item.jsonl \
+        --tasks tasks/tier_a/tasks.jsonl
+
+The classification is per task family:
+
+Tier A -- reconstructed from the table, not guessed. Every distractor in Tier A
+is a value reachable by one specific misreading (tier_a/build.py:distractors), so
+a wrong answer says WHICH misreading happened:
+
+    wrong_row      right table, wrong line   -- found the right table and pulled
+                                                the wrong number out of it
+    wrong_family   read the wrong table      -- picked the wrong procedure
+    inverted       divided instead of multiplied
+    other          none of the above; no diagnosis
+
+Splitting "picked the wrong table" from "picked the right table and misread it"
+is the selection-vs-execution split. Skill2-Bench (HANDOFF section 9.2c) reports
+that naming the wrong skill family roughly halves per-step accuracy, i.e. that
+selection is separable from execution and causally large; this is the same cut on
+a task where the answer itself reveals which one failed.
+
+Tier B -- numeric residuals. A textbook answer that is off by exactly 101.325 or
+1000 is not a reasoning error, it is the wrong version of a constant:
+
+    const_version  ratio 101.325 (R in J vs L atm) -- the error pchem-constants
+                   exists to fix
+    unit_prefix    ratio 1000 (L vs m^3, kJ vs J)
+    magnitude      ratio a power of ten
+    kelvin         off by 273.15
+    sign           sign flipped
+    other
+
+Both families also carry `unparsed`: no answer could be extracted at all. That
+one is not a reasoning error and must never be pooled with the others -- see
+HANDOFF section 12.3b, where a below-chance Tier A baseline turned out to be
+mostly this.
+"""
+
+from __future__ import annotations
+
+import argparse
+import io
+import json
+import pathlib
+from collections import Counter
+
+HERE = pathlib.Path(__file__).resolve().parent
+
+# Must match tasks/tier_a/build.py:FAMILIES. Duplicated rather than imported
+# because build.py lives in a task directory and importing it here would make
+# this script depend on which task set is being analysed.
+FAMILIES = {
+    "length": {"dref": 1, "glorn": 7, "varak": 84, "skellum": 420},
+    "mass": {"zunt": 1, "pelm": 9, "brask": 180},
+    "duration": {"tovek": 1, "wemp": 15, "cradal": 60},
+}
+
+# category -> which hypothesis it points at (HANDOFF-whitebox.md section 1)
+POINTS_AT = {
+    "correct": "-",
+    "unparsed": "H3 format",
+    "wrong_row": "H1 retrieval (found the table, misread the line)",
+    "wrong_family": "H2 selection (wrong table entirely)",
+    "inverted": "H2 selection (right values, wrong direction)",
+    "const_version": "H1 retrieval (wrong version of a constant)",
+    "unit_prefix": "H1/H3 (convention, not chemistry)",
+    "magnitude": "H1/H3 (convention, not chemistry)",
+    "kelvin": "H1 retrieval (missing conversion rule)",
+    "sign": "H2 selection (wrong direction)",
+    "other": "no diagnosis",
+}
+
+ORDER = ["correct", "unparsed", "wrong_row", "wrong_family", "inverted",
+         "const_version", "unit_prefix", "magnitude", "kelvin", "sign", "other"]
+
+
+def close(a: float, b: float, tol: float = 0.02) -> bool:
+    if b == 0:
+        return abs(a) < 1e-9
+    return abs(a - b) / abs(b) <= tol
+
+
+def predicted_value(rec: dict, task: dict, mode: str):
+    """The NUMBER the model answered, whichever format the run used."""
+    pred = rec.get("pred")
+    if pred is None:
+        return None
+    if mode == "mc":
+        letter = str(pred).strip()[:1]
+        if letter not in "ABCD":
+            return None
+        opts = task.get("options")
+        if not opts or len(opts) < 4:
+            return None
+        return float(opts["ABCD".index(letter)])
+    try:
+        return float(pred)
+    except (TypeError, ValueError):
+        return None
+
+
+def classify_tier_a(value, task) -> str:
+    """Which misreading of the Zorb table produces this answer."""
+    if value is None:
+        return "unparsed"
+    fam, src, dst, v = task["family"], task["src"], task["dst"], task["value"]
+    t = FAMILIES[fam]
+    if close(value, v * t[src] / t[dst]):
+        return "correct"
+    for other in t:
+        if other != src and close(value, v * t[other] / t[dst]):
+            return "wrong_row"
+    for ofam, ot in FAMILIES.items():
+        if ofam != fam and close(value, v * list(ot.values())[1]):
+            return "wrong_family"
+    if close(value, v * t[dst] / t[src]):
+        return "inverted"
+    return "other"
+
+
+def classify_numeric(value, gold: float) -> str:
+    """Residual typology for free numeric answers."""
+    if value is None:
+        return "unparsed"
+    if close(value, gold):
+        return "correct"
+    if gold != 0 and close(value, -gold):
+        return "sign"
+    if abs(abs(value - gold) - 273.15) < 273.15 * 0.02:
+        return "kelvin"
+    if gold != 0 and value != 0:
+        ratio = abs(value / gold)
+        for r, name in ((101.325, "const_version"), (1000.0, "unit_prefix")):
+            if close(ratio, r) or close(ratio, 1.0 / r):
+                return name
+        for n in range(-12, 13):
+            if n and close(ratio, 10.0 ** n):
+                return "magnitude"
+    return "other"
+
+
+def table(counts: Counter, n: int) -> list[str]:
+    rows = []
+    for k in ORDER:
+        if counts.get(k):
+            rows.append(f"    {k:<14} {counts[k]:>4}  {counts[k]/n:>6.1%}   "
+                        f"{POINTS_AT[k]}")
+    return rows
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--per-item", required=True,
+                    help="per_item.jsonl written by e0_effect.py")
+    ap.add_argument("--tasks", required=True)
+    ap.add_argument("--mode", choices=["mc", "num"], default=None,
+                    help="default: inferred from the gold answers")
+    ap.add_argument("--out", default=None, help="write the report as json")
+    args = ap.parse_args()
+
+    tasks = {}
+    for line in io.open(args.tasks, encoding="utf-8"):
+        if line.strip():
+            it = json.loads(line)
+            tasks[it["id"]] = it
+    recs = [json.loads(l) for l in io.open(args.per_item, encoding="utf-8")
+            if l.strip()]
+    if not recs:
+        print("[FAIL] no records"); raise SystemExit(1)
+
+    mode = args.mode
+    if mode is None:
+        golds = {str(r.get("gold", "")) for r in recs}
+        mode = "mc" if golds <= {"A", "B", "C", "D"} else "num"
+    tier_a = all("family" in tasks.get(r["id"], {}) for r in recs)
+
+    if "pred" not in recs[0].get("no_skill", {}):
+        print("[FAIL] this per_item.jsonl predates the `pred` field. Re-run")
+        print("       e0_effect.py -- the raw text alone cannot be classified")
+        print("       without re-implementing the extractor here, and two")
+        print("       extractors that disagree is worse than no typology.")
+        raise SystemExit(1)
+
+    print(f"per-item : {args.per_item}  ({len(recs)} items)")
+    print(f"tasks    : {args.tasks}  (mode={mode}, "
+          f"{'Tier A structural' if tier_a else 'numeric residual'} typology)\n")
+
+    cats = {"no_skill": [], "with_skill": []}
+    for r in recs:
+        task = tasks.get(r["id"])
+        if task is None:
+            continue
+        for cond in ("no_skill", "with_skill"):
+            v = predicted_value(r[cond], task, mode)
+            if tier_a:
+                c = classify_tier_a(v, task)
+            else:
+                c = classify_numeric(v, float(r["gold"]))
+            cats[cond].append((r["id"], c))
+
+    n = len(cats["no_skill"])
+    cn, cy = Counter(c for _, c in cats["no_skill"]), Counter(c for _, c in cats["with_skill"])
+
+    print("  without skill")
+    print("\n".join(table(cn, n)))
+    print("\n  with skill")
+    print("\n".join(table(cy, n)))
+
+    # Where the gains came from. The paired design makes this exact rather than
+    # a difference of two distributions: each item is followed from the category
+    # it was in without the skill to the one it is in with it.
+    moves = Counter()
+    for (i, a), (_, b) in zip(cats["no_skill"], cats["with_skill"]):
+        if a != b:
+            moves[(a, b)] += 1
+    gained = [(a, k) for (a, b), k in moves.items() if b == "correct"]
+    lost = [(b, k) for (a, b), k in moves.items() if a == "correct"]
+
+    print(f"\n  became correct: {sum(k for _, k in gained)} items")
+    for a, k in sorted(gained, key=lambda x: -x[1]):
+        print(f"    from {a:<14} {k:>4}   {POINTS_AT[a]}")
+    if lost:
+        print(f"  became wrong: {sum(k for _, k in lost)} items")
+        for b, k in sorted(lost, key=lambda x: -x[1]):
+            print(f"    into {b:<14} {k:>4}")
+
+    print("\n  reading it:")
+    fixed = sum(k for _, k in gained) or 1
+    fmt = sum(k for a, k in gained if a == "unparsed")
+    sel = sum(k for a, k in gained if a in ("wrong_family", "inverted", "sign"))
+    ret = sum(k for a, k in gained
+              if a in ("wrong_row", "const_version", "kelvin"))
+    print(f"    of the items the skill fixed: {fmt/fixed:.0%} were unparsed "
+          f"(H3), {sel/fixed:.0%} were\n    selection errors (H2), "
+          f"{ret/fixed:.0%} were retrieval errors (H1)")
+    if fmt / fixed > 0.5:
+        print("    Most of the effect is the skill making the output parseable.")
+        print("    That is H3, and it is not what the layer sweeps are set up to")
+        print("    explain. Fix the answer instruction or the extractor first.")
+    elif cn.get("unparsed", 0) > 0.2 * n:
+        print(f"    {cn['unparsed']/n:.0%} of no-skill outputs carry no answer at "
+              f"all. The accuracy delta\n    is inflated by that much before any "
+              f"mechanism is involved.")
+
+    if args.out:
+        pathlib.Path(args.out).write_text(json.dumps({
+            "n": n, "mode": mode, "tier_a": tier_a,
+            "no_skill": dict(cn), "with_skill": dict(cy),
+            "moves": {f"{a}->{b}": k for (a, b), k in moves.items()},
+        }, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"\n  written: {args.out}")
+
+
+if __name__ == "__main__":
+    main()

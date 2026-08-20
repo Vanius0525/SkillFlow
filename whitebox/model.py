@@ -182,9 +182,16 @@ def patch_layer(r: Runner, layer: int, position: int, vector: torch.Tensor,
     call only; selftest.py checks it by patching a layer with its own value,
     which must leave the output bit-identical.
 
-    `position` may be negative and is resolved against the prefill length.
+    `position` may be negative and is resolved against the prefill length. It may
+    also be a sequence of positions, in which case `vector` carries one row per
+    position -- that is the multi-position variant the design asks for
+    (HANDOFF-whitebox.md section 6 step 5, item 4). It matters because a single
+    position is a capacity limit that was chosen, not measured: "the effect does
+    not compress" and "the effect does not compress into ONE vector" are
+    different claims, and only the second one is supported by patching one place.
     """
     state = {"done": False}
+    positions = [position] if isinstance(position, int) else list(position)
 
     def hook(_mod, _inp, out):
         if prefill_only and state["done"]:
@@ -192,8 +199,9 @@ def patch_layer(r: Runner, layer: int, position: int, vector: torch.Tensor,
         hs = out[0] if isinstance(out, tuple) else out
         if prefill_only and hs.shape[1] == 1:
             return out            # a decode step, not the prefill
-        pos = position if position >= 0 else hs.shape[1] + position
-        hs[:, pos, :] = vector.to(hs.dtype).to(hs.device)
+        pos = [p if p >= 0 else hs.shape[1] + p for p in positions]
+        v = vector.to(hs.dtype).to(hs.device)
+        hs[:, pos, :] = v.reshape(len(pos), -1)
         state["done"] = True
         return (hs,) + tuple(out[1:]) if isinstance(out, tuple) else hs
 
