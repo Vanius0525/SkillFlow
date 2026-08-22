@@ -322,6 +322,7 @@ def main():
     tail_layers = [L for L in layers if L not in candidates]
 
     summary = {
+        "experiment": "e2_patch",
         "run_id": run_id, "n_items": len(items), "layers": layers,
         "tail_k": args.tail_k,
         "mean_logprob_delta": mean_delta,

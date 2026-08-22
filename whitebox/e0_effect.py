@@ -224,6 +224,20 @@ def main():
               f"({1-parse_no:.0%} without skill, {1-parse_yes:.0%} with). Part of")
         print("      any delta is formatting compliance rather than task content.")
 
+    # Section 2 requires a floor and a ceiling: "无 skill 准确率不能接近 0 或 1".
+    # Nothing checked it, and the chance-level warning above cannot -- it needs a
+    # chance level, which numeric mode has none of. A pool the model gets 7% of
+    # answers a different question than the one asked: accuracy has no room to
+    # move, so a gate failure says the items are too hard, NOT that the skill is
+    # inert. Those two conclusions get written up very differently.
+    at_floor, at_ceiling = acc_no < 0.10, acc_no > 0.90
+    if at_floor or at_ceiling:
+        where = "floor" if at_floor else "ceiling"
+        print(f"  [!] Baseline {acc_no:.3f} is at the {where}. Section 2 asks for "
+              f"a pool")
+        print("      with room in both directions; this one has none, so whatever")
+        print("      the gate says below is about the items, not about the skill.")
+
     # gate, per HANDOFF-whitebox.md section 2
     acc_gate = d_acc >= 15 and acc_lo * 100 > 5
     lp_gate = d_acc >= 5 and lp_lo > 0
@@ -234,9 +248,18 @@ def main():
         print("  logprob shift is consistent). Use logprob as the DV downstream.")
     else:
         print("  GATE NOT PASSED.")
-        print("  Try another task/skill pair. After four consecutive pairs below")
-        print("  10pp, switch to the bottleneck question -- HANDOFF-whitebox.md")
-        print("  section 6 step 3.")
+        if at_floor:
+            print("  ...but the baseline is at the floor, so this is not the "
+                  "reportable")
+            print("  null. Re-select items by difficulty before concluding "
+                  "anything about")
+            print("  the skill -- section 2, 挑基线正好落在「会一半」区间的题.")
+        else:
+            print("  Try another task/skill pair. After four consecutive pairs "
+                  "below")
+            print("  10pp, switch to the bottleneck question -- "
+                  "HANDOFF-whitebox.md")
+            print("  section 6 step 3.")
     print(f"  results: {out_dir}")
 
     if args.filter_known:

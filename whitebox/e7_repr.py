@@ -364,7 +364,8 @@ def main():
                 print(f"    {cond:<18} {sparkline(acc)}  best {acc[bi]:.2f} "
                       f"at layer {layers[bi]}  (permuted {base[bi]:.2f})")
 
-    summary = {"run_id": run_id, "n_items": n, "layers": layers,
+    summary = {"experiment": "e7_repr",
+               "run_id": run_id, "n_items": n, "layers": layers,
                "per_skill": report, "cross_skill_cosine": cross, "probe": probe}
     (out_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")

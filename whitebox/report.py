@@ -33,6 +33,16 @@ QUESTION = {
 
 
 def kind(s: dict) -> str:
+    """
+    Identify a summary.json.
+
+    The structural fallbacks are not decoration. Three of the scripts wrote
+    "experiment" into run-info.json and not into summary.json, so this function
+    returned "unknown" for E1, E2 and E7 -- and an unknown summary takes every
+    cross-check that needs it out of the report without saying so. The key is
+    written into both files now; these clauses keep already-finished runs
+    readable without rerunning them.
+    """
     if "experiment" in s:
         return s["experiment"]
     if "acc_no_skill" in s:
@@ -41,6 +51,12 @@ def kind(s: dict) -> str:
         return "errors"
     if "follow_rate" in s:
         return "e6_counterfactual"
+    if "recovery_real" in s and "best_layer" in s:
+        return "e2_patch"
+    if "net" in s and "best_layers" in s:
+        return "e1_knockout"
+    if "per_skill" in s and "layers" in s:
+        return "e7_repr"
     return "unknown"
 
 
@@ -48,9 +64,15 @@ def fmt_e0(s: dict) -> list[str]:
     lo, hi = s["delta_acc_ci95_pp"]
     out = [f"n={s['n']}   准确率 {s['acc_no_skill']:.3f} -> {s['acc_with_skill']:.3f}"
            f"  ({s['delta_acc_pp']:+.1f}pp, CI95 [{lo:+.1f},{hi:+.1f}])",
+           # Section 2 makes logprob the primary DV and accuracy the readable
+           # one, so its CI belongs on the page too -- especially when the gate
+           # fails on the accuracy precondition, where this is the number that
+           # says whether anything moved at all.
            f"logprob {s['mean_logprob_no_skill']:.3f} -> "
-           f"{s['mean_logprob_with_skill']:.3f}  ({s['delta_logprob']:+.3f})"
-           f"   配对 +{s['mcnemar_gained']}/-{s['mcnemar_lost']}"]
+           f"{s['mean_logprob_with_skill']:.3f}  ({s['delta_logprob']:+.3f}"
+           + (", CI95 [{:+.3f},{:+.3f}]".format(*s["delta_logprob_ci95"])
+              if "delta_logprob_ci95" in s else "")
+           + f")   配对 +{s['mcnemar_gained']}/-{s['mcnemar_lost']}"]
     pr = s.get("parse_rate_no_skill")
     ch = s.get("chance_level")
     if pr is not None:
@@ -62,7 +84,21 @@ def fmt_e0(s: dict) -> list[str]:
         out.append(line)
     gate = (s["delta_acc_pp"] >= 15 and s["delta_acc_ci95_pp"][0] > 5) or \
            (s["delta_acc_pp"] >= 5 and s["delta_logprob_ci95"][0] > 0)
-    out.append("门槛：通过" if gate else "门槛：**未通过** —— 这一对不要往下做")
+    if gate:
+        out.append("门槛：通过")
+    else:
+        out.append("门槛：**未通过** —— 这一对不要往下做")
+        # Which clause failed decides what to change next: an item pool that is
+        # too hard, or a skill that does nothing. Recomputed here rather than
+        # read from a key, so runs finished before this existed still say it.
+        if s["acc_no_skill"] < 0.10:
+            out.append("[!] 基线 {:.3f} 贴着地板（§2 要求上下都有余量）。这**不是**"
+                       "可报告的零结果 —— 先按难度重挑题,再谈这份 skill 有没有用"
+                       .format(s["acc_no_skill"]))
+        elif s["delta_acc_pp"] < 5 and s.get("delta_logprob_ci95", [0])[0] > 0:
+            out.append("差在准确率那一档（{:+.1f}pp < 5pp）,而 logprob 的 CI 整段"
+                       "在 0 以上 —— 有位移,只是没大到能撑起恢复率的分母"
+                       .format(s["delta_acc_pp"]))
     return out
 
 
@@ -103,13 +139,34 @@ def fmt_e7(s: dict) -> list[str]:
 
 def fmt_e6(s: dict) -> list[str]:
     sh = s["shares"]["cf"]
-    return [f"n={s['n']}  扰动口味 {s['flavour']}",
-            f"反事实条件下： 跟改过的值 {sh['cf']:.0%}   跟原值 {sh['true']:.0%}   "
-            f"都不是 {sh['neither']:.0%}   没答案 {sh['unparsed']:.0%}",
-            f"follow rate {s['follow_rate']:.0%}"
-            + ("   高 = 模型逐行读表 -> H1" if s["follow_rate"] > 0.8 else
-               "   低 = 没在读这一行,效应来自别处" if s["follow_rate"] < 0.2 else
-               "   混合 —— 用逐题标签切分 E1/E2 的曲线")]
+    out = [f"n={s['n']}  扰动口味 {s['flavour']}",
+           f"反事实条件下： 跟改过的值 {sh['cf']:.0%}   跟原值 {sh['true']:.0%}   "
+           f"都不是 {sh['neither']:.0%}   没答案 {sh['unparsed']:.0%}"]
+
+    # The logprob gap needs no answer extraction, so it survives the case below
+    # -- print it always, and print all three conditions: the no_skill and true
+    # rows are what say whether the generation-side numbers can be trusted.
+    gaps = s.get("lp_gap") or {}
+    if gaps:
+        out.append("mean lp(cf) - lp(true)： "
+                   + "   ".join(f"{c} {gaps[c]:+.3f}" for c in
+                                ("no_skill", "true", "cf") if c in gaps)
+                   + "   （>0 = 更想说反事实值）")
+
+    fr = s["follow_rate"]
+    decided = sh["cf"] + sh["true"]
+    if decided < 0.2 or fr != fr:                       # fr != fr catches nan
+        out.append(f"follow rate 无定义（只有 {decided:.0%} 的题选了两个值之一）"
+                   " —— 分母就是这两类的和")
+        out.append("[!] 反事实条件下模型基本两个值都不答。两种读法：H5（冲突把计算"
+                   "打乱了），或者答案根本没被正确抽出来。**先看 per_item.jsonl 的"
+                   "`raw` 字段**,再谈机制。")
+    else:
+        out.append(f"follow rate {fr:.0%}"
+                   + ("   高 = 模型逐行读表 -> H1" if fr > 0.8 else
+                      "   低 = 没在读这一行,效应来自别处" if fr < 0.2 else
+                      "   混合 —— 用逐题标签切分 E1/E2 的曲线"))
+    return out
 
 
 def fmt_e2(s: dict) -> list[str]:
@@ -231,15 +288,32 @@ def main():
         name = f.parent.name
         print(f"\n[{k}]  {name}")
         print(f"  问题: {QUESTION.get(k, '?')}")
-        for line in FMT.get(k, lambda _s: ["(未知的 summary 格式)"])(s):
+        def unknown(_s: dict) -> list[str]:
+            # Naming the keys turns "unknown format" into something diagnosable
+            # without opening the file: the mismatch is always a key mismatch.
+            return ["(未知的 summary 格式)",
+                    "  它有这些键: " + ", ".join(sorted(_s)[:12])]
+
+        for line in FMT.get(k, unknown)(s):
             print(f"  {line}")
 
+    # A cross-check that cannot run is reported, not skipped. An empty section
+    # reads as "nothing contradicts", which is the one thing it must never mean
+    # when the reason is that a summary was not recognised.
+    kinds = {k for k, _, _ in found}
     notes = cross_check([(k, s) for k, s, _ in found])
-    if notes:
-        print("\n" + "-" * 70)
-        print(" 交叉校验（单看任何一条曲线都看不出来的部分）")
-        for nline in notes:
-            print(f"  - {nline}")
+    missing = [n for n, k in (("E1", "e1_knockout"), ("E2", "e2_patch"),
+                              ("E6", "e6_counterfactual"), ("E7", "e7_repr"))
+               if k not in kinds]
+    print("\n" + "-" * 70)
+    print(" 交叉校验（单看任何一条曲线都看不出来的部分）")
+    for nline in notes:
+        print(f"  - {nline}")
+    if missing:
+        print(f"  - 用到 {'/'.join(missing)} 的检查没做：这个 run 里没有它们,"
+              "或者没认出它们的 summary。")
+    if not notes and not missing:
+        print("  - 几个实验之间没有互相矛盾的地方。")
     print("\n" + "=" * 70)
 
 

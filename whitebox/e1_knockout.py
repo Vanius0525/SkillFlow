@@ -272,6 +272,7 @@ def main():
     bd = per_group[best]
 
     summary = {
+        "experiment": "e1_knockout",
         "run_id": run_id, "n_items": len(base), "group": args.group,
         "groups": [per_group[gi]["layers"] for gi in sorted(per_group)],
         "net": nets, "effect": effs, "control": ctls,
