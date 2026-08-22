@@ -35,6 +35,13 @@ PAIRS = [
     ("tasks/tier_a/tasks.jsonl", "tasks/tier_a/SKILL.zorb-units.md"),
     ("tasks/tier_b/tasks.jsonl", "tasks/tier_b/SKILL.pchem-constants.md"),
     ("tasks/tier_b/tasks.jsonl", "tasks/tier_b/SKILL.pchem-procedure.md"),
+    # Tier B v2 pairs the same two skills with the generated setup-selection
+    # set. Its gold is a composite -- "<relation> + <constant>" -- and neither
+    # document contains that pairing, because one holds the relations and the
+    # other holds the constants. A hit here would mean the generator drifted
+    # into quoting a skill rather than combining the two.
+    ("tasks/tier_b2/tasks.jsonl", "tasks/tier_b/SKILL.pchem-constants.md"),
+    ("tasks/tier_b2/tasks.jsonl", "tasks/tier_b/SKILL.pchem-procedure.md"),
 ]
 
 

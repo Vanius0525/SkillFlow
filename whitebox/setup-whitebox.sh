@@ -142,7 +142,12 @@ echo "--- 4. 任务集(应当和生成器一致)---"
 ( cd "$BASE/tasks/tier_a" && python build.py --check ) 2>&1 | sed 's/^/  /' \
   || bad "Tier A 任务集和生成器对不上"
 ( cd "$BASE/tasks/tier_b" && python build.py --check ) 2>&1 | sed 's/^/  /' \
-  || bad "Tier B 任务集和生成器对不上(SciBench 数据在不在?git lfs pull)"
+  || bad "Tier B v1 任务集和生成器对不上(SciBench 数据在不在?git lfs pull)"
+# v2 是梯队 b 实际在跑的那一份。它的 --check 顺带验两件只在这里能验的事：四个选项
+# 仍然构成 2x2,以及它引用的关系式/常数在两份 skill 里逐字存在 —— 后者一旦漂了,
+# 题目就没法从文档里答出来,而那种零结果看起来和"skill 没用"一模一样。
+( cd "$BASE/tasks/tier_b2" && python build.py --check ) 2>&1 | sed 's/^/  /' \
+  || bad "Tier B v2 任务集和生成器对不上,或 2x2 已经不成立"
 # 渲染器:E6 的反事实文档是从同一张表渲染出来的。渲染器和仓库里那份 skill 一旦
 # 对不上,"两份文档只差一个因子"就不再成立,而这件事不会有任何报错。
 ( cd "$BASE/tasks/tier_a" && python render_skill.py --check ) 2>&1 | sed 's/^/  /' \

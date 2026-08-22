@@ -5,28 +5,27 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 和 `../HANDOFF.md`（agent harness 黑盒对比）共用模型和仓库，实验方法完全不同。
 
-状态（2026-08-22）：Tier A 整条梯队跑完了（1.7B，run `20260822-031238`），Tier B
-的 e0 两对**都没过门槛，而且是贴着地板没过**（run `20260822-033149`），层间实验
-按设计跳过。结论与依据见 HANDOFF §12.3g / §12.3h，那两次的原始输出在
+状态（2026-08-23）：Tier A 整条梯队跑完了（1.7B，runs `20260822-031238` /
+`20260822-175713`，两次数字一致——贪心解码）。Tier B **v1 已经下线**：它的 e0 两对
+都没过门槛，而且是贴着地板没过（8B，run `20260822-181445`），根因是无 CoT 设定下
+模型要在一次前向里做三位有效数字的算术，见 HANDOFF §15。梯队 b 现在跑的是
+**Tier B v2 选装置任务**（`tasks/tier_b2/`，116 题，无算术）。原始输出在
 [`journal/`](journal/)。
 
-**下一步是这四件，前两件不用 GPU：**
+**下一步，前三件不用 GPU：**
 
-1. **重跑一次汇总。** 上一版 `report.py` 认不出 e1/e2/e7 的 summary，所以那三条
-   曲线**跑出来了但没有人读过**，交叉校验也一次都没跑（§12.3g）。
-   `git pull` 之后 `python report.py results/20260822-031238`，几秒。
-2. **定性 E6。** 两个口味都报 `follow_rate = nan`（100% 两个值都不答）。
-   `python e6_diagnose.py results/20260822-031238/e6-tierA` —— 它分开"H5"和
-   "答案没被正确抽出来"这两种方向相反的读法。
-3. **确认 Tier B 那一跑用的是哪个模型**：
-   `results/20260822-033149/e0-tierB-const/run-info.json`。如果是 1.7B，基线
-   0.067 就被完全解释掉，那个零结果作废。
-4. **Tier B 按难度重挑题**。题池 196 道，这次用了前 120。§2 要的是"基线正好落在
-   会一半区间"的题，不是按顺序截。
-
-进 Tier B 之前：两次 `--filter-known` 产出的文件应当逐行相同（筛的是无 skill 条件，
-与用哪份 skill 无关），diff 一下再比较两条恢复率曲线。08-22 那一跑两个条件的无
-skill 数字完全一致（0.067 / −4.395），是强证据但还不是逐行相同。
+1. **重跑一次汇总。** 上一版 `report.py` 认不出 e1/e2/e7 的 summary，那三条曲线
+   跑出来了但没人读过；新的交叉校验还会用 lp swing 补上 E6（§12.3g）。
+   `python report.py results/20260822-175713`，几秒。
+2. **重跑 Tier A 的 errors。** `errors.py` 以前把「照抄题干数字」算成 H1 检索错
+   （`other` 会取到 `dst`，系数为 1）。现在有独立的 `echo` 类别，
+   「修好的 19 题 100% 来自检索错」这个结论要重新看一次。
+3. **定性 E6。** 两个口味都报 `follow_rate = nan`（100% 两个值都不答），但
+   lp swing 是 +3.43 —— 那是「抽取坏了」，不是 H5。
+   `python e6_diagnose.py results/20260822-175713/e6-tierA` 看 raw 坐实。
+4. **跑 Tier B v2。** `./run-whitebox.sh --phase b`。它的头一个结果是行为层的
+   **双重分离**（e0 + errors，不用层扫描）：常数那份 skill 应当只修单位轴，
+   方法那份只修关系式轴。不成立的话，E2 的 example/principle 预测就已经被证伪了。
 
 ---
 
@@ -53,7 +52,8 @@ skill 数字完全一致（0.067 / −4.395），是强证据但还不是逐行�
 | `contamination.py` | skill 是否泄漏答案 |
 | `setup-whitebox.sh` | 服务器端体检 + 可选安装 |
 | `tasks/tier_a/` | 合成任务（正对照）：虚构 Zorb 单位制 |
-| `tasks/tier_b/` | 真实任务：SciBench 物理化学 + 两份知识型 skill |
+| `tasks/tier_b/` | **v1，已下线**：SciBench 物理化学原题 + 两份知识型 skill |
+| `tasks/tier_b2/` | **梯队 b 实际在跑的**：选装置，2×2 因子设计，无算术 |
 | `results/<run-id>/` | 每次跑的产物 |
 
 ---
@@ -172,11 +172,14 @@ python e0_effect.py --model ../models/Qwen3-1.7B \
   --tasks tasks/tier_a/tasks.jsonl --skill tasks/tier_a/SKILL.zorb-units.md \
   --mode mc --run-id tierA-dev
 
-# 3. Tier B 效应筛查 —— 真实问题所在
+# 3. Tier B v2 效应筛查 —— 结论从这里出
 python e0_effect.py --model ../models/Qwen3-8B \
-  --tasks tasks/tier_b/tasks.jsonl --skill tasks/tier_b/SKILL.pchem-constants.md \
-  --mode num --limit 120 --run-id tierB-const-8b \
-  --filter-known tasks/tier_b/tasks.filtered.jsonl
+  --tasks tasks/tier_b2/tasks.jsonl --skill tasks/tier_b/SKILL.pchem-constants.md \
+  --mode mc --run-id tierB-const-8b
+
+# 4. 双重分离的一半：这份 skill 修的是哪个轴（纯后处理，不用 GPU）
+python errors.py --per-item results/tierB-const-8b/per_item.jsonl \
+  --tasks tasks/tier_b2/tasks.jsonl --mode mc --label pchem-constants
 ```
 
 **第 1 步不能跳。** 自检测的不是假设，是代码有没有做它声称的事。坏掉的干预照样
@@ -237,51 +240,101 @@ D. 36
 的题全部剔除。这次剔了 15 题，剩 47。不剔的话模型可以照抄例子而不查表，那会一律
 表现成 H1，机制就分不出来了。
 
-### Tier B：SciBench 物理化学（196 题池）
+### Tier B v2：选装置（116 题，梯队 b 实际在跑的）
 
-两份 skill **内容类型互斥**，这是 E2 预注册预测能成立的前提。
+> **v1（SciBench 原题 + 填空）已经下线，代码和题池还在 `tasks/tier_b/`。**
+> 它测不出东西，原因不是题太多步——很多是一步——而是这个设计
+> `enable_thinking=False` + 24 token + 「只给最终数字」，模型得在一次前向里把
+> `25000 / 373.15` 算到三位有效数字。8B 无 skill 0.067，地板上没有余量，
+> skill 再有用也涨不动。详见 HANDOFF §15。
+>
+> v2 把**算术拿掉，化学留下**：给一个场景和四个候选装置，选哪个是对的，
+> 不用算。题目由 `tasks/tier_b2/build.py` 生成，`--check` 能逐字节复现。
+
+**四个选项是一个 2×2 因子设计**，这是这份题集存在的理由：
+
+|  | 常数对 | 常数错 |
+|---|---|---|
+| **关系式对** | `correct` | `wrong_const` |
+| **关系式错** | `wrong_rel` | `wrong_both` |
+
+两个轴分别由两份 skill 拥有，而且**互不覆盖**：
+
+- `SKILL.pchem-constants` 只有数值 → 只能修 `wrong_const`（单位轴）
+- `SKILL.pchem-procedure` 只有方法 → 只能修 `wrong_rel`（关系式轴）
+
+所以预注册的预测是**双重分离**，不是一个准确率差值。`errors.py` 逐题给出是哪个轴，
+`report.py` 把两份 skill 的结果并起来判定。一份 skill 同时动两个轴，
+example/principle 这条线就当场被证伪了——而那正是 E2 整个预测赖以成立的东西。
+
+题目长这样：
+
+> 1.78 mol of nitrogen expands isothermally and reversibly from 9.55 dm^3 to
+> 16.07 dm^3 at 37 degC. The work done is required in joules.
+>
+> Which setup is correct? Do not carry out the calculation.
+> A. reversible isothermal work, using R = 82.06 cm^3 atm K^-1 mol^-1
+> B. reversible isothermal work, using R = 8.314 J K^-1 mol^-1   ← 对
+> C. perfect gas law, using R = 82.06 cm^3 atm K^-1 mol^-1
+> D. perfect gas law, using R = 8.314 J K^-1 mol^-1
+
+干扰项永远不是随机的：每一个都是正确装置**只翻一个轴**得到的，所以模型选了哪个字母，
+就说明它犯的是哪一类错。错的关系式只从**易混对**里取（气体定律 ↔ van der Waals，
+cell potential ↔ Nernst），不会给一个不读文档也能排除的选项。
+
+**效度必须照实说。** v1 的题是外部的、公开的（SciBench 原题，一字未改）；v2 不是，
+场景和选项都是这里生成的，关系式和常数直接抄自两份 skill，所以**按构造就能被它们解出来**
+——和 Tier A 一样，理由也一样。这让 v2 成了**第二个正对照**，surface 词汇更真实而已，
+**不是**「skill 在真实世界里有多大用」的证据。不要从这份题集引用效应量。
+
+金标字母在 A/B/C/D 上**严格等分**（116 = 4 × 29），所以一个只会选 C 的模型正好得 0.25。
+
+#### 两份 skill 的内容互斥（E2 预注册预测的前提）
 
 #### `SKILL.pchem-constants` —— 只有数值，没有方法
 
-题目例：
+v2 里它负责**单位轴**。以上面那道 work 题为例，模型要挑对 R 的哪一版：答案要焦耳，
+所以是 `R = 8.314 J K⁻¹ mol⁻¹`，不是 `82.06 cm³ atm K⁻¹ mol⁻¹`。
 
-> Suppose that 10.0 mol C₂H₆(g) is confined to 4.860 dm³ at 27 °C. Predict the
-> pressure exerted by the ethane from the perfect gas.  → 50.7 atm
+模型多半"知道" R，但**知道的是哪一版**才是关键。这份 skill 给的是**具体数值**，
+预期走 H1（检索）。
 
-模型必须：
-
-1. 认出需要哪个常数（气体常数 R）
-2. **挑对单位那一版**——压强要 atm、体积是 dm³，所以要 `R = 0.08206 L atm K⁻¹ mol⁻¹`，
-   不是 8.314
-3. 用上换算规则 `T/K = θ/°C + 273.15` → 300.15 K
-4. 代入求解
-
-模型多半"知道" R，但**知道的是哪一版**是关键。挑错单位那一版，答案就差一个常数因子。
-这份 skill 提供的是**具体数值**，所以预期走 H1（检索）。
+> v1 的同一件事需要先算出来才看得见：
+> `10.0 mol C₂H₆ 关在 4.860 dm³、27 °C，求压强 → 50.7 atm`，
+> 挑错 R 那一版答案就差一个常数因子。v2 把「挑」和「算」拆开，只保留前者。
 
 #### `SKILL.pchem-procedure` —— 只有方法，没有一个数值
 
-同一题，这份 skill 提供的是：给了 p、V、n、T 中的三个求第四个 → 用理想气体定律；
-以及符号约定、电子数怎么数、报告前怎么检查（符号、量级、单位、方向）。
+v2 里它负责**关系式轴**。它提供的是 Step 1 那张表：给了 p、V、n、T 中的三个求第四个
+→ 理想气体定律；real gas、中等压强 → van der Waals；非标准浓度 → Nernst。
 
-**它里面一个常数都没有。** 所以它要是有效，效果只能来自**选对关系式和方向**，
-不可能来自提供信息。预期走 H2（选择）。
+**它里面一个常数都没有。** 所以它要是有效，效果只能来自**选对关系式**，
+不可能来自提供数值。预期走 H2（选择）。
+
+v2 只覆盖它的 Step 1。Step 2–4（符号约定、电子数、报告前自检）没有常数轴，
+塞不进 2×2；双重分离要是成立了，符号那一版是下一个该做的题集。
 
 #### 这个对照就是 E2 的判决
 
 | skill | 抽象层级 | 预测（跑之前写死） |
 |---|---|---|
-| `pchem-constants` | 偏 `example` | 激活补丁**压不进**单个向量 |
-| `pchem-procedure` | 偏 `principle` | 激活补丁**压得进** |
+| `pchem-constants` | 偏 `example` | 行为上只动**单位轴**；激活补丁**压不进**单个向量 |
+| `pchem-procedure` | 偏 `principle` | 行为上只动**关系式轴**；激活补丁**压得进** |
+
+第一列（行为层的双重分离）**不需要 GPU 层扫描**：`e0` + `errors.py` 就能判。
+它先跑，因为它要是不成立，第二列在解释什么就已经不清楚了。
 
 抽象层级的三分来自 SAPO（见 HANDOFF §9.2）。预测写在跑之前，跑完直接对照，避免
 在多重比较里挑显著的讲故事。
 
-#### 单位必须写进 prompt
+#### 单位必须写进 prompt（v1 的遗留约束）
 
 SciBench 有些题把比例因子放在单位字段里（答案 `1.602`，单位 `10⁻¹⁷ J`）。不声明
 单位的话模型答 `1.602e-17`，scorer 判错，测到的就成了约定不一致而不是化学。
 `model.py:build_messages` 会把单位加进用户轮。
+
+v2 用不到这条——它的答案是字母——但 `build_messages` 的行为没变，v1 的题池还在，
+拿它跑对照时这条仍然适用。
 
 ---
 
@@ -295,11 +348,12 @@ python e2_patch.py --model ../models/Qwen3-1.7B \
   --tasks tasks/tier_a/tasks.jsonl --skill tasks/tier_a/SKILL.zorb-units.md \
   --mode mc --limit 40 --run-id e2-tierA
 
-# Tier B，用 e0 筛过的题（--filter-known 的产物）
+# Tier B v2 —— 和 e0 用同一批题。两份 skill 必须落在同一个题池上，
+# 否则两条恢复率曲线不可比（这也是 v2 不再做 --filter-known 的原因之一）
 python e2_patch.py --model ../models/Qwen3-8B \
-  --tasks tasks/tier_b/tasks.filtered.pchem-procedure.jsonl \
+  --tasks tasks/tier_b2/tasks.jsonl \
   --skill tasks/tier_b/SKILL.pchem-procedure.md \
-  --mode num --limit 60 --layer-step 2 --run-id e2-tierB-proc
+  --mode mc --limit 60 --layer-step 2 --run-id e2-tierB-proc
 ```
 
 它做的事：对每一层 ℓ，跑有 skill 缓存最后一个 prompt token 的 residual → 跑无
@@ -448,9 +502,9 @@ python e1_knockout.py --model ../models/Qwen3-1.7B \
 
 # 8B 先粗扫（每 4 层一组），定位到热点再用 --group 1 细扫那一段
 python e1_knockout.py --model ../models/Qwen3-8B \
-  --tasks tasks/tier_b/tasks.filtered.pchem-constants.jsonl \
+  --tasks tasks/tier_b2/tasks.jsonl \
   --skill tasks/tier_b/SKILL.pchem-constants.md \
-  --mode num --limit 60 --group 4 --run-id e1-tierB-const
+  --mode mc --limit 60 --group 4 --run-id e1-tierB-const
 ```
 
 把所有位置**指向 skill token span 的注意力**屏蔽掉，一层（或一组层）一次，测正确

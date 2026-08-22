@@ -79,8 +79,16 @@ def load_tasks(path, limit=None):
 
 def fields(item, mode):
     if "question_mc" in item:
-        return (item["question_mc"], item["answer_mc"], None) if mode == "mc" \
-            else (item["question_num"], item["answer_num"], None)
+        if mode == "mc":
+            return item["question_mc"], item["answer_mc"], None
+        # Tier B v2 is multiple-choice only: its answer is "which setup",
+        # which has no numeric form. Saying so beats a KeyError three
+        # frames down on a field the caller never knew existed.
+        if "question_num" not in item:
+            raise SystemExit(
+                f"[FAIL] {item['id']} has no numeric form -- this task set "
+                f"is multiple-choice only. Run it with --mode mc.")
+        return item["question_num"], item["answer_num"], None
     return item["question"], item["answer_raw"], item.get("unit") or None
 
 
