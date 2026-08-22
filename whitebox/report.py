@@ -110,7 +110,10 @@ def fmt_errors(s: dict) -> list[str]:
     fixed = {a.split("->")[0]: v for a, v in s["moves"].items()
              if a.endswith("->correct")}
     tot = sum(fixed.values()) or 1
-    return [f"无 skill : {dist(s['no_skill'])}",
+    head = []
+    if s.get("label"):
+        head = [f"这一份用的是 skill: {s['label']}"]
+    return head + [f"无 skill : {dist(s['no_skill'])}",
             f"有 skill : {dist(s['with_skill'])}",
             f"修好的 {tot} 题来自： " +
             "  ".join(f"{k} {v}({v/tot:.0%})" for k, v in
@@ -218,23 +221,110 @@ def cross_check(found: dict) -> list[str]:
     e1 = [s for k, s in found if k == "e1_knockout"]
     e6 = [s for k, s in found if k == "e6_counterfactual"]
     e7 = [s for k, s in found if k == "e7_repr"]
+    # E6 first: it is the only one of the three that uses no hooks, so when it
+    # disagrees with E1 or E2 it is the one that decides. Computed up here so
+    # the E2 x E1 reading below can refuse to draw a conclusion that E6 has
+    # already contradicted.
+    rates = [s["follow_rate"] for s in e6
+             if s.get("follow_rate") == s.get("follow_rate") is not None]
+    fr = max(rates) if rates else float("nan")
+    swing = max((s["lp_gap"]["cf"] - s["lp_gap"]["true"] for s in e6
+                 if "lp_gap" in s), default=float("nan"))
+    e6_tracks = (fr > 0.8) or (swing > 0.5)
+
     if e2 and e1:
         rec = max(s["best_recovery"] for s in e2)
+        mean_rec = max((s["best_layer_meanvec"] for s in e2
+                        if "best_layer_meanvec" in s), default=float("nan"))
         net_lo = max(s["best_net_ci95"][0] for s in e1)
         late = any(s["best_layers"][0] > 0.5 * (s["best_layers"][-1] + 1) for s in e1)
         if rec > 0.5 and net_lo > 0 and late:
             out.append("E2 说压得进一个向量,E1 说中后层还在持续依赖原文 —— "
                        "这两个结论互斥,先查 selftest,不要挑一个讲。")
+        elif rec > 0.5 and net_lo <= 0 and e6_tracks:
+            # "E1 found nothing" is only evidence of read-once when E1 could
+            # have found something. E6 saying the model tracks the document
+            # turns the same silence into an instrument failure.
+            out.append("E2 高恢复 + E1 无显著峰 本来读作「读一次就够」(H2),"
+                       "但 E6 说模型在跟着文档走 —— 先把 E1 的功效问题解决,"
+                       "这里不能下 H2 的结论。")
         elif rec > 0.5 and net_lo <= 0:
             out.append("E2 高恢复 + E1 无显著峰：一致,读作「读一次就够」(H2)。")
         elif rec < 0.2 and net_lo > 0:
             out.append("E2 低恢复 + E1 有峰：一致,读作「持续回看原文」(H1)。")
+        # A mean vector that beats the real one is not a compression result.
+        # Whatever the patch delivers, it is not this item's skill content --
+        # it cannot be, the mean has none. Reported here rather than in
+        # e2_patch.py as well because the two files answer to different
+        # readers and this is the reading that gets copied into a writeup.
+        if mean_rec == mean_rec and mean_rec > rec + 0.1:
+            out.append(f"E2 的平均向量({mean_rec:+.2f})比真向量({rec:+.2f})还好 —— "
+                       f"被补进去的不是这道题的 skill 内容。这是「注入了某个通用"
+                       f"状态」,不是 H2 的证据。")
+
+    # The E6 note itself. The nan case gets its own line: "the extractor
+    # failed" and "the conflict disorganised the computation" produce the
+    # same follow_rate and opposite conclusions, and only the swing separates
+    # them.
+    if e6:
+        if not rates and swing > 0.5:
+            out.append(f"E6 的 follow rate 是 nan（没有一题答出两个值之一）,"
+                       f"但 lp 偏好的 swing 是 {swing:+.2f} —— 坏的是答案抽取,"
+                       f"不是机制。跑 e6_diagnose.py 看 raw,别读成 H5。")
+        elif not rates:
+            out.append("E6 的 follow rate 是 nan,lp swing 也没有定论 —— 这一对"
+                       "既不支持也不反驳 E1,别当成证据用。")
     if e6 and e1:
-        fr = max(s["follow_rate"] for s in e6)
         net_lo = max(s["best_net_ci95"][0] for s in e1)
-        if fr > 0.8 and net_lo <= 0:
-            out.append("E6 证明模型在逐行读表,而 E1 报「没有哪一层依赖 skill」—— "
-                       "**E1 坏了**。E6 不用 hook,它说了算。")
+        if e6_tracks and net_lo <= 0:
+            how = "生成的答案" if fr > 0.8 else f" lp 偏好(swing {swing:+.2f})"
+            out.append(f"E6 按{how}判定模型在跟着文档走,而 E1 报「没有哪一层"
+                       f"依赖 skill」—— **E1 坏了**。E6 不用 hook,它说了算。")
+    # ---- Tier B v2: the double dissociation -------------------------------
+    #
+    # This is the one cross-check that IS the result rather than a consistency
+    # test. Each errors.json says which column of the 2x2 its document moved;
+    # the claim is that pchem-constants moves the units column and
+    # pchem-procedure moves the relation column. One file cannot show that --
+    # only the pair can -- so it lives here and nowhere else.
+    errs = [s for k, s in found if k == "errors" and s.get("tier_b2")]
+    by_label = {s.get("label", ""): s for s in errs}
+    if len(by_label) >= 2:
+        def axes(s):
+            mv = s["moves"]
+            wc = sum(v for a, v in mv.items() if a == "wrong_const->correct")
+            wr = sum(v for a, v in mv.items() if a == "wrong_rel->correct")
+            return wc, wr
+        rows = {lab: axes(s) for lab, s in by_label.items()}
+        out.append("Tier B v2 修好的题按轴拆开： " + "   ".join(
+            f"{lab}: 单位轴 {wc}, 关系式轴 {wr}" for lab, (wc, wr) in rows.items()))
+        con = rows.get("pchem-constants")
+        pro = rows.get("pchem-procedure")
+
+        def own(pair, idx):
+            """Did this document's fixes land mostly on the axis it owns?
+
+            A bare > comparison is not enough: 18 against 17 satisfies it and
+            means nothing. 60% of the document's own fixes is the smallest
+            margin that still reads as 'this column and not the other'."""
+            return sum(pair) > 0 and pair[idx] > 0.6 * sum(pair)
+
+        if con and pro:
+            if sum(con) == 0 or sum(pro) == 0:
+                out.append("其中一份 skill 一题都没修好 —— 双重分离没有分母,"
+                           "先看 e0 的门槛。")
+            elif own(con, 0) and own(pro, 1):
+                out.append("**双重分离成立**：常数那份主要修单位轴,方法那份主要"
+                           "修关系式轴。两份文档在做不同的事,E2 的 example/"
+                           "principle 对照有了行为层面的依据。")
+            elif own(con, 0) or own(pro, 1):
+                out.append("只分离了一半：一份 skill 落在自己的轴上,另一份没有。"
+                           "报这个不对称,不要报「分离」。")
+            else:
+                out.append("**没有分离**：两份 skill 修的是同一批错。这直接反驳"
+                           "「内容不同的 skill 走不同机制」—— 剩下的解释是"
+                           "「上下文里有份长文档」,和 E7 的余弦 0.97 一致。")
+
     if e7 and e2:
         rec_mean = max(s["best_layer_meanvec"] for s in e2)
         cos = max((max(r["mean_pairwise_cos"]) for s in e7

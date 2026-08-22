@@ -48,6 +48,10 @@ E1_N=${WB_E1_LIMIT:-40}
 TAIL_K=${WB_TAIL_K:-4}
 LAYER_STEP_B=${WB_TIERB_LAYER_STEP:-2}
 GROUP_B=${WB_TIERB_GROUP:-4}
+# E1 一次敲一层时，单层的真实效应比题间方差还小（selftest：单层 1.4 vs 全层 20.9），
+# 在 28 条那样的曲线里取最大值只会拿到噪声的上尾。Tier B 一直是 4，
+# Tier A 之前漏了，默认跟 Tier B 对齐。
+GROUP_A=${WB_TIERA_GROUP:-4}
 
 RUN_ID=${RUN_ID:-$(date '+%Y%m%d-%H%M%S')}
 OUT=$BASE/results/$RUN_ID
@@ -61,6 +65,7 @@ STAGES=(
   "selftest|0|干预机制自检：补丁和敲除有没有做它们声称的事（硬门槛）"
   "e7-metrics|0|几何指标自检：余弦/有效维数/探针在已知数据上给不给出已知答案"
   "e0-tierA|a|有没有值得解释的效应？不过门槛,后面全是在解释噪声"
+  "e0-tierA-num|a|同一批题改成填空：+36pp 里有多少是「会算」,多少是「会在四个选项里选」"
   "errors-tierA|a|skill 消掉的是哪一类错？格式 / 选错表 / 读错行"
   "e7-tierA|a|注入之后表示层出现了什么 pattern？一个共享方向还是逐题内容"
   "e6-tierA|a|模型真的在读那张表吗？改掉一个换算因子,答案跟谁走"
@@ -68,8 +73,10 @@ STAGES=(
   "e2-tierA|a|效应能不能压进一个向量？能=H2 选择,不能=H1 检索"
   "e2-tierA-k4|a|换成补 K 个位置还压不进吗？区分「压不进」和「一个位置装不下」"
   "e1-tierA|a|哪些层在读 skill？早层=读一次,中后层持续=反复回看"
-  "e0-tierB-const|b|真实任务上,只给常数的 skill 有没有效应"
-  "e0-tierB-proc|b|真实任务上,只给方法的 skill 有没有效应"
+  "e0-tierB-const|b|选装置任务上,只给常数的 skill 有没有效应"
+  "e0-tierB-proc|b|选装置任务上,只给方法的 skill 有没有效应"
+  "errors-tierB-const|b|常数 skill 修的是单位轴还是关系式轴（双重分离的一半）"
+  "errors-tierB-proc|b|方法 skill 修的是关系式轴还是单位轴（另一半）"
   "e7-tierB|b|两份内容互斥的 skill,在表示层是同一个方向还是两个方向"
   "e2-tierB-const|b|预注册预测：example 型 skill 应当压不进向量"
   "e2-tierB-proc|b|预注册预测：principle 型 skill 应当压得进向量"
@@ -111,7 +118,10 @@ if [ $LIST -eq 1 ]; then
 梯队 0 不花算力,每次都跑。
 梯队 a 是知识型 skill + 单步 —— 单位是编出来的,不查表答不出来,所以效应是构造
        保证的。它的作用是让「没测到」只能有一个解释：代码坏了。
-梯队 b 是真实任务（SciBench 物理化学）+ 两份内容互斥的 skill。结论在这里出。
+梯队 b 是选装置任务（tier_b2,116 题,无算术）+ 两份内容互斥的 skill。
+       机制结论从这里出：头一个是行为层的双重分离,常数那份 skill 应当只修
+       单位轴、方法那份只修关系式轴,e0+errors 就能判,不用层扫描。
+       效应量结论不从这里出 —— 题是生成的,见 HANDOFF §15.4。
 EOF
   exit 0
 fi
@@ -217,12 +227,16 @@ fi
 cd "$BASE" || exit 1
 A_TASKS=$BASE/tasks/tier_a/tasks.jsonl
 A_SKILL=$BASE/tasks/tier_a/SKILL.zorb-units.md
-B_TASKS=$BASE/tasks/tier_b/tasks.jsonl
+B_TASKS=$BASE/tasks/tier_b2/tasks.jsonl
+# Tier B v1 (SciBench, free numeric) is kept for reference but is no longer
+# on the ladder: the no-CoT decoding it inherits puts its baseline at 0.067,
+# with no room for a skill to act in. See HANDOFF-whitebox.md 15.
+B_TASKS_V1=$BASE/tasks/tier_b/tasks.jsonl
 
 # --smoke：几道题、几层，跑通全流程用的。数字全是错的,唯一的问题是
 # "每一步会不会跑起来"。真跑之前先 smoke 一遍,比在第 40 分钟撞到一个
 # 参数拼错要便宜得多。
-A_LIMIT=(); E2_STEP=(); E1_GROUP=()
+A_LIMIT=(); E2_STEP=(); E1_GROUP=(--group "$GROUP_A")
 if [ $SMOKE -eq 1 ]; then
   A_LIMIT=(--limit 8); E2_N=4; E1_N=4; TIERB_N=8
   E2_STEP=(--layer-step 8); E1_GROUP=(--group 8)
@@ -266,6 +280,18 @@ for entry in "${STAGES[@]}"; do
       echo "[!] Tier A 是**正对照**：这批题不查表答不出来,所以没有大效应"
       echo "    只有一个解释 —— 流水线坏了,不是假设错了。后面的层间实验先别看。"
     fi ;;
+
+  e0-tierA-num)
+    # Same items, same skill, free-form numeric answers instead of four options.
+    # E6 already runs Tier A in num mode and reports that with the correct,
+    # unperturbed skill the model produces the right value on 0% of items -- so
+    # the MC accuracy the gate passed on may be discrimination among four
+    # options rather than the conversion. This stage measures that directly
+    # instead of leaving it as an inference from E6's skipped-item pool.
+    run_stage "$nm" "$wh" "$PY" "$BASE/e0_effect.py" \
+      --model "$DEV_MODEL" --device "$DEVICE" \
+      --tasks "$A_TASKS" --skill "$A_SKILL" --mode num \
+      ${A_LIMIT[@]+"${A_LIMIT[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   errors-tierA)
     [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/$nm"
@@ -312,23 +338,43 @@ for entry in "${STAGES[@]}"; do
 
   e0-tierB-const|e0-tierB-proc)
     sk=pchem-constants; [ "$nm" = "e0-tierB-proc" ] && sk=pchem-procedure
+    # No --filter-known here. v1 used it to drop the items the model already got
+    # right, which is the correct move against a CEILING and the wrong one
+    # against a floor: at 0.067 it would have left a pool with a 0% baseline.
+    # The v2 set is built to land mid-range on its own; if it does not, the fix
+    # belongs in the generator, not in a filter applied after the fact.
     run_stage "$nm" "$wh" "$PY" "$BASE/e0_effect.py" \
       --model "$MAIN_MODEL" --device "$DEVICE" \
       --tasks "$B_TASKS" --skill "$BASE/tasks/tier_b/SKILL.$sk.md" \
-      --mode num --limit "$TIERB_N" --run-id "$RUN_ID/$nm" \
-      --filter-known "$BASE/tasks/tier_b/tasks.filtered.$sk.jsonl" ;;
+      --mode mc --limit "$TIERB_N" --run-id "$RUN_ID/$nm" ;;
+
+  errors-tierB-const|errors-tierB-proc)
+    # Half the double dissociation each. The comparison between the two files
+    # is what carries the result, and report.py does it.
+    case "$nm" in
+      *-const) sk=pchem-constants; e0=e0-tierB-const ;;
+      *)       sk=pchem-procedure; e0=e0-tierB-proc ;;
+    esac
+    [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/$nm"
+    run_stage "$nm" "$wh" "$PY" "$BASE/errors.py" \
+      --per-item "$OUT/$e0/per_item.jsonl" --tasks "$B_TASKS" --mode mc \
+      --label "$sk" --out "$OUT/$nm/errors.json" ;;
 
   e7-tierB)
     run_stage "$nm" "$wh" "$PY" "$BASE/e7_repr.py" \
       --model "$MAIN_MODEL" --device "$DEVICE" \
-      --tasks "$B_TASKS" --mode num --limit "$TIERB_N" \
+      --tasks "$B_TASKS" --mode mc --limit "$TIERB_N" \
       --skill "$BASE/tasks/tier_b/SKILL.pchem-constants.md" \
       --skill "$BASE/tasks/tier_b/SKILL.pchem-procedure.md" \
       --run-id "$RUN_ID/$nm" ;;
 
   e2-tierB-const|e2-tierB-proc|e1-tierB-const|e1-tierB-proc)
     case "$nm" in *-const) sk=pchem-constants ;; *) sk=pchem-procedure ;; esac
-    filtered=$BASE/tasks/tier_b/tasks.filtered.$sk.jsonl
+    # v1 pointed these at tasks.filtered.<skill>.jsonl, the output of
+    # --filter-known. v2 has no filter step, so they run on the same items e0
+    # did -- which is also what E2 needs: the two recovery curves are only
+    # comparable if both skills were measured on an identical pool.
+    filtered=$B_TASKS
     # 层间实验的分母是行为效应。分母是噪声时,恢复率不是"小",是没有定义 ——
     # 所以门槛没过就跳过,而不是照跑然后在报告里解释。
     if [ $DRYRUN -eq 0 ] && [ $NOGATE -eq 0 ] && ! gate_ok "$OUT/e0-tierB-${nm##*-}/summary.json"; then
@@ -348,12 +394,12 @@ for entry in "${STAGES[@]}"; do
       e2-*) run_stage "$nm" "$wh" "$PY" "$BASE/e2_patch.py" \
               --model "$MAIN_MODEL" --device "$DEVICE" \
               --tasks "$filtered" --skill "$BASE/tasks/tier_b/SKILL.$sk.md" \
-              --mode num --limit "$E2_N" --layer-step "$LAYER_STEP_B" \
+              --mode mc --limit "$E2_N" --layer-step "$LAYER_STEP_B" \
               --run-id "$RUN_ID/$nm" ;;
       e1-*) run_stage "$nm" "$wh" "$PY" "$BASE/e1_knockout.py" \
               --model "$MAIN_MODEL" --device "$DEVICE" \
               --tasks "$filtered" --skill "$BASE/tasks/tier_b/SKILL.$sk.md" \
-              --mode num --limit "$E1_N" --group "$GROUP_B" \
+              --mode mc --limit "$E1_N" --group "$GROUP_B" \
               --run-id "$RUN_ID/$nm" ;;
     esac ;;
 

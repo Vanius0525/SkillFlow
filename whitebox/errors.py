@@ -70,6 +70,10 @@ FAMILIES = {
 POINTS_AT = {
     "correct": "-",
     "unparsed": "H3 format",
+    "echo": "H0 no attempt (copied the quantity from the question)",
+    "wrong_const": "H1 retrieval (right relation, constant in the wrong units)",
+    "wrong_rel": "H2 selection (wrong relation, constant right)",
+    "wrong_both": "both axes wrong",
     "wrong_row": "H1 retrieval (found the table, misread the line)",
     "wrong_family": "H2 selection (wrong table entirely)",
     "inverted": "H2 selection (right values, wrong direction)",
@@ -81,7 +85,8 @@ POINTS_AT = {
     "other": "no diagnosis",
 }
 
-ORDER = ["correct", "unparsed", "wrong_row", "wrong_family", "inverted",
+ORDER = ["correct", "unparsed", "echo", "wrong_const", "wrong_rel",
+         "wrong_both", "wrong_row", "wrong_family", "inverted",
          "const_version", "unit_prefix", "magnitude", "kelvin", "sign", "other"]
 
 
@@ -118,6 +123,15 @@ def classify_tier_a(value, task) -> str:
     t = FAMILIES[fam]
     if close(value, v * t[src] / t[dst]):
         return "correct"
+    # Answering with the quantity from the question is not a misreading of the
+    # table, it is not consulting the table at all. Checked before the loop
+    # below because that loop would call it wrong_row: `other` ranges over every
+    # unit including dst, and t[dst]/t[dst] is 1. Every echo would then be
+    # counted as an H1 retrieval error, and -- since the skill stops the echoing
+    # -- as an H1 error the skill repaired. build.py puts `value` itself in the
+    # distractor set, so in MC mode this answer is one option away.
+    if close(value, v):
+        return "echo"
     for other in t:
         if other != src and close(value, v * t[other] / t[dst]):
             return "wrong_row"
@@ -127,6 +141,25 @@ def classify_tier_a(value, task) -> str:
     if close(value, v * t[dst] / t[src]):
         return "inverted"
     return "other"
+
+
+def classify_tier_b2(rec: dict, task: dict) -> str:
+    """
+    Tier B v2 needs no inference: build.py records what each option means, so
+    the letter the model picked names the failure directly.
+
+    The 2x2 is the point. `wrong_const` is a units error with the relation
+    already right, which only SKILL.pchem-constants can repair; `wrong_rel` is
+    the reverse, and only SKILL.pchem-procedure can repair it. A skill that
+    moves both columns is not doing what its own front matter claims, and the
+    example/principle contrast E2 is built on does not survive it.
+    """
+    pred = rec.get("pred")
+    if pred is None:
+        return "unparsed"
+    letter = str(pred).strip()[:1]
+    kinds = task.get("option_kinds") or {}
+    return kinds.get(letter, "unparsed")
 
 
 def classify_numeric(value, gold: float) -> str:
@@ -163,6 +196,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--per-item", required=True,
                     help="per_item.jsonl written by e0_effect.py")
+    ap.add_argument("--label", default="",
+                    help="which skill this run used, e.g. pchem-constants. "
+                         "Recorded in the output so the Tier B v2 dissociation "
+                         "can be checked across two runs.")
     ap.add_argument("--tasks", required=True)
     ap.add_argument("--mode", choices=["mc", "num"], default=None,
                     help="default: inferred from the gold answers")
@@ -184,6 +221,11 @@ def main():
         golds = {str(r.get("gold", "")) for r in recs}
         mode = "mc" if golds <= {"A", "B", "C", "D"} else "num"
     tier_a = all("family" in tasks.get(r["id"], {}) for r in recs)
+    # Tier B v2 is recognised by the field that carries its 2x2 -- the same way
+    # tier_a is recognised by "family". Detecting on the data rather than on a
+    # flag keeps errors.py runnable against any per_item.jsonl without the
+    # caller having to remember which set produced it.
+    tier_b2 = all("option_kinds" in tasks.get(r["id"], {}) for r in recs)
 
     if "pred" not in recs[0].get("no_skill", {}):
         print("[FAIL] this per_item.jsonl predates the `pred` field. Re-run")
@@ -193,8 +235,9 @@ def main():
         raise SystemExit(1)
 
     print(f"per-item : {args.per_item}  ({len(recs)} items)")
-    print(f"tasks    : {args.tasks}  (mode={mode}, "
-          f"{'Tier A structural' if tier_a else 'numeric residual'} typology)\n")
+    which = ("Tier A structural" if tier_a else
+             "Tier B v2 2x2" if tier_b2 else "numeric residual")
+    print(f"tasks    : {args.tasks}  (mode={mode}, {which} typology)\n")
 
     cats = {"no_skill": [], "with_skill": []}
     for r in recs:
@@ -202,11 +245,13 @@ def main():
         if task is None:
             continue
         for cond in ("no_skill", "with_skill"):
-            v = predicted_value(r[cond], task, mode)
-            if tier_a:
-                c = classify_tier_a(v, task)
+            if tier_b2:
+                c = classify_tier_b2(r[cond], task)
+            elif tier_a:
+                c = classify_tier_a(predicted_value(r[cond], task, mode), task)
             else:
-                c = classify_numeric(v, float(r["gold"]))
+                c = classify_numeric(predicted_value(r[cond], task, mode),
+                                     float(r["gold"]))
             cats[cond].append((r["id"], c))
 
     n = len(cats["no_skill"])
@@ -237,25 +282,68 @@ def main():
 
     print("\n  reading it:")
     fixed = sum(k for _, k in gained) or 1
-    fmt = sum(k for a, k in gained if a == "unparsed")
-    sel = sum(k for a, k in gained if a in ("wrong_family", "inverted", "sign"))
-    ret = sum(k for a, k in gained
-              if a in ("wrong_row", "const_version", "kelvin"))
-    print(f"    of the items the skill fixed: {fmt/fixed:.0%} were unparsed "
-          f"(H3), {sel/fixed:.0%} were\n    selection errors (H2), "
-          f"{ret/fixed:.0%} were retrieval errors (H1)")
-    if fmt / fixed > 0.5:
-        print("    Most of the effect is the skill making the output parseable.")
-        print("    That is H3, and it is not what the layer sweeps are set up to")
-        print("    explain. Fix the answer instruction or the extractor first.")
-    elif cn.get("unparsed", 0) > 0.2 * n:
-        print(f"    {cn['unparsed']/n:.0%} of no-skill outputs carry no answer at "
-              f"all. The accuracy delta\n    is inflated by that much before any "
-              f"mechanism is involved.")
+    if tier_b2:
+        # The 2x2 makes this a within-item contrast rather than a rate: the
+        # same item offers a units error and a relation error side by side,
+        # so "which column did this document move" is answerable directly.
+        wc = sum(k for a, k in gained if a == "wrong_const")
+        wr = sum(k for a, k in gained if a == "wrong_rel")
+        wb = sum(k for a, k in gained if a == "wrong_both")
+        print(f"    of the items this skill fixed: {wc/fixed:.0%} were units "
+              f"errors (wrong_const),")
+        print(f"    {wr/fixed:.0%} were relation errors (wrong_rel), "
+              f"{wb/fixed:.0%} were both")
+        if wc and wr and min(wc, wr) > 0.3 * (wc + wr):
+            print("    This document moved BOTH axes about equally. It is not")
+            print("    behaving as values-only or methods-only, whichever it")
+            print("    claims to be -- and the example/principle contrast that")
+            print("    E2 preregisters does not survive that. Check the other")
+            print("    skill before concluding: if both move both axes, the")
+            print("    effect is 'a document is present', not its content.")
+        elif wc > wr:
+            print("    Mostly the units axis -> this behaves like a values")
+            print("    document (expected for pchem-constants).")
+        elif wr > wc:
+            print("    Mostly the relation axis -> this behaves like a methods")
+            print("    document (expected for pchem-procedure).")
+        if cn.get("unparsed", 0) > 0.2 * n:
+            frac = cn['unparsed'] / n
+            print(f"    {frac:.0%} of no-skill answers carry no letter at all.")
+    else:
+        fmt = sum(k for a, k in gained if a == "unparsed")
+        ech = sum(k for a, k in gained if a == "echo")
+        sel = sum(k for a, k in gained if a in ("wrong_family", "inverted", "sign"))
+        ret = sum(k for a, k in gained
+                  if a in ("wrong_row", "const_version", "kelvin"))
+        print(f"    of the items the skill fixed: {fmt/fixed:.0%} were unparsed "
+              f"(H3), {ech/fixed:.0%} were echoes of the question (H0),\n    "
+              f"{sel/fixed:.0%} were selection errors (H2), {ret/fixed:.0%} were "
+              f"retrieval errors (H1)")
+        if fmt / fixed > 0.5:
+            print("    Most of the effect is the skill making the output parseable.")
+            print("    That is H3, and it is not what the layer sweeps are set up to")
+            print("    explain. Fix the answer instruction or the extractor first.")
+        elif ech / fixed > 0.5:
+            print("    Most of the items the skill fixed were ones where the model")
+            print("    had answered with the number from the question. The skill is")
+            print("    getting it to attempt the task at all, and that is upstream")
+            print("    of every hypothesis the layer sweeps separate: H1 vs H2 asks")
+            print("    HOW the model consults the table, and these items were not")
+            print("    consulting it. Report the effect on the items that did")
+            print("    attempt it separately, or the mechanism claim inherits an")
+            print("    engagement effect.")
+        elif cn.get("unparsed", 0) > 0.2 * n:
+            print(f"    {cn['unparsed']/n:.0%} of no-skill outputs carry no answer at "
+                  f"all. The accuracy delta\n    is inflated by that much before any "
+                  f"mechanism is involved.")
 
     if args.out:
         pathlib.Path(args.out).write_text(json.dumps({
-            "n": n, "mode": mode, "tier_a": tier_a,
+            "n": n, "mode": mode, "tier_a": tier_a, "tier_b2": tier_b2,
+            # Which document produced this file. The Tier B v2 dissociation is a
+            # comparison BETWEEN two of these, and a run directory holds both,
+            # so report.py needs to be able to tell them apart.
+            "label": args.label,
             "no_skill": dict(cn), "with_skill": dict(cy),
             "moves": {f"{a}->{b}": k for (a, b), k in moves.items()},
         }, indent=2, ensure_ascii=False), encoding="utf-8")

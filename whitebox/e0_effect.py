@@ -41,6 +41,7 @@ import pathlib
 import random
 import re
 import time
+from collections import Counter
 
 import torch
 
@@ -57,8 +58,16 @@ def load_tasks(path, limit=None):
 def fields(item, mode):
     """Tier A carries both formats; Tier B is numeric only."""
     if "question_mc" in item:
-        return (item["question_mc"], item["answer_mc"], None) if mode == "mc" \
-            else (item["question_num"], item["answer_num"], None)
+        if mode == "mc":
+            return item["question_mc"], item["answer_mc"], None
+        # Tier B v2 is multiple-choice only: its answer is "which setup",
+        # which has no numeric form. Saying so beats a KeyError three
+        # frames down on a field the caller never knew existed.
+        if "question_num" not in item:
+            raise SystemExit(
+                f"[FAIL] {item['id']} has no numeric form -- this task set "
+                f"is multiple-choice only. Run it with --mode mc.")
+        return item["question_num"], item["answer_num"], None
     return item["question"], item["answer_raw"], item.get("unit") or None
 
 
@@ -210,15 +219,37 @@ def main():
     # item counts as wrong. The delta then partly measures "the skill made the
     # output parseable" (H3, formatting) rather than "the skill supplied the
     # missing knowledge" -- a different mechanism, and not the one being studied.
-    if chance and acc_no < chance * 0.8:
-        print(f"  [!] Baseline {acc_no:.3f} is below chance ({chance:.3f}).")
-        print(f"      Answers were found in only {parse_no:.0%} of the no-skill "
-              f"outputs.")
-        print("      Read the `raw` field of per_item.jsonl before treating the")
-        print("      delta as mechanistic. See HANDOFF-whitebox.md 12.3b.")
-        unparsed = [x for x in no if not x["parsed"]][:3]
-        for x in unparsed:
+    # A baseline below chance has two causes that call for opposite responses,
+    # and the parse rate separates them. Unparsed output -> the delta partly
+    # measures H3 (formatting). Parsed output -> the model answered, in a
+    # form the extractor understood, and was systematically wrong: it is being
+    # pulled to a particular distractor. That is a fact about the item set and
+    # it does NOT put an H3 share in the delta. The old branch assumed the
+    # first cause and printed the parse rate as if it supported it, which at
+    # 100% read as "answers were found in only 100% of the outputs".
+    if chance and acc_no < chance * 0.8 and parse_no < 0.9:
+        print(f"  [!] Baseline {acc_no:.3f} is below chance ({chance:.3f}), and")
+        print(f"      {1-parse_no:.0%} of no-skill outputs carry no extractable "
+              f"answer.")
+        print("      Part of the delta is the skill making the output parseable")
+        print("      (H3), not the skill supplying knowledge. Read the `raw` field")
+        print("      of per_item.jsonl. See HANDOFF-whitebox.md 12.3b.")
+        for x in [x for x in no if not x["parsed"]][:3]:
             print(f"        {x['id']}: {x['raw'][:70]!r}")
+    elif chance and acc_no < chance * 0.8:
+        print(f"  [!] Baseline {acc_no:.3f} is below chance ({chance:.3f}) with "
+              f"{parse_no:.0%} of")
+        print("      outputs parsed. So this is not a formatting problem: the")
+        print("      model answered every item and was reliably wrong, which means")
+        print("      one distractor is attracting it. There is no H3 share in the")
+        print("      delta, but part of it may be the skill stopping that pull")
+        print("      rather than supplying knowledge -- errors.py splits the two.")
+        wrong = [x for x in no if x["parsed"] and not x["correct"]]
+        picked = Counter(x["pred"] for x in wrong)
+        if picked:
+            top, k = picked.most_common(1)[0]
+            print(f"      most common wrong answer: {top!r} on {k}/{len(wrong)} "
+                  f"of the wrong items")
     elif parse_no < 0.9 or parse_yes < 0.9:
         print(f"  [!] Some outputs carry no extractable answer "
               f"({1-parse_no:.0%} without skill, {1-parse_yes:.0%} with). Part of")

@@ -81,8 +81,16 @@ def load_tasks(path, limit=None):
 
 def fields(item, mode):
     if "question_mc" in item:
-        return (item["question_mc"], item["answer_mc"], None) if mode == "mc" \
-            else (item["question_num"], item["answer_num"], None)
+        if mode == "mc":
+            return item["question_mc"], item["answer_mc"], None
+        # Tier B v2 is multiple-choice only: its answer is "which setup",
+        # which has no numeric form. Saying so beats a KeyError three
+        # frames down on a field the caller never knew existed.
+        if "question_num" not in item:
+            raise SystemExit(
+                f"[FAIL] {item['id']} has no numeric form -- this task set "
+                f"is multiple-choice only. Run it with --mode mc.")
+        return item["question_num"], item["answer_num"], None
     return item["question"], item["answer_raw"], item.get("unit") or None
 
 
@@ -363,7 +371,29 @@ def main():
 
     print(f"\n  reading it:")
     margin = br["real"] - br["mismatched"]
-    if br["real"] > 0.5 and margin > 0.2:
+    # Recovery is a ratio: 1.0 is "the patch reproduced the whole behavioural
+    # effect of the document". Above that the patch is doing something the
+    # document did not, and the mean-vector condition is the tell -- a mean
+    # over items carries no item content, so if it beats the real vector, what
+    # is delivered cannot be this item's skill content. The likely candidate is
+    # a generic "a document is present" state, minus the distraction cost of
+    # having 700 tokens of document actually in context. Checked before the H2
+    # branch, which would otherwise call this the strongest evidence for H2.
+    overshoot = br["real"] > 1.15 or (br["mean"] == br["mean"] and
+                                      br["mean"] > br["real"] + 0.1)
+    if overshoot:
+        print("    [!] The patch OVER-recovers: real %+.3f, mean %+.3f "
+              "(1.0 = the whole effect)." % (br["real"], br["mean"]))
+        print("    A mean vector carries no per-item content, so a mean that")
+        print("    matches or beats the real one is not delivering the skill's")
+        print("    content. Read it as 'patching injects some generic state',")
+        print("    not as H2. Two things to check before reporting it:")
+        print("      - E7: if two skills with incompatible content share a mean")
+        print("        direction, that direction is not about the skill at all.")
+        print("      - E0 error types: if having the document in context creates")
+        print("        errors of its own, the patch beats it by skipping that")
+        print("        cost, and a ratio above 1 has a boring explanation.")
+    elif br["real"] > 0.5 and margin > 0.2:
         print("    Compresses into a vector, and the mismatched control does not")
         print("    reproduce it -> H2 (capability selection). Next: what does the")
         print("    vector encode? E1 attention work drops to a check.")

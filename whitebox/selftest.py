@@ -48,9 +48,17 @@ import model as M
 PASS, FAIL = [], []
 
 
-def check(name: str, ok: bool, detail: str = ""):
+def check(name: str, ok: bool, detail: str = "", on_fail: str = ""):
+    """
+    `detail` is the measurement and prints either way. `on_fail` is the hint
+    about what a failure would mean and prints only when it failed -- printing
+    it next to [ OK ] made passing lines read as failures ("span stops early"
+    on a span that was located correctly), which is worse than saying nothing.
+    """
     (PASS if ok else FAIL).append(name)
-    print(f"  [{'  OK  ' if ok else ' FAIL '}] {name}" + (f"  -- {detail}" if detail else ""))
+    bits = [b for b in (detail, "" if ok else on_fail) if b]
+    print(f"  [{'  OK  ' if ok else ' FAIL '}] {name}"
+          + ("  -- " + "  -- ".join(bits) if bits else ""))
 
 
 def main():
@@ -120,7 +128,7 @@ def main():
         out0 = r.model(ids, use_cache=False)
     zero_delta = (out0.logits[:, -1].float() - ref_logits).abs().max().item()
     check("zero patch does change output", zero_delta > 1.0,
-          f"max |dlogit| = {zero_delta:.4g} -- if ~0 the hook never fired")
+          f"max |dlogit| = {zero_delta:.4g}", "if ~0 the hook never fired")
 
     # --- 4b. multi-position patch ----------------------------------------
     # E2 can patch the last K prompt positions (--tail-k). The same no-op
@@ -142,7 +150,7 @@ def main():
         outr = r.model(ids, use_cache=False)
     rev_k = (outr.logits[:, -1].float() - ref_logits).abs().max().item()
     check("reversing the rows does change the output", rev_k > 0.01,
-          f"max |dlogit| = {rev_k:.4g} -- rows may not be bound to positions")
+          f"max |dlogit| = {rev_k:.4g}", "rows may not be bound to positions")
 
     # --- 5. attention knockout -------------------------------------------
     print("\n5. attention knockout")
@@ -156,7 +164,7 @@ def main():
     att = ko.attentions[layer][0, :, -1, lo:hi]
     leak = att.abs().max().item()
     check("blocked span receives ~no attention", leak < 1e-4,
-          f"max attention into blocked span = {leak:.3g} -- mask ignored?")
+          f"max attention into blocked span = {leak:.3g}", "mask ignored?")
     ko_delta = (ko.logits[:, -1].float() - ref_logits).abs().max().item()
     check("knockout changes the output", ko_delta > 1.0, f"max |dlogit| = {ko_delta:.4g}")
 
@@ -171,7 +179,7 @@ def main():
     with M.knockout_layers(r, [layer], blocked, n) as fired:
         with torch.no_grad():
             one = r.model(ids, use_cache=False)
-    check("per-layer hook fired", fired["n"] > 0,
+    check("per-layer hook fired", fired["n"] > 0, "",
           "self_attn signature may differ in this transformers version")
     one_delta = (one.logits[:, -1].float() - ref_logits).abs().max().item()
     check("single-layer knockout changes output", one_delta > 0.01,
@@ -217,9 +225,9 @@ def main():
             first, last = body.splitlines()[0], body.splitlines()[-1]
             check("whole-document span located", True,
                   f"{dspan[1] - dspan[0]} tokens")
-            check("span reaches the end of the document", last in got,
+            check("span reaches the end of the document", last in got, "",
                   f"last line {last[:40]!r} missing -- span stops early")
-            check("span starts at the document", first in got,
+            check("span starts at the document", first in got, "",
                   f"first line {first[:40]!r} missing")
 
     # --- 7. logprob sanity ------------------------------------------------
