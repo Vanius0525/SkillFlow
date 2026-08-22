@@ -5,23 +5,28 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 和 `../HANDOFF.md`（agent harness 黑盒对比）共用模型和仓库，实验方法完全不同。
 
-状态（2026-08-21）：自检 9/9 通过；`e0_effect.py` 和 `e2_patch.py` 已在
-Qwen3-1.7B + Tier A 上跑过（结果与两处修正见 HANDOFF §12.3b / §12.3c）。
-**`e1_knockout.py` 一次都没跑过**——跑之前刚做过一次代码审查，改掉了一个会让它
-必然报出空结果的缺陷，见 HANDOFF §12.3d。
+状态（2026-08-22）：Tier A 整条梯队跑完了（1.7B，run `20260822-031238`），Tier B
+的 e0 两对**都没过门槛，而且是贴着地板没过**（run `20260822-033149`），层间实验
+按设计跳过。结论与依据见 HANDOFF §12.3g / §12.3h，那两次的原始输出在
+[`journal/`](journal/)。
 
-现在有流水线了（`./run-whitebox.sh --phase a`），下面这个顺序它会自动走完：
+**下一步是这四件，前两件不用 GPU：**
 
-1. `selftest.py` —— 现在多了第 6b 项（全文 span），旧的通过记录不作数
-2. **重跑 E2 Tier A** —— §12.3c/§12.3d 三处修正之后的数才是可引用的
-3. **首跑 E1 Tier A** —— 全文 span + 交替顺序之后的第一次
-3b. **首跑 E6 Tier A** —— 不用 hook 的那条证据，跑完用它校验 1–3 的结论
-4. 用 HANDOFF §12.3 那张交叉校验表把两条曲线对一次
-5. 重跑一次 `e0_effect.py` Tier A，看新加的可解析率——基线 0.085 低于随机的事还没
-   查完（§12.3e）
+1. **重跑一次汇总。** 上一版 `report.py` 认不出 e1/e2/e7 的 summary，所以那三条
+   曲线**跑出来了但没有人读过**，交叉校验也一次都没跑（§12.3g）。
+   `git pull` 之后 `python report.py results/20260822-031238`，几秒。
+2. **定性 E6。** 两个口味都报 `follow_rate = nan`（100% 两个值都不答）。
+   `python e6_diagnose.py results/20260822-031238/e6-tierA` —— 它分开"H5"和
+   "答案没被正确抽出来"这两种方向相反的读法。
+3. **确认 Tier B 那一跑用的是哪个模型**：
+   `results/20260822-033149/e0-tierB-const/run-info.json`。如果是 1.7B，基线
+   0.067 就被完全解释掉，那个零结果作废。
+4. **Tier B 按难度重挑题**。题池 196 道，这次用了前 120。§2 要的是"基线正好落在
+   会一半区间"的题，不是按顺序截。
 
 进 Tier B 之前：两次 `--filter-known` 产出的文件应当逐行相同（筛的是无 skill 条件，
-与用哪份 skill 无关），diff 一下再比较两条恢复率曲线。
+与用哪份 skill 无关），diff 一下再比较两条恢复率曲线。08-22 那一跑两个条件的无
+skill 数字完全一致（0.067 / −4.395），是强证据但还不是逐行相同。
 
 ---
 
@@ -40,6 +45,8 @@ Qwen3-1.7B + Tier A 上跑过（结果与两处修正见 HANDOFF §12.3b / §12.
 | `report.py` | 把一次 run 的所有 summary.json 汇总成一页 + **交叉校验** |
 | `whitebox.conf.example` | 机器配置模板（复制成 `whitebox.conf`，不进 git）|
 | `errors.py` | 错误类型学（第 4 步）。**纯后处理，不用 GPU** |
+| `e6_diagnose.py` | E6 的 follow rate 无定义时读什么。**纯后处理，不用 GPU** |
+| `journal/` | **每次实跑的原始输出和当时的判断**，一次一个文件 |
 | `tasks/tier_a/render_skill.py` | 从换算表渲染 skill；E6 的反事实文档由它生成 |
 | `tasks/filler-neutral.md` | E1 的对照文档（结构相似、任务无关） |
 | `run-whitebox.sh` | 服务器端一键运行（体检 → 自检 → Tier A → Tier B） |
