@@ -60,6 +60,20 @@ def kind(s: dict) -> str:
     return "unknown"
 
 
+def e0_gate(s: dict) -> bool:
+    """
+    The Phase 0 gate, per HANDOFF-whitebox.md section 2.
+
+    Lifted out of fmt_e0 because cross_check needs it too: an axis split
+    computed from a pair that never cleared the gate is a split of an effect
+    nobody has confirmed exists, and saying that out loud is the difference
+    between a finding and a story.
+    """
+    lp_lo = s.get("delta_logprob_ci95", [0.0, 0.0])[0]
+    return (s["delta_acc_pp"] >= 15 and s["delta_acc_ci95_pp"][0] > 5) or \
+           (s["delta_acc_pp"] >= 5 and lp_lo > 0)
+
+
 def fmt_e0(s: dict) -> list[str]:
     lo, hi = s["delta_acc_ci95_pp"]
     out = [f"n={s['n']}   准确率 {s['acc_no_skill']:.3f} -> {s['acc_with_skill']:.3f}"
@@ -82,23 +96,52 @@ def fmt_e0(s: dict) -> list[str]:
             if s["acc_no_skill"] < ch * 0.8:
                 line += "   [!] 基线低于随机 —— 先查格式再谈机制"
         out.append(line)
-    gate = (s["delta_acc_pp"] >= 15 and s["delta_acc_ci95_pp"][0] > 5) or \
-           (s["delta_acc_pp"] >= 5 and s["delta_logprob_ci95"][0] > 0)
-    if gate:
+    acc_no, d_acc = s["acc_no_skill"], s["delta_acc_pp"]
+    lp_lo = s.get("delta_logprob_ci95", [0.0, 0.0])[0]
+    head_pp = (1.0 - acc_no) * 100
+    if e0_gate(s):
         out.append("门槛：通过")
     else:
         out.append("门槛：**未通过** —— 这一对不要往下做")
         # Which clause failed decides what to change next: an item pool that is
-        # too hard, or a skill that does nothing. Recomputed here rather than
-        # read from a key, so runs finished before this existed still say it.
-        if s["acc_no_skill"] < 0.10:
+        # too hard, one that is too easy, or a skill that does nothing.
+        # Recomputed here rather than read from a key, so runs finished before
+        # this existed still say it.
+        if acc_no < 0.10:
             out.append("[!] 基线 {:.3f} 贴着地板（§2 要求上下都有余量）。这**不是**"
                        "可报告的零结果 —— 先按难度重挑题,再谈这份 skill 有没有用"
-                       .format(s["acc_no_skill"]))
-        elif s["delta_acc_pp"] < 5 and s.get("delta_logprob_ci95", [0])[0] > 0:
+                       .format(acc_no))
+        elif head_pp < 20:
+            # The ceiling side had no line at all, and Tier B v2 landed on it:
+            # a 0.819 baseline leaves 18.1pp of headroom, so the accuracy arm
+            # (>=15pp, CI lower bound >5pp) asks the skill to fix 83% of
+            # everything still wrong. A failure there is a fact about the item
+            # pool, exactly as it was at the floor -- and the two get written
+            # up the same way, which is why the same warning has to exist.
+            out.append("[!] 基线 {:.3f},余量只有 {:.1f}pp。准确率那一档要 Δ≥15pp,"
+                       "在这个基线上等于要求 skill 修好剩下错题的 {:.0%} —— 够不着。"
+                       "这和 v1 贴地板是同一类问题（§2：要地板也要天花板）,"
+                       "「未通过」在这里首先是关于题的事实"
+                       .format(acc_no, head_pp, min(1.0, 15.0 / head_pp)))
+        # Then which arm of the gate it missed, and by how much. -0.008 on the
+        # logprob CI reads very differently from -0.405, and the point estimate
+        # on the line above cannot tell them apart.
+        if d_acc >= 5 and lp_lo <= 0:
+            out.append("差在 logprob 那一档：CI 下界 {:+.3f}（要 >0）。方向对,"
+                       "但还压不住 0 —— 不能当作确认了的效应往下用".format(lp_lo))
+        elif d_acc < 5 and lp_lo > 0:
             out.append("差在准确率那一档（{:+.1f}pp < 5pp）,而 logprob 的 CI 整段"
                        "在 0 以上 —— 有位移,只是没大到能撑起恢复率的分母"
-                       .format(s["delta_acc_pp"]))
+                       .format(d_acc))
+        elif d_acc < 5 and "delta_logprob_ci95" not in s:
+            # Old summaries have no logprob CI at all. Printing the 0.0 default
+            # as if it were a measured bound invents a number.
+            out.append("准确率那一档没够（{:+.1f}pp < 5pp）,而这份 summary 里没有"
+                       " logprob 的 CI（旧版产物）—— 另一档判不了".format(d_acc))
+        elif d_acc < 5:
+            out.append("两档都没够：准确率 {:+.1f}pp < 5pp,logprob 的 CI 下界 "
+                       "{:+.3f} 也含 0 —— 这一对上没有可解释的位移"
+                       .format(d_acc, lp_lo))
     return out
 
 
@@ -208,19 +251,25 @@ FMT = {"e0": fmt_e0, "errors": fmt_errors, "e7_repr": fmt_e7,
 ORDER = ["e0", "errors", "e7_repr", "e6_counterfactual", "e2_patch", "e1_knockout"]
 
 
-def cross_check(found: dict) -> list[str]:
+def cross_check(found: list) -> list[str]:
     """
     The part no single experiment can print: do they agree?
 
     Only pairs that can actually contradict each other are listed. Agreement is
     weak evidence; a contradiction is strong evidence that one instrument is
     broken, and that is the useful direction.
+
+    Takes (kind, summary, path) triples: the Tier B v2 check below has to pair
+    each errors.json with the e0 that produced its per-item file, and the stage
+    directory name (`errors-tierB-const` <-> `e0-tierB-const`) is what records
+    that pairing.
     """
     out = []
-    e2 = [s for k, s in found if k == "e2_patch"]
-    e1 = [s for k, s in found if k == "e1_knockout"]
-    e6 = [s for k, s in found if k == "e6_counterfactual"]
-    e7 = [s for k, s in found if k == "e7_repr"]
+    e2 = [s for k, s, _ in found if k == "e2_patch"]
+    e1 = [s for k, s, _ in found if k == "e1_knockout"]
+    e6 = [s for k, s, _ in found if k == "e6_counterfactual"]
+    e7 = [s for k, s, _ in found if k == "e7_repr"]
+    e0_by_stage = {p.parent.name: s for k, s, p in found if k == "e0"}
     # E6 first: it is the only one of the three that uses no hooks, so when it
     # disagrees with E1 or E2 it is the one that decides. Computed up here so
     # the E2 x E1 reading below can refuse to draw a conclusion that E6 has
@@ -287,19 +336,55 @@ def cross_check(found: dict) -> list[str]:
     # the claim is that pchem-constants moves the units column and
     # pchem-procedure moves the relation column. One file cannot show that --
     # only the pair can -- so it lives here and nowhere else.
-    errs = [s for k, s in found if k == "errors" and s.get("tier_b2")]
-    by_label = {s.get("label", ""): s for s in errs}
+    errs = [(s, p) for k, s, p in found if k == "errors" and s.get("tier_b2")]
+    by_label = {s.get("label", ""): (s, p) for s, p in errs}
     if len(by_label) >= 2:
         def axes(s):
             mv = s["moves"]
             wc = sum(v for a, v in mv.items() if a == "wrong_const->correct")
             wr = sum(v for a, v in mv.items() if a == "wrong_rel->correct")
             return wc, wr
-        rows = {lab: axes(s) for lab, s in by_label.items()}
+        rows = {lab: axes(s) for lab, (s, _) in by_label.items()}
         out.append("Tier B v2 修好的题按轴拆开： " + "   ".join(
             f"{lab}: 单位轴 {wc}, 关系式轴 {wr}" for lab, (wc, wr) in rows.items()))
+        # Whether each document's own e0 cleared the gate. Without this the
+        # split below reads as a result; with it, an axis split of an
+        # unconfirmed effect is labelled as what it is. `errors-tierB-const`
+        # was produced from `e0-tierB-const/per_item.jsonl`, so the stage name
+        # is the join key.
+        gated = {}
+        for lab, (_, p) in by_label.items():
+            stage = p.parent.name
+            e0s = e0_by_stage.get("e0-" + stage.split("-", 1)[1]) \
+                if "-" in stage else None
+            gated[lab] = e0_gate(e0s) if e0s else None
+        ungated = [lab for lab, ok in gated.items() if ok is False]
+        if len(ungated) == len(gated):
+            out.append("[!] 这几对的 e0 都没过门槛（" + "、".join(ungated) +
+                       "）—— 上面这个拆分是在拆一个还没被确认的效应。它可以当线索,"
+                       "不能当分离的证据；先解决门槛（余量 / 题目难度）。")
+        elif ungated:
+            out.append("[!] " + "、".join(ungated) + " 的 e0 没过门槛,另一份过了 —— "
+                       "两边的轴不在同一个证据等级上,不要并排读。")
         con = rows.get("pchem-constants")
         pro = rows.get("pchem-procedure")
+        # Which axis each document's fixes actually landed on, per document.
+        # The joint verdict below can say "half" while hiding the case that
+        # matters most: a document whose fixes land on the axis it cannot
+        # touch by construction (pchem-procedure contains no numbers at all).
+        for lab, pair, idx in (("pchem-constants", con, 0),
+                               ("pchem-procedure", pro, 1)):
+            if not pair or sum(pair) == 0:
+                continue
+            tot = sum(pair)
+            if pair[1 - idx] > 0.6 * tot:
+                other = "关系式轴" if idx == 0 else "单位轴"
+                out.append(f"{lab} 修好的 {tot} 题里,多数落在**{other}** —— 那是它"
+                           f"按构造碰不到的轴。要么这些修复是噪声,要么效应不是"
+                           f"内容特异的。")
+            if tot < 10:
+                out.append(f"{lab} 只修好了 {tot} 题,轴的比例在这个 n 上不稳定 —— "
+                           f"当成方向,不要当成比例。")
 
         def own(pair, idx):
             """Did this document's fixes land mostly on the axis it owns?
@@ -318,12 +403,59 @@ def cross_check(found: dict) -> list[str]:
                            "修关系式轴。两份文档在做不同的事,E2 的 example/"
                            "principle 对照有了行为层面的依据。")
             elif own(con, 0) or own(pro, 1):
-                out.append("只分离了一半：一份 skill 落在自己的轴上,另一份没有。"
+                who = "常数那份" if own(con, 0) else "方法那份"
+                out.append(f"只分离了一半：{who}落在自己的轴上,另一份没有。"
                            "报这个不对称,不要报「分离」。")
             else:
+                # The cosine is read out of this run's E7 when it is here.
+                # It was a literal in the source once, which meant the sentence
+                # would keep asserting 0.97 on a run that measured something
+                # else entirely.
+                cos = max((max(c) for s in e7
+                           for c in s.get("cross_skill_cosine", {}).values()),
+                          default=float("nan"))
                 out.append("**没有分离**：两份 skill 修的是同一批错。这直接反驳"
                            "「内容不同的 skill 走不同机制」—— 剩下的解释是"
-                           "「上下文里有份长文档」,和 E7 的余弦 0.97 一致。")
+                           "「上下文里有份长文档」"
+                           + (f",和 E7 两份 skill 的方向余弦 {cos:+.2f} 一致。"
+                              if cos == cos else "。E7 没在这个 run 里,"
+                              "跑一次 e7 就能看这两条证据指不指向同一件事。"))
+
+    # E7 on its own. A direction shared by two documents whose contents do not
+    # overlap is only evidence about *skills* if a document that is not a skill
+    # fails to produce the same direction. The neutral filler is that control,
+    # and e7_repr.py accepts --skill more than once, so it costs one extra pass
+    # over the same items -- the cheapest missing control in the whole ladder.
+    if e7:
+        pairs = {p: max(c) for s in e7
+                 for p, c in (s.get("cross_skill_cosine") or {}).items()}
+        ctrl = {p: v for p, v in pairs.items() if "filler" in p}
+        real = {p: v for p, v in pairs.items() if "filler" not in p}
+        hi_real = max(real.values()) if real else float("nan")
+        if ctrl:
+            hi = max(ctrl.values())
+            line = f"E7 中性对照（filler）的方向余弦 {hi:+.2f}"
+            if hi_real == hi_real:
+                line += f",两份 skill 之间 {hi_real:+.2f} —— " + (
+                    "对照一样高,那么测到的是「上下文里多了一份长文档」,"
+                    "不是 skill 的签名。" if hi > 0.5 * hi_real else
+                    "对照明显更低,共享方向确实来自 skill 这一类文档。")
+            else:
+                # One skill plus the control: there is no skill-skill pair to
+                # compare against, but the control alone still decides whether
+                # the direction is about documents or about this document.
+                line += " —— " + (
+                    "中性文档走的是同一个方向,那么这个方向是「上下文里多了一份"
+                    "长文档」,不是 skill 的签名。" if hi > 0.5 else
+                    "中性文档走不出这个方向,所以它不是「多了一段长文本」的普遍"
+                    "扰动。")
+            out.append(line)
+        elif hi_real == hi_real and hi_real > 0.5:
+            out.append(f"E7 说两份内容互斥的 skill 走同一个方向（余弦 "
+                       f"{hi_real:+.2f}）,但这个 run 里**没有中性对照** —— "
+                       f"「注入有通用签名」和「上下文里多了一份长文档」现在分不开。"
+                       f"把 tasks/filler-neutral.md 当第三个 --skill 再跑一次 e7 "
+                       f"就能分开,不用重跑别的阶段。")
 
     if e7 and e2:
         rec_mean = max(s["best_layer_meanvec"] for s in e2)
@@ -391,7 +523,7 @@ def main():
     # reads as "nothing contradicts", which is the one thing it must never mean
     # when the reason is that a summary was not recognised.
     kinds = {k for k, _, _ in found}
-    notes = cross_check([(k, s) for k, s, _ in found])
+    notes = cross_check(found)
     missing = [n for n, k in (("E1", "e1_knockout"), ("E2", "e2_patch"),
                               ("E6", "e6_counterfactual"), ("E7", "e7_repr"))
                if k not in kinds]

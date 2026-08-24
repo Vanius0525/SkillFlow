@@ -269,6 +269,22 @@ def main():
         print("      with room in both directions; this one has none, so whatever")
         print("      the gate says below is about the items, not about the skill.")
 
+    # Between "at the ceiling" and "room to move" there is a band the 0.90 test
+    # does not catch, and Tier B v2 landed in it: a 0.819 baseline leaves
+    # 18.1pp of headroom, so the accuracy arm of the gate can only be cleared
+    # if the skill fixes 83% of everything still wrong. The run printed nothing
+    # about that, and a gate failure under those conditions says the same thing
+    # the floor case says -- it is about the item pool.
+    headroom = (1 - acc_no) * 100
+    tight = not at_ceiling and not at_floor and headroom < 20
+    if tight:
+        print(f"  [!] Baseline {acc_no:.3f} leaves only {headroom:.1f}pp of "
+              f"headroom, so the")
+        print(f"      accuracy arm of the gate (delta >= 15pp) asks the skill to "
+              f"fix {min(1.0, 15/headroom):.0%} of")
+        print("      everything still wrong. Read a failure on that arm as a fact")
+        print("      about the item pool, the same way the floor case is read.")
+
     # gate, per HANDOFF-whitebox.md section 2
     acc_gate = d_acc >= 15 and acc_lo * 100 > 5
     lp_gate = d_acc >= 5 and lp_lo > 0
@@ -285,6 +301,13 @@ def main():
             print("  null. Re-select items by difficulty before concluding "
                   "anything about")
             print("  the skill -- section 2, 挑基线正好落在「会一半」区间的题.")
+        elif at_ceiling or tight:
+            print("  ...but the baseline is at the ceiling end, so this is not "
+                  "the reportable")
+            print("  null either. Regenerate harder items -- section 2 asks for a "
+                  "floor AND a")
+            print("  ceiling, and post-hoc filtering is what pushed v1 to the "
+                  "floor (section 15).")
         else:
             print("  Try another task/skill pair. After four consecutive pairs "
                   "below")
