@@ -77,7 +77,7 @@ STAGES=(
   "e0-tierB-proc|b|选装置任务上,只给方法的 skill 有没有效应"
   "errors-tierB-const|b|常数 skill 修的是单位轴还是关系式轴（双重分离的一半）"
   "errors-tierB-proc|b|方法 skill 修的是关系式轴还是单位轴（另一半）"
-  "e7-tierB|b|两份内容互斥的 skill,在表示层是同一个方向还是两个方向"
+  "e7-tierB|b|两份内容互斥的 skill,在表示层是同一个方向还是两个方向（带中性填充对照）"
   "e2-tierB-const|b|预注册预测：example 型 skill 应当压不进向量"
   "e2-tierB-proc|b|预注册预测：principle 型 skill 应当压得进向量"
   "e1-tierB-const|b|检索型 skill 的注意力依赖是不是持续到中后层"
@@ -300,9 +300,13 @@ for entry in "${STAGES[@]}"; do
       --out "$OUT/$nm/errors.json" ;;
 
   e7-tierA)
+    # 中性填充文档当第三份"skill"：它不是 skill,所以它要是也走同一个方向,
+    # 那个方向就不是 skill 的签名,而是"上下文里多了一份长文档"。
+    # 多一遍前向,e7 是全流水线最便宜的那个。
     run_stage "$nm" "$wh" "$PY" "$BASE/e7_repr.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
-      --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --probe family \
+      --tasks "$A_TASKS" --skill "$A_SKILL" \
+      --skill "$BASE/tasks/filler-neutral.md" --mode mc --probe family \
       ${A_LIMIT[@]+"${A_LIMIT[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   e6-tierA)
@@ -366,6 +370,7 @@ for entry in "${STAGES[@]}"; do
       --tasks "$B_TASKS" --mode mc --limit "$TIERB_N" \
       --skill "$BASE/tasks/tier_b/SKILL.pchem-constants.md" \
       --skill "$BASE/tasks/tier_b/SKILL.pchem-procedure.md" \
+      --skill "$BASE/tasks/filler-neutral.md" \
       --run-id "$RUN_ID/$nm" ;;
 
   e2-tierB-const|e2-tierB-proc|e1-tierB-const|e1-tierB-proc)
