@@ -78,8 +78,8 @@ STAGES=(
   "errors-tierB-const|b|常数 skill 修的是单位轴还是关系式轴（双重分离的一半）"
   "errors-tierB-proc|b|方法 skill 修的是关系式轴还是单位轴（另一半）"
   "e7-tierB|b|两份内容互斥的 skill,在表示层是同一个方向还是两个方向（带中性填充对照）"
-  "e2-tierB-const|b|预注册预测：example 型 skill 应当压不进向量"
-  "e2-tierB-proc|b|预注册预测：principle 型 skill 应当压得进向量"
+  "e2-tierB-const|b|预注册预测：example 型 skill 应当压不进向量（带中性文档对照）"
+  "e2-tierB-proc|b|预注册预测：principle 型 skill 应当压得进向量（带中性文档对照）"
   "e1-tierB-const|b|检索型 skill 的注意力依赖是不是持续到中后层"
   "e1-tierB-proc|b|流程型 skill 是不是只在早层被读一次"
 )
@@ -322,15 +322,21 @@ for entry in "${STAGES[@]}"; do
       --run-id "$RUN_ID/$nm" ;;
 
   e2-tierA)
+    # --filler is not optional any more. E7 found the injection direction is
+    # generic -- a neutral document moves the residual as far as a skill does
+    # (HANDOFF 12.3j) -- so a recovery number without this condition cannot be
+    # told apart from "a document was in context when the vector was captured".
     run_stage "$nm" "$wh" "$PY" "$BASE/e2_patch.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E2_N" \
+      --filler "$BASE/tasks/filler-neutral.md" \
       ${E2_STEP[@]+"${E2_STEP[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   e2-tierA-k4)
     run_stage "$nm" "$wh" "$PY" "$BASE/e2_patch.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E2_N" \
+      --filler "$BASE/tasks/filler-neutral.md" \
       ${E2_STEP[@]+"${E2_STEP[@]}"} --tail-k "$TAIL_K" \
       --run-id "$RUN_ID/$nm" ;;
 
@@ -400,6 +406,7 @@ for entry in "${STAGES[@]}"; do
               --model "$MAIN_MODEL" --device "$DEVICE" \
               --tasks "$filtered" --skill "$BASE/tasks/tier_b/SKILL.$sk.md" \
               --mode mc --limit "$E2_N" --layer-step "$LAYER_STEP_B" \
+              --filler "$BASE/tasks/filler-neutral.md" \
               --run-id "$RUN_ID/$nm" ;;
       e1-*) run_stage "$nm" "$wh" "$PY" "$BASE/e1_knockout.py" \
               --model "$MAIN_MODEL" --device "$DEVICE" \

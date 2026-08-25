@@ -99,7 +99,17 @@ def fmt_e0(s: dict) -> list[str]:
     acc_no, d_acc = s["acc_no_skill"], s["delta_acc_pp"]
     lp_lo = s.get("delta_logprob_ci95", [0.0, 0.0])[0]
     head_pp = (1.0 - acc_no) * 100
-    if e0_gate(s):
+    if s.get("is_control"):
+        # A control is run to fail. Rendering it with the candidate-pair verdict
+        # reads its success as a failure -- see HANDOFF 12.3j 第 2 条.
+        if e0_gate(s):
+            out.append("**这是负对照,而它过了门槛** —— 不该起作用的文档动了因变量,"
+                       "主效应不能再当成内容特异的。先报这一条")
+        else:
+            out.append("负对照：**符合预期**（不该有效应,也确实没有）。"
+                       "注意它自己的基线：贴地板或贴天花板时它本来也动不了,"
+                       "排除掉的东西比看上去少")
+    elif e0_gate(s):
         out.append("门槛：通过")
     else:
         out.append("门槛：**未通过** —— 这一对不要往下做")
@@ -156,11 +166,25 @@ def fmt_errors(s: dict) -> list[str]:
     head = []
     if s.get("label"):
         head = [f"这一份用的是 skill: {s['label']}"]
-    return head + [f"无 skill : {dist(s['no_skill'])}",
+    out = head + [f"无 skill : {dist(s['no_skill'])}",
             f"有 skill : {dist(s['with_skill'])}",
             f"修好的 {tot} 题来自： " +
             "  ".join(f"{k} {v}({v/tot:.0%})" for k, v in
                       sorted(fixed.items(), key=lambda kv: -kv[1]))]
+    # Engagement vs mechanism. On Tier A 84% of the fixed items had been echoing
+    # the question, so the headline delta was mostly the model starting to answer
+    # at all -- upstream of anything the layer sweeps separate (§12.3j 第 3 条).
+    st = s.get("strata")
+    if st:
+        a, e = st["attempted"], st["echoed"]
+        out.append(f"分层： 本来就作答 n={a['n']} {a['acc_no']:.0%}->"
+                   f"{a['acc_with']:.0%}   抄题干 n={e['n']} "
+                   f"{e['acc_no']:.0%}->{e['acc_with']:.0%}")
+        if e["n"] > a["n"]:
+            out.append("[!] 半数以上的题本来就是「抄题干」—— 主效应是 engagement,"
+                       "不是检索或选择。机制结论只能引「本来就作答」那一行,"
+                       "而且要说明它的样本量")
+    return out
 
 
 def fmt_e7(s: dict) -> list[str]:
@@ -225,6 +249,28 @@ def fmt_e2(s: dict) -> list[str]:
            f"平均向量 {s['best_layer_meanvec']:+.3f}"]
     if s["best_layer_mismatched"] > 0.4:
         out.append("[!] 别题的向量也能恢复 —— 这一层测到的是扰动,不是 skill")
+    # The filler condition is the one that decides whether any of the above is
+    # about content. E7 found the injection direction is generic (§12.3j), and
+    # if that carries into patching then recovery measures document-presence.
+    fl = s.get("best_layer_filler")
+    if fl is None:
+        out.append("[!] **没有中性文档对照** —— E7 已经证明注入方向是通用的,"
+                   "所以这个恢复率分不开「内容」和「上下文里有份长文档」。"
+                   "加 --filler tasks/filler-neutral.md 重跑再读")
+    else:
+        margin = s["best_recovery"] - fl
+        out.append(f"中性文档对照： {fl:+.3f}   内容余量 {margin:+.3f}")
+        if margin < 0.15:
+            out.append("[!] **中性文档恢复得一样多** —— 补丁送进去的是"
+                       "「上下文里有份长文档」,不是这份 skill 的内容。"
+                       "这个恢复率不能当 H1/H2 的证据用（§12.3j）")
+        else:
+            out.append(f"中性文档恢复得少 {margin:+.3f} —— 高出去的这部分才是"
+                       "内容特异的,上面的判读要对着它读,不是对着 0")
+    fcd = s.get("filler_ctx_delta")
+    if fcd is not None and fcd == fcd:
+        out.append(f"（参考）中性文档放进上下文本身的 logprob 位移 {fcd:+.3f},"
+                   f"skill 是 {s['mean_logprob_delta']:+.3f}")
     return out
 
 

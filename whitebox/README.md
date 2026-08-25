@@ -40,8 +40,17 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 **下一步（顺序按 HANDOFF §16.7 改过，先剥「文档存在」效应）：**
 
-0. **E2 补一个 `filler-neutral` 条件** —— 既然 e7 分不开 skill 和 filler，E2 的
-   恢复率很可能也分不开。**这条决定 E2 的所有历史数字还算不算数。**
+0. **E2 带中性文档对照跑一遍** —— 既然 e7 分不开 skill 和 filler，E2 的恢复率很可能
+   也分不开。**这条决定 E2 的所有历史数字还算不算数。** 代码已就位
+   （`e2_patch.py --filler`，流水线三个 e2 阶段默认带上）：
+
+   ```bash
+   ./run-whitebox.sh --only e2-tierA --force     # 1.7B，分钟级，先在这里看
+   ./run-whitebox.sh --only e7-tierB --force     # 顺带拿到三个余弦的 bootstrap CI
+   ```
+
+   e2 会打出 `内容余量 = real − filler`。**余量 < 0.15 就说明补丁送进去的是
+   「上下文里有份长文档」，那个恢复率不能当 H1/H2 的证据用。**
 
 **下面这几条是上一轮的清单，仍然有效：**
 

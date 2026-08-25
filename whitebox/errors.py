@@ -280,6 +280,50 @@ def main():
         for b, k in sorted(lost, key=lambda x: -x[1]):
             print(f"    into {b:<14} {k:>4}")
 
+    # ---- engagement vs mechanism -------------------------------------------
+    #
+    # `echo` means the model answered with a number lifted straight out of the
+    # question: it was not consulting the document badly, it was not consulting
+    # it at all. Items like that are upstream of every hypothesis the layer
+    # sweeps separate -- H1 vs H2 asks HOW the model reads the table, and these
+    # items never got that far. On the first Tier A run 37 of 47 items were
+    # echoes without the skill, and 16 of the 19 the skill fixed came from that
+    # pool (HANDOFF 12.3j), so the headline effect was mostly the model starting
+    # to attempt the task. Reporting the two strata together lets an engagement
+    # effect be read as a mechanism one, so split them here.
+    attempted = [(i, a) for (i, a) in cats["no_skill"] if a != "echo"]
+    echoed = [(i, a) for (i, a) in cats["no_skill"] if a == "echo"]
+    strata = None
+    if echoed and attempted:
+        with_by_id = dict(cats["with_skill"])
+        def acc(pool, cond):
+            src = with_by_id if cond == "with" else dict(cats["no_skill"])
+            hit = sum(1 for (i, _) in pool if src.get(i) == "correct")
+            return hit, len(pool)
+        a_no, a_n = acc(attempted, "no")
+        a_ys, _ = acc(attempted, "with")
+        e_no, e_n = acc(echoed, "no")
+        e_ys, _ = acc(echoed, "with")
+        strata = {
+            "attempted": {"n": a_n, "acc_no": a_no / a_n, "acc_with": a_ys / a_n},
+            "echoed": {"n": e_n, "acc_no": e_no / e_n, "acc_with": e_ys / e_n},
+        }
+        print("\n  split by whether the model even attempted the task "
+              "(without the skill)")
+        print(f"    attempted (not echo)  n={a_n:<4} "
+              f"{a_no/a_n:.1%} -> {a_ys/a_n:.1%}   "
+              f"({(a_ys-a_no)/a_n*100:+.1f}pp)")
+        print(f"    echoed the question   n={e_n:<4} "
+              f"{e_no/e_n:.1%} -> {e_ys/e_n:.1%}   "
+              f"({(e_ys-e_no)/e_n*100:+.1f}pp)")
+        share = e_n / (e_n + a_n)
+        if share > 0.5:
+            print(f"    [!] {share:.0%} of the pool was echo without the skill, so the")
+            print("        headline effect is mostly ENGAGEMENT (the model starting to")
+            print("        answer at all), not retrieval or selection. Mechanism")
+            print("        claims belong to the `attempted` row -- quote that one,")
+            print("        and say the pool it came from. See HANDOFF 12.3j.")
+
     print("\n  reading it:")
     fixed = sum(k for _, k in gained) or 1
     if tier_b2:
@@ -346,6 +390,9 @@ def main():
             "label": args.label,
             "no_skill": dict(cn), "with_skill": dict(cy),
             "moves": {f"{a}->{b}": k for (a, b), k in moves.items()},
+            # Engagement vs mechanism (HANDOFF 12.3j). None when the pool has no
+            # echo items, or no non-echo ones, and the split is not defined.
+            "strata": strata,
         }, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"\n  written: {args.out}")
 

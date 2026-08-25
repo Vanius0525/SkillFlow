@@ -128,6 +128,40 @@ def mean_pairwise_cosine(x: torch.Tensor, cap: int = 400, seed: int = 0) -> floa
     return float(sum(float(xn[i] @ xn[j]) for i, j in pairs) / len(pairs))
 
 
+def boot_cross_cosine(D, names, li, n_boot=1000, seed=0):
+    """Paired bootstrap over items for every pairwise mean-direction cosine.
+
+    Every pair is recomputed from the SAME resampled item indices on each draw.
+    That is what makes the differences readable: the point estimates on the
+    first Tier B run were skill|skill +0.972 against skill|filler +0.945 and
+    +0.955, and a gap of 0.02 is only a finding if it survives its own interval.
+    Resampling each pair independently would inflate the variance of the
+    difference and hide a real gap, or invent one.
+
+    Returns {(a, b): [cosine per draw]} keyed by index into `names`.
+    """
+    rng = random.Random(seed)
+    n = D[names[0]].shape[0]
+    M = {k: D[k][:, li] for k in names}            # [n, d] at this layer
+    pairs = [(a, b) for a in range(len(names)) for b in range(a + 1, len(names))]
+    draws = {pr: [] for pr in pairs}
+    for _ in range(n_boot):
+        idx = [rng.randrange(n) for _ in range(n)]
+        mean = {k: M[k][idx].mean(0) for k in names}
+        for (a, b) in pairs:
+            ma, mb = mean[names[a]], mean[names[b]]
+            draws[(a, b)].append(float(torch.nn.functional.cosine_similarity(
+                ma.unsqueeze(0), mb.unsqueeze(0))))
+    return draws
+
+
+def pct(vals, lo=0.025, hi=0.975):
+    v = sorted(vals)
+    if not v:
+        return (float("nan"), float("nan"))
+    return (v[int(lo * len(v))], v[min(len(v) - 1, int(hi * len(v)))])
+
+
 def probe_cv(x: torch.Tensor, y: list, folds: int = 5, dims: int = 16,
              epochs: int = 300, seed: int = 0) -> float:
     """
@@ -245,11 +279,15 @@ def main():
                     help="'family' probes which conversion table the item needs "
                          "(Tier A only)")
     ap.add_argument("--device", default="cuda")
+    ap.add_argument("--boot", type=int, default=1000,
+                    help="bootstrap draws for the cross-document "
+                         "cosine CIs (0 disables)")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--selftest", action="store_true",
                     help="check the geometry metrics against known cases and exit; "
                          "no model, no GPU")
     args = ap.parse_args()
+    NL = chr(10)
 
     if args.selftest:
         print("e7 metric self-test")
@@ -353,6 +391,56 @@ def main():
             print(f"    {sparkline(cs)}   max {max(cs):+.3f} at layer "
                   f"{layers[max(range(len(cs)), key=lambda i: cs[i])]}")
 
+    # ---- how big is the gap between skill|skill and skill|filler? ----------
+    #
+    # E7's first Tier B run reported every pair at roughly the same height, which
+    # is why HANDOFF 12.3j reads the direction as generic. But the skill|skill
+    # pair did sit slightly higher, and a point estimate cannot say whether that
+    # residue is a content-specific component or resampling noise. This block
+    # answers exactly that, and nothing else.
+    cross_ci = {}
+    if len(names) >= 2 and args.boot > 0:
+        avg = [sum(cross[k][i] for k in cross) / len(cross)
+               for i in range(len(layers))]
+        li = max(range(len(layers)), key=lambda i: avg[i])
+        draws = boot_cross_cosine(D, names, li, n_boot=args.boot)
+        print(f"{NL}  cross-document cosine at layer {layers[li]} "
+              f"(where the pairs are highest), {args.boot} bootstrap draws over items")
+        for (a, b), vals in draws.items():
+            key = f"{names[a]}|{names[b]}"
+            lo, hi = pct(vals)
+            cross_ci[key] = {"point": cross[key][li], "ci95": [lo, hi],
+                             "layer": layers[li]}
+            print(f"    {key:<38} {cross[key][li]:+.3f}  CI95 [{lo:+.3f}, {hi:+.3f}]")
+
+        # The contrast that matters: is a pair of real skills more aligned with
+        # each other than either is with a document that says nothing?
+        fill = [i for i, k in enumerate(names) if "filler" in k.lower()]
+        if fill:
+            f0 = fill[0]
+            sk = [i for i in range(len(names)) if i not in fill]
+            sk_sk = [(a, b) for (a, b) in draws if a in sk and b in sk]
+            sk_fl = [(a, b) for (a, b) in draws if (a == f0) != (b == f0)]
+            if sk_sk and sk_fl:
+                print(f"{NL}    skill|skill  minus  skill|filler  "
+                      f"(paired, same resample):")
+                for ss in sk_sk:
+                    for sf in sk_fl:
+                        d = [x - y for x, y in zip(draws[ss], draws[sf])]
+                        lo, hi = pct(d)
+                        pt = sum(d) / len(d)
+                        nm_ss = f"{names[ss[0]]}|{names[ss[1]]}"
+                        nm_sf = f"{names[sf[0]]}|{names[sf[1]]}"
+                        tag = "含 0" if lo <= 0 <= hi else "不含 0"
+                        cross_ci[f"DIFF {nm_ss} - {nm_sf}"] = {
+                            "point": pt, "ci95": [lo, hi]}
+                        print(f"      ({nm_ss}) - ({nm_sf})".ljust(58) +
+                              f"{pt:+.3f}  CI95 [{lo:+.3f}, {hi:+.3f}]  {tag}")
+                print(f"{NL}    含 0 = 两份 skill 之间并不比 skill 与中性文档之间更对齐,")
+                print("           也就是这个方向里读不出内容特异的成分（HANDOFF 12.3j）。")
+                print("    不含 0 = 通用成分之上还有一个小的、内容特异的分量,")
+                print("             它的大小就是这个差值 —— v3 要放大的正是它。")
+
     # ---- probe -------------------------------------------------------------
     probe = {}
     if args.probe == "family":
@@ -374,7 +462,8 @@ def main():
 
     summary = {"experiment": "e7_repr",
                "run_id": run_id, "n_items": n, "layers": layers,
-               "per_skill": report, "cross_skill_cosine": cross, "probe": probe}
+               "per_skill": report, "cross_skill_cosine": cross,
+               "cross_skill_cosine_ci": cross_ci, "probe": probe}
     (out_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
 

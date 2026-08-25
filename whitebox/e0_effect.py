@@ -132,6 +132,11 @@ def main():
     ap.add_argument("--mode", choices=["mc", "num"], required=True)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--max-new-tokens", type=int, default=24)
+    ap.add_argument("--control", action="store_true",
+                    help="this pair is a NEGATIVE CONTROL (off-domain "
+                         "skill, filler document). Inverts the verdict: "
+                         "not clearing the gate is the expected result, "
+                         "and clearing it is the finding.")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--filter-known", metavar="OUT_JSONL", default=None,
@@ -197,6 +202,9 @@ def main():
         "mcnemar_gained": b, "mcnemar_lost": c,
         "parse_rate_no_skill": parse_no, "parse_rate_with_skill": parse_yes,
         "chance_level": chance,
+        # report.py must not apply the Phase 0 gate to a control the way it does
+        # to a candidate pair: for a control, not clearing it is the pass.
+        "is_control": bool(args.control),
     }
     (out_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -288,7 +296,23 @@ def main():
     # gate, per HANDOFF-whitebox.md section 2
     acc_gate = d_acc >= 15 and acc_lo * 100 > 5
     lp_gate = d_acc >= 5 and lp_lo > 0
-    if acc_gate:
+    if args.control:
+        # A negative control is run to FAIL. Printing the usual "try another
+        # pair" advice against it inverts the meaning of the result, which is
+        # how the off-domain run of 2026-08-25 came back looking like a failure
+        # when it was the control doing its job (HANDOFF 12.3j).
+        if acc_gate or lp_gate:
+            print("  [!] CONTROL CLEARED THE GATE -- that is the finding, and a")
+            print("      bad one. A document that should not apply here moved the")
+            print("      dependent variable, so the main effect cannot be read as")
+            print("      content-specific. Report this before anything else.")
+        else:
+            print("  CONTROL BEHAVED AS EXPECTED: no effect where there should be")
+            print("  none. This does NOT need a different task/skill pair.")
+            print("  What it licenses depends on its own baseline: near a floor or")
+            print("  a ceiling the control had little room to move either, so it")
+            print("  rules out less than it looks like it does. Say which.")
+    elif acc_gate:
         print("  GATE PASSED on accuracy. Proceed.")
     elif lp_gate:
         print("  GATE PASSED on logprob (accuracy delta is modest but the")
