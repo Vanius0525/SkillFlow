@@ -64,7 +64,7 @@ STAGES=(
   "check|0|环境与冻结校验：任务集、skill、渲染器有没有被动过"
   "selftest|0|干预机制自检：补丁和敲除有没有做它们声称的事（硬门槛）"
   "e7-metrics|0|几何指标自检：余弦/有效维数/探针在已知数据上给不给出已知答案"
-  "e0-tierA|a|有没有值得解释的效应？不过门槛,后面全是在解释噪声"
+  "e0-tierA|a|有没有值得解释的效应？不过门槛,后面全是在解释噪声（含各类干扰项的间距）"
   "e0-tierA-num|a|同一批题改成填空：+36pp 里有多少是「会算」,多少是「会在四个选项里选」"
   "errors-tierA|a|skill 消掉的是哪一类错？格式 / 选错表 / 读错行"
   "e7-tierA|a|注入之后表示层出现了什么 pattern？一个共享方向还是逐题内容"
@@ -275,7 +275,7 @@ for entry in "${STAGES[@]}"; do
     run_stage "$nm" "$wh" "$PY" "$BASE/e0_effect.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" ${A_LIMIT[@]+"${A_LIMIT[@]}"} \
-      --mode mc --run-id "$RUN_ID/$nm"
+      --mode mc --margins --run-id "$RUN_ID/$nm"
     if [ $DRYRUN -eq 0 ] && [ $NOGATE -eq 0 ] && ! gate_ok "$OUT/$nm/summary.json"; then
       echo
       echo "[!] Tier A 是**正对照**：这批题不查表答不出来,所以没有大效应"

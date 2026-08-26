@@ -71,7 +71,22 @@ def fields(item, mode):
     return item["question"], item["answer_raw"], item.get("unit") or None
 
 
-AXES = ("wrong_const", "wrong_rel", "wrong_both")
+# Ordered for display; whatever a task file actually carries is what gets
+# measured. Tier B labels its options by which factor of the 2x2 is wrong,
+# Tier A by which misreading of the conversion table produces them.
+AXES = ("wrong_const", "wrong_rel", "wrong_both",
+        "echo", "wrong_row", "wrong_family", "inverted", "other")
+
+AXIS_LABEL = {
+    "wrong_const":  "常数轴 (correct vs wrong_const)",
+    "wrong_rel":    "关系式轴 (correct vs wrong_rel)",
+    "wrong_both":   "两轴都错 (correct vs wrong_both)",
+    "echo":         "抄题干 (correct vs echo)",
+    "wrong_row":    "读错行 (correct vs wrong_row)",
+    "wrong_family": "选错表 (correct vs wrong_family)",
+    "inverted":     "方向反了 (correct vs inverted)",
+    "other":        "其它 (correct vs other)",
+}
 
 
 def option_margins(r, ids, item):
@@ -100,11 +115,17 @@ def option_margins(r, ids, item):
         return None
     by_kind = {}
     for letter, kind in kinds.items():
-        by_kind[kind] = M.answer_logprob(r, ids, letter)
+        lp = M.answer_logprob(r, ids, letter)
+        # Two options can share a kind -- Tier A often has two wrong-row foils.
+        # Keep the strongest one: the margin then asks whether the model prefers
+        # the gold option over the BEST competitor of that kind, which is the
+        # conservative reading and does not get diluted by an easy second foil.
+        if kind not in by_kind or lp > by_kind[kind]:
+            by_kind[kind] = lp
     if "correct" not in by_kind:
         return None
     return {k: by_kind["correct"] - by_kind[k]
-            for k in AXES if k in by_kind}
+            for k in by_kind if k != "correct"}
 
 
 def run_condition(r, items, skill, mode, max_new, margins=False):
@@ -414,9 +435,7 @@ def main():
                   "HANDOFF-whitebox.md")
             print("  section 6 step 3.")
     if margin_stats:
-        LABEL = {"wrong_const": "常数轴 (correct vs wrong_const)",
-                 "wrong_rel":   "关系式轴 (correct vs wrong_rel)",
-                 "wrong_both":  "两轴都错 (correct vs wrong_both)"}
+        LABEL = AXIS_LABEL
         print()
         print("  轴间距 —— gold 与只差一个轴的干扰项之间的 logprob 差")
         print("  （通用的「上下文里有份长文档」位移把两项一起抬高,相减就消掉了）")
@@ -426,7 +445,7 @@ def main():
                 continue
             lo, hi = st["ci95"]
             mark = "  <-- CI 不含 0" if (lo > 0 or hi < 0) else ""
-            print(f"    {LABEL[ax]:<38} {st['no_skill']:+.3f} -> "
+            print(f"    {LABEL.get(ax, ax):<38} {st['no_skill']:+.3f} -> "
                   f"{st['with_skill']:+.3f}   delta {st['delta']:+.3f}  "
                   f"CI95 [{lo:+.3f}, {hi:+.3f}]   配对 +{st['gained']}/-{st['lost']}"
                   f"{mark}")

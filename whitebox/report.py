@@ -98,14 +98,17 @@ def fmt_e0(s: dict) -> list[str]:
         out.append(line)
     mg = s.get("margins")
     if mg:
-        LAB = {"wrong_const": "常数轴", "wrong_rel": "关系式轴", "wrong_both": "两轴"}
-        for ax in ("wrong_const", "wrong_rel", "wrong_both"):
+        LAB = {"wrong_const": "常数轴", "wrong_rel": "关系式轴",
+               "wrong_both": "两轴", "echo": "抄题干", "wrong_row": "读错行",
+               "wrong_family": "选错表", "inverted": "方向反了", "other": "其它"}
+        for ax in ("wrong_const", "wrong_rel", "wrong_both",
+                   "echo", "wrong_row", "wrong_family", "inverted", "other"):
             st = mg.get(ax)
             if not st:
                 continue
             lo, hi = st["ci95"]
             tag = "  CI 不含 0" if (lo > 0 or hi < 0) else "  CI 含 0"
-            out.append(f"轴间距 {LAB[ax]}： {st['no_skill']:+.3f} -> "
+            out.append(f"轴间距 {LAB.get(ax, ax)}： {st['no_skill']:+.3f} -> "
                        f"{st['with_skill']:+.3f}  (delta {st['delta']:+.3f}, "
                        f"CI95 [{lo:+.3f},{hi:+.3f}])  配对 "
                        f"+{st['gained']}/-{st['lost']}{tag}")

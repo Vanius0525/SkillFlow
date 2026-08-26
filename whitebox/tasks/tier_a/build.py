@@ -73,9 +73,18 @@ def distractors(value: int, src: str, dst: str, fam: str, correct: float, rng):
     t = FAMILIES[fam]
     cands = []
 
-    # neighbouring row in the same family: right table, wrong line
+    # neighbouring row in the same family: right table, wrong line.
+    #
+    # `other != dst` is not decoration. Without it the loop reaches other == dst,
+    # where value * t[dst]/t[dst] is value itself -- the quantity printed in the
+    # question. That option turned out to be a magnet: on the first full run the
+    # model chose it on 79% of items without the document, which put the no-skill
+    # baseline at 8.5%, BELOW the 25% chance level, and left the tier with no
+    # floor headroom at all. The delta the tier then measured was mostly "stop
+    # answering with the input number", which sits upstream of every hypothesis
+    # the layer sweeps are meant to separate. See HANDOFF-whitebox.md 12.3m.
     for other in t:
-        if other != src:
+        if other != src and other != dst:
             v = value * t[other] / t[dst]
             if is_clean(v):
                 cands.append(round(v))
@@ -101,6 +110,37 @@ def distractors(value: int, src: str, dst: str, fam: str, correct: float, rng):
             seen.add(c)
             out.append(c)
     return out
+
+
+def classify_option(v, value, src, dst, fam, correct) -> str:
+    """Which misreading of the table produces this option value.
+
+    The same arithmetic errors.py uses to classify an ANSWER, applied to the
+    options at build time so every item ships with its own labels. That turns
+    the four options into a contrast set: the margin between the gold option and
+    one specific foil isolates one specific failure, and -- unlike the absolute
+    log-probability of the gold token -- a margin cancels whatever shifts both
+    options equally. Tier B has carried these labels from the start; Tier A now
+    does too, so both tiers can be read with the same instrument.
+    """
+    t = FAMILIES[fam]
+    if close(v, correct):
+        return "correct"
+    if close(v, value):
+        return "echo"                       # the quantity from the question
+    for other in t:
+        if other != src and close(v, value * t[other] / t[dst]):
+            return "wrong_row"              # right table, wrong line
+    for ofam, ot in FAMILIES.items():
+        if ofam != fam and close(v, value * list(ot.values())[1]):
+            return "wrong_family"           # wrong table entirely
+    if close(v, value * t[dst] / t[src]):
+        return "inverted"                   # divided where it should multiply
+    return "other"
+
+
+def close(a, b, tol=1e-6) -> bool:
+    return abs(a - b) <= tol * max(1.0, abs(b))
 
 
 def skill_numbers() -> set:
@@ -175,6 +215,10 @@ def build():
                 "question_num": question + " Answer with the number only.",
                 "answer_num": str(round(correct)),
                 "options": options,
+                "option_kinds": {
+                    L: classify_option(o, value, src, dst, fam, correct)
+                    for L, o in zip("ABCD", options)
+                },
             })
             idx += 1
 

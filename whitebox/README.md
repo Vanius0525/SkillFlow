@@ -23,7 +23,24 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 原始输出和逐条判断在 [`journal/2026-08-24-tierB-v2.md`](journal/2026-08-24-tierB-v2.md)，
 结论在 HANDOFF §12.3i。
 
-### 2026-08-26 两处改动
+### 2026-08-26 三处改动
+
+**⚠️ ① Tier A 的题集换了，旧结果全部作废。**
+干扰项生成器漏了一个边界条件，把**题干那个数**混进了选项（47 题里 41 道，87%），
+模型无 skill 时 79% 直接抄它，基线因此是 0.085 —— **低于随机 0.25**。
+所以那个 +36.2pp 的主体是「别再照抄题干」，在所有机制假设的上游。
+
+已修（`if other != src` → `if other != src and other != dst`），重新生成：
+**39 题，含 echo 选项 0 道**，sha `2c37d17751daea5f`。旧题保留为
+`tasks/tier_a/tasks.echo-bug.jsonl`。同时每道题带上了 `option_kinds`，
+所以轴间距在 Tier A 上也能用。
+
+**Tier A 的全部阶段都要重跑**：`./run-whitebox.sh --phase a`，十几分钟。
+跑之前的预测和「哪些结论受影响、哪些不受」见 HANDOFF §12.3m ——
+**E7 和 E6 的结论不受影响**（前者在 Tier B 独立复现，后者是配对对照），
+受影响的是 **E2 那条 filler ≈ skill**。
+
+
 
 **① 门槛不再跳过后续实验，改成警告并继续。**
 `e1/e2-tierB` 在 Phase 0 没过时照跑，但污点跟着数字走：`run-whitebox.sh` 打横幅并传
