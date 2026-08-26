@@ -5,7 +5,7 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 和 `../HANDOFF.md`（agent harness 黑盒对比）共用模型和仓库，实验方法完全不同。
 
-状态（2026-08-25，四个对照跑完）：Tier A 整条梯队跑完了（1.7B，runs `20260822-031238` /
+状态（2026-08-25，Tier A 整跑完）：Tier A 整条梯队跑完了（1.7B，runs `20260822-031238` /
 `20260822-175713`，两次数字一致——贪心解码）。Tier B **v1 已经下线**：它的 e0 两对
 都没过门槛，而且是贴着地板没过（8B，run `20260822-181445`），根因是无 CoT 设定下
 模型要在一次前向里做三位有效数字的算术，见 HANDOFF §15。**Tier B v2（选装置，
@@ -23,7 +23,28 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 原始输出和逐条判断在 [`journal/2026-08-24-tierB-v2.md`](journal/2026-08-24-tierB-v2.md)，
 结论在 HANDOFF §12.3i。
 
-**2026-08-25 的四个对照改变了结论的形状**（run `20260825-112500` + 三次单跑，
+**2026-08-25 Tier A 整跑（run `20260825-123259`）：补丁做到的比文档本身还多。**
+原始输出在 [`journal/2026-08-25-tierA-full.md`](journal/2026-08-25-tierA-full.md)，
+判断在 HANDOFF §12.3k。
+
+```
+e2-tierA  最佳层 24   real +1.072   mismatched +0.228   mean +1.578
+          分母（有-无 skill 的 logprob）+5.027
+```
+
+`1.0` = 复现文档的**全部**行为效应。所以 **real 超过 1 意味着补丁比真放一份文档更
+有效**，而**不含任何逐题内容**的平均向量还要再高 47%。`errors-tierA` 给出机制：
+文档自己制造错误（`wrong_family` 2 → 14）——补丁给了「有文档在」那个状态，却没给
+688 token 文档的干扰代价。
+
+> **Tier A 上的「skill 有用」= 一个通用状态 + 一份带副作用的文档。**
+
+另外三条：**E1 的 net 只占行为效应的 3.1%**（屏蔽整份文档几乎不掉分，所以它和 E2
+的高恢复率**不矛盾**）；**`e0-tierA-num` 是 0.000 → 0.000**，Tier A 的 +36.2pp 全是
+「在四个选项里选对」，它作为仪器灵敏度证明因此打折；**这一跑用的是旧代码**，
+`--filler` / `--boot` / errors 分层 / `--control` 都没生效。
+
+**再往前一次，2026-08-25 的四个对照改变了结论的形状**（run `20260825-112500` + 三次单跑，
 原始输出在 [`journal/2026-08-25-controls.md`](journal/2026-08-25-controls.md)，
 判断在 HANDOFF §12.3j）：
 
@@ -45,9 +66,22 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
    （`e2_patch.py --filler`，流水线三个 e2 阶段默认带上）：
 
    ```bash
-   ./run-whitebox.sh --only e2-tierA --force     # 1.7B，分钟级，先在这里看
-   ./run-whitebox.sh --only e7-tierB --force     # 顺带拿到三个余弦的 bootstrap CI
+   # 先确认代码是新的 —— 上一跑就是漏了这步
+   cd $BASE && git fetch && git reset --hard origin/master && git lfs pull
+   git log --oneline -1        # 必须是 6faec55 或更新
+
+   cd $BASE/whitebox
+   RUN_ID=20260825-123259 ./run-whitebox.sh --only e2-tierA     --force
+   RUN_ID=20260825-123259 ./run-whitebox.sh --only errors-tierA --force
+   RUN_ID=20260825-123259 ./run-whitebox.sh --only e7-tierB     --force
+   python report.py results/20260825-123259
    ```
+
+   用同一个 `RUN_ID`，新结果覆盖进同一张汇总页，其余阶段的旧结果仍然有效。约 4 分钟。
+
+   **预注册（HANDOFF §12.3k-bis，跑之前就写下来了）**：既然 mean 向量已经超额恢复、
+   且 e7-tierA 的跨文档余弦 0.943，**预测 filler 也会恢复到 1.0 附近，内容余量 < 0.15**。
+   命中就是一个被预注册命中的预测；明显更低则说明 mean 的超额另有原因，机制故事要重写。
 
    e2 会打出 `内容余量 = real − filler`。**余量 < 0.15 就说明补丁送进去的是
    「上下文里有份长文档」，那个恢复率不能当 H1/H2 的证据用。**

@@ -274,12 +274,26 @@ def fmt_e2(s: dict) -> list[str]:
     return out
 
 
-def fmt_e1(s: dict) -> list[str]:
+def fmt_e1(s: dict, e0_delta: float = float("nan")) -> list[str]:
     lo, hi = s["best_net_ci95"]
     out = [f"n={s['n_items']}  每组 {s['group']} 层  屏蔽宽度 "
            f"{s['blocked_width_tokens']} token（skill 全文）",
            f"峰值 层 {s['best_layers'][0]}-{s['best_layers'][-1]}  "
            f"net {s['best_net']:+.3f} CI95 [{lo:+.3f},{hi:+.3f}]"]
+    # A net has no meaning on its own -- it is a logprob, and whether it is big
+    # depends entirely on how big the skill's own logprob effect was. The Tier A
+    # run of 2026-08-25 peaked at +0.152 against an e0 delta of +4.903: blocking
+    # the ENTIRE 688-token document costs 3% of the effect. Reading that as
+    # "sustained late-layer dependence" because the peak sits late is reading the
+    # position and ignoring the size (HANDOFF 12.3k).
+    if e0_delta == e0_delta and abs(e0_delta) > 1e-6:
+        share = s["best_net"] / e0_delta
+        out.append(f"占行为效应的比例： {share:+.1%}"
+                   f"（e0 的 logprob 位移 {e0_delta:+.3f}）")
+        if abs(share) < 0.15:
+            out.append("[!] 屏蔽掉 skill 全文只损失了效应的 "
+                       f"{abs(share):.0%} —— 这**不是**「持续依赖原文」,"
+                       "是「模型基本没在读它」。峰值在哪一层是次要的")
     bo = s.get("best_net_by_order") or {}
     if bo:
         sf, ff = bo.get("skill_first"), bo.get("filler_first")
@@ -294,6 +308,10 @@ def fmt_e1(s: dict) -> list[str]:
 
 FMT = {"e0": fmt_e0, "errors": fmt_errors, "e7_repr": fmt_e7,
        "e6_counterfactual": fmt_e6, "e2_patch": fmt_e2, "e1_knockout": fmt_e1}
+# fmt_e1 needs the behavioural effect to put its net on a scale, and that lives
+# in a different stage's summary. Filled in by main() once every summary is
+# loaded; the default keeps fmt_e1 callable on its own.
+E0_DELTA_FOR_E1 = [float("nan")]
 ORDER = ["e0", "errors", "e7_repr", "e6_counterfactual", "e2_patch", "e1_knockout"]
 
 
@@ -333,7 +351,23 @@ def cross_check(found: list) -> list[str]:
                         if "best_layer_meanvec" in s), default=float("nan"))
         net_lo = max(s["best_net_ci95"][0] for s in e1)
         late = any(s["best_layers"][0] > 0.5 * (s["best_layers"][-1] + 1) for s in e1)
-        if rec > 0.5 and net_lo > 0 and late:
+        # Scale the net against the behavioural effect before calling it a
+        # contradiction. A significant-but-tiny net is not "the model keeps
+        # going back to the text"; it is the opposite, and it AGREES with a high
+        # E2 recovery instead of contradicting it. The first version of this
+        # check tested only the peak's position and reported a contradiction on
+        # a net worth 3% of the effect (HANDOFF 12.3k).
+        e0_lp = max((abs(s.get("delta_logprob", 0.0)) for s in e0_by_stage.values()),
+                    default=0.0)
+        net_share = (max(s["best_net"] for s in e1) / e0_lp) if e0_lp > 1e-6 \
+            else float("nan")
+        tiny = net_share == net_share and abs(net_share) < 0.15
+        if rec > 0.5 and net_lo > 0 and late and tiny:
+            out.append(f"E1 的峰值在晚层,但 net 只占行为效应的 {abs(net_share):.0%} "
+                       f"—— 屏蔽整份文档几乎不掉分。这和 E2 的高恢复率**不矛盾**,"
+                       f"两者一起说的是「模型基本没在读原文,所以它当然压得进一个"
+                       f"向量」。不要把峰值位置读成 H1。")
+        elif rec > 0.5 and net_lo > 0 and late:
             out.append("E2 说压得进一个向量,E1 说中后层还在持续依赖原文 —— "
                        "这两个结论互斥,先查 selftest,不要挑一个讲。")
         elif rec > 0.5 and net_lo <= 0 and e6_tracks:
@@ -552,6 +586,11 @@ def main():
         return
 
     found.sort(key=lambda x: (ORDER.index(x[0]) if x[0] in ORDER else 99, str(x[2])))
+    # The largest behavioural effect in the run is the scale E1's net is read
+    # against. Largest rather than matching by stage name: E1 runs on the pair
+    # that cleared the gate, so the biggest e0 in the directory is that pair.
+    _d = [abs(x[1].get("delta_logprob", 0.0)) for x in found if x[0] == "e0"]
+    E0_DELTA_FOR_E1[0] = max(_d) if _d else float("nan")
     for k, s, f in found:
         name = f.parent.name
         print(f"\n[{k}]  {name}")
@@ -562,7 +601,9 @@ def main():
             return ["(未知的 summary 格式)",
                     "  它有这些键: " + ", ".join(sorted(_s)[:12])]
 
-        for line in FMT.get(k, unknown)(s):
+        fn = FMT.get(k, unknown)
+        lines = fn(s, E0_DELTA_FOR_E1[0]) if k == "e1_knockout" else fn(s)
+        for line in lines:
             print(f"  {line}")
 
     # A cross-check that cannot run is reported, not skipped. An empty section
