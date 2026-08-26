@@ -96,6 +96,20 @@ def fmt_e0(s: dict) -> list[str]:
             if s["acc_no_skill"] < ch * 0.8:
                 line += "   [!] 基线低于随机 —— 先查格式再谈机制"
         out.append(line)
+    mg = s.get("margins")
+    if mg:
+        LAB = {"wrong_const": "常数轴", "wrong_rel": "关系式轴", "wrong_both": "两轴"}
+        for ax in ("wrong_const", "wrong_rel", "wrong_both"):
+            st = mg.get(ax)
+            if not st:
+                continue
+            lo, hi = st["ci95"]
+            tag = "  CI 不含 0" if (lo > 0 or hi < 0) else "  CI 含 0"
+            out.append(f"轴间距 {LAB[ax]}： {st['no_skill']:+.3f} -> "
+                       f"{st['with_skill']:+.3f}  (delta {st['delta']:+.3f}, "
+                       f"CI95 [{lo:+.3f},{hi:+.3f}])  配对 "
+                       f"+{st['gained']}/-{st['lost']}{tag}")
+
     acc_no, d_acc = s["acc_no_skill"], s["delta_acc_pp"]
     lp_lo = s.get("delta_logprob_ci95", [0.0, 0.0])[0]
     head_pp = (1.0 - acc_no) * 100
@@ -344,6 +358,39 @@ def cross_check(found: list) -> list[str]:
     swing = max((s["lp_gap"]["cf"] - s["lp_gap"]["true"] for s in e6
                  if "lp_gap" in s), default=float("nan"))
     e6_tracks = (fr > 0.8) or (swing > 0.5)
+
+    # The preregistered double dissociation, finally testable on a DV that the
+    # generic component cannot reach. Each document should widen its OWN axis
+    # more than the other's; the interaction term is the single number that says
+    # whether that held. Stated in HANDOFF 15.3 and re-specified in 12.3l.
+    e0_margin = {p.parent.name: x for k, x, p in found
+                 if k == "e0" and x.get("margins")}
+    if len(e0_margin) >= 2:
+        def own_minus_other(st, own, other):
+            a, b = st["margins"].get(own), st["margins"].get(other)
+            if not a or not b:
+                return None
+            return a["delta"] - b["delta"]
+        const = next((v for n, v in e0_margin.items() if "const" in n), None)
+        proc = next((v for n, v in e0_margin.items() if "proc" in n), None)
+        if const and proc:
+            c = own_minus_other(const, "wrong_const", "wrong_rel")
+            r_ = own_minus_other(proc, "wrong_rel", "wrong_const")
+            if c is not None and r_ is not None:
+                out.append(
+                    f"双重分离（轴间距）： constants 偏向自己那轴 {c:+.3f}，"
+                    f"procedure 偏向自己那轴 {r_:+.3f}，双重差分 {c + r_:+.3f}")
+                if c > 0 and r_ > 0:
+                    out.append("  两份文档各自更动自己的轴 —— 方向上成立。"
+                               "**逐题配对 bootstrap 的 CI 还没算**,不含 0 才叫成立。")
+                else:
+                    out.append("  至少一份文档更动的是**别人**的轴 —— 双重分离在方向上"
+                               "就不成立,先别做 E2 的 example/principle 对照。")
+
+    if any(x.get("gate_unconfirmed") for x in e2 + e1):
+        out.append("这个 run 里有阶段是在**分母未确认**的情况下跑的（门槛没过但"
+                   "照跑了）。下面凡是用到恢复率的判断,都是在一个没有定义的比值上"
+                   "做的 —— 当作曲线形状的描述读,不要当结论。")
 
     if e2 and e1:
         rec = max(s["best_recovery"] for s in e2)
@@ -603,6 +650,17 @@ def main():
 
         fn = FMT.get(k, unknown)
         lines = fn(s, E0_DELTA_FOR_E1[0]) if k == "e1_knockout" else fn(s)
+        if s.get("gate_unconfirmed"):
+            # First, before any number the reader could quote out of context.
+            print("  " + "!" * 62)
+            print("  !! 分母未确认：这一对没过 Phase 0 门槛,行为效应的 CI 含 0。")
+            if k == "e2_patch":
+                print("  !! 恢复率是个比值,分母含 0 时它**没有定义**（不是「小」）——")
+                print("  !! 可以读曲线形状（哪一层起跳、各对照恢复多少）,")
+                print("  !! **不要引用那个比值**。")
+            else:
+                print("  !! net 本身是差值,还算数；但「占行为效应的比例」没有可信的分母。")
+            print("  " + "!" * 62)
         for line in lines:
             print(f"  {line}")
 

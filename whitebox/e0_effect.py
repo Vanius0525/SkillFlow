@@ -71,7 +71,43 @@ def fields(item, mode):
     return item["question"], item["answer_raw"], item.get("unit") or None
 
 
-def run_condition(r, items, skill, mode, max_new):
+AXES = ("wrong_const", "wrong_rel", "wrong_both")
+
+
+def option_margins(r, ids, item):
+    """
+    Log-prob margin between the gold option and each kind of foil.
+
+    This exists because the gold logprob alone cannot see what Tier B needs it to
+    see. E7 found that putting ANY long document in context displaces the
+    prompt-final residual in one shared direction, which lifts every plausible
+    continuation together -- and that lift lands squarely in lp(gold). A margin
+    between two options cancels, by construction, anything that moves both of
+    them equally, so it is blind to exactly the component that dominated Tier A.
+
+    The second reason is the ceiling. Tier B v2's baseline is 0.819, leaving
+    18.1pp of headroom, so the accuracy arm of the gate asks the document to fix
+    83% of what is left. A margin has no ceiling: an item the model already
+    answers correctly can still show the margin widen, so the measurement does
+    not run out of room the way accuracy does.
+
+    Nothing is invented here. build.py already records, per item, what each
+    letter means (`option_kinds`), so the foils are read off the task file --
+    they are the options the model was shown.
+    """
+    kinds = item.get("option_kinds")
+    if not kinds:
+        return None
+    by_kind = {}
+    for letter, kind in kinds.items():
+        by_kind[kind] = M.answer_logprob(r, ids, letter)
+    if "correct" not in by_kind:
+        return None
+    return {k: by_kind["correct"] - by_kind[k]
+            for k in AXES if k in by_kind}
+
+
+def run_condition(r, items, skill, mode, max_new, margins=False):
     out = []
     t0 = time.time()
     for i, it in enumerate(items):
@@ -90,10 +126,15 @@ def run_condition(r, items, skill, mode, max_new):
         # Whether an answer was found at all, kept separate from whether it was
         # right. A model that answers in prose scores zero and looks like a model
         # that answers wrongly; the two call for completely different fixes.
-        out.append({"id": it["id"], "correct": bool(ok), "logprob": lp,
-                    "parsed": pred is not None, "pred": None if pred is None else str(pred),
-                    "raw": text.strip()[:200], "gold": gold,
-                    "n_prompt_tokens": int(ids.shape[1])})
+        rec = {"id": it["id"], "correct": bool(ok), "logprob": lp,
+               "parsed": pred is not None, "pred": None if pred is None else str(pred),
+               "raw": text.strip()[:200], "gold": gold,
+               "n_prompt_tokens": int(ids.shape[1])}
+        if margins:
+            m = option_margins(r, ids, it)
+            if m:
+                rec["margins"] = m
+        out.append(rec)
         if (i + 1) % 20 == 0:
             el = time.time() - t0
             print(f"    {i+1}/{len(items)}  {el:.0f}s  "
@@ -132,6 +173,13 @@ def main():
     ap.add_argument("--mode", choices=["mc", "num"], required=True)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--max-new-tokens", type=int, default=24)
+    ap.add_argument("--margins", action="store_true",
+                    help="also score every labelled option and report the "
+                         "gold-vs-foil margin per axis. Needs `option_kinds` on "
+                         "the items. A margin cancels anything that moves both "
+                         "options equally, so unlike the gold logprob it is "
+                         "blind to the generic 'a document is present' shift, "
+                         "and it has no ceiling.")
     ap.add_argument("--control", action="store_true",
                     help="this pair is a NEGATIVE CONTROL (off-domain "
                          "skill, filler document). Inverts the verdict: "
@@ -160,10 +208,17 @@ def main():
     })
     print("structure:", json.dumps(r.describe(), ensure_ascii=False), "\n")
 
+    # Auto-on wherever build.py labelled the options; there is no reason to make
+    # the caller remember a flag for a measurement the task file already supports.
+    want_margins = args.margins and any("option_kinds" in it for it in items)
+    if args.margins and not want_margins:
+        print("  (--margins asked for, but these items carry no `option_kinds` "
+              "-- skipped)\n")
+
     print("[1/2] without skill")
-    no = run_condition(r, items, None, args.mode, args.max_new_tokens)
+    no = run_condition(r, items, None, args.mode, args.max_new_tokens, want_margins)
     print("[2/2] with skill")
-    yes = run_condition(r, items, skill, args.mode, args.max_new_tokens)
+    yes = run_condition(r, items, skill, args.mode, args.max_new_tokens, want_margins)
 
     acc_no = sum(x["correct"] for x in no) / len(no)
     acc_yes = sum(x["correct"] for x in yes) / len(yes)
@@ -178,6 +233,23 @@ def main():
     # McNemar counts: the discordant pairs are the whole evidence in a paired design
     b = sum(1 for x, y in zip(no, yes) if not x["correct"] and y["correct"])
     c = sum(1 for x, y in zip(no, yes) if x["correct"] and not y["correct"])
+
+    # Per-axis margins: the paired delta and its CI, one axis at a time.
+    margin_stats = {}
+    for ax in AXES:
+        a = [x["margins"][ax] for x in no if "margins" in x and ax in x["margins"]]
+        b = [y["margins"][ax] for y in yes if "margins" in y and ax in y["margins"]]
+        if len(a) != len(b) or not a:
+            continue
+        lo, hi = paired_bootstrap(a, b)
+        margin_stats[ax] = {
+            "n": len(a),
+            "no_skill": sum(a) / len(a), "with_skill": sum(b) / len(b),
+            "delta": sum(b) / len(b) - sum(a) / len(a),
+            "ci95": [lo, hi],
+            "gained": sum(1 for x, y in zip(a, b) if y > x),
+            "lost": sum(1 for x, y in zip(a, b) if y < x),
+        }
 
     parse_no = sum(x["parsed"] for x in no) / len(no)
     parse_yes = sum(x["parsed"] for x in yes) / len(yes)
@@ -202,6 +274,9 @@ def main():
         "mcnemar_gained": b, "mcnemar_lost": c,
         "parse_rate_no_skill": parse_no, "parse_rate_with_skill": parse_yes,
         "chance_level": chance,
+        # Axis margins. Keyed by foil kind; `wrong_const` is the pair that
+        # differs only in the constant, `wrong_rel` only in the relation.
+        "margins": margin_stats or None,
         # report.py must not apply the Phase 0 gate to a control the way it does
         # to a candidate pair: for a control, not clearing it is the pass.
         "is_control": bool(args.control),
@@ -338,6 +413,31 @@ def main():
             print("  10pp, switch to the bottleneck question -- "
                   "HANDOFF-whitebox.md")
             print("  section 6 step 3.")
+    if margin_stats:
+        LABEL = {"wrong_const": "常数轴 (correct vs wrong_const)",
+                 "wrong_rel":   "关系式轴 (correct vs wrong_rel)",
+                 "wrong_both":  "两轴都错 (correct vs wrong_both)"}
+        print()
+        print("  轴间距 —— gold 与只差一个轴的干扰项之间的 logprob 差")
+        print("  （通用的「上下文里有份长文档」位移把两项一起抬高,相减就消掉了）")
+        for ax in AXES:
+            st = margin_stats.get(ax)
+            if not st:
+                continue
+            lo, hi = st["ci95"]
+            mark = "  <-- CI 不含 0" if (lo > 0 or hi < 0) else ""
+            print(f"    {LABEL[ax]:<38} {st['no_skill']:+.3f} -> "
+                  f"{st['with_skill']:+.3f}   delta {st['delta']:+.3f}  "
+                  f"CI95 [{lo:+.3f}, {hi:+.3f}]   配对 +{st['gained']}/-{st['lost']}"
+                  f"{mark}")
+        wc = margin_stats.get("wrong_const")
+        wr = margin_stats.get("wrong_rel")
+        if wc and wr:
+            print()
+            print("    这份文档动哪个轴更多： "
+                  f"常数轴 {wc['delta']:+.3f}   关系式轴 {wr['delta']:+.3f}")
+            print("    双重分离要两份文档并排才判得了 —— report.py 会算那个双重差分。")
+
     print(f"  results: {out_dir}")
 
     if args.filter_known:

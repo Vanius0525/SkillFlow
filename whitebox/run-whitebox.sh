@@ -10,7 +10,7 @@
 #   ./run-whitebox.sh --skip e1-tierA   # 排除某个阶段（可重复）
 #   ./run-whitebox.sh --dry-run         # 只打印会跑什么,不产生任何文件
 #   ./run-whitebox.sh --force           # 忽略"已经跑过",重跑
-#   ./run-whitebox.sh --no-gate         # 跳过 Phase 0 门槛检查（分母你自己确认过）
+#   ./run-whitebox.sh --no-gate         # 跳过 Phase 0 门槛检查（现在门槛不过也会跑,只是标记）（分母你自己确认过）
 #
 # 服务器上没有 tmux,长跑用 nohup：
 #   nohup ./run-whitebox.sh --phase b > logs/wb-$(date +%m%d).log 2>&1 &
@@ -73,8 +73,9 @@ STAGES=(
   "e2-tierA|a|效应能不能压进一个向量？能=H2 选择,不能=H1 检索"
   "e2-tierA-k4|a|换成补 K 个位置还压不进吗？区分「压不进」和「一个位置装不下」"
   "e1-tierA|a|哪些层在读 skill？早层=读一次,中后层持续=反复回看"
-  "e0-tierB-const|b|选装置任务上,只给常数的 skill 有没有效应"
-  "e0-tierB-proc|b|选装置任务上,只给方法的 skill 有没有效应"
+  "e0-tierB-const|b|选装置任务上,只给常数的 skill 有没有效应（含轴间距）"
+  "e0-tierB-proc|b|选装置任务上,只给方法的 skill 有没有效应（含轴间距）"
+  "e0-tierB-filler|b|中性文档对照：通用成分在 Tier B 上有多大,轴间距是否真的免疫"
   "errors-tierB-const|b|常数 skill 修的是单位轴还是关系式轴（双重分离的一半）"
   "errors-tierB-proc|b|方法 skill 修的是关系式轴还是单位轴（另一半）"
   "e7-tierB|b|两份内容互斥的 skill,在表示层是同一个方向还是两个方向（带中性填充对照）"
@@ -356,7 +357,21 @@ for entry in "${STAGES[@]}"; do
     run_stage "$nm" "$wh" "$PY" "$BASE/e0_effect.py" \
       --model "$MAIN_MODEL" --device "$DEVICE" \
       --tasks "$B_TASKS" --skill "$BASE/tasks/tier_b/SKILL.$sk.md" \
-      --mode mc --limit "$TIERB_N" --run-id "$RUN_ID/$nm" ;;
+      --mode mc --limit "$TIERB_N" --margins --run-id "$RUN_ID/$nm" ;;
+
+  e0-tierB-filler)
+    # The same measurement with a document that says nothing about chemistry.
+    # Two things it settles that nothing else can: how big the generic "a long
+    # document is present" effect is on THIS tier (Tier A's was the whole
+    # effect), and whether the axis margins are really blind to it -- they are
+    # supposed to be, and this is the condition that checks the claim rather
+    # than assuming it. Marked --control so a failed gate reads as the expected
+    # result rather than as a failure.
+    run_stage "$nm" "$wh" "$PY" "$BASE/e0_effect.py" \
+      --model "$MAIN_MODEL" --device "$DEVICE" \
+      --tasks "$B_TASKS" --skill "$BASE/tasks/filler-neutral.md" \
+      --mode mc --limit "$TIERB_N" --margins --control \
+      --run-id "$RUN_ID/$nm" ;;
 
   errors-tierB-const|errors-tierB-proc)
     # Half the double dissociation each. The comparison between the two files
@@ -386,15 +401,31 @@ for entry in "${STAGES[@]}"; do
     # did -- which is also what E2 needs: the two recovery curves are only
     # comparable if both skills were measured on an identical pool.
     filtered=$B_TASKS
-    # 层间实验的分母是行为效应。分母是噪声时,恢复率不是"小",是没有定义 ——
-    # 所以门槛没过就跳过,而不是照跑然后在报告里解释。
+    # 门槛没过时照跑,但把"分母未确认"这个污点一路带下去。
+    #
+    # 恢复率 = (补丁后 - 无skill) / (有skill - 无skill)。分母是行为效应,门槛没过
+    # 意味着那个分母的 CI 含 0 —— 所以这个比值不是"小",是**没有定义**:分母趋近 0
+    # 时它可以是任意大的数,符号也随抽样翻转。以前的做法是跳过,现在改成跑完并标记,
+    # 因为曲线的**形状**（哪一层起跳、别题向量恢复多少）即使在分母不确定时也有诊断
+    # 价值,只是那个**比值**不能报。
+    #
+    # 关键是标记必须进 summary.json,而不只是打在终端上:半年后读到 "recovery
+    # +1.07" 的人不会去翻当时的日志。
+    GATE_FLAG=()
     if [ $DRYRUN -eq 0 ] && [ $NOGATE -eq 0 ] && ! gate_ok "$OUT/e0-tierB-${nm##*-}/summary.json"; then
       echo
-      echo "[跳过] $nm —— $sk 没过 Phase 0 门槛（或这个 RUN_ID 下还没跑过 e0）。"
-      echo "        层间实验的因变量差值是恢复率的分母,分母是噪声时那个比值没有定义。"
-      echo "        确实想跑（比如分母是在别的 run 里确认的）: 加 --no-gate"
-      record "$nm" skipped-gate 0
-      continue
+      echo "  ############################################################"
+      echo "  #  [!!] 分母未确认 —— $nm"
+      echo "  #"
+      echo "  #  $sk 没过 Phase 0 门槛（或这个 RUN_ID 下还没跑过 e0）。"
+      echo "  #  恢复率的分母是那个行为效应,它的 CI 含 0。"
+      echo "  #"
+      echo "  #  照跑,但结论只能读**曲线形状**（哪一层起跳、对照恢复多少),"
+      echo "  #  **那个比值不能报**。summary.json 里会带 gate_unconfirmed 标记,"
+      echo "  #  report.py 会一直提醒。"
+      echo "  ############################################################"
+      echo
+      GATE_FLAG=(--gate-unconfirmed)
     fi
     if [ ! -f "$filtered" ] && [ $DRYRUN -eq 0 ]; then
       echo "[跳过] $nm —— 缺 $(basename "$filtered")（先跑 e0-tierB-*）"
@@ -407,11 +438,13 @@ for entry in "${STAGES[@]}"; do
               --tasks "$filtered" --skill "$BASE/tasks/tier_b/SKILL.$sk.md" \
               --mode mc --limit "$E2_N" --layer-step "$LAYER_STEP_B" \
               --filler "$BASE/tasks/filler-neutral.md" \
+              ${GATE_FLAG[@]+"${GATE_FLAG[@]}"} \
               --run-id "$RUN_ID/$nm" ;;
       e1-*) run_stage "$nm" "$wh" "$PY" "$BASE/e1_knockout.py" \
               --model "$MAIN_MODEL" --device "$DEVICE" \
               --tasks "$filtered" --skill "$BASE/tasks/tier_b/SKILL.$sk.md" \
               --mode mc --limit "$E1_N" --group "$GROUP_B" \
+              ${GATE_FLAG[@]+"${GATE_FLAG[@]}"} \
               --run-id "$RUN_ID/$nm" ;;
     esac ;;
 

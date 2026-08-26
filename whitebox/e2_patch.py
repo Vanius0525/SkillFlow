@@ -165,6 +165,12 @@ def main():
                          "skill does -- so without this condition a high "
                          "recovery cannot be told apart from 'a document is "
                          "present'. See HANDOFF 12.3j.")
+    ap.add_argument("--gate-unconfirmed", action="store_true",
+                    help="the Phase 0 effect this experiment divides by was NOT "
+                         "confirmed. Runs anyway, but marks the result: a "
+                         "ratio over a denominator whose CI contains zero "
+                         "is undefined, not small. The curve SHAPE stays "
+                         "diagnostic; the ratio does not.")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
@@ -191,7 +197,18 @@ def main():
     print(f"layers : {len(layers)} of {r.n_layers} (step {args.layer_step})")
     print(f"patch  : last {args.tail_k} prompt position"
           f"{'s' if args.tail_k > 1 else ''}")
-    print(f"run id : {run_id}\n")
+    print(f"run id : {run_id}")
+    if args.gate_unconfirmed:
+        print()
+        print("  " + "#" * 58)
+        print("  #  [!!] DENOMINATOR UNCONFIRMED")
+        print("  #  Phase 0 did not confirm the behavioural effect this")
+        print("  #  divides by. Recovery is a ratio; with a denominator whose")
+        print("  #  CI contains zero it is UNDEFINED, not small -- it can come")
+        print("  #  out arbitrarily large and its sign can flip with the draw.")
+        print("  #  Read the SHAPE of the curve. Do not report the number.")
+        print("  " + "#" * 58)
+    print()
     M.write_run_info(out_dir, r, {
         "experiment": "e2_patch", "run_id": run_id, "tasks": str(args.tasks),
         "skill": str(args.skill), "mode": args.mode, "n_items": len(items),
@@ -385,6 +402,8 @@ def main():
         "best_layer_mismatched": br["mismatched"], "best_layer_meanvec": br["mean"],
         "filler": str(args.filler) if args.filler else None,
         "filler_ctx_delta": filler_ctx_delta,
+        # Travels with the numbers, not just in the log the run scrolled past.
+        "gate_unconfirmed": bool(args.gate_unconfirmed),
         "recovery_filler": ([per_layer[L]["recovery"]["filler"] for L in layers]
                             if filler else None),
         "best_layer_filler": br.get("filler"),
@@ -425,6 +444,10 @@ def main():
               f"layers carry no information about the skill.")
 
     print(f"{NL}  reading it:")
+    if args.gate_unconfirmed:
+        print("    [!!] The denominator was never confirmed. Everything below is")
+        print("         written as if it had been -- read it as a description of")
+        print("         the CURVE, and treat every ratio as undefined.")
     margin = br["real"] - br["mismatched"]
 
     # The filler check comes first because it can invalidate everything below

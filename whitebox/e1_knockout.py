@@ -147,6 +147,12 @@ def main():
                     default="alternate",
                     help="document order in the prompt; alternate counterbalances "
                          "it across items so position is not confounded with content")
+    ap.add_argument("--gate-unconfirmed", action="store_true",
+                    help="the Phase 0 effect this experiment divides by was NOT "
+                         "confirmed. Runs anyway, but marks the result: a "
+                         "ratio over a denominator whose CI contains zero "
+                         "is undefined, not small. The curve SHAPE stays "
+                         "diagnostic; the ratio does not.")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
@@ -182,11 +188,21 @@ def main():
     print(f"filler : {FILLER.name}")
     print(f"order  : {args.order}")
     print(f"groups : {len(groups)} x {args.group} layers of {r.n_layers}")
-    print(f"run id : {run_id}\n")
+    print(f"run id : {run_id}")
+    if args.gate_unconfirmed:
+        print()
+        print("  " + "#" * 58)
+        print("  #  [!!] Phase 0 never confirmed the effect this net is read")
+        print("  #  against. The knockout curve is still a real measurement --")
+        print("  #  it is a difference, not a ratio -- but 'net as a share of")
+        print("  #  the behavioural effect' has no trustworthy divisor.")
+        print("  " + "#" * 58)
+    print()
     M.write_run_info(out_dir, r, {
         "experiment": "e1_knockout", "run_id": run_id, "tasks": str(args.tasks),
         "skill": str(args.skill), "filler": str(FILLER), "mode": args.mode,
         "n_items": len(items), "group": args.group, "order": args.order,
+        "gate_unconfirmed": bool(args.gate_unconfirmed),
         "dv": "answer_logprob",
     })
 
@@ -290,6 +306,11 @@ def main():
         "blocked_width_tokens": base[0]["width"],
         "order": args.order,
         "n_skill_first": n_first,
+        # Travels with the numbers. E1's net is a difference, not a ratio, so an
+        # unconfirmed Phase 0 hurts it less than it hurts E2 -- but the net is
+        # still read against that same behavioural effect (fmt_e1 divides by it),
+        # so a reader has to know the divisor was never established.
+        "gate_unconfirmed": bool(args.gate_unconfirmed),
     }
     (out_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
