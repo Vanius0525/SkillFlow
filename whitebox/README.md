@@ -5,7 +5,7 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 和 `../HANDOFF.md`（agent harness 黑盒对比）共用模型和仓库，实验方法完全不同。
 
-状态（2026-08-25，Tier A 整跑完）：Tier A 整条梯队跑完了（1.7B，runs `20260822-031238` /
+状态（2026-08-26，门槛改成警告 + Tier B 换了因变量）：Tier A 整条梯队跑完了（1.7B，runs `20260822-031238` /
 `20260822-175713`，两次数字一致——贪心解码）。Tier B **v1 已经下线**：它的 e0 两对
 都没过门槛，而且是贴着地板没过（8B，run `20260822-181445`），根因是无 CoT 设定下
 模型要在一次前向里做三位有效数字的算术，见 HANDOFF §15。**Tier B v2（选装置，
@@ -22,6 +22,47 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 原始输出和逐条判断在 [`journal/2026-08-24-tierB-v2.md`](journal/2026-08-24-tierB-v2.md)，
 结论在 HANDOFF §12.3i。
+
+### 2026-08-26 两处改动
+
+**① 门槛不再跳过后续实验，改成警告并继续。**
+`e1/e2-tierB` 在 Phase 0 没过时照跑，但污点跟着数字走：`run-whitebox.sh` 打横幅并传
+`--gate-unconfirmed`，两个脚本把 `gate_unconfirmed` 写进 **`summary.json`**，
+`report.py` 把警告打在**那一段最前面**（在任何可被引用的数字之前）。
+
+读法：**曲线形状可以读**（哪一层起跳、各对照恢复多少），**那个比值不能报**。
+恢复率的分母是行为效应，分母 CI 含 0 时比值**没有定义**——它可以任意大，符号还随
+抽样翻转。E1 的 net 是差值，受影响小，但「占行为效应的比例」的分母还是它。
+
+**② Tier B 换了因变量：轴间距。**
+`build.py` 逐题记了 `option_kinds`，所以四个选项各打一次 logprob 就有
+
+```
+m_const = lp(correct) − lp(wrong_const)     只差一个常数的那一对
+m_rel   = lp(correct) − lp(wrong_rel)       只差一个关系式的那一对
+```
+
+两条性质正好对上 Tier B 的两个毛病：**对通用成分免疫**（共同位移等量抬高两项，
+相减消掉——见下面 §12.3j 那条）、**没有天花板**（本来就答对的题，间距照样能拉宽）。
+所以 §15.6 那件重活（改生成器压基线）**降级**了，它原本只是为准确率那一档腾余量。
+
+新增 `did.py` 判预注册的双重分离（配对 bootstrap，判据写死成四个分支）；
+新增阶段 `e0-tierB-filler` 量通用成分在 Tier B 上的行为大小，**并检验轴间距是不是
+真的免疫**。设计和判据见 HANDOFF §12.3l——**判据写在看到任何间距数字之前**。
+
+```bash
+# 远程，接着上次的 RUN_ID 或新建一个
+RUN_ID=$RUN_ID ./run-whitebox.sh --only e0-tierB-const  --force
+RUN_ID=$RUN_ID ./run-whitebox.sh --only e0-tierB-proc   --force
+RUN_ID=$RUN_ID ./run-whitebox.sh --only e0-tierB-filler --force
+python report.py results/$RUN_ID     # 轴间距 + 双重分离的方向
+python did.py    results/$RUN_ID     # 双重分离的判据（带 CI）
+```
+
+`did.py` 打四种结论之一：**成立** / **只有一半** / **方向就不成立** / **功效不够**。
+最后一种的处理是多生成题并把题变难，**不要在同一批题上重测**。
+
+---
 
 **2026-08-25 Tier A 整跑（run `20260825-123259`）：补丁做到的比文档本身还多。**
 原始输出在 [`journal/2026-08-25-tierA-full.md`](journal/2026-08-25-tierA-full.md)，
