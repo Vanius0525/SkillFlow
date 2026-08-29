@@ -50,3 +50,7 @@ whitebox/results/
 # 机器配置（和 env.sh 同理：部署状态，不是源码）
 whitebox/whitebox.conf
 whitebox/tasks/*/tasks.filtered*.jsonl
+
+# howskill run outputs (server-side), and graft prefix files
+/howskill/results/
+/howskill/grafts/
