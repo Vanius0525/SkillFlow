@@ -2,9 +2,12 @@
 # Qwen3-8B vLLM 服务管理: ./run-server.sh [start|stop|status|log]
 # 部署位置: Inspire Studio 容器 $BASE/run-server.sh
 BASE=/inspire/qb-dev/project/multi-agent/czxs253130660/agent-harness
-MODEL_DIR=$BASE/models/Qwen3-8B
-SERVED_NAME=Qwen/Qwen3-8B
-PORT=8000
+# 默认 Qwen3-8B。切换模型（P1 校准要用 Qwen3-4B）：
+#   QWEN_MODEL_DIR=$BASE/models/Qwen3-4B QWEN_SERVED_NAME=Qwen/Qwen3-4B ./run-server.sh start
+# 一张 4090 放不下两个模型，切换前先 stop。
+MODEL_DIR=${QWEN_MODEL_DIR:-$BASE/models/Qwen3-8B}
+SERVED_NAME=${QWEN_SERVED_NAME:-Qwen/Qwen3-8B}
+PORT=${QWEN_PORT:-8000}
 LOG=$BASE/logs/vllm.log
 PIDFILE=$BASE/logs/vllm.pid
 
