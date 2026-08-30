@@ -33,6 +33,16 @@ DATA = os.path.join(HERE, "data")
 LABELS = ["S1", "S2", "S3", "S4", "S5", "unparsed"]
 
 
+def clip(text: str, budget: int) -> str:
+    """Keep the head and the tail. A head-only truncation would cut off the
+    final computation and the ANSWER line, which is where the evidence is."""
+    if len(text) <= budget:
+        return text
+    head = budget // 3
+    tail = budget - head
+    return text[:head] + f"\n...[{len(text)-budget} chars elided]...\n" + text[-tail:]
+
+
 def load_jsonl(path: str) -> list[dict]:
     rows = []
     with open(path, encoding="utf-8") as fh:
@@ -51,7 +61,9 @@ def main(argv=None):
     p.add_argument("--n", type=int, default=50)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--max-chars", type=int, default=3000,
-                   help="truncate the agent transcript to this many chars")
+                   help="transcript budget per line; the head and the tail are "
+                        "kept, since the decisive reasoning and the ANSWER line "
+                        "are at the end and a head-only cut hides them")
     p.add_argument("--out", default="")
     a = p.parse_args(argv)
 
@@ -81,6 +93,26 @@ def main(argv=None):
             print(f"  {k:9s} {dist[k]:5d}")
     print(f"parse rate (of incorrect): {100*parse_rate:.1f}%  "
           f"(PROTOCOL.md GATE-0 wants >=80%)")
+
+    # S5 fires when any number in the transcript is within 0.1% of the answer.
+    # For a small integer answer that is a coincidence waiting to happen: the
+    # agent restating "2 points" hits an answer of 2. If S5 is concentrated on
+    # small integers relative to the rest of the failures, the label is an
+    # artefact of the rule and not a real presentation failure.
+    def small_int(r) -> bool:
+        try:
+            v = float(str(r["gt_answer"]).strip())
+        except (TypeError, ValueError):
+            return False
+        return v == int(v) and abs(v) <= 20
+
+    s5 = [r for r, fr in wrong if fr["fail_step"] == "S5"]
+    rest = [r for r, fr in wrong if fr["fail_step"] not in ("S5", "unparsed")]
+    if s5 and rest:
+        a_, b_ = sum(map(small_int, s5)) / len(s5), sum(map(small_int, rest)) / len(rest)
+        print(f"S5 diagnostic: small-integer answers are {100*a_:.0f}% of S5 vs "
+              f"{100*b_:.0f}% of other failures"
+              + ("   <- S5 is likely a coincidence artefact" if a_ > b_ + 0.15 else ""))
 
     # Stratified: every predicted label gets at least a few, the rest
     # proportional. A uniform sample would never show us a rare label.
@@ -117,7 +149,7 @@ def main(argv=None):
                 "gt_explanation": (g.get("gt_explanation") or "")[:1200],
                 "n_tool_calls": traj.get("n_tool_calls"),
                 "stop_reason": traj.get("stop_reason"),
-                "transcript": text[:a.max_chars],
+                "transcript": clip(text, a.max_chars),
             }, ensure_ascii=False) + "\n")
 
     size = os.path.getsize(out_path)
