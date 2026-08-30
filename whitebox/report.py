@@ -420,10 +420,28 @@ def content_margin(e0_by_stage: dict) -> list[str]:
                                f"filler {mc_['delta']:+.3f})")
             # The three bands are 12.3n's, written down before any filler
             # number was seen. Rounder thresholds would have been easier to
-            # read and would also have been chosen after the fact.
-            if a["delta_acc_pp"] > 1e-9:
-                share = c["delta_acc_pp"] / a["delta_acc_pp"]
-                if share >= 2 / 3:
+            # read and would also have been chosen after the fact. What the
+            # first run with these arms showed is that the ratio needs three
+            # guards before it means anything -- it tripped all three, and the
+            # unguarded version printed "the effect is mostly content" for a
+            # tier where the control had moved the gold logprob three times
+            # further than the skill did.
+            arm = a["delta_acc_pp"]
+            if arm < 5.0:
+                out.append("    这个 arm 自己的 Δacc {:+.1f}pp 还够不到门槛的 5pp"
+                           " 下限 —— 余量的分母不成立,§12.3n 的三档在这里读不了"
+                           .format(arm))
+            else:
+                share = c["delta_acc_pp"] / arm
+                if share < 0:
+                    # A negative share is not "content explains everything".
+                    # The control moved accuracy the other way, which needs its
+                    # own explanation before the margin can be quoted at all.
+                    out.append("    [!] 中性文档把准确率推向**另一个方向**"
+                               "（{:+.1f}pp）,所以余量 {:+.1f}pp 比内容效应本身"
+                               "还大。这不是「内容占 100%」—— 先解释对照为什么"
+                               "变差,再谈余量".format(c["delta_acc_pp"], d_acc))
+                elif share >= 2 / 3:
                     out.append("    [!] 中性文档拿走了 {:.0%}（§12.3n 第三档）—— "
                                "这一梯的「skill 有用」基本是 engagement,"
                                "标题数字**不能**当内容特异的效应报,机制结论"
@@ -435,8 +453,34 @@ def content_margin(e0_by_stage: dict) -> list[str]:
                                .format(share))
                 else:
                     out.append("    中性文档只解释了 {:.0%}（§12.3n 第一档）,"
-                               "主体是内容 —— 报效应量时仍要扣掉这一块并说明"
-                               .format(max(0.0, share)))
+                               "准确率这条通道上主体是内容 —— 报效应量时仍要"
+                               "扣掉这一块并说明".format(share))
+
+            # Guard 2: a control that stopped producing parseable answers loses
+            # accuracy for a reason that has nothing to do with content, and
+            # every point it loses that way is added to the margin.
+            pa = a.get("parse_rate_with_skill")
+            pc = c.get("parse_rate_with_skill")
+            if pa is not None and pc is not None and pc < pa - 0.05:
+                out.append("    [!] 对照的可解析率 {:.0%},arm 是 {:.0%} —— 对照"
+                           "掉的分里有一部分是**格式**,不是内容,余量被这一块"
+                           "抬高了。先看 errors 里的 unparsed".format(pc, pa))
+
+            # Guard 3: accuracy is a threshold read off the same distribution
+            # the logprob measures. When the two channels disagree, the only
+            # honest report is that they disagree -- accuracy alone would have
+            # called Tier A's filler inert while it was moving the gold token
+            # further than the skill was, with an interval excluding zero.
+            def moved(x):
+                ci = x.get("delta_logprob_ci95")
+                return ci is not None and (ci[0] > 0 or ci[1] < 0)
+
+            if abs(lp_c) > abs(lp_a) or (moved(c) and not moved(a)):
+                out.append("    [!] logprob 那条通道说的是另一回事：对照 {:+.3f}"
+                           "{},arm {:+.3f}{} —— 准确率只是同一个分布上的阈值"
+                           "读数,两条通道不一致时报「不一致」,不要只报准确率"
+                           "那一边".format(lp_c, "（CI 不含 0）" if moved(c) else "",
+                                          lp_a, "（CI 不含 0）" if moved(a) else ""))
     return out
 
 

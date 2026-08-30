@@ -252,24 +252,27 @@ def main():
     lp_lo, lp_hi = paired_bootstrap(lp_no, lp_yes)
 
     # McNemar counts: the discordant pairs are the whole evidence in a paired design
-    b = sum(1 for x, y in zip(no, yes) if not x["correct"] and y["correct"])
-    c = sum(1 for x, y in zip(no, yes) if x["correct"] and not y["correct"])
+    gained = sum(1 for x, y in zip(no, yes) if not x["correct"] and y["correct"])
+    lost = sum(1 for x, y in zip(no, yes) if x["correct"] and not y["correct"])
 
     # Per-axis margins: the paired delta and its CI, one axis at a time.
+    # Named mn/my rather than a/b: the loop used to bind `b`, which already
+    # held the McNemar gained count, so every summary written with --margins
+    # recorded the last axis's list of margins there instead of the count.
     margin_stats = {}
     for ax in AXES:
-        a = [x["margins"][ax] for x in no if "margins" in x and ax in x["margins"]]
-        b = [y["margins"][ax] for y in yes if "margins" in y and ax in y["margins"]]
-        if len(a) != len(b) or not a:
+        mn = [x["margins"][ax] for x in no if "margins" in x and ax in x["margins"]]
+        my = [y["margins"][ax] for y in yes if "margins" in y and ax in y["margins"]]
+        if len(mn) != len(my) or not mn:
             continue
-        lo, hi = paired_bootstrap(a, b)
+        lo, hi = paired_bootstrap(mn, my)
         margin_stats[ax] = {
-            "n": len(a),
-            "no_skill": sum(a) / len(a), "with_skill": sum(b) / len(b),
-            "delta": sum(b) / len(b) - sum(a) / len(a),
+            "n": len(mn),
+            "no_skill": sum(mn) / len(mn), "with_skill": sum(my) / len(my),
+            "delta": sum(my) / len(my) - sum(mn) / len(mn),
             "ci95": [lo, hi],
-            "gained": sum(1 for x, y in zip(a, b) if y > x),
-            "lost": sum(1 for x, y in zip(a, b) if y < x),
+            "gained": sum(1 for x, y in zip(mn, my) if y > x),
+            "lost": sum(1 for x, y in zip(mn, my) if y < x),
         }
 
     parse_no = sum(x["parsed"] for x in no) / len(no)
@@ -297,7 +300,7 @@ def main():
         "mean_logprob_no_skill": sum(lp_no) / len(lp_no),
         "mean_logprob_with_skill": sum(lp_yes) / len(lp_yes),
         "delta_logprob": d_lp, "delta_logprob_ci95": [lp_lo, lp_hi],
-        "mcnemar_gained": b, "mcnemar_lost": c,
+        "mcnemar_gained": gained, "mcnemar_lost": lost,
         "parse_rate_no_skill": parse_no, "parse_rate_with_skill": parse_yes,
         "chance_level": chance,
         # Axis margins. Keyed by foil kind; `wrong_const` is the pair that
@@ -317,7 +320,7 @@ def main():
     print(f"  logprob    {summary['mean_logprob_no_skill']:.3f} -> "
           f"{summary['mean_logprob_with_skill']:.3f}   "
           f"delta {d_lp:+.3f}  CI95 [{lp_lo:+.3f}, {lp_hi:+.3f}]")
-    print(f"  discordant gained {b}, lost {c}")
+    print(f"  discordant gained {gained}, lost {lost}")
     print(f"  answer found in output: {parse_no:.3f} without skill, "
           f"{parse_yes:.3f} with"
           + (f"   (chance = {chance:.3f})" if chance else ""))

@@ -225,7 +225,18 @@ def main():
     # tier_a is recognised by "family". Detecting on the data rather than on a
     # flag keeps errors.py runnable against any per_item.jsonl without the
     # caller having to remember which set produced it.
-    tier_b2 = all("option_kinds" in tasks.get(r["id"], {}) for r in recs)
+    labelled = all("option_kinds" in tasks.get(r["id"], {}) for r in recs)
+    # `option_kinds` used to exist only on Tier B v2, so its presence WAS the
+    # 2x2. 12.3m gave Tier A the same field, and this flag then did two things
+    # nobody asked for: it read Tier A through the units/relation contrast --
+    # printing "0% units errors, 0% relation errors" instead of the H1/H2 split
+    # the tier was built for -- and it pulled Tier A into report.py's
+    # dissociation cross-check as a row of zeros. What makes a set the 2x2 is
+    # which kinds the options carry, not that they are labelled at all.
+    kinds_seen = set()
+    for r in recs:
+        kinds_seen |= set((tasks.get(r["id"]) or {}).get("option_kinds", {}).values())
+    tier_b2 = labelled and bool(kinds_seen & {"wrong_const", "wrong_rel"})
 
     if "pred" not in recs[0].get("no_skill", {}):
         print("[FAIL] this per_item.jsonl predates the `pred` field. Re-run")
@@ -235,8 +246,9 @@ def main():
         raise SystemExit(1)
 
     print(f"per-item : {args.per_item}  ({len(recs)} items)")
-    which = ("Tier A structural" if tier_a else
-             "Tier B v2 2x2" if tier_b2 else "numeric residual")
+    which = ("Tier B v2 2x2" if tier_b2 else
+             "labelled options" if labelled else
+             "Tier A structural" if tier_a else "numeric residual")
     print(f"tasks    : {args.tasks}  (mode={mode}, {which} typology)\n")
 
     cats = {"no_skill": [], "with_skill": []}
@@ -245,7 +257,11 @@ def main():
         if task is None:
             continue
         for cond in ("no_skill", "with_skill"):
-            if tier_b2:
+            if labelled:
+                # Reading the kind straight off the option the model picked
+                # beats reconstructing it from the value, so this path is right
+                # for Tier A too -- it is only the *reading* below that is
+                # specific to the 2x2.
                 c = classify_tier_b2(r[cond], task)
             elif tier_a:
                 c = classify_tier_a(predicted_value(r[cond], task, mode), task)
@@ -384,6 +400,10 @@ def main():
     if args.out:
         pathlib.Path(args.out).write_text(json.dumps({
             "n": n, "mode": mode, "tier_a": tier_a, "tier_b2": tier_b2,
+            # Whether the options carried kinds at all, as opposed to carrying
+            # the two kinds that make a 2x2. report.py keys its dissociation
+            # cross-check on tier_b2 and must not see Tier A there.
+            "labelled": labelled,
             # Which document produced this file. The Tier B v2 dissociation is a
             # comparison BETWEEN two of these, and a run directory holds both,
             # so report.py needs to be able to tell them apart.

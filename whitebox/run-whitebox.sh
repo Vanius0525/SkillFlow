@@ -142,6 +142,41 @@ sys.exit(0 if (acc or lp) else 1)
 PY
 }
 
+# set_gate_flag <e0-summary.json> —— 门槛没过时不跳过,但把"分母未确认"这个
+# 污点一路带下去。设置全局 GATE_FLAG,调用方原样展开。
+#
+# 恢复率 = (补丁后 - 无skill) / (有skill - 无skill)。分母是行为效应,门槛没过
+# 意味着那个分母的 CI 含 0 —— 所以这个比值不是"小",是**没有定义**:分母趋近 0
+# 时它可以是任意大的数,符号也随抽样翻转。以前的做法是跳过,现在改成跑完并标记,
+# 因为曲线的**形状**（哪一层起跳、别题向量恢复多少）即使在分母不确定时也有诊断
+# 价值,只是那个**比值**不能报。
+#
+# 关键是标记必须进 summary.json,而不只是打在终端上:半年后读到 "recovery
+# +1.07" 的人不会去翻当时的日志。
+#
+# 这原来只挂在 Tier B 上,理由是 Tier A 是正对照、"当然过得了门槛"。§12.3m 换掉
+# 题集之后它就不过了（n=39,Δacc 的 CI 下界压在 0 上）,于是 e2-tierA 打出一个
+# 分母未确认的恢复率,还不带任何警告 —— 正对照的身份不是豁免。
+set_gate_flag() {
+  GATE_FLAG=()
+  [ $DRYRUN -eq 1 ] && return 0
+  [ $NOGATE -eq 1 ] && return 0
+  gate_ok "$1" && return 0
+  echo
+  echo "  ############################################################"
+  echo "  #  [!!] 分母未确认 —— $nm"
+  echo "  #"
+  echo "  #  $(basename "$(dirname "$1")") 没过 Phase 0 门槛（或这个 RUN_ID"
+  echo "  #  下还没跑过它）。恢复率的分母是那个行为效应,它的 CI 含 0。"
+  echo "  #"
+  echo "  #  照跑,但结论只能读**曲线形状**（哪一层起跳、对照恢复多少）,"
+  echo "  #  **那个比值不能报**。summary.json 里会带 gate_unconfirmed 标记,"
+  echo "  #  report.py 会一直提醒。"
+  echo "  ############################################################"
+  echo
+  GATE_FLAG=(--gate-unconfirmed)
+}
+
 if [ $DRYRUN -eq 0 ]; then
   mkdir -p "$LOGS"
   [ -f "$STATUS" ] || printf "stage\tstatus\tseconds\tstarted\n" > "$STATUS"
@@ -358,30 +393,28 @@ for entry in "${STAGES[@]}"; do
       --tasks "$A_TASKS" --flavour near ${A_LIMIT[@]+"${A_LIMIT[@]}"} \
       --run-id "$RUN_ID/$nm" ;;
 
-  e2-tierA)
+  e2-tierA|e2-tierA-k4)
     # --filler is not optional any more. E7 found the injection direction is
     # generic -- a neutral document moves the residual as far as a skill does
     # (HANDOFF 12.3j) -- so a recovery number without this condition cannot be
     # told apart from "a document was in context when the vector was captured".
+    set_gate_flag "$OUT/e0-tierA/summary.json"
+    K4=(); [ "$nm" = "e2-tierA-k4" ] && K4=(--tail-k "$TAIL_K")
     run_stage "$nm" "$wh" "$PY" "$BASE/e2_patch.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E2_N" \
       --filler "$BASE/tasks/filler-neutral.md" \
-      ${E2_STEP[@]+"${E2_STEP[@]}"} --run-id "$RUN_ID/$nm" ;;
-
-  e2-tierA-k4)
-    run_stage "$nm" "$wh" "$PY" "$BASE/e2_patch.py" \
-      --model "$DEV_MODEL" --device "$DEVICE" \
-      --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E2_N" \
-      --filler "$BASE/tasks/filler-neutral.md" \
-      ${E2_STEP[@]+"${E2_STEP[@]}"} --tail-k "$TAIL_K" \
+      ${E2_STEP[@]+"${E2_STEP[@]}"} ${K4[@]+"${K4[@]}"} \
+      ${GATE_FLAG[@]+"${GATE_FLAG[@]}"} \
       --run-id "$RUN_ID/$nm" ;;
 
   e1-tierA)
+    set_gate_flag "$OUT/e0-tierA/summary.json"
     run_stage "$nm" "$wh" "$PY" "$BASE/e1_knockout.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E1_N" \
-      ${E1_GROUP[@]+"${E1_GROUP[@]}"} --run-id "$RUN_ID/$nm" ;;
+      ${E1_GROUP[@]+"${E1_GROUP[@]}"} \
+      ${GATE_FLAG[@]+"${GATE_FLAG[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   e0-tierB-const|e0-tierB-proc)
     sk=pchem-constants; [ "$nm" = "e0-tierB-proc" ] && sk=pchem-procedure
@@ -460,32 +493,7 @@ for entry in "${STAGES[@]}"; do
     # did -- which is also what E2 needs: the two recovery curves are only
     # comparable if both skills were measured on an identical pool.
     filtered=$B_TASKS
-    # 门槛没过时照跑,但把"分母未确认"这个污点一路带下去。
-    #
-    # 恢复率 = (补丁后 - 无skill) / (有skill - 无skill)。分母是行为效应,门槛没过
-    # 意味着那个分母的 CI 含 0 —— 所以这个比值不是"小",是**没有定义**:分母趋近 0
-    # 时它可以是任意大的数,符号也随抽样翻转。以前的做法是跳过,现在改成跑完并标记,
-    # 因为曲线的**形状**（哪一层起跳、别题向量恢复多少）即使在分母不确定时也有诊断
-    # 价值,只是那个**比值**不能报。
-    #
-    # 关键是标记必须进 summary.json,而不只是打在终端上:半年后读到 "recovery
-    # +1.07" 的人不会去翻当时的日志。
-    GATE_FLAG=()
-    if [ $DRYRUN -eq 0 ] && [ $NOGATE -eq 0 ] && ! gate_ok "$OUT/e0-tierB-${nm##*-}/summary.json"; then
-      echo
-      echo "  ############################################################"
-      echo "  #  [!!] 分母未确认 —— $nm"
-      echo "  #"
-      echo "  #  $sk 没过 Phase 0 门槛（或这个 RUN_ID 下还没跑过 e0）。"
-      echo "  #  恢复率的分母是那个行为效应,它的 CI 含 0。"
-      echo "  #"
-      echo "  #  照跑,但结论只能读**曲线形状**（哪一层起跳、对照恢复多少),"
-      echo "  #  **那个比值不能报**。summary.json 里会带 gate_unconfirmed 标记,"
-      echo "  #  report.py 会一直提醒。"
-      echo "  ############################################################"
-      echo
-      GATE_FLAG=(--gate-unconfirmed)
-    fi
+    set_gate_flag "$OUT/e0-tierB-${nm##*-}/summary.json"
     if [ ! -f "$filtered" ] && [ $DRYRUN -eq 0 ]; then
       echo "[跳过] $nm —— 缺 $(basename "$filtered")（先跑 e0-tierB-*）"
       record "$nm" skipped-nofile 0
