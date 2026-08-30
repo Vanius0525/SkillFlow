@@ -18,6 +18,7 @@ by someone who has not memorised the design.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import pathlib
 import sys
@@ -87,7 +88,12 @@ def fmt_e0(s: dict) -> list[str]:
            f"{s['mean_logprob_with_skill']:.3f}  ({s['delta_logprob']:+.3f}"
            + (", CI95 [{:+.3f},{:+.3f}]".format(*s["delta_logprob_ci95"])
               if "delta_logprob_ci95" in s else "")
-           + f")   配对 +{s['mcnemar_gained']}/-{s['mcnemar_lost']}"]
+           + ")   配对 "
+           + (f"+{s['mcnemar_gained']}" if s.get("mcnemar_gained") is not None
+              else "+?")
+           + f"/-{s['mcnemar_lost']}"
+           + ("  (计数从 per_item 重算)"
+              if s.get("mcnemar_gained_recounted") else "")]
     pr = s.get("parse_rate_no_skill")
     ch = s.get("chance_level")
     if pr is not None:
@@ -794,6 +800,29 @@ def main():
             continue
         if kind(s) == "errors":
             found.append(("errors", s, f))
+
+    # Every summary written between --margins landing and the fix carries the
+    # last axis's list of margins in mcnemar_gained, because the loop bound the
+    # name the count was already using. The count is the whole evidence in a
+    # paired design, so rather than leave eight runs printing "+[]/" -- or spend
+    # GPU time re-deriving a number greedy decoding would reproduce exactly --
+    # recount it here from the per_item.jsonl sitting next to the summary.
+    for k, x, f in found:
+        if k != "e0" or isinstance(x.get("mcnemar_gained"), int):
+            continue
+        pi = f.parent / "per_item.jsonl"
+        if not pi.exists():
+            x["mcnemar_gained"] = None
+            continue
+        g = 0
+        for line in io.open(pi, encoding="utf-8"):
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            if not r["no_skill"]["correct"] and r["with_skill"]["correct"]:
+                g += 1
+        x["mcnemar_gained"] = g
+        x["mcnemar_gained_recounted"] = True
 
     if args.json:
         print(json.dumps([{"kind": k, "path": str(p), "summary": s}
