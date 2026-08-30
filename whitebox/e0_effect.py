@@ -286,6 +286,11 @@ def main():
     d_lp = sum(lp_yes) / len(lp_yes) - sum(lp_no) / len(lp_no)
     summary = {
         "run_id": run_id, "n": len(items),
+        # mode belongs in the summary, not only in run-info.json: report.py
+        # differences an arm against its control, and `num` accuracy is not on
+        # the same scale as `mc` accuracy. Without this the pairing had to be
+        # inferred from chance_level being None.
+        "mode": args.mode,
         "acc_no_skill": acc_no, "acc_with_skill": acc_yes,
         "delta_acc_pp": d_acc,
         "delta_acc_ci95_pp": [acc_lo * 100, acc_hi * 100],

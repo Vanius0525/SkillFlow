@@ -29,6 +29,7 @@ QUESTION = {
     "e6_counterfactual": "模型真的在读那张表吗？（改掉一个值,答案跟谁走）",
     "e2_patch": "效应能不能压进一个向量？（能=H2 选择,不能=H1 检索）",
     "e1_knockout": "哪些层在读 skill？（早层=读一次,中后层持续=反复回看）",
+    "did_tierB": "预注册的双重分离成不成立？（轴间距的双重差分,带配对 CI）",
 }
 
 
@@ -323,13 +324,120 @@ def fmt_e1(s: dict, e0_delta: float = float("nan")) -> list[str]:
     return out
 
 
+def fmt_did(s: dict) -> list[str]:
+    VERDICT = {
+        "dissociation": "双重分离**成立**：两份文档各自只动自己那个轴,而且是在"
+                        "通用成分被间距消掉之后",
+        "asymmetric": "DiD 显著但**分离不成立**：只有一份文档站住了,报这个不对称,"
+                      "不要报「分离」",
+        "wrong-direction": "**方向上就不成立**：至少一份文档更动的是别人的轴 —— "
+                           "这直接反驳「内容不同的文档走不同机制」",
+        "underpowered": "方向对,CI 压不住 0 —— 功效不够。杠杆是多生成题并把题变难,"
+                        "**不要在同一批题上重测**",
+    }
+    def iv(k):
+        return s[k], s[k + "_ci95"][0], s[k + "_ci95"][1]
+
+    FMT1 = "{} {:+.4f}  CI95 [{:+.4f},{:+.4f}]"
+    return [f"n={s['n']}   {s['boot']} 次配对 bootstrap",
+            FMT1.format("constants 偏向常数轴", *iv("lean_const")),
+            FMT1.format("procedure 偏向关系式轴", *iv("lean_proc")),
+            FMT1.format("双重差分 DiD", *iv("did")),
+            VERDICT.get(s.get("verdict"), "(未知判词)")]
+
+
 FMT = {"e0": fmt_e0, "errors": fmt_errors, "e7_repr": fmt_e7,
-       "e6_counterfactual": fmt_e6, "e2_patch": fmt_e2, "e1_knockout": fmt_e1}
+       "e6_counterfactual": fmt_e6, "e2_patch": fmt_e2, "e1_knockout": fmt_e1,
+       "did_tierB": fmt_did}
 # fmt_e1 needs the behavioural effect to put its net on a scale, and that lives
 # in a different stage's summary. Filled in by main() once every summary is
 # loaded; the default keeps fmt_e1 callable on its own.
 E0_DELTA_FOR_E1 = [float("nan")]
-ORDER = ["e0", "errors", "e7_repr", "e6_counterfactual", "e2_patch", "e1_knockout"]
+ORDER = ["e0", "errors", "did_tierB", "e7_repr", "e6_counterfactual",
+         "e2_patch", "e1_knockout"]
+
+
+def tier_of(stage: str) -> str:
+    """`e0-tierA-filler` -> `tierA`. The join key between an arm and its control."""
+    return next((x for x in stage.split("-") if x.startswith("tier")), "")
+
+
+def content_margin(e0_by_stage: dict) -> list[str]:
+    """
+    The skill's behavioural effect minus the neutral document's.
+
+    E7 found the injected direction is generic, and E2 found a patch carrying no
+    per-item content recovers more than the document itself (12.3j, 12.3k). Both
+    of those live in the representation. The accuracy delta each tier is quoted
+    for had no such control until the filler arms existed, so it was carrying
+    both "the document says how to do it" and "a long document is in context" in
+    one number, with no way to tell them apart. The subtraction below is the only
+    statement about CONTENT this pipeline can make at the behavioural level,
+    which is why it is printed before anything else.
+
+    An arm pairs with a control when they share a tier, an item count and a
+    mode. The last condition is what keeps the `num` arm from being differenced
+    against an `mc` control -- their accuracies are not on the same scale, and
+    the subtraction would look perfectly reasonable anyway.
+    """
+    out = []
+    for cname, c in sorted(e0_by_stage.items()):
+        if not c.get("is_control"):
+            continue
+        tier = tier_of(cname)
+        for name, a in sorted(e0_by_stage.items()):
+            if name == cname or a.get("is_control"):
+                continue
+            if tier_of(name) != tier or a["n"] != c["n"]:
+                continue
+            if a.get("mode") != c.get("mode"):
+                continue
+            if a.get("chance_level") != c.get("chance_level"):
+                # Kept as well as `mode` so summaries written before that key
+                # existed still pair correctly: for them None-vs-0.25 is the
+                # only thing separating a `num` arm from an `mc` control.
+                continue
+            d_acc = a["delta_acc_pp"] - c["delta_acc_pp"]
+            lp_a = a.get("delta_logprob", float("nan"))
+            lp_c = c.get("delta_logprob", float("nan"))
+            d_lp = lp_a - lp_c
+            out.append(
+                f"内容余量（行为层） {name} 减 {cname}： "
+                f"Δacc {a['delta_acc_pp']:+.1f} 减 {c['delta_acc_pp']:+.1f} "
+                f"= {d_acc:+.1f}pp   Δlogprob {d_lp:+.3f}")
+            # Per axis as well: a margin cancels the shared displacement inside
+            # each arm, and this difference cancels it a second time. When the
+            # two disagree -- no accuracy margin but a real axis margin -- the
+            # axis is the one to believe, because accuracy has a ceiling and it
+            # does not (12.3l).
+            for ax in ("wrong_const", "wrong_rel", "wrong_row", "wrong_family",
+                       "echo", "inverted"):
+                ma = (a.get("margins") or {}).get(ax)
+                mc_ = (c.get("margins") or {}).get(ax)
+                if ma and mc_:
+                    out.append(f"    轴 {ax}： {ma['delta'] - mc_['delta']:+.3f}"
+                               f"  (skill {ma['delta']:+.3f}, "
+                               f"filler {mc_['delta']:+.3f})")
+            # The three bands are 12.3n's, written down before any filler
+            # number was seen. Rounder thresholds would have been easier to
+            # read and would also have been chosen after the fact.
+            if a["delta_acc_pp"] > 1e-9:
+                share = c["delta_acc_pp"] / a["delta_acc_pp"]
+                if share >= 2 / 3:
+                    out.append("    [!] 中性文档拿走了 {:.0%}（§12.3n 第三档）—— "
+                               "这一梯的「skill 有用」基本是 engagement,"
+                               "标题数字**不能**当内容特异的效应报,机制结论"
+                               "不要从这一梯出".format(share))
+                elif share >= 1 / 3:
+                    out.append("    [!] 中性文档拿走了 {:.0%}（§12.3n 第二档）—— "
+                               "标题数字要改写成上面那个余量,**E2 和 E1 的分母"
+                               "也要跟着换**,否则恢复率的分母里混着通用成分"
+                               .format(share))
+                else:
+                    out.append("    中性文档只解释了 {:.0%}（§12.3n 第一档）,"
+                               "主体是内容 —— 报效应量时仍要扣掉这一块并说明"
+                               .format(max(0.0, share)))
+    return out
 
 
 def cross_check(found: list) -> list[str]:
@@ -351,6 +459,7 @@ def cross_check(found: list) -> list[str]:
     e6 = [s for k, s, _ in found if k == "e6_counterfactual"]
     e7 = [s for k, s, _ in found if k == "e7_repr"]
     e0_by_stage = {p.parent.name: s for k, s, p in found if k == "e0"}
+    out += content_margin(e0_by_stage)
     # E6 first: it is the only one of the three that uses no hooks, so when it
     # disagrees with E1 or E2 it is the one that decides. Computed up here so
     # the E2 x E1 reading below can refuse to draw a conclusion that E6 has
@@ -383,9 +492,14 @@ def cross_check(found: list) -> list[str]:
                 out.append(
                     f"双重分离（轴间距）： constants 偏向自己那轴 {c:+.3f}，"
                     f"procedure 偏向自己那轴 {r_:+.3f}，双重差分 {c + r_:+.3f}")
-                if c > 0 and r_ > 0:
+                did = next((x for k_, x, _ in found if k_ == "did_tierB"), None)
+                if did:
+                    out.append("  配对 bootstrap 的判词在 [did_tierB] 那一段,"
+                               "以它为准 —— 上面这三个数只是点估计。")
+                elif c > 0 and r_ > 0:
                     out.append("  两份文档各自更动自己的轴 —— 方向上成立。"
-                               "**逐题配对 bootstrap 的 CI 还没算**,不含 0 才叫成立。")
+                               "**逐题配对 bootstrap 的 CI 还没算**（跑 did.py,"
+                               "或流水线阶段 did-tierB）,不含 0 才叫成立。")
                 else:
                     out.append("  至少一份文档更动的是**别人**的轴 —— 双重分离在方向上"
                                "就不成立,先别做 E2 的 example/principle 对照。")
@@ -407,7 +521,12 @@ def cross_check(found: list) -> list[str]:
         # E2 recovery instead of contradicting it. The first version of this
         # check tested only the peak's position and reported a contradiction on
         # a net worth 3% of the effect (HANDOFF 12.3k).
-        e0_lp = max((abs(s.get("delta_logprob", 0.0)) for s in e0_by_stage.values()),
+        # Controls excluded. The denominator is meant to be the behavioural
+        # effect of the SKILL, and 12.3j measured a filler whose displacement is
+        # the larger of the two -- with the filler arms in the run, taking a max
+        # over every e0 would quietly divide E1's net by the control.
+        e0_lp = max((abs(s.get("delta_logprob", 0.0))
+                     for s in e0_by_stage.values() if not s.get("is_control")),
                     default=0.0)
         net_share = (max(s["best_net"] for s in e1) / e0_lp) if e0_lp > 1e-6 \
             else float("nan")
@@ -614,6 +733,15 @@ def main():
         except json.JSONDecodeError:
             continue
         found.append((kind(s), s, f))
+    # did.py writes the preregistered verdict as did.json, not summary.json,
+    # so the pipeline can rerun it without the stage looking already-done.
+    for f in sorted(root.rglob("did*.json")):
+        try:
+            s = json.loads(f.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if kind(s) == "did_tierB":
+            found.append(("did_tierB", s, f))
     # errors.py writes its report under whatever --out was given
     for f in sorted(root.rglob("errors*.json")):
         try:
@@ -639,7 +767,8 @@ def main():
     # The largest behavioural effect in the run is the scale E1's net is read
     # against. Largest rather than matching by stage name: E1 runs on the pair
     # that cleared the gate, so the biggest e0 in the directory is that pair.
-    _d = [abs(x[1].get("delta_logprob", 0.0)) for x in found if x[0] == "e0"]
+    _d = [abs(x[1].get("delta_logprob", 0.0)) for x in found
+          if x[0] == "e0" and not x[1].get("is_control")]
     E0_DELTA_FOR_E1[0] = max(_d) if _d else float("nan")
     for k, s, f in found:
         name = f.parent.name

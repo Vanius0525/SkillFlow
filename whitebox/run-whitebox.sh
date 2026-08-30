@@ -65,8 +65,10 @@ STAGES=(
   "selftest|0|干预机制自检：补丁和敲除有没有做它们声称的事（硬门槛）"
   "e7-metrics|0|几何指标自检：余弦/有效维数/探针在已知数据上给不给出已知答案"
   "e0-tierA|a|有没有值得解释的效应？不过门槛,后面全是在解释噪声（含各类干扰项的间距）"
+  "e0-tierA-filler|a|中性文档对照：Tier A 的效应里有多少只是「上下文里多了份长文档」"
   "e0-tierA-num|a|同一批题改成填空：+36pp 里有多少是「会算」,多少是「会在四个选项里选」"
   "errors-tierA|a|skill 消掉的是哪一类错？格式 / 选错表 / 读错行"
+  "errors-tierA-filler|a|中性文档消掉的是哪一类错 —— 和 errors-tierA 相减才是内容修的那部分"
   "e7-tierA|a|注入之后表示层出现了什么 pattern？一个共享方向还是逐题内容"
   "e6-tierA|a|模型真的在读那张表吗？改掉一个换算因子,答案跟谁走"
   "e6-tierA-near|a|近似匹配的错值是不是更容易锚住模型（H5 上下文干扰）"
@@ -78,6 +80,8 @@ STAGES=(
   "e0-tierB-filler|b|中性文档对照：通用成分在 Tier B 上有多大,轴间距是否真的免疫"
   "errors-tierB-const|b|常数 skill 修的是单位轴还是关系式轴（双重分离的一半）"
   "errors-tierB-proc|b|方法 skill 修的是关系式轴还是单位轴（另一半）"
+  "errors-tierB-filler|b|中性文档在 Tier B 上消掉哪一类错（两份 skill 的共同基线）"
+  "did-tierB|b|双重分离的判据：轴间距的双重差分 + 配对 bootstrap 的 CI"
   "e7-tierB|b|两份内容互斥的 skill,在表示层是同一个方向还是两个方向（带中性填充对照）"
   "e2-tierB-const|b|预注册预测：example 型 skill 应当压不进向量（带中性文档对照）"
   "e2-tierB-proc|b|预注册预测：principle 型 skill 应当压得进向量（带中性文档对照）"
@@ -112,7 +116,7 @@ what_of()  { echo "${1##*|}"; }
 if [ $LIST -eq 1 ]; then
   echo "阶段（按顺序）:"
   for s in "${STAGES[@]}"; do
-    printf "  [%s] %-16s %s\n" "$(phase_of "$s")" "$(name_of "$s")" "$(what_of "$s")"
+    printf "  [%s] %-22s %s\n" "$(phase_of "$s")" "$(name_of "$s")" "$(what_of "$s")"
   done
   cat <<'EOF'
 
@@ -282,6 +286,24 @@ for entry in "${STAGES[@]}"; do
       echo "    只有一个解释 —— 流水线坏了,不是假设错了。后面的层间实验先别看。"
     fi ;;
 
+  e0-tierA-filler)
+    # The arm Tier A never had. e0-tierA measures skill against nothing, so its
+    # delta contains both "the document says how to convert" and "a 688-token
+    # document is in context at all" -- and the second one is not small: 12.3j
+    # found a neutral document moves the residual as far as a skill does, and
+    # 12.3k found the mean vector, which carries no per-item content, recovers
+    # MORE than the document itself. Tier B has had this condition since 12.3l.
+    # On Tier A the generic component had been measured only inside E2 and E7,
+    # never on accuracy -- which is the number this tier is quoted for.
+    #
+    # Same items, same model, same length of context; only the document differs.
+    # --control because here a failed gate is the expected result.
+    run_stage "$nm" "$wh" "$PY" "$BASE/e0_effect.py" \
+      --model "$DEV_MODEL" --device "$DEVICE" \
+      --tasks "$A_TASKS" --skill "$BASE/tasks/filler-neutral.md" \
+      ${A_LIMIT[@]+"${A_LIMIT[@]}"} \
+      --mode mc --margins --control --run-id "$RUN_ID/$nm" ;;
+
   e0-tierA-num)
     # Same items, same skill, free-form numeric answers instead of four options.
     # E6 already runs Tier A in num mode and reports that with the correct,
@@ -294,11 +316,25 @@ for entry in "${STAGES[@]}"; do
       --tasks "$A_TASKS" --skill "$A_SKILL" --mode num \
       ${A_LIMIT[@]+"${A_LIMIT[@]}"} --run-id "$RUN_ID/$nm" ;;
 
-  errors-tierA)
+  errors-tierA|errors-tierA-filler)
+    # The same typology on both arms. errors-tierA says which error classes the
+    # skill removes; errors-tierA-filler says which ones a document that knows
+    # nothing about Zorb units removes. The difference is the only Tier A claim
+    # about content that survives 12.3j, and it is free -- both stages read a
+    # per_item.jsonl the e0 stages already wrote.
+    case "$nm" in
+      *-filler) src=e0-tierA-filler; lbl=filler-neutral ;;
+      *)        src=e0-tierA;        lbl=zorb-units ;;
+    esac
+    if [ $DRYRUN -eq 0 ] && [ ! -f "$OUT/$src/per_item.jsonl" ]; then
+      echo "[跳过] $nm —— 缺 $src/per_item.jsonl（先跑 $src）"
+      record "$nm" skipped-nofile 0
+      continue
+    fi
     [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/$nm"
     run_stage "$nm" "$wh" "$PY" "$BASE/errors.py" \
-      --per-item "$OUT/e0-tierA/per_item.jsonl" --tasks "$A_TASKS" \
-      --out "$OUT/$nm/errors.json" ;;
+      --per-item "$OUT/$src/per_item.jsonl" --tasks "$A_TASKS" \
+      --mode mc --label "$lbl" --out "$OUT/$nm/errors.json" ;;
 
   e7-tierA)
     # 中性填充文档当第三份"skill"：它不是 skill,所以它要是也走同一个方向,
@@ -373,17 +409,40 @@ for entry in "${STAGES[@]}"; do
       --mode mc --limit "$TIERB_N" --margins --control \
       --run-id "$RUN_ID/$nm" ;;
 
-  errors-tierB-const|errors-tierB-proc)
-    # Half the double dissociation each. The comparison between the two files
-    # is what carries the result, and report.py does it.
+  errors-tierB-const|errors-tierB-proc|errors-tierB-filler)
+    # Half the double dissociation each, plus the neutral arm they share. The
+    # comparison ACROSS the files is what carries the result -- report.py does
+    # it, and did-tierB puts an interval on it.
     case "$nm" in
-      *-const) sk=pchem-constants; e0=e0-tierB-const ;;
-      *)       sk=pchem-procedure; e0=e0-tierB-proc ;;
+      *-const)  sk=pchem-constants; e0=e0-tierB-const ;;
+      *-filler) sk=filler-neutral;  e0=e0-tierB-filler ;;
+      *)        sk=pchem-procedure; e0=e0-tierB-proc ;;
     esac
+    if [ $DRYRUN -eq 0 ] && [ ! -f "$OUT/$e0/per_item.jsonl" ]; then
+      echo "[跳过] $nm —— 缺 $e0/per_item.jsonl（先跑 $e0）"
+      record "$nm" skipped-nofile 0
+      continue
+    fi
     [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/$nm"
     run_stage "$nm" "$wh" "$PY" "$BASE/errors.py" \
       --per-item "$OUT/$e0/per_item.jsonl" --tasks "$B_TASKS" --mode mc \
       --label "$sk" --out "$OUT/$nm/errors.json" ;;
+
+  did-tierB)
+    # The preregistered verdict, run by the pipeline instead of by hand. It is
+    # pure post-processing over the two e0 per_item files, so it costs nothing,
+    # and there is no reason for the one number the 2x2 was built to produce to
+    # live only in somebody's shell history. The four branches of the verdict
+    # are written into did.py (12.3l), fixed before any margin was seen.
+    if [ $DRYRUN -eq 0 ] && { [ ! -f "$OUT/e0-tierB-const/per_item.jsonl" ] \
+       || [ ! -f "$OUT/e0-tierB-proc/per_item.jsonl" ]; }; then
+      echo "[跳过] $nm —— 缺 e0-tierB-const / e0-tierB-proc 的 per_item.jsonl"
+      record "$nm" skipped-nofile 0
+      continue
+    fi
+    [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/$nm"
+    run_stage "$nm" "$wh" "$PY" "$BASE/did.py" "$OUT" \
+      --out "$OUT/$nm/did.json" ;;
 
   e7-tierB)
     run_stage "$nm" "$wh" "$PY" "$BASE/e7_repr.py" \

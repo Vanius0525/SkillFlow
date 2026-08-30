@@ -5,7 +5,12 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 和 `../HANDOFF.md`（agent harness 黑盒对比）共用模型和仓库，实验方法完全不同。
 
-状态（2026-08-26，门槛改成警告 + Tier B 换了因变量）：Tier A 整条梯队跑完了（1.7B，runs `20260822-031238` /
+状态（2026-08-30，Tier A 补上了空白组）：**最后一次实跑是 `20260825-123259`，
+在那之后 08-26 和 08-30 的改动一次都没跑过** —— 新题集（39 题）、`--filler`、
+轴间距、`e0-tierB-filler`、`did.py`，以及下面那四个新阶段，全都还没有数字。
+下面这段状态说的是**旧题集上的**结果，其中 Tier A 那部分已被 §12.3m 作废。
+
+（2026-08-26，门槛改成警告 + Tier B 换了因变量）：Tier A 整条梯队跑完了（1.7B，runs `20260822-031238` /
 `20260822-175713`，两次数字一致——贪心解码）。Tier B **v1 已经下线**：它的 e0 两对
 都没过门槛，而且是贴着地板没过（8B，run `20260822-181445`），根因是无 CoT 设定下
 模型要在一次前向里做三位有效数字的算术，见 HANDOFF §15。**Tier B v2（选装置，
@@ -22,6 +27,72 @@ skill 注入的白盒实验。**研究设计在 [`../HANDOFF-whitebox.md`](../HA
 
 原始输出和逐条判断在 [`journal/2026-08-24-tierB-v2.md`](journal/2026-08-24-tierB-v2.md)，
 结论在 HANDOFF §12.3i。
+
+### 2026-08-30 四个新阶段：Tier A 的空白组是真的没有
+
+`e0-tierA` 量的是「有 skill」对「什么都没有」。§12.3j 之后这个差值不能再单独读：
+中性文档在表示层走的方向和 skill 一样远（余弦 0.945 / 0.955，两份 skill 之间
+0.972），而 §12.3k 的平均向量**不含任何逐题内容**却恢复得比文档本身还多。
+**但那两条都在表示层，被引用的却一直是准确率。** 准确率这一层的空白组
+Tier B 从 §12.3l 起有了（`e0-tierB-filler`），**Tier A 从来没有** —— filler
+只在 `e2-tierA` 和 `e7-tierA` 里出现过，没有一个阶段量过「换成一份和 Zorb
+单位无关的文档，准确率动多少」。
+
+补了四个阶段，一条要 GPU，三条纯后处理：
+
+| 阶段 | 梯队 | 它回答什么 | 代价 |
+|---|---|---|---|
+| `e0-tierA-filler` | a | 同一批题、同一个模型，只把 skill 换成中性文档。两个 Δacc 相减 = **内容余量** | 1.7B，分钟级 |
+| `errors-tierA-filler` | a | 中性文档消掉的是哪一类错；和 `errors-tierA` 相减才是内容修的那部分 | 纯 CPU |
+| `errors-tierB-filler` | b | Tier B 上的同一件事，两份 skill 的共同基线 | 纯 CPU |
+| `did-tierB` | b | 预注册的双重分离判据（`did.py`），以前只能手工跑，结果只留在终端里 | 纯 CPU |
+
+`report.py` 跟着改了三处：
+
+- 新增**内容余量**交叉校验，打在汇总页最前面。按「同一梯 + 同题数 + 同 mode」
+  把每个 arm 和它的对照配起来，打 Δacc、Δlogprob 和逐轴的差。中性文档拿走
+  一半以上时打警告：那种情况下这一梯的标题数字不能当内容特异的效应报。
+- **负对照不再进 E1 的分母。** `e0_lp` 原来取所有 e0 里最大的 |Δlogprob|，而
+  §12.3j 量到的 filler 位移比 skill 还大 —— 一旦 run 里有 filler 阶段，E1 的
+  net 就会被悄悄除以对照。**这条对已经存在的 `e0-tierB-filler` 同样是 bug**，
+  不是这次新加的阶段才有的。
+- 认得 `did.json`，把四选一的判词直接打进汇总页。
+
+`e0_effect.py` 的 summary 里多了一个 `mode`（原来只在 run-info.json 里），
+配对时用它把 `num` 和 `mc` 分开 —— 两者的准确率不在一个尺度上，相减看着却很正常。
+
+**预注册（HANDOFF §12.3n，写在跑之前）**：Tier A 上 filler 应当拿走 Δacc 的
+一大块，但不是全部。三档判据和它们各自意味着什么，见 §12.3n。
+
+#### 这一轮在服务器上按什么顺序跑
+
+**最后一次真跑是 `20260825-123259`，之后所有改动都没跑过**：新题集（39 题）、
+`--filler`、轴间距、`e0-tierB-filler`、`did.py`，以及上面这四个阶段。所以
+Tier A 现在没有任何有效数字，不是「有旧的可以先看着」。
+
+```bash
+BASE=/inspire/qb-dev/project/multi-agent/czxs253130660/agent-harness
+source $BASE/env.sh
+cd $BASE && git fetch && git reset --hard origin/master && git lfs pull
+$BASE/run-server.sh stop            # 8B 那一梯必须先让开显存
+cd $BASE/whitebox && ./setup-whitebox.sh   # 体检；build.py --check 会验新题集的 sha
+
+./run-whitebox.sh --smoke --phase a  # 一两分钟，只看能不能跑通
+./run-whitebox.sh --phase a          # 1.7B，十几分钟，前台看
+python report.py results/<run-id>    # 先读「内容余量（行为层）」那一行
+
+mkdir -p logs                         # 梯队 b：8B，小时级，容器里没有 tmux
+nohup ./run-whitebox.sh --phase b > logs/wb-$(date +%m%d).log 2>&1 &
+tail -f logs/wb-*.log
+$BASE/run-server.sh start            # 跑完把 vLLM 放回去
+```
+
+Tier A 出来之后先看三个数，其余都在它们后面：
+
+1. `e0-tierA` 的 `acc_no_skill` —— 应当从 0.085 回到 0.25 附近（§12.3m 的预注册）。
+   仍然明显低于 0.25 就还有第二个磁铁选项，先回去查干扰项分布，别往下跑。
+2. **内容余量（行为层）** `e0-tierA` 减 `e0-tierA-filler` —— §12.3n 的预注册在这。
+3. `e2-tierA` 的**内容余量**（real − filler）—— 它决定 E2 的历史数字还算不算数。
 
 ### 2026-08-26 三处改动
 
@@ -184,6 +255,7 @@ skill 的一段拥有，金标前缀 teacher-forcing 让每步重新成为独立
 | `report.py` | 把一次 run 的所有 summary.json 汇总成一页 + **交叉校验** |
 | `whitebox.conf.example` | 机器配置模板（复制成 `whitebox.conf`，不进 git）|
 | `errors.py` | 错误类型学（第 4 步）。**纯后处理，不用 GPU** |
+| `did.py` | 双重分离的预注册判据：轴间距的双重差分 + 配对 bootstrap。**不用 GPU** |
 | `e6_diagnose.py` | E6 的 follow rate 无定义时读什么。**纯后处理，不用 GPU** |
 | `journal/` | **每次实跑的原始输出和当时的判断**，一次一个文件 |
 | `tasks/tier_a/render_skill.py` | 从换算表渲染 skill；E6 的反事实文档由它生成 |

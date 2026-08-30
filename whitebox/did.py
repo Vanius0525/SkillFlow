@@ -79,6 +79,10 @@ def main() -> int:
     ap.add_argument("--proc", default="e0-tierB-proc")
     ap.add_argument("--boot", type=int, default=4000)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--out", default=None,
+                    help="write the verdict and the three intervals as "
+                         "json, so the pipeline keeps it next to the other "
+                         "stage products instead of only in a log")
     args = ap.parse_args()
 
     paths = {}
@@ -147,6 +151,9 @@ def main() -> int:
     print("    两份文档各自的 lean 都 > 0,且两个 CI 都不含 0 —— 才叫双重分离成立。")
     print("    DiD 的 CI 不含 0 只是必要条件：一边很大另一边为负时它照样为正。")
     print()
+    verdict = ("dissociation" if (both_lean and lo_c > 0 and lo_p > 0) else
+               "asymmetric" if (lo_did > 0) else
+               "wrong-direction" if not both_lean else "underpowered")
     if both_lean and lo_c > 0 and lo_p > 0:
         print("  ==> 双重分离**成立**。两份内容互斥的文档各自只动自己那个轴,")
         print("      而且是在通用成分被间距消掉之后。E2 的 example/principle")
@@ -162,6 +169,19 @@ def main() -> int:
         print("      唯一诚实的杠杆是多生成题、并把题变难（HANDOFF 15.6）。")
         print("      **不要在同一批题上重测。**")
     print("=" * 68)
+
+    if args.out:
+        out = pathlib.Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with io.open(out, "w", encoding="utf-8", newline="\n") as f:
+            json.dump({
+                "experiment": "did_tierB", "n": n, "boot": args.boot,
+                "lean_const": pt[0], "lean_const_ci95": list(lo_hi[0]),
+                "lean_proc": pt[1], "lean_proc_ci95": list(lo_hi[1]),
+                "did": pt[2], "did_ci95": list(lo_hi[2]),
+                "verdict": verdict,
+            }, f, ensure_ascii=False, indent=2)
+        print(f"  -> {out}")
     return 0
 
 
