@@ -155,13 +155,16 @@ def main(argv=None):
             open(os.path.join(HERE, "data", "stepgt.json"), encoding="utf-8"))}
         inst = {i["instance_id"]: i for i in json.load(
             open(os.path.join(HERE, "data", "medcalcbench.json"), encoding="utf-8"))}
+        names = {s["skill_id"]: s.get("name") for s in json.load(
+            open(os.path.join(HERE, "data", "medcalc_skills.json"), encoding="utf-8"))}
 
         def steps_for(rows):
             out = []
             for r in rows:
                 fr = first_failure(r.get("trajectory") or {}, inst[r["instance_id"]],
                                    gt.get(r["instance_id"]),
-                                   {"correct": r["correct"]})
+                                   {"correct": r["correct"]},
+                                   calculator_name=names.get(r.get("skill_id")))
                 out.append({"instance_id": r["instance_id"],
                             "fail_step": fr["fail_step"]})
             return out

@@ -17,7 +17,8 @@ from howskill.llm import MockClient
 from howskill.loop import make_prefix, run_episode
 from howskill.modules import example_syntax_only, split_modules
 from howskill.prompts import build_prompt
-from howskill.steps import first_failure, parse_entities, transition_matrix
+from howskill.steps import (entity_values, first_failure, parse_entities,
+                            transition_matrix)
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(HERE, "data")
@@ -160,6 +161,29 @@ def main():
     fr = first_failure({"transcript": "ANSWER: 3", "n_tool_calls": 1},
                        instances[0], g, {"correct": True})
     check("correct -> fail_step none", fr["fail_step"] == "none")
+    # S1 needs the calculator name, which stepgt.json does not carry — it must
+    # come from medcalc_skills.json via skill_id. Without it the branch is dead
+    # and every wrong-calculator failure is reported as S4, silently.
+    check("stepgt has no calculator_name (name must come from skills)",
+          "calculator_name" not in g)
+    # Needs an instance with no unit conversion in its GT explanation: S3 is
+    # tested before S1, so a converting instance would stop there first.
+    by_iid = {i["instance_id"]: i for i in instances}
+    g1 = next((v for v in stepgt.values()
+               if "convert" not in (v.get("gt_explanation") or "").lower()
+               and "which is" not in (v.get("gt_explanation") or "").lower()
+               and v["instance_id"] in by_iid
+               and parse_entities(v["relevant_entities"])), None)
+    if g1:
+        i1 = by_iid[g1["instance_id"]]
+        vals = [v[0] for v in entity_values(parse_entities(
+            g1["relevant_entities"])).values() if v[0] is not None]
+        fr = first_failure({"transcript": " ".join(str(v) for v in vals),
+                            "n_tool_calls": 0},
+                           i1, g1, {"correct": False},
+                           calculator_name="Zzzznonexistent Score")
+        check("wrong calculator -> S1 when the name is supplied",
+              fr["fail_step"] == "S1", fr["fail_step"])
     tm = transition_matrix(
         [{"instance_id": "a", "fail_step": "S2"}],
         [{"instance_id": "a", "fail_step": "none"}])

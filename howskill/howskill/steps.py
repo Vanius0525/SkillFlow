@@ -122,10 +122,16 @@ def check_units(traj_text: str, entities: dict, explanation: str) -> dict:
 
 
 def first_failure(traj: dict, instance: dict, gt: dict | None,
-                  graded: dict) -> dict:
+                  graded: dict, calculator_name: str | None = None) -> dict:
     """Classify the first step that went wrong.
 
     Returns {'fail_step': 'S1'|..|'S5'|'none'|'unparsed', 'detail': {...}}.
+
+    ``calculator_name`` is what the S1 test needs and the step-GT join does not
+    carry: `stepgt.json` has `skill_id`, and the name lives in
+    `medcalc_skills.json`. Callers must look it up and pass it — without it the
+    S1 branch below can never fire and every wrong-calculator failure is
+    silently reported as S4.
     """
     text = traj.get("transcript") or traj.get("model_output") or ""
     detail: dict = {}
@@ -165,7 +171,7 @@ def first_failure(traj: dict, instance: dict, gt: dict | None,
     if not ext["parsed"]:
         return {"fail_step": "unparsed", "detail": detail}
 
-    calc_name = (gt.get("calculator_name") or "").lower()
+    calc_name = (calculator_name or gt.get("calculator_name") or "").lower()
     if calc_name and calc_name.split()[0] not in text.lower() \
             and not traj.get("n_tool_calls"):
         return {"fail_step": "S1", "detail": detail}
