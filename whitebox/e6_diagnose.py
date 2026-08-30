@@ -154,37 +154,63 @@ def main() -> None:
     #
     # The headline follow rate had a denominator of zero because it counted only
     # items answering one of the two GOLD values. Counting an unambiguous
-    # multiple of one factor as "read that row" gives it a denominator. Read as
-    # a description of the generations; the confirmatory number is section 3.
-    fc = ft = 0
-    for row in rows:
-        pred = row["cf"]["pred"]
-        if pred is None:
-            continue
-        if near(pred, row["gold_cf"]) or near(pred, row["new_factor"]):
-            fc += 1
-            continue
-        if near(pred, row["gold_true"]) or near(pred, row["orig_factor"]):
-            ft += 1
-            continue
-        mo, mc = multiple_of(pred, row["orig_factor"]), \
-            multiple_of(pred, row["new_factor"])
-        if mc and not mo:
-            fc += 1
-        elif mo and not mc:
-            ft += 1
-    if fc + ft:
+    # multiple of one factor as "read that row" gives it a denominator.
+    #
+    # A category invented after seeing the data needs its own control, and there
+    # is one already in the run: apply the same rule under the UNPERTURBED
+    # document, where the answer should name the original factor. If both rows
+    # favour the edited factor, the rule is picking up coincidental divisibility
+    # rather than what the model read, and neither row means anything.
+    def factor_follow(cond):
+        """(named the edited factor, named the original) under one condition."""
+        fc = ft = 0
+        for row in rows:
+            pred = row[cond]["pred"]
+            if pred is None:
+                continue
+            if near(pred, row["gold_cf"]) or near(pred, row["new_factor"]):
+                fc += 1
+                continue
+            if near(pred, row["gold_true"]) or near(pred, row["orig_factor"]):
+                ft += 1
+                continue
+            mo = multiple_of(pred, row["orig_factor"])
+            mc = multiple_of(pred, row["new_factor"])
+            if mc and not mo:
+                fc += 1
+            elif mo and not mc:
+                ft += 1
+        return fc, ft
+
+    counts = {c: factor_follow(c) for c in ("true", "cf")}
+    if any(sum(v) for v in counts.values()):
         print("\n" + "=" * 72)
-        print(" follow rate from generations, counting multiples (POST HOC)")
+        print(" which factor the generations name   (POST HOC category)")
         print("=" * 72)
-        print(f"  under the counterfactual document, {fc + ft} of {n} items "
-              f"name one of the two factors:")
-        print(f"    followed the edited factor  {fc}  ({fc/(fc+ft):.0%})")
-        print(f"    followed the original       {ft}  ({ft/(fc+ft):.0%})")
-        print("  This category was defined after looking at these generations "
-              "(see multiple_of).")
-        print("  It says the extractor was discarding evidence, not that the "
-              "criterion changed.")
+        print(f"  {'document':<16}{'names a factor':>16}{'edited':>9}"
+              f"{'original':>10}")
+        for cond, lab in (("true", "unperturbed"), ("cf", "counterfactual")):
+            fc, ft = counts[cond]
+            if fc + ft:
+                print(f"  {lab:<16}{f'{fc + ft} of {n}':>16}{fc:>9}{ft:>10}")
+        tc, tt = counts["true"]
+        cc, ct = counts["cf"]
+        print()
+        if tt > tc and cc > ct:
+            print("    The rows point opposite ways, which is what reading the")
+            print("    document looks like: unperturbed names the original,")
+            print("    edited names the edited one.")
+        elif cc > ct:
+            print("    Only the counterfactual row separates. The unperturbed")
+            print("    control does not favour the original factor, so some of")
+            print("    this is coincidental divisibility -- read the direction,")
+            print("    not the rate.")
+        else:
+            print("    The counterfactual row does not favour the edited factor.")
+            print("    This category found nothing; section 3 is the readout.")
+        print("  The category was defined after looking at these generations")
+        print("  (see multiple_of). It says the extractor was discarding")
+        print("  evidence, not that the criterion changed.")
 
     # ---- 3. the follow rate that needs no extraction -----------------------
     print("\n" + "=" * 72)
