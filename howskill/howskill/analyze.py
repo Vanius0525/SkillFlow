@@ -119,8 +119,21 @@ def main(argv=None):
         print(f"{tag:<28} {len(rows):>5} {100*pt:>6.1f}%  "
               f"[{100*lo:>5.1f},{100*hi:>5.1f}]  {cost}")
 
-    base = next((r for t, r in arms.items() if t.startswith(a.baseline)), None)
-    ctrl = next((r for t, r in arms.items() if t.startswith(a.control)), None)
+    def find(key: str):
+        """Locate an arm by tag. Tags carry a run prefix (`p2-gold`), so an
+        exact or startswith match silently finds nothing and the gate readout
+        below is skipped without a word — say so instead."""
+        hits = [t for t in arms if t == key] or [t for t in arms if key in t]
+        if not hits:
+            print(f"\n[warn] no arm matching {key!r} in {sorted(arms)} — "
+                  "paired deltas skipped; pass --baseline/--control")
+            return None
+        if len(hits) > 1:
+            print(f"\n[warn] {key!r} matches {hits}; using {hits[0]}")
+        return arms[hits[0]]
+
+    base = find(a.baseline)
+    ctrl = find(a.control)
 
     if base:
         print(f"\n=== paired deltas vs {a.baseline} ===")
