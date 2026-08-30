@@ -310,7 +310,13 @@ def fmt_e1(s: dict, e0_delta: float = float("nan")) -> list[str]:
     # the ENTIRE 688-token document costs 3% of the effect. Reading that as
     # "sustained late-layer dependence" because the peak sits late is reading the
     # position and ignoring the size (HANDOFF 12.3k).
-    if e0_delta == e0_delta and abs(e0_delta) > 1e-6:
+    #
+    # The share is also a ratio, so it needs its denominator to exist. A pair
+    # that missed the gate can leave a denominator near zero -- e0-tierB-proc
+    # moved the logprob by -0.024 -- and dividing by it prints a percentage in
+    # the hundreds that means nothing except "the denominator is tiny".
+    if e0_delta == e0_delta and abs(e0_delta) > 1e-6 \
+            and not s.get("gate_unconfirmed"):
         share = s["best_net"] / e0_delta
         out.append(f"占行为效应的比例： {share:+.1%}"
                    f"（e0 的 logprob 位移 {e0_delta:+.3f}）")
@@ -318,6 +324,9 @@ def fmt_e1(s: dict, e0_delta: float = float("nan")) -> list[str]:
             out.append("[!] 屏蔽掉 skill 全文只损失了效应的 "
                        f"{abs(share):.0%} —— 这**不是**「持续依赖原文」,"
                        "是「模型基本没在读它」。峰值在哪一层是次要的")
+    elif e0_delta == e0_delta and s.get("gate_unconfirmed"):
+        out.append(f"（这一对的 e0 位移是 {e0_delta:+.3f},CI 含 0 —— "
+                   f"「占行为效应的比例」没有分母,不打）")
     bo = s.get("best_net_by_order") or {}
     if bo:
         sf, ff = bo.get("skill_first"), bo.get("filler_first")
@@ -361,6 +370,32 @@ FMT = {"e0": fmt_e0, "errors": fmt_errors, "e7_repr": fmt_e7,
 E0_DELTA_FOR_E1 = [float("nan")]
 ORDER = ["e0", "errors", "did_tierB", "e7_repr", "e6_counterfactual",
          "e2_patch", "e1_knockout"]
+
+
+def own_e0(stage: str, e0_by_stage: dict):
+    """
+    The e0 whose behavioural effect is THIS sweep's denominator.
+
+    It used to be "the largest delta_logprob among the run's e0 stages", on the
+    reasoning that E1 runs on the pair that cleared the gate, so the biggest e0
+    in the directory is that pair. A run now holds three e0 arms and two sweeps
+    per tier, and the reasoning stopped holding: e1-tierB-proc was reported as
+    50.1% of an effect belonging to e0-tierB-const, its own pair having moved
+    the logprob by -0.024. Tier A escaped by 0.002 -- the numeric arm's shift
+    was -0.639 against the real arm's +0.641.
+
+    `e1-tierB-proc` -> `e0-tierB-proc`; `e2-tierA-k4` -> `e0-tierA-k4`, which
+    does not exist, then `e0-tierA`, which does. Controls are never a
+    denominator.
+    """
+    parts = stage.split("-")
+    while len(parts) > 1:
+        cand = "-".join(["e0"] + parts[1:])
+        x = e0_by_stage.get(cand)
+        if x is not None and not x.get("is_control"):
+            return x
+        parts = parts[:-1]
+    return None
 
 
 def tier_of(stage: str) -> str:
@@ -571,15 +606,16 @@ def cross_check(found: list) -> list[str]:
         # E2 recovery instead of contradicting it. The first version of this
         # check tested only the peak's position and reported a contradiction on
         # a net worth 3% of the effect (HANDOFF 12.3k).
-        # Controls excluded. The denominator is meant to be the behavioural
-        # effect of the SKILL, and 12.3j measured a filler whose displacement is
-        # the larger of the two -- with the filler arms in the run, taking a max
-        # over every e0 would quietly divide E1's net by the control.
-        e0_lp = max((abs(s.get("delta_logprob", 0.0))
-                     for s in e0_by_stage.values() if not s.get("is_control")),
-                    default=0.0)
-        net_share = (max(s["best_net"] for s in e1) / e0_lp) if e0_lp > 1e-6 \
-            else float("nan")
+        # Each sweep against its OWN pair, not against the run's largest e0:
+        # controls are excluded (12.3j measured a filler whose displacement is
+        # the larger of the two), and so is the other document's arm.
+        shares = []
+        for s_, p_ in [(x, q) for k_, x, q in found if k_ == "e1_knockout"]:
+            d = own_e0(p_.parent.name, e0_by_stage)
+            lp = abs((d or {}).get("delta_logprob", 0.0))
+            if lp > 1e-6:
+                shares.append(s_["best_net"] / lp)
+        net_share = max(shares, key=abs) if shares else float("nan")
         tiny = net_share == net_share and abs(net_share) < 0.15
         if rec > 0.5 and net_lo > 0 and late and tiny:
             out.append(f"E1 的峰值在晚层,但 net 只占行为效应的 {abs(net_share):.0%} "
@@ -837,12 +873,11 @@ def main():
         return
 
     found.sort(key=lambda x: (ORDER.index(x[0]) if x[0] in ORDER else 99, str(x[2])))
-    # The largest behavioural effect in the run is the scale E1's net is read
-    # against. Largest rather than matching by stage name: E1 runs on the pair
-    # that cleared the gate, so the biggest e0 in the directory is that pair.
-    _d = [abs(x[1].get("delta_logprob", 0.0)) for x in found
-          if x[0] == "e0" and not x[1].get("is_control")]
-    E0_DELTA_FOR_E1[0] = max(_d) if _d else float("nan")
+    # Each E1 is scaled by its own pair's behavioural effect; see own_e0.
+    _e0 = {q.parent.name: x for k_, x, q in found if k_ == "e0"}
+    _fallback = [abs(x[1].get("delta_logprob", 0.0)) for x in found
+                 if x[0] == "e0" and not x[1].get("is_control")]
+    E0_DELTA_FOR_E1[0] = max(_fallback) if _fallback else float("nan")
     for k, s, f in found:
         name = f.parent.name
         print(f"\n[{k}]  {name}")
@@ -854,7 +889,12 @@ def main():
                     "  它有这些键: " + ", ".join(sorted(_s)[:12])]
 
         fn = FMT.get(k, unknown)
-        lines = fn(s, E0_DELTA_FOR_E1[0]) if k == "e1_knockout" else fn(s)
+        if k == "e1_knockout":
+            d = own_e0(name, _e0)
+            lines = fn(s, d.get("delta_logprob", float("nan")) if d
+                       else E0_DELTA_FOR_E1[0])
+        else:
+            lines = fn(s)
         if s.get("gate_unconfirmed"):
             # First, before any number the reader could quote out of context.
             print("  " + "!" * 62)

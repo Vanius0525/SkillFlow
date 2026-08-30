@@ -36,6 +36,25 @@ import sys
 CONDS = ("no_skill", "true", "cf")
 
 
+def multiple_of(pred, factor, kmax=12):
+    """k when pred == k * factor for a small integer k >= 2, else None.
+
+    POST HOC. This category was added after reading the raw generations of
+    20260830-163838, where the model answers with a multiple of the conversion
+    factor rather than with the conversion: on the near flavour it says 21 for
+    an item whose factor is 7 and whose answer is 14, and 18 once that factor
+    is edited to 6. The multiplier is wrong and the row is right. Nothing about
+    the design anticipated it, so it is a description of what the extractor was
+    throwing away, not a criterion -- E6's preregistered readout remains the
+    logprob swing below, which needs no extraction at all.
+    """
+    if pred is None or not factor:
+        return None
+    q = pred / float(factor)
+    k = round(q)
+    return k if abs(q - k) < 1e-6 and 2 <= k <= kmax else None
+
+
 def load(run_dir: pathlib.Path) -> list[dict]:
     p = run_dir / "per_item.jsonl"
     if not p.is_file():
@@ -113,11 +132,59 @@ def main() -> None:
             elif row["id"] in quantity and near(pred, quantity[row["id"]]):
                 k = "the quantity in the question (echo)"
             else:
-                k = "something else"
+                # A multiple of one factor and not of the other says which row
+                # was read even though the arithmetic is wrong. A multiple of
+                # both says nothing, and is kept apart rather than assigned.
+                mo = multiple_of(pred, row["orig_factor"])
+                mc = multiple_of(pred, row["new_factor"])
+                if mo and mc:
+                    k = "a multiple of either factor (ambiguous)"
+                elif mc:
+                    k = "a multiple of the counterfactual factor"
+                elif mo:
+                    k = "a multiple of the original factor"
+                else:
+                    k = "something else"
             tally[k] = tally.get(k, 0) + 1
         line = "  ".join(f"{k} {v}({v/n:.0%})" for k, v in
                          sorted(tally.items(), key=lambda kv: -kv[1]))
         print(f"  {c:<9} {line}")
+
+    # ---- 2b. the follow rate the wider category makes computable ----------
+    #
+    # The headline follow rate had a denominator of zero because it counted only
+    # items answering one of the two GOLD values. Counting an unambiguous
+    # multiple of one factor as "read that row" gives it a denominator. Read as
+    # a description of the generations; the confirmatory number is section 3.
+    fc = ft = 0
+    for row in rows:
+        pred = row["cf"]["pred"]
+        if pred is None:
+            continue
+        if near(pred, row["gold_cf"]) or near(pred, row["new_factor"]):
+            fc += 1
+            continue
+        if near(pred, row["gold_true"]) or near(pred, row["orig_factor"]):
+            ft += 1
+            continue
+        mo, mc = multiple_of(pred, row["orig_factor"]), \
+            multiple_of(pred, row["new_factor"])
+        if mc and not mo:
+            fc += 1
+        elif mo and not mc:
+            ft += 1
+    if fc + ft:
+        print("\n" + "=" * 72)
+        print(" follow rate from generations, counting multiples (POST HOC)")
+        print("=" * 72)
+        print(f"  under the counterfactual document, {fc + ft} of {n} items "
+              f"name one of the two factors:")
+        print(f"    followed the edited factor  {fc}  ({fc/(fc+ft):.0%})")
+        print(f"    followed the original       {ft}  ({ft/(fc+ft):.0%})")
+        print("  This category was defined after looking at these generations "
+              "(see multiple_of).")
+        print("  It says the extractor was discarding evidence, not that the "
+              "criterion changed.")
 
     # ---- 3. the follow rate that needs no extraction -----------------------
     print("\n" + "=" * 72)
