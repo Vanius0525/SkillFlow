@@ -17,7 +17,8 @@ from howskill.llm import MockClient
 from howskill.loop import make_prefix, run_episode
 from howskill.modules import example_syntax_only, split_modules
 from howskill.prompts import build_prompt
-from howskill.steps import (entity_values, first_failure, parse_entities,
+from howskill.steps import (check_extraction, check_units, entity_values,
+                            first_failure, parse_entities,
                             transition_matrix)
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -158,7 +159,7 @@ def main():
     n_parsed = sum(1 for v in stepgt.values() if parse_entities(v["relevant_entities"]))
     check("entities parse for >=95% of step-GT",
           n_parsed >= 0.95 * len(stepgt), f"{n_parsed}/{len(stepgt)}")
-    fr = first_failure({"transcript": "ANSWER: 3", "n_tool_calls": 1},
+    fr = first_failure({"model_output": "ANSWER: 3", "n_tool_calls": 1},
                        instances[0], g, {"correct": True})
     check("correct -> fail_step none", fr["fail_step"] == "none")
     # S1 needs the calculator name, which stepgt.json does not carry — it must
@@ -178,16 +179,70 @@ def main():
         i1 = by_iid[g1["instance_id"]]
         vals = [v[0] for v in entity_values(parse_entities(
             g1["relevant_entities"])).values() if v[0] is not None]
-        fr = first_failure({"transcript": " ".join(str(v) for v in vals),
+        seen = " ".join(str(v) for v in vals) + "\nANSWER: -12345"
+        fr = first_failure({"model_output": seen, "n_tool_calls": 0},
+                           i1, g1, {"correct": False},
+                           calculator_name="Zzzznonexistent Score",
+                           calculator_names=["Zzzznonexistent Score",
+                                             "Wells' Criteria for DVT"])
+        check("no S1 without evidence of another calculator",
+              fr["fail_step"] != "S1", fr["fail_step"])
+        fr = first_failure({"model_output": seen + " using Wells' Criteria",
                             "n_tool_calls": 0},
                            i1, g1, {"correct": False},
-                           calculator_name="Zzzznonexistent Score")
-        check("wrong calculator -> S1 when the name is supplied",
+                           calculator_name="Zzzznonexistent Score",
+                           calculator_names=["Zzzznonexistent Score",
+                                             "Wells' Criteria for DVT"])
+        check("S1 when another calculator is named",
               fr["fail_step"] == "S1", fr["fail_step"])
+
+    # The four rules the P0-4 calibration broke. Each of these was a real
+    # mislabel in the first 50 reviewed, not a hypothetical.
+    inst5 = {"eval_data": dict(dec)}                       # answer 25.2381
+    gt5 = {"relevant_entities": "{'weight': [38.0, 'kg']}", "gt_explanation": ""}
+    check("a tool result is not evidence the agent had the answer",
+          first_failure({"model_output": "TOOL_CALL: f(weight_kg=38)",
+                         "transcript": "TOOL_CALL: f(weight_kg=38)\n"
+                                       "TOOL_RESULT: 25.2381\n",
+                         "turns": [{"tool_result": "25.2381"}],
+                         "stop_reason": "max_rounds"},
+                        inst5, gt5, {"correct": False})["fail_step"]
+          == "no_answer")
+    check("no_answer records that the tool had computed it",
+          first_failure({"model_output": "TOOL_CALL: f(weight_kg=38)",
+                         "turns": [{"tool_result": "25.2381"}],
+                         "stop_reason": "max_rounds"},
+                        inst5, gt5, {"correct": False}
+                        )["detail"].get("computed_in_tool") is True)
+    small = {"eval_data": {"answer": "3", "calculator_id": 16,
+                           "output_type": "integer"}}
+    check("a small integer answer is not discriminative",
+          first_failure({"model_output": "bedridden > 3 days\nANSWER: 4",
+                         "n_tool_calls": 1},
+                        small, gt5, {"correct": False})["fail_step"] != "S5")
+    check("thousands separators are one number",
+          check_extraction("platelets 190,000 /uL",
+                           {"Platelet count": [190000, "uL"]})["ok"])
+    check("boolean criteria are not checkable as 0/1",
+          check_extraction("nothing here",
+                           {"Prior DVT": False, "Stroke": True})["checkable"] == 0)
+    check("a date entity is matched literally",
+          check_extraction("LMP = 11/18/2009",
+                           {"Last menstrual date": "11/18/2009"})["ok"])
+    check("a shorter but correct conversion is not a unit failure",
+          check_units("creatinine 6.288 mg/dL", {},
+                      "555.8 umol/L ... converts to 6.335 mg/dL")["ok"])
+    check("an unconverted value is a unit failure",
+          check_units("albumin 31 g/L", {},
+                      "31.0 g/L ... converts to 3.1 g/dL")["ok"] is False)
     tm = transition_matrix(
         [{"instance_id": "a", "fail_step": "S2"}],
         [{"instance_id": "a", "fail_step": "none"}])
     check("transition matrix counts (S2->none)", tm["S2"]["none"] == 1)
+    tm2 = transition_matrix(
+        [{"instance_id": "a", "fail_step": "no_answer"}],
+        [{"instance_id": "a", "fail_step": "none"}])
+    check("transition matrix has a no_answer row", tm2["no_answer"]["none"] == 1)
 
     print("\n" + "=" * 60)
     if FAILS:

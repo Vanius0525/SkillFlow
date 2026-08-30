@@ -26,11 +26,11 @@ import json
 import os
 import random
 
-from howskill.steps import STEPS, first_failure
+from howskill.steps import first_failure
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(HERE, "data")
-LABELS = ["S1", "S2", "S3", "S4", "S5", "unparsed"]
+LABELS = ["S1", "S2", "S3", "S4", "S5", "no_answer", "unparsed"]
 
 
 def clip(text: str, budget: int) -> str:
@@ -74,12 +74,15 @@ def main(argv=None):
     names = {s["skill_id"]: s.get("name") for s in json.load(
         open(os.path.join(DATA, "medcalc_skills.json"), encoding="utf-8"))}
 
+    all_names = sorted({v for v in names.values() if v})
+
     rows = load_jsonl(a.results_file)
     labelled = []
     for r in rows:
         fr = first_failure(r.get("trajectory") or {}, inst[r["instance_id"]],
                            gt.get(r["instance_id"]), {"correct": r["correct"]},
-                           calculator_name=names.get(r.get("skill_id")))
+                           calculator_name=names.get(r.get("skill_id")),
+                           calculator_names=all_names)
         labelled.append((r, fr))
 
     dist = collections.Counter(fr["fail_step"] for _, fr in labelled)
@@ -105,6 +108,12 @@ def main(argv=None):
         except (TypeError, ValueError):
             return False
         return v == int(v) and abs(v) <= 20
+
+    na = [(r, fr) for r, fr in wrong if fr["fail_step"] == "no_answer"]
+    if na:
+        had = sum(1 for _, fr in na if fr["detail"].get("computed_in_tool") is True)
+        print(f"no_answer: {len(na)} episodes never emitted an answer; "
+              f"in {had} of them a tool had already returned the right value")
 
     s5 = [r for r, fr in wrong if fr["fail_step"] == "S5"]
     rest = [r for r, fr in wrong if fr["fail_step"] not in ("S5", "unparsed")]
@@ -135,6 +144,9 @@ def main(argv=None):
         for r, fr in picked:
             g = gt.get(r["instance_id"]) or {}
             traj = r.get("trajectory") or {}
+            # The agent's own text is what the labels are judged against; the
+            # transcript additionally carries the TOOL_RESULT lines, and
+            # conflating the two is what made S5 unusable in the first pass.
             text = traj.get("transcript") or traj.get("model_output") or ""
             fh.write(json.dumps({
                 "instance_id": r["instance_id"],
@@ -149,6 +161,7 @@ def main(argv=None):
                 "gt_explanation": (g.get("gt_explanation") or "")[:1200],
                 "n_tool_calls": traj.get("n_tool_calls"),
                 "stop_reason": traj.get("stop_reason"),
+                "model_output": clip(traj.get("model_output") or "", a.max_chars),
                 "transcript": clip(text, a.max_chars),
             }, ensure_ascii=False) + "\n")
 

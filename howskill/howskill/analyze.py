@@ -162,7 +162,7 @@ def main(argv=None):
                   "effect is presence, not content (PROTOCOL.md GATE-2).")
 
     if a.steps:
-        from howskill.steps import first_failure, transition_matrix
+        from howskill.steps import LABELS, first_failure, transition_matrix
         HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         gt = {g["instance_id"]: g for g in json.load(
             open(os.path.join(HERE, "data", "stepgt.json"), encoding="utf-8"))}
@@ -171,16 +171,42 @@ def main(argv=None):
         names = {s["skill_id"]: s.get("name") for s in json.load(
             open(os.path.join(HERE, "data", "medcalc_skills.json"), encoding="utf-8"))}
 
+        all_names = sorted({v for v in names.values() if v})
+
         def steps_for(rows):
             out = []
             for r in rows:
                 fr = first_failure(r.get("trajectory") or {}, inst[r["instance_id"]],
                                    gt.get(r["instance_id"]),
                                    {"correct": r["correct"]},
-                                   calculator_name=names.get(r.get("skill_id")))
+                                   calculator_name=names.get(r.get("skill_id")),
+                                   calculator_names=all_names)
                 out.append({"instance_id": r["instance_id"],
-                            "fail_step": fr["fail_step"]})
+                            "fail_step": fr["fail_step"],
+                            "detail": fr["detail"]})
             return out
+
+        # Episodes whose tool produced the right value and that were still
+        # scored wrong because the loop never emitted an answer. This is loss
+        # the harness causes, not the model, and it must not be reported as
+        # the model failing the task.
+        print("\n=== computed but never reported ===")
+        for tag, rows in arms.items():
+            st = steps_for(rows)
+            n_na = sum(1 for x in st if x["fail_step"] == "no_answer")
+            n_had = sum(1 for x in st
+                        if x["detail"].get("computed_in_tool") is True)
+            # Tool errors are counted from the trajectory rather than inferred:
+            # a skill whose tool cannot run is not the same experimental
+            # condition as one whose tool runs, and P5 turns on that difference.
+            has_field = any("n_tool_errors" in (r.get("trajectory") or {})
+                            for r in rows)
+            errs = sum(1 for r in rows
+                       if (r.get("trajectory") or {}).get("n_tool_errors"))
+            tool = (f"tool errors: {errs}" if has_field
+                    else "tool errors: not recorded (run predates the field)")
+            print(f"  {tag:<28} no_answer {n_na:>4}"
+                  f"   of which the tool had the answer: {n_had:>4}   {tool}")
 
         if base:
             for tag, rows in arms.items():
@@ -194,11 +220,10 @@ def main(argv=None):
                       + ("   [<80% — readout NOT reliable, PROTOCOL.md GATE-0]"
                          if rate < 0.8 else ""))
                 m = transition_matrix(sa, sb)
-                keys = ["none", "S1", "S2", "S3", "S4", "S5", "unparsed"]
-                print("      " + "".join(f"{k:>9}" for k in keys))
-                for x in keys:
-                    row = "".join(f"{m[x][y]:>9}" for y in keys)
-                    print(f"    {x:<6}{row}")
+                print("          " + "".join(f"{k:>10}" for k in LABELS))
+                for x in LABELS:
+                    row = "".join(f"{m[x][y]:>10}" for y in LABELS)
+                    print(f"    {x:<10}{row}")
     return 0
 
 

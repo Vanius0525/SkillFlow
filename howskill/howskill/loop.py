@@ -108,6 +108,7 @@ class Trajectory:
             "wall_seconds": round(self.wall_seconds, 3),
             "n_turns": len(self.turns),
             "n_tool_calls": sum(1 for t in self.turns if t.get("tool_call")),
+            "n_tool_errors": sum(1 for t in self.turns if t.get("tool_error")),
         }
 
 
@@ -213,6 +214,11 @@ def run_episode(
 
         turn["tool_call"] = {"name": tool_name, "args": args}
         turn["tool_result"] = result
+        # Upstream swallows the exception and hands the text back to the model,
+        # which is faithful but leaves a broken tool indistinguishable from a
+        # working one in the results. Record it; the string the model sees is
+        # unchanged, so this does not affect any measurement.
+        turn["tool_error"] = result.startswith("Error:")
         turn["final"] = False
         traj.turns.append(turn)
 
