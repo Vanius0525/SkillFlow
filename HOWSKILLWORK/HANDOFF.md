@@ -428,10 +428,20 @@ SkillsBench 对投递方式的表述**两可**：既说 skills 是
 
 ### ALFWorld 降为备选
 
-- LatentSkill 的 5 个 skill **未随代码发布**，repo 只接受外部 `--skill_context_dir`。
+- ~~LatentSkill 的 5 个 skill **未随代码发布**，repo 只接受外部 `--skill_context_dir`。~~
+  > **2026-08-31 更正：这条是错的。** skill 确实发布了，只是不在 LatentSkill 仓库里 ——
+  > 它用的是上游 **SkillRL**（arXiv 2602.08234，`github.com/aiming-lab/SkillRL`）发布的
+  > `memory_data/alfworld/claude_style_skills.json`：**62 个 skill**（12 通用 + 50 任务特定，
+  > 覆盖全部 6 类），字段为 `skill_id / title / principle / when_to_apply`，每条约 25–35 词。
+  > 同仓库另有 237 条 ALFWorld teacher 轨迹（o3 生成）。已直接读过该文件确认。
+  >
+  > 当时的判断来自 LatentSkill 仓库自身的 `--skill_context_dir` 参数，**没有追到它引用的
+  > "skill library released by Xia et al."**。降级理由现在只剩下面那一条（绝对分冲突）。
+  > 后果见 `PROTOCOL.md` §9。
 - LatentSkill 报 Qwen3-8B in-context skill = 52.9/56.0，SkillsInjector 报同模型 no-skill = 67.1。
   **给了 skill 比没给还低 10+ 点** → ALFWorld 绝对分强依赖 harness/prompt/step 上限，
-  跨论文引用不安全。
+  跨论文引用不安全。**这条仍然成立**，且正因如此，若启用 ALFWorld 必须先做一次
+  GATE-1 式复现，并明确复现的是哪一篇的设置。
 
 ### 方法骨架
 

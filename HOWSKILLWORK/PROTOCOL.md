@@ -380,12 +380,42 @@ P2 结束后**确定深挖子集**（§1.3 规则）。
 
 候选与已知障碍：
 
-| 候选 | 深度 | 障碍 |
-|---|---|---|
-| ALFWorld（LatentSkill） | 高 | skill 未发布；两篇论文绝对分互相冲突（`HANDOFF.md` §1.1） |
-| AppWorld | 高 | 仓库有 `appworld_adapter.py`；需确认有无现成 skill 语料 |
-| GAIA（smolagents / inspect） | 中高 | 仓库有两套启动器；无配套 gold skill，判分依赖答案匹配 |
-| SWE-Skills-Bench 系 | 高 | 闭源模型 + 厂商 CLI 的证据；开源模型上是否成立未知 |
+调研完成 2026-08-31：
 
-**先做的事不是选任务，是量深度**：在候选上跑一遍 no-skill 基线，记录轮数分布，
-拿到 §3.9 那张表的对应版本再决定。深度是这次的第一判据，不能再靠论文正文推断。
+| 候选 | 深度 | skill 语料 | 开源模型证据 | 判定 |
+|---|---|---|---|---|
+| **ALFWorld** | **50 步/episode** | ✅ SkillRL 已发布 62 个（见下） | ✅ Qwen3-8B（LatentSkill，与我们同模型） | **首选** |
+| AppWorld | 12–17 步实测（SAGE） | ❌ skill 由 agent 训练中自生成，未发布 | ✅ Qwen2.5-32B | 缺 skill，等同于要我们自己写 |
+| GAIA | 中高 | ❌ 无配套 gold skill | — | 同上 |
+| SWE-Skills-Bench 系 | 高 | ✅ | ❌ 全篇只测 Claude Haiku 4.5 | 排除，见下 |
+
+**ALFWorld 的 skill 是发布了的**（`HANDOFF.md` §5.5 的更正）：
+`aiming-lab/SkillRL` 的 `memory_data/alfworld/claude_style_skills.json`，62 个，
+字段 `skill_id / title / principle / when_to_apply`，每条 25–35 词。
+参照设置 = LatentSkill 的 in-context 臂：**Qwen3-8B frozen、50 步上限、按类别配对无检索**
+（等价于我们的 Oracle 注入），**no-skill 43.6% → in-context skill 52.9%（seen）**。
+
+**它补的是我们缺的两条轴，不是重做内容轴**：
+
+| 轴 | MedCalc | ALFWorld |
+|---|---|---|
+| 内容 | M1–M5 五模块 + 可执行工具，消融空间大 | 只有 3 个字段、约 30 词，最多做 `−principle` / `−when_to_apply` |
+| 时间 | 2.0 轮，`late` 需人为构造复核轮 | 50 步，`first` / `late` 是真问题 |
+| 轨迹 | 嫁接点 1–2 个，只能二值对比 | 嫁接点可取 5、10、20…，**能画出曲线** |
+| 工具（P5） | 55/55 带可执行工具 | 无工具，P5 不迁移 |
+
+**启用前必须先解决的三件事**（不解决就不要开跑）：
+
+1. **复现哪一篇要先钉死。** LatentSkill 报 no-skill 43.6%，SkillsInjector 报同模型 67.1%，
+   差 23pp。选 LatentSkill 的 in-context 设置作为 GATE-1 目标，并说明为什么不是另一篇。
+2. **效应量小一个数量级。** +9.3pp vs MedCalc 的 +43.7pp，n 也小得多
+   （eval 集约 140 seen）。开跑前先算功效，别跑完才发现读不出。
+3. **聚类 bootstrap 的簇数不够。** MedCalc 有 55 个 calculator 可聚类，
+   ALFWorld 只有 **6 个任务类别**。6 个簇的 bootstrap CI 极宽，
+   §4 的报数规则要为它单独定（按 task instance？按 game file？）——**这条不解决，主表就报不出来**。
+
+**SWE 线排除**：SWE-Skills-Bench 整篇只测 Claude Haiku 4.5 + Claude Code，
+无人用开源模型复现。最接近的开源证据是 **SkillFlow**（2604.17308，含 Qwen-Coder / Kimi-CLI）：
+Kimi K2.5 skill 使用率 66.87% 却只涨 +0.60，**Qwen-Coder-Next 相对 vanilla 反而退步**。
+与 §5.5 已有的排除理由（SkillsBench SWE 仅 +4.5pp）方向一致，且与我们 P2 的
+「错 skill 比无 skill 差 3.9pp」互为佐证 —— 「skill 在场」本身不是收益。
