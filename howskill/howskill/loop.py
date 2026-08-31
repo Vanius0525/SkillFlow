@@ -31,6 +31,15 @@ TOOL_CALL_RE = re.compile(r"^TOOL_CALL:\s*(\w+)\(([^)]*)\)\s*$", re.MULTILINE)
 
 MAX_TOOL_ROUNDS = 5          # upstream _MAX_TOOL_ROUNDS
 
+# The 'late' arm asks whether the skill works as a verifier rather than as a
+# plan: the agent answers without it, then sees it. Reaching that second turn
+# takes an explicit continuation, because the loop otherwise ends the moment an
+# answer appears, and an agent with no skill does not know the tool names well
+# enough to keep the loop alive by calling one. This line is part of the arm's
+# definition and is the only text the arm adds.
+REVISE_PROMPT = ("Reconsider your answer in light of the reference above, then "
+                 "give your final answer in the required format.")
+
 SAFE_BUILTINS = {
     "abs": abs, "round": round, "min": min, "max": max,
     "int": int, "float": float, "str": str, "len": len,
@@ -113,13 +122,25 @@ class Trajectory:
 
 
 def _skill_visible(schedule: str, turn_idx: int, any_tool_yet: bool) -> bool:
-    """P4 temporal ablation. ``turn_idx`` is 0-based."""
+    """P4 temporal ablation. ``turn_idx`` is 0-based.
+
+    ``late`` withholds the skill for the first turn and shows it afterwards.
+    It is deliberately keyed on the turn and not on the first tool call: the
+    tool signatures live in the skill's M4, and the measured no_skill arm makes
+    zero tool calls, so an event-keyed 'late' would never fire for an agent
+    that cannot see the skill — the arm would silently collapse into no_skill
+    and its readout would be about nothing.
+
+    ``late-tool`` keeps the event-keyed variant for the case where that is the
+    question being asked.
+    """
     if schedule == "all":
         return True
     if schedule == "first":
         return turn_idx == 0
     if schedule == "late":
-        # withheld until after the first tool call has happened
+        return turn_idx >= 1
+    if schedule == "late-tool":
         return any_tool_yet
     raise ValueError(f"unknown skill schedule: {schedule}")
 
@@ -174,6 +195,7 @@ def run_episode(
 
     any_tool_yet = any(m["role"] == "user" and m["content"].startswith("TOOL_RESULT:")
                        for m in (forced_prefix or []))
+    revised = False
 
     for turn_idx in range(max_rounds):
         # refresh skill visibility for this turn
@@ -201,6 +223,22 @@ def run_episode(
         if parsed is None:
             traj.model_output += response
             traj.transcript += response
+            # 'late': the answer came before the skill was ever visible, so
+            # the episode is not over — reveal it and let the agent revise.
+            # Grading reads the LAST ANSWER: line, so the revised answer is
+            # the one scored.
+            if skill_schedule == "late" and not visible and not revised:
+                revised = True
+                # Without this the two answers concatenate into one line and
+                # the extractor reads "7ANSWER: 3" as the answer.
+                traj.model_output += "\n"
+                turn["final"] = False
+                turn["revise_offered"] = True
+                traj.turns.append(turn)
+                messages.append({"role": "assistant", "content": response})
+                messages.append({"role": "user", "content": REVISE_PROMPT})
+                traj.transcript += "\n" + REVISE_PROMPT + "\n"
+                continue
             turn["final"] = True
             traj.turns.append(turn)
             traj.stop_reason = "answered"

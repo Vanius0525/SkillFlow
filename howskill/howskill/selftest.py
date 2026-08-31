@@ -136,8 +136,24 @@ def main():
     run_episode(m3, sysmsg, user, "PLAIN", tools, skill_schedule="late")
     check("schedule=late: absent turn 0",
           "Relevant Skill:" not in m3.seen[0][1]["content"])
-    check("schedule=late: present after first tool call",
+    check("schedule=late: present on turn 1",
           "Relevant Skill:" in m3.seen[1][1]["content"])
+    # An agent that cannot see the skill does not know the tool names, and the
+    # measured no_skill arm calls no tools at all. Keying 'late' on the first
+    # tool call would therefore never show the skill to exactly the agents the
+    # arm is about -- 'late' is keyed on the turn, and this pins the difference.
+    m4 = MockClient(["ANSWER: 7", "ANSWER: 3"])
+    t4 = run_episode(m4, sysmsg, user, "PLAIN", tools, skill_schedule="late")
+    check("schedule=late: answering does not end the episode",
+          len(m4.seen) == 2, f"{len(m4.seen)} calls")
+    check("schedule=late: skill shown on the revise turn",
+          len(m4.seen) > 1 and "Relevant Skill:" in m4.seen[1][1]["content"])
+    check("schedule=late: the revised answer is the one graded",
+          extract(t4.model_output, dec) == "3", extract(t4.model_output, dec))
+    m5 = MockClient(["ANSWER: 7", "ANSWER: 3"])
+    run_episode(m5, sysmsg, user, "PLAIN", tools, skill_schedule="late-tool")
+    check("schedule=late-tool: no revise turn, ends on the answer",
+          len(m5.seen) == 1, f"{len(m5.seen)} calls")
 
     print("\n== forced prefix / graft (P7) ==")
     donor = MockClient([f"donor reasoning\n{call}", "ANSWER: 3"])

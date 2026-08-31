@@ -110,7 +110,8 @@ def run_one(inst, arm, by_id, pairs, client, schedule, prefixes, no_tool_protoco
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--arm", required=True, choices=arms_mod.ARMS)
-    p.add_argument("--schedule", default="all", choices=["all", "first", "late"])
+    p.add_argument("--schedule", default="all",
+                   choices=["all", "first", "late", "late-tool"])
     p.add_argument("--model", default=os.environ.get("QWEN_MODEL", "Qwen/Qwen3-8B"))
     p.add_argument("--base-url", default=os.environ.get("QWEN_BASE_URL",
                                                         "http://127.0.0.1:8000/v1"))
