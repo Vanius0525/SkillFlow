@@ -42,23 +42,33 @@ ALFWorld 的绝对分跨论文冲突（LatentSkill 无 skill 43.6%，SkillsInjec
 | 集合大小 | **seen 140 / unseen 134** | 同上 |
 | skill 数 | **5**，按类别配对、无检索（Pick 与 Pick2 共用一个） | 同上 |
 | skill 来源 | SkillRL `memory_data/alfworld/claude_style_skills.json`，62 个 | 已直接读过该文件 |
-| 评测入口 | `python -m evals.alfworld.evaluate`，flag 含 `--skill_context_dir` / `--max_steps 50` / `--max_new_tokens 4096` | LatentSkill README |
-| 数据 | `alfworld_data/alfworld/` + `config_tw.yaml` | 同上 |
+| 评测入口 | `python -m evals.alfworld.evaluate`，见 `evals/alfworld/run_eval.sh` | LatentSkill 仓库 |
+| 数据 | `alfworld_data/alfworld/` + `evals/alfworld/config_tw.yaml` | 同上 |
+| skill 文件 | **`evals/alfworld/skills/*.txt`，就在 LatentSkill 仓库里** | 已读 |
+| 实跑 flag | `--max_steps 50 --max_new_tokens 2048 --history_length 5 --context_max_length 4096 --conversation_max_length 4096` | `run_eval.sh` |
 
-## 3. 未确认、必须读代码才能定的
+## 3. 五个未确认项 —— 已从代码读出（2026-08-31）
 
-论文正文都没写，**不要靠猜**（MedCalc 那次「以为没有工具」就是猜出来的）：
+来源：`yuaofan0-oss/LatentSkill` 的 `evals/alfworld/{prompts.py, evaluate.py, run_eval.sh}`。
+**skill 文件也在这个仓库里**（`evals/alfworld/skills/*.txt`），不必去 SkillRL 取。
 
-1. **baseline prompt 里有没有 few-shot 专家轨迹**。ALFWorld 的经典 ReAct 基线放 2 条同类别
-   完整示范，加不加能差十几到二十点 —— 这是 43.6 vs 67.1 那 23pp 最可能的来源。
-   **间接证据指向"没有"**：表里 vanilla 的 prefill 只有 **0.44k**，放两条完整轨迹不可能这么短。
-   开跑前用代码确认，不要停在这条推断上。
-2. 解码参数（temperature / top-p / 是否 `enable_thinking`）—— 正文未披露。
-3. 动作格式：ReAct？是否把 admissible actions 列给模型？非法动作怎么处理
-   （ALFWorld 对不合法动作返回 "Nothing happens"，烧步还是重提示，对小模型是生死差别）。
-4. `context_max_length` / `conversation_max_length` 的实际取值，以及超长怎么截断。
-5. **那 5 个 skill 具体是怎么从 62 个里组出来的**（整类拼接？只取 task-specific？带不带 12 个通用的？）。
-   prefill 从 0.44k 涨到 1.21k，即 skill 约 **0.77k token**，可以用它反推组合方式。
+| # | 问题 | 答案 |
+|---|---|---|
+| 1 | baseline 有 few-shot 吗 | **没有。** 基线用 `ALFWORLD_TEMPLATE_NO_HIS`，零样本。仓库里另有 `ALFWORLD_REACT_TEMPLATE_NO_HIS` 带 `REACT_FEW_SHOT_EXAMPLE`，**但不是评测用的那个** |
+| 2 | 解码 | **贪心**（`do_sample=False`），无 temperature/top-p；`apply_chat_template(..., enable_thinking=True)` |
+| 3 | 动作格式 | `<think>…</think>` + `<action>…</action>`；**admissible actions 每步列进 prompt**；解析不中就回退到原文，再不行强制 `look`，并计入 `invalid_action_counts` |
+| 4 | 上下文 | `history_length 5` —— **只保留最近 5 个 (obs, action) 对，每个 obs 截到 300 字符**；`context_max_length` / `conversation_max_length` 均 4096 |
+| 5 | skill 怎么组 | 按 task type 直接读 `skills/{pick_and_place,cool,heat,clean,look_at_obj_in_light}.txt` 五个文件之一。`general_alfworld.txt` / `mistakes_alfworld.txt` 是 `moe_combo` 模式才单独加载的**组件**，普通 in-context 臂不额外拼 |
+
+**第 1 条解释了 43.6 vs SkillsInjector 67.1 的 23pp**：基线是零样本，不放专家轨迹。
+**第 4 条解释了 prefill 恒为 0.44k** —— 上下文不随步数增长，只带最近 5 步。
+两条互相印证，之前那个"prefill 太短所以大概没有 few-shot"的推断成立。
+
+⚠️ **`max_new_tokens` 三处不一致**：`run_eval.sh` 写 2048，`evaluate.py` 默认 512，README 例子 4096。
+以 `run_eval.sh` 的 **2048** 为准（那是他们实际跑的脚本），并在报告里写明这个歧义。
+
+⚠️ **`enable_thinking=True`** —— 和我们 MedCalc 侧的约定（`thinking=False`）相反。
+ALFWorld 复现必须开 thinking，两个任务的这个开关不同，**结果文件里必须各自记录**。
 
 ## 4. 我们要自己写的部分
 
@@ -94,20 +104,37 @@ MedCalc 有 55 个 calculator 可聚类；ALFWorld 只有 6 个任务类别。
 - 或按类别分层 + 实例级配对差值，并明确声明簇内相关性未被完全吸收
 - 不可接受：当成 274 个独立样本报一个窄 CI
 
-### 5.3 内容轴在这里做不了
+### 5.3 内容轴：比预想的能做（修正 2026-08-31）
 
-skill 只有 `title / principle / when_to_apply` 三个字段、约 30 词，
-没有 M1–M5 那样的模块结构，也**没有可执行工具**（P5 不迁移）。
-ALFWorld 上能做的内容干预最多是 `−principle` / `−when_to_apply` / `ctrl-neutral`（换成别类的 skill）。
+先前根据 SkillRL 的 JSON（每条 `title / principle / when_to_apply`，约 30 词）判断
+「没有模块结构、内容轴做不了」。**读了实际投喂的文件后这条不成立**：
+LatentSkill 喂给模型的是 `skills/clean.txt` 这类**约 1,050 词的三段式文档**：
 
-**分工写清楚**：MedCalc 负责内容轴与工具，ALFWorld 负责时间轴与轨迹轴。
-不要指望在 ALFWorld 上重做一遍模块消融，也不要用 ALFWorld 的结论去覆盖 MedCalc 的。
+| 段 | 内容 | 与 MedCalc 的对应 |
+|---|---|---|
+| **General Principles** | 6 条通用策略（系统性探索、先到目的地、进度追踪…） | 无对应，MedCalc 没有跨任务的通用段 |
+| **Task Skills**（如 Clean Skills） | 6 条本类专用原则，每条带斜体 *Apply when* 触发条件 | ≈ M3 procedure + M2 的适用条件 |
+| **Mistakes to Avoid** | 5 组 Don't / Instead 对照 | ≈ M7 notes，但 MedCalc 只有 11/55 有 |
+
+即 62 条 JSON 是**素材**，按类别渲染成 5 份文档才是实际注入的东西。
+所以内容消融可做：**`−general` / `−task` / `−mistakes`** 三个干净的臂。
+
+更省事的是：**仓库已经自带控制臂的变体目录**，不用我们自己构造 ——
+`skills_noise/`、`skills_paraphrase/`、`skills_reordered/`、`skills_plaintext/`，
+分别对应我们的 `ctrl_corrupted` / 同义改写 / `ctrl_shuffled` / 去格式。
+**用他们的版本而不是我们自己扰动**：可比性更好，也少一处自由度。
+
+仍然**不迁移**的是 P5：ALFWorld 的 skill 没有可执行工具。
+
+**分工**：MedCalc 负责工具轴与细粒度模块消融（M1–M5），
+ALFWorld 负责时间轴、轨迹轴与**粗粒度三段消融**。
+两边的内容轴结论可以互相印证，但粒度不同，不要混report。
 
 ---
 
 ## 6. 执行顺序
 
-1. 拉 SkillRL 与 LatentSkill 的代码，回答 §3 的五个问题 —— **纯读代码，不占 GPU**
+1. ~~拉代码回答 §3 的五个问题~~ **完成 2026-08-31，见 §3**
 2. 定 §5.2 的聚类单元，算 §5.1 的功效，确定实际要跑多少 episode
 3. 装 ALFWorld 数据，跑通 vanilla 单条 episode，确认步数与动作解析
 4. 移植 prompt / 动作解析 / 判分 + 我们的四个钩子，写 selftest
