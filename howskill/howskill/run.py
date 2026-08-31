@@ -54,6 +54,20 @@ def git_commit() -> str:
         return "unknown"
 
 
+def restrict(instances, spec: str):
+    """Keep only the calculators named by ``spec`` (JSON file or id list)."""
+    if not spec:
+        return instances
+    if os.path.exists(spec):
+        keep = set(json.load(open(spec, encoding="utf-8")))
+    else:
+        keep = {int(x) for x in spec.replace(",", " ").split()}
+    out = [x for x in instances if x["eval_data"]["calculator_id"] in keep]
+    if not out:
+        raise SystemExit(f"--calculators {spec!r} matched no instances")
+    return out
+
+
 def subset(instances, n_per_calc: int, seed: int):
     """Deterministic per-calculator subsample."""
     if n_per_calc <= 0:
@@ -121,6 +135,9 @@ def main(argv=None):
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--logprobs", type=int, default=0)
     p.add_argument("--n-per-calc", type=int, default=0, help="0 = all 20")
+    p.add_argument("--calculators", default="",
+                   help="restrict to these calculator ids: a JSON file from "
+                        "howskill.subset, or a comma-separated list")
     p.add_argument("--workers", type=int, default=8)
     p.add_argument("--out", default="results")
     p.add_argument("--tag", default="")
@@ -130,7 +147,7 @@ def main(argv=None):
     a = p.parse_args(argv)
 
     skills, instances, by_id, pairs, _gt = load_data()
-    insts = subset(instances, a.n_per_calc, a.seed)
+    insts = subset(restrict(instances, a.calculators), a.n_per_calc, a.seed)
     prefixes = json.load(open(a.prefixes, encoding="utf-8")) if a.prefixes else None
 
     client = ChatClient(base_url=a.base_url, model=a.model,
@@ -146,6 +163,7 @@ def main(argv=None):
         "client": client.config(), "git_commit": git_commit(),
         "argv": sys.argv, "started": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "no_tool_protocol": a.no_tool_protocol,
+        "calculators": sorted({x["eval_data"]["calculator_id"] for x in insts}),
     }
     json.dump(meta, open(os.path.join(a.out, f"{tag}_meta.json"), "w"), indent=1)
 

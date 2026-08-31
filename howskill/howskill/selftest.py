@@ -167,6 +167,22 @@ def main():
         m.get("content", "").startswith("TOOL_RESULT:") for m in recv.seen[0]))
     check("forced_turns recorded", rt.forced_turns == 2, str(rt.forced_turns))
 
+    print("\n== subset (P3) ==")
+    from howskill.run import restrict
+    r = restrict(instances, "2,5,9")
+    check("--calculators takes an id list",
+          sorted({x["eval_data"]["calculator_id"] for x in r}) == [2, 5, 9],
+          f"{len(r)} instances")
+    # stepgt.json stores calculator_id as a string and the instances store it
+    # as an int; comparing them directly makes every calculator ineligible and
+    # the subset picker reports the task as unusable.
+    gt_ids = {g["calculator_id"] for g in stepgt.values()}
+    inst_ids = {i["eval_data"]["calculator_id"] for i in instances}
+    check("calculator_id types differ across the two files (must be coerced)",
+          bool(gt_ids) and bool(inst_ids) and not (gt_ids & inst_ids),
+          f"{type(next(iter(gt_ids))).__name__} vs "
+          f"{type(next(iter(inst_ids))).__name__}")
+
     print("\n== steps ==")
     g = stepgt[instances[0]["instance_id"]] if instances[0]["instance_id"] in stepgt \
         else next(iter(stepgt.values()))
