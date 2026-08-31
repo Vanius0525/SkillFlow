@@ -30,6 +30,7 @@
 | [`DESIGN-mechanism.md`](DESIGN-mechanism.md) | **方法论**。三轴干预（内容 / 时间 / 轨迹）、失败模式转移矩阵、轨迹嫁接、六个机制假设、白盒路线 |
 | [`PROTOCOL.md`](PROTOCOL.md) | **可执行流程**。harness 决策、P0–P8 阶段、GATE 判据与停止规则、算力预算 |
 | [`RESULTS-P1.md`](RESULTS-P1.md) | **P1 实测结果**。GATE-1 判定、5 轮上限吃掉 −3.9pp 的诊断、工具调用与准确率的待查观察 |
+| [`ALFWORLD.md`](ALFWORLD.md) | **深度轴的第二任务**。LatentSkill 复现规格、GATE-1′、功效与聚类单元的两个未决问题 |
 | [`P0-FINDINGS.md`](P0-FINDINGS.md) | **P0 实测结果**。skill 的真实模块结构、四条推翻原设计的发现、step 级 GT 的 join、中性配对审计 |
 | [`../howskill/`](../howskill/) | **代码与数据**，可直接搬到 4090。见其 `README.md` |
 

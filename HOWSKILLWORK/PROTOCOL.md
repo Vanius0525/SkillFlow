@@ -389,6 +389,8 @@ P2 结束后**确定深挖子集**（§1.3 规则）。
 | GAIA | 中高 | ❌ 无配套 gold skill | — | 同上 |
 | SWE-Skills-Bench 系 | 高 | ✅ | ❌ 全篇只测 Claude Haiku 4.5 | 排除，见下 |
 
+**已定：对标 LatentSkill 的 in-context 臂，复现规格见 [`ALFWORLD.md`](ALFWORLD.md)。**
+
 **ALFWorld 的 skill 是发布了的**（`HANDOFF.md` §5.5 的更正）：
 `aiming-lab/SkillRL` 的 `memory_data/alfworld/claude_style_skills.json`，62 个，
 字段 `skill_id / title / principle / when_to_apply`，每条 25–35 词。
