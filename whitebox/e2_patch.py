@@ -236,19 +236,16 @@ def main():
                 r, M.build_messages(q, filler, args.mode, unit)))
             lp_filler_ctx = logprob_with_patch(r, ids_f, gold)
 
-        cap = M.capture(r, ids_yes)
-        # hidden_states[L+1] is the output of layer L; the last K prompt tokens.
-        # The two prompts differ in length, so the positions are aligned from the
-        # END -- the question and the chat suffix line up there, the skill block
-        # does not line up anywhere.
+        # Captured through the same forward hook the patch writes into, not
+        # from output_hidden_states: those two disagree at the last layer, where
+        # hidden_states holds the post-RMSNorm state. See
+        # model.capture_block_outputs. The two prompts differ in length, so the
+        # positions are aligned from the END -- the question and the chat suffix
+        # line up there, the skill block does not line up anywhere.
         k = args.tail_k
-        vecs = {L: cap.hidden_states[L + 1][0, -k:].detach().clone() for L in layers}
-        del cap
+        vecs = M.capture_block_outputs(r, ids_yes, layers, k)
         if filler:
-            capf = M.capture(r, ids_f)
-            vecs_f = {L: capf.hidden_states[L + 1][0, -k:].detach().clone()
-                      for L in layers}
-            del capf
+            vecs_f = M.capture_block_outputs(r, ids_f, layers, k)
 
         base.append({
             "id": it["id"], "gold": gold,
@@ -378,18 +375,32 @@ def main():
     mcur = [per_layer[L]["recovery"]["mean"] for L in layers]
     # Exclude the final layers from "best layer".
     #
-    # Patching the last layer at the last prompt token overwrites the state that
-    # directly produces the next token, so for a single-token answer the recovery
-    # is high by construction rather than by finding anything. The first Tier A
-    # run scored +1.465 there -- above 100% -- with the MISMATCHED control also at
-    # +0.799, which is the tell: another item's vector should not help, and does
-    # only because the position is degenerate. Reported separately below.
+    # Patching the last block at the last prompt token overwrites the state that
+    # directly produces the next token. For a single-token answer that makes the
+    # real condition an identity: it must reproduce the source run exactly, so
+    # recovery there is 1.000 by construction and finds nothing. It is kept as a
+    # self-check (printed below) rather than as a data point, and the mismatched
+    # control at that layer is likewise degenerate -- another item's vector
+    # "helps" only because the position writes straight through to the output.
     TAIL = 2
     candidates = layers[:-TAIL] if len(layers) > TAIL + 2 else layers
     best = max(candidates, key=lambda L: per_layer[L]["recovery"]["real"])
     br = per_layer[best]["recovery"]
     bci = per_layer[best]["ci95"]["real"]
     tail_layers = [L for L in layers if L not in candidates]
+
+    # The identity check the last layer now affords. It costs nothing -- the
+    # number is already computed -- and it is the only end-to-end statement this
+    # script can make about its own patch path being wired correctly.
+    last = r.n_layers - 1
+    if last in per_layer:
+        got = per_layer[last]["recovery"]["real"]
+        ok = abs(got - 1.0) < 0.02
+        print(f"\n  [{'OK' if ok else 'FAIL'}] 末层恒等检查: 补最后一个 block 的"
+              f"输出应当精确复现源前向, 恢复率 = {got:.3f} (要 1.000)")
+        if not ok:
+            print("       补丁通路有问题 —— 每一层的数都要怀疑。先查捕获点和"
+                  "写入点是不是同一个地方 (model.capture_block_outputs)。")
 
     summary = {
         "experiment": "e2_patch",

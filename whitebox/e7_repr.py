@@ -326,17 +326,18 @@ def main():
     for i, it in enumerate(items):
         q, _, unit = fields(it, args.mode)
         ids_no = M.encode(r, M.render(r, M.build_messages(q, None, args.mode, unit)))
-        cap_no = M.capture(r, ids_no)
-        h_no = torch.stack([cap_no.hidden_states[L + 1][0, -1].float().cpu()
-                            for L in layers])
-        del cap_no
+        # Block outputs via hooks, not output_hidden_states: the latter holds
+        # the post-RMSNorm state in its last entry, which is on a different
+        # scale from every other layer and would make ||d||/||h|| at the last
+        # layer incomparable with the rest -- and the peak is chosen by
+        # comparing exactly that quantity across layers.
+        bo_no = M.capture_block_outputs(r, ids_no, layers, k=1)
+        h_no = torch.stack([bo_no[L][-1].float().cpu() for L in layers])
         base_h.append(h_no)
         for name, body in skills.items():
             ids_yes = M.encode(r, M.render(r, M.build_messages(q, body, args.mode, unit)))
-            cap = M.capture(r, ids_yes)
-            h_yes = torch.stack([cap.hidden_states[L + 1][0, -1].float().cpu()
-                                 for L in layers])
-            del cap
+            bo = M.capture_block_outputs(r, ids_yes, layers, k=1)
+            h_yes = torch.stack([bo[L][-1].float().cpu() for L in layers])
             deltas[name].append(h_yes - h_no)
         if (i + 1) % 10 == 0:
             el = time.time() - t0

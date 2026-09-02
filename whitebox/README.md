@@ -826,14 +826,20 @@ python contamination.py                         # 应当三行全 OK
    生成时，补丁必须只挂在 prefill 那一次前向上；挂在每个 decode step 上会在整个生成
    过程里反复注入，结果没有意义，但**看起来完全正常**。
 
-2. **注意力敲除要求 eager attention。** sdpa 和 flash 不可靠地处理自定义 4D mask，
+2. **`output_hidden_states` 的最后一条是 norm 之后的。** `hidden_states[L+1]` 是
+   block L 的原始输出，**除了最后一条**——那是过了 `model.norm` 的状态，而补丁的
+   hook 写的是 norm 之前的槽位。从它取向量再补回最后一层，等于归一化两次。
+   捕获一律走 `model.capture_block_outputs()`（和补丁同一个 hook）。见 §12.3p。
+   末层的恢复率现在是断言：**必须读到 1.000**。
+
+3. **注意力敲除要求 eager attention。** sdpa 和 flash 不可靠地处理自定义 4D mask，
    会静默忽略。`model.py` 默认 `attn_implementation="eager"`，慢但正确。自检第 5 项
    会验证 mask 真的挡住了。
 
-3. **显存。** 8B bf16 约 16GB，加上 eager attention 的注意力矩阵（seq² × heads）
+4. **显存。** 8B bf16 约 16GB，加上 eager attention 的注意力矩阵（seq² × heads）
    在长上下文下涨得快。先用 1.7B 调通。
 
-4. **别用 heredoc 改这些 Python 文件。** 这个仓库的 `bash` heredoc 会把 `\b` 变成
+5. **别用 heredoc 改这些 Python 文件。** 这个仓库的 `bash` heredoc 会把 `\b` 变成
    真正的退格字节。`tier_a/build.py` 的正则被这样毁过一次：模式匹配不到任何东西、
    过滤器静默失效，而 `sed` 和 `inspect.getsource` 都把那个字节渲染成不可见，源码
    看上去完全正确。两个 `build.py` 里的正则现在都用 `[0-9]+` 而不是反斜杠类。

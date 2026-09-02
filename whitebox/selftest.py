@@ -124,6 +124,20 @@ def main():
     check("no-op patch leaves output unchanged", noop_delta < 1e-2,
           f"max |dlogit| = {noop_delta:.4g}")
 
+    # The same check at the LAST block. It is a separate case because the
+    # capture path used to differ there: output_hidden_states holds the
+    # post-RMSNorm state in its final entry, so a vector taken from it and
+    # patched back in was normalised twice. Running the no-op only at
+    # n_layers // 2 is what let that through for eight runs.
+    lastL = d["n_layers"] - 1
+    own_last = M.capture_block_outputs(r, ids, [lastL], k=1)[lastL][-1]
+    with M.patch_layer(r, lastL, -1, own_last) as st_last:
+        out_last = r.model(ids, use_cache=False)
+    last_delta = (out_last.logits[:, -1].float() - ref_logits).abs().max().item()
+    check("patch hook fired at the last block", st_last["done"])
+    check("no-op patch at the LAST block leaves output unchanged",
+          last_delta < 1e-2, f"max |dlogit| = {last_delta:.4g}")
+
     with M.patch_layer(r, layer, -1, torch.zeros_like(own)):
         out0 = r.model(ids, use_cache=False)
     zero_delta = (out0.logits[:, -1].float() - ref_logits).abs().max().item()

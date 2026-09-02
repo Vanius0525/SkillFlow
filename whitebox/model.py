@@ -157,8 +157,12 @@ def capture(r: Runner, ids: torch.Tensor, want_attn: bool = False):
     """
     Residual stream after every layer, optionally attention weights.
 
-    hidden_states[i] is the input to layer i; hidden_states[-1] is the final
-    output. So index i in [0, n_layers] and "after layer L" is index L+1.
+    hidden_states[i] is the input to layer i, so "after layer L" is index L+1 --
+    EXCEPT for the last entry. HuggingFace's LLaMA-family forward appends the
+    state before each block and then appends one more AFTER the final RMSNorm,
+    so hidden_states[n_layers] is the normalised state, not the raw output of
+    the last block. Anything that has to line up with a forward hook on a block
+    must use capture_block_outputs instead; see the note there.
     """
     out = r.model(ids, output_hidden_states=True,
                   output_attentions=want_attn, use_cache=False)
@@ -346,6 +350,49 @@ def load_skill(path: str | pathlib.Path) -> str:
     body = p.read_text(encoding="utf-8")
     name = p.stem.replace("SKILL.", "")
     return f"\n# Skill: {name}\n\n{body}"
+
+
+@torch.no_grad()
+def capture_block_outputs(r: Runner, ids: torch.Tensor, layers, k: int = 1):
+    """
+    {L: [k, d]} -- the raw output of block L at the last k positions.
+
+    Read through a forward hook on each block rather than from
+    `output_hidden_states`, because the two disagree at exactly one layer.
+    HuggingFace's LLaMA-family forward appends the running state BEFORE each
+    block and then appends one more entry AFTER the final RMSNorm, so
+    hidden_states[L+1] is the raw output of block L for every L except the last,
+    where it is the normalised state instead. `patch_layer` writes into the raw
+    output, so a vector captured from hidden_states and patched at the last
+    layer gets normalised a second time and is not the state it was taken from.
+
+    Capturing through the same site the patch writes to makes the two agree by
+    construction, and turns the last layer into an exact end-to-end check:
+    transplanting the final block's output at the last prompt position
+    reproduces the source run's logits, so recovery there must read 1.000. If it
+    does not, the patch path is broken and every layer's number is suspect.
+    """
+    want = list(layers)
+    out: dict[int, torch.Tensor] = {}
+    handles = []
+
+    def mk(L):
+        def hook(_mod, _inp, o):
+            hs = o[0] if isinstance(o, tuple) else o
+            out[L] = hs[0, -k:].detach().clone()
+        return hook
+
+    try:
+        for L in want:
+            handles.append(r.layers[L].register_forward_hook(mk(L)))
+        r.model(ids, use_cache=False)
+    finally:
+        for h in handles:
+            h.remove()
+    missing = [L for L in want if L not in out]
+    if missing:
+        raise RuntimeError(f"no hook fired for layers {missing}")
+    return out
 
 
 def write_run_info(out_dir: pathlib.Path, r: Runner, extra: dict) -> None:

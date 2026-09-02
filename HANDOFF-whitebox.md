@@ -2108,6 +2108,69 @@ sweep，这个理由不成立了：**`e1-tierB-proc` 的「占行为效应 50.1%
 - **`e2-tierB-proc` 那一层测的是扰动**：别题向量 +5.454 ≈ 真向量 +5.441。
 - **两梯的 E2 内容余量符号相反**，模型规模 / 任务 / 未确认的分母，三个都说得通。
 
+### 12.3p 捕获点和写入点在最后一层对不上（2026-09-02）
+
+#### 症状
+
+`e2-tierA` 的 `real` 曲线在最后一层（27）读到 **+4.09**。它**必须**是 1.000：
+答案是单个字母，它的 logprob 从最后一个 prompt 位置的 logits 读出，而那个 logits
+= `lm_head(RMSNorm(最后一个 block 在该位置的输出))`，两步都是确定性的。把那个向量
+换成「有文档」那次的，logits 必然逐位相同。
+
+第二条旁证，不依赖任何对实现的猜测：`filler` 在同一层也是解析可算的，
+应当等于 `filler_ctx_delta / mean_delta = 2.194 / 0.641 = 3.42`，实测 **2.29**。
+**两个条件、两个精确可预测的值，都只在这一层落空。**
+
+#### 原因
+
+HuggingFace 的 LLaMA / Qwen 一族 `Model.forward` 是这样攒 `all_hidden_states` 的：
+
+```python
+for decoder_layer in self.layers:
+    if output_hidden_states:
+        all_hidden_states += (hidden_states,)   # 进 block 之前
+    hidden_states = decoder_layer(...)
+hidden_states = self.norm(hidden_states)        # 最后的 RMSNorm
+if output_hidden_states:
+    all_hidden_states += (hidden_states,)       # ← 这一条在 norm 之后
+```
+
+所以 `hidden_states[L+1]` 是 block L 的原始输出——**除了最后一条**，那是过了
+`model.norm` 的状态。而 `patch_layer` 的 hook 写的是 **norm 之前**的槽位。
+于是只在最后一层：一个已经归一化的向量被塞进未归一化的位置，然后**又被归一化一次**。
+
+#### 为什么自检没抓到
+
+`selftest.py` 第 3 项恰恰就是这条检查——用自己的向量做空操作补丁，输出必须不变——
+但它跑在 `n_layers // 2`。**中间层的索引是对的，最后一层从来没被测过。**
+
+#### 影响
+
+**已报的结论一个都不动。** 末两层本来就被 `TAIL = 2` 排除在最佳层之外，
+Tier A 的最佳层是 21、Tier B 是 24，所有引用过的数都在干净区间里。
+每条曲线**只有最后一个点**变（0–26 层的捕获索引本来就是对的）。
+
+两处要跟着改：
+
+- **论文 Figure 2 的图注**原来写「末层恢复率高是构造出来的」。**捕获修对之后它是
+  精确的 1.000，不是「高」。** 已改成：那个点作为补丁通路的端到端检查保留。
+- **E7 用的是同一套索引**（`e7_repr.py`）。最后一层上 `h_yes` 和 `h_no` 两个都是
+  post-norm，所以 ‖d‖/‖h‖ 在那一层是在**另一个尺度**上算的，而峰值恰恰是靠跨层比较
+  这个比值挑出来的。**Tier A 的 zorb 峰值层正好是 27**，所以 §12.3k / §12.3o 里
+  「峰值层 27、逐题余弦 0.75、有效维数 1.8/39」**在重跑之前都要挂上保留**。
+  Tier B 不受影响：三份文档的峰都在 15，而它有 36 层。
+
+#### 改了什么
+
+新增 `model.capture_block_outputs()`：用**和补丁同一个 forward hook** 去抓 block 输出，
+而不是从 `output_hidden_states` 里取。捕获点和写入点因此**按构造一致**，不再依赖
+那个索引约定。`e2_patch.py` 和 `e7_repr.py` 都改用它。
+
+白赚了一个检查：**末层的恢复率现在是一个精确断言，必须读到 1.000**，`e2_patch.py`
+每跑一次就打一次。读不到就说明补丁通路坏了，那一跑每一层的数都要怀疑。
+`selftest.py` 也补了一例，把空操作补丁在 `n_layers − 1` 上再跑一次——那正是本来
+该抓住它的地方。
+
 ### 12.4 还没验证的部分
 
 **所有和 GPU 相关的东西。** 本机没有 CUDA，`model.py` / `selftest.py` /
