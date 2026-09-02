@@ -138,8 +138,7 @@ def main() -> int:
             got = r.model(ino, use_cache=False).logits[0, -1].float()
     dmax = (got - ref).abs().max().item()
     same = dmax < 5e-2
-    print(f"
-[{'OK ' if same else 'BAD'}] 4b. 补丁位置上的 logits 与源前向相同: "
+    print(f"\n[{'OK ' if same else 'BAD'}] 4b. 补丁位置上的 logits 与源前向相同: "
           f"{same}   max|diff| {dmax:.4g}")
     if not same:
         print("     -> 补丁没有把那个位置变成源前向的状态。捕获点和写入点仍然"
