@@ -255,6 +255,7 @@ R 与 F 之间仍可能有未观测的难度差（例如 F 里 calculator 更难
 
 代码已落地：`howskill/{cells,wb_spans,wb_metrics,wb_replay,wb_patch,wb_analyze}.py`，
 入口是 `howskill/run_experiments.sh`（顺序执行 + 门槛硬停 + `FROM=` 断点续跑 + `DRY=1` 空跑）。
+**一律用 `bash run_experiments.sh` 调用** —— 可执行位靠 git 传递，而提交端是 Windows，`chmod` 不生效。
 离线自检覆盖 span 切分、无工具臂、四格映射、CKA/熵/曲率的不变量。
 
 **下面这些是明知会动、先记下来的，不是等它出错再补：**

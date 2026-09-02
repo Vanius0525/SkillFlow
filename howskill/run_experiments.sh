@@ -2,14 +2,18 @@
 # 按顺序跑完 P3 + P8 白盒的全部步骤。在服务器上：
 #
 #   cd $BASE/howskill
-#   nohup ./run_experiments.sh > $BASE/logs/exp.log 2>&1 &
+#   nohup bash run_experiments.sh > $BASE/logs/exp.log 2>&1 &
 #   echo $! > $BASE/logs/exp.pid
 #   tail -f $BASE/logs/exp.log
 #
+# 一律写成 `bash run_experiments.sh`。可执行位在这个仓库里靠 git 传递，
+# 而它是从 Windows 提交的 —— chmod 在那边不生效，曾经就漏过一次。
+# `bash <脚本>` 不依赖可执行位，也不依赖 shebang。
+#
 # 从某一步继续（前面的结果已经在了就不重跑）：
-#   FROM=4 ./run_experiments.sh
+#   FROM=4 bash run_experiments.sh
 # 只看会跑什么、不真跑：
-#   DRY=1 ./run_experiments.sh
+#   DRY=1 bash run_experiments.sh
 #
 # 门槛是硬的：GATE-W0 不过就停在那一步，不往下推。理由见
 # ../HOWSKILLWORK/P8-WHITEBOX.md §3.5 —— token 错位不会报错，只会给出
