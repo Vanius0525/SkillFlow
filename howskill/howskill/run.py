@@ -11,6 +11,7 @@ and should be discarded.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -23,7 +24,7 @@ from howskill import arms as arms_mod
 from howskill.grade import evaluate
 from howskill.llm import ChatClient
 from howskill.loop import make_prefix, run_episode
-from howskill.prompts import build_prompt
+from howskill.prompts import build_prompt, build_prompt_spans
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(HERE, "data")
@@ -87,12 +88,13 @@ def subset(instances, n_per_calc: int, seed: int):
 def run_one(inst, arm, by_id, pairs, client, schedule, prefixes, no_tool_protocol):
     sid = inst["skill_annotations"][0] if inst["skill_annotations"] else None
     gold = by_id.get(sid)
-    neutral = by_id.get(pairs.get(sid)) if arm == "ctrl_neutral" else None
+    neutral = (by_id.get(pairs.get(sid))
+               if arm in ("ctrl_neutral", "ctrl_neutral_no_tool") else None)
 
     payload = arms_mod.build(arm, gold, neutral_for=neutral, seed=0) if gold else []
     tools = [t for s in payload for t in (s.get("tools") or [])]
 
-    system, user_skill = build_prompt(
+    system, user_skill, spans = build_prompt_spans(
         inst, skills=payload, tool_protocol=bool(tools) and not no_tool_protocol)
     _, user_plain = build_prompt(
         inst, skills=[], tool_protocol=bool(tools) and not no_tool_protocol)
@@ -117,6 +119,14 @@ def run_one(inst, arm, by_id, pairs, client, schedule, prefixes, no_tool_protoco
         "extracted_answer": graded["extracted_answer"],
         "gt_answer": inst["eval_data"]["answer"],
         "output_type": graded["output_type"],
+        # Character spans of the skill / task / suffix regions of the user
+        # message, plus a digest of that message. The whitebox replay turns the
+        # spans into token spans and refuses to proceed if the digest does not
+        # match what it rebuilds -- a silently different prompt would misalign
+        # every position-indexed measurement without erroring.
+        "spans": spans,
+        "user_sha1": hashlib.sha1(user_skill.encode("utf-8")).hexdigest(),
+        "system_sha1": hashlib.sha1(system.encode("utf-8")).hexdigest(),
         "trajectory": traj.to_dict(),
     }
 

@@ -167,6 +167,74 @@ def main():
         m.get("content", "").startswith("TOOL_RESULT:") for m in recv.seen[0]))
     check("forced_turns recorded", rt.forced_turns == 2, str(rt.forced_turns))
 
+    print("\n== whitebox plumbing (P8) ==")
+    from howskill.cells import cell_of
+    from howskill.prompts import build_prompt_spans
+    from howskill.wb_spans import char_to_token_span, subsample
+
+    _, u_g, sp_g = build_prompt_spans(inst, skills=[gold], tool_protocol=False)
+    _, u_n, sp_n = build_prompt_spans(inst, skills=[], tool_protocol=False)
+    check("spans: skill slice is exactly the skill text",
+          sp_g["skill"] and u_g[sp_g["skill"][0]:sp_g["skill"][1]] == gold["content"])
+    check("spans: task slice is exactly the question",
+          u_g[sp_g["task"][0]:sp_g["task"][1]] == inst["question"])
+    check("spans: no skill span when no skill is injected", sp_n["skill"] is None)
+    check("spans: task slice survives without a skill",
+          u_n[sp_n["task"][0]:sp_n["task"][1]] == inst["question"])
+    # The tool-free arms exist so the whitebox condition is one forward pass
+    # and so ctrl_neutral is a control for content alone, not for content plus
+    # the mismatched skill's own executable tools.
+    check("gold_no_tool keeps the prose, drops the tools",
+          arms_mod.build("gold_no_tool", gold, seed=0)[0]["tools"] == []
+          and arms_mod.build("gold_no_tool", gold, seed=0)[0]["content"]
+          == gold["content"])
+    cn = arms_mod.build("ctrl_neutral_no_tool", gold, neutral_for=neutral, seed=0)
+    check("ctrl_neutral_no_tool is the neutral skill without tools",
+          cn[0]["tools"] == [] and cn[0]["content"] == neutral["content"])
+    check("cells: wrong->right is R, wrong->wrong is F",
+          cell_of(False, True) == "R" and cell_of(False, False) == "F"
+          and cell_of(True, True) == "K" and cell_of(True, False) == "B")
+    # A token straddling a span boundary must be kept, not dropped: losing the
+    # first token of the skill would shrink every skill-span measurement.
+    offs = [(0, 5), (5, 9), (9, 14), (14, 20)]
+    check("char->token span includes a straddling token",
+          char_to_token_span(offs, 3, 12, base=0) == (0, 3),
+          str(char_to_token_span(offs, 3, 12, base=0)))
+    check("subsample keeps the span when it is short enough",
+          subsample(10, 20, 256) == list(range(10, 20)))
+    check("subsample caps and stays inside the span",
+          len(subsample(0, 1000, 64)) == 64
+          and max(subsample(0, 1000, 64)) < 1000)
+
+    try:
+        import numpy as _np
+    except ImportError:
+        print("  [skip] wb_metrics needs numpy (present on the GPU box)")
+    else:
+        from howskill.wb_metrics import (curvature, effective_rank, linear_cka,
+                                         prompt_entropy)
+        rng = _np.random.default_rng(0)
+        low = _np.tile(rng.normal(size=(1, 32)), (40, 1)) + 1e-6 * rng.normal(size=(40, 32))
+        high = rng.normal(size=(40, 32))
+        check("entropy: rank-1 span scores below a full-rank one",
+              prompt_entropy(low) < prompt_entropy(high),
+              f"{prompt_entropy(low):.3f} vs {prompt_entropy(high):.3f}")
+        check("effective rank of a near-rank-1 span is ~1",
+              effective_rank(low) < 1.5, f"{effective_rank(low):.3f}")
+        check("entropy ignores activation scale (trace-normalised)",
+              abs(prompt_entropy(high) - prompt_entropy(high * 17.0)) < 1e-9)
+        line = _np.cumsum(_np.tile(rng.normal(size=(1, 32)), (40, 1)), axis=0)
+        check("curvature: a straight trajectory is ~0, a random walk is not",
+              curvature(line) < 0.1 < curvature(high), f"{curvature(line):.3f}")
+        check("CKA of a representation with itself is 1",
+              abs(linear_cka(high, high) - 1.0) < 1e-9)
+        check("CKA is invariant to rotation",
+              abs(linear_cka(high, high @ _np.linalg.qr(
+                  rng.normal(size=(32, 32)))[0]) - 1.0) < 1e-6)
+        check("CKA of unrelated representations is well below 1",
+              linear_cka(high, rng.normal(size=(40, 32))) < 0.5,
+              f"{linear_cka(high, rng.normal(size=(40, 32))):.3f}")
+
     print("\n== subset (P3) ==")
     from howskill.run import restrict
     r = restrict(instances, "2,5,9")

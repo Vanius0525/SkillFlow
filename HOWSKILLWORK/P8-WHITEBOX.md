@@ -251,6 +251,27 @@ R 与 F 之间仍可能有未观测的难度差（例如 F 里 calculator 更难
 
 ---
 
+## 5b. 已实现，以及**预计要调整**的地方（2026-09-02）
+
+代码已落地：`howskill/{cells,wb_spans,wb_metrics,wb_replay,wb_patch,wb_analyze}.py`，
+入口是 `howskill/run_experiments.sh`（顺序执行 + 门槛硬停 + `FROM=` 断点续跑 + `DRY=1` 空跑）。
+离线自检覆盖 span 切分、无工具臂、四格映射、CKA/熵/曲率的不变量。
+
+**下面这些是明知会动、先记下来的，不是等它出错再补：**
+
+| # | 位置 | 现在怎么做 | 为什么可能要改 |
+|---|---|---|---|
+| 1 | `wb_replay --max-span-tokens 256` | task span 均匀抽 256 个位置 | 是为了让两次前向的激活同时装得下而设的**内存上限**，不是统计判断。CKA 对位置数敏感度未知，先在 20 条上比 128/256/512 三档，稳了再定 |
+| 2 | 注意力敲除 | 用 `attention_mask` 屏蔽 skill span，**一次屏蔽所有层** | 想要的是**逐层**敲除（"skill 在第几层被读"），那需要拦到 attention 内部，跨实现容易碎。先用全局版拿到"有没有被读"，逐层版等主结论稳了再做 |
+| 3 | patch 的位置组 | 只 patch **task span 的尾部 m 个 token** | 尾部离答案最近，最可能是信息汇聚点 —— 但这是假设。要补的对照：patch 头部、patch 中段、patch 随机位置、以及 patch skill span 自身 |
+| 4 | patch 的对齐 | 有/无 skill 两个 prompt 的 task span **末尾对齐** | token 数可能因分词边界差 1–2 个。已用 `min()` 取齐并记录 `n_patched`，但若偏差大要改成按字符 offset 逐 token 对齐 |
+| 5 | GATE-W0 判据 | `corr ≥ 0.99` 且 `MAD ≤ 0.05` | 阈值是拍的。vLLM 与 HF 在 bf16 下本就有数值差，**先看实际分布再定阈值**，不要让一个过严的阈值把整条线卡死 |
+| 6 | `--logprobs 1` | 只取 top-1 | 若要做 M3 的分布级 KL，需要 top-k（k≥20）或直接在重放侧算全分布 KL。**当前 M3 的 KL 尚未接进 driver**，`wb_metrics.kl_divergence` 已就位但没被调用 |
+| 7 | 答案打分 | `score_answer` 用 `\nANSWER: {gold}` 的**平均** token logprob | 平均对长答案友好、对单 token 答案敏感。日期类答案 token 化后长度差异大，可能要改成按 token 数分层或只取首个数值 token |
+| 8 | `thinking` | 默认 `False`，与 MedCalc 侧一致 | 若 P8 单步跑开了 thinking，重放必须同步 —— **两边不一致 GATE-W0 必挂**，这正是它存在的理由 |
+| 9 | cells 的样本 | `--n-per-cell 150`（M1–M3）/ `40`（M4） | M4 是 40 条 × 9 层 × 每层 2 次前向，先跑通再谈规模。若 R/F 差异小，样本量要按实际方差重估 |
+| 10 | 显存 | 停 vLLM 再跑 HF | 一张 4090 装不下两份 8B。脚本第 6 步会 `pkill`，**跑完白盒要手动把 vLLM 起回来** |
+
 ## 6. 执行顺序
 
 1. 代码改动 1–2，跑单步三臂 3,300 条 → 建 R/F/K/B 四格

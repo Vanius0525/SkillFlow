@@ -37,6 +37,11 @@ ARMS = [
     "m5_clinical",
     "no_tool", "no_tool_no_M4",
     "ctrl_neutral", "ctrl_shuffled", "ctrl_corrupted",
+    # Tool-free variants. The whitebox work (P8-WHITEBOX.md) needs the task
+    # collapsed to a single forward pass, and ctrl_neutral otherwise carries
+    # the mismatched skill's own executable tools -- which would make it a
+    # control for content AND for tool availability at the same time.
+    "gold_no_tool", "ctrl_neutral_no_tool",
 ]
 
 # Arms that are pure controls (never used to claim a content effect).
@@ -56,9 +61,11 @@ def build(arm: str, gold: dict, neutral_for: dict | None = None,
     if arm == "no_skill":
         return []
 
-    if arm == "ctrl_neutral":
+    if arm in ("ctrl_neutral", "ctrl_neutral_no_tool"):
         if neutral_for is None:
-            raise ValueError("ctrl_neutral needs a paired neutral skill")
+            raise ValueError(f"{arm} needs a paired neutral skill")
+        if arm == "ctrl_neutral_no_tool":
+            return [_mk(neutral_for, neutral_for["content"], tools=[])]
         return [neutral_for]
 
     mods = split_modules(gold["content"])
@@ -69,7 +76,7 @@ def build(arm: str, gold: dict, neutral_for: dict | None = None,
         return [_mk(gold, render(mods, drop={arm.split("_", 1)[1]}))]
     if arm == "m5_clinical":
         return [_mk(gold, render_m5_clinical(mods))]
-    if arm == "no_tool":
+    if arm in ("no_tool", "gold_no_tool"):
         return [_mk(gold, gold["content"], tools=[])]
     if arm == "no_tool_no_M4":
         return [_mk(gold, render(mods, drop={"M4"}), tools=[])]
