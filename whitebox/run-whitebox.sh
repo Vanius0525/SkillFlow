@@ -72,6 +72,8 @@ STAGES=(
   "e7-tierA|a|注入之后表示层出现了什么 pattern？一个共享方向还是逐题内容"
   "e6-tierA|a|模型真的在读那张表吗？改掉一个换算因子,答案跟谁走"
   "e6-tierA-near|a|近似匹配的错值是不是更容易锚住模型（H5 上下文干扰）"
+  "e6-diagnose-tierA|a|E6 的 follow rate 无定义时,原始生成到底长什么样（纯后处理）"
+  "e6-diagnose-tierA-near|a|同上,近似口味"
   "e2-tierA|a|效应能不能压进一个向量？能=H2 选择,不能=H1 检索"
   "e2-tierA-k4|a|换成补 K 个位置还压不进吗？区分「压不进」和「一个位置装不下」"
   "e1-tierA|a|哪些层在读 skill？早层=读一次,中后层持续=反复回看"
@@ -87,6 +89,7 @@ STAGES=(
   "e2-tierB-proc|b|预注册预测：principle 型 skill 应当压得进向量（带中性文档对照）"
   "e1-tierB-const|b|检索型 skill 的注意力依赖是不是持续到中后层"
   "e1-tierB-proc|b|流程型 skill 是不是只在早层被读一次"
+  "figs|0|把这个 run 里每一条层扫描画成论文用的 tikz 片段（纯后处理）"
 )
 
 PHASE=""; ONLY=""; FROM=""; SKIP=""; DRYRUN=0; FORCE=0; LIST=0; NOGATE=0
@@ -370,6 +373,28 @@ for entry in "${STAGES[@]}"; do
     run_stage "$nm" "$wh" "$PY" "$BASE/errors.py" \
       --per-item "$OUT/$src/per_item.jsonl" --tasks "$A_TASKS" \
       --mode mc --label "$lbl" --out "$OUT/$nm/errors.json" ;;
+
+  e6-diagnose-tierA|e6-diagnose-tierA-near)
+    # Written months ago and never run until 2026-08-31, when it turned the E6
+    # "100% neither" readout from a broken measurement into positive evidence.
+    # A diagnostic nobody remembers to run is a diagnostic that does not exist,
+    # so it is a stage.
+    src=${nm#e6-diagnose-}
+    if [ $DRYRUN -eq 0 ] && [ ! -f "$OUT/e6-$src/per_item.jsonl" ]; then
+      echo "[跳过] $nm —— 缺 e6-$src/per_item.jsonl（先跑 e6-$src）"
+      record "$nm" skipped-nofile 0
+      continue
+    fi
+    [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/$nm"
+    run_stage "$nm" "$wh" "$PY" "$BASE/e6_diagnose.py" "$OUT/e6-$src" \
+      --out "$OUT/$nm/e6diag.json" ;;
+
+  figs)
+    # paperfig walks the run itself: which sweeps exist depends on the tier and
+    # on which stages were asked for, and a list in the shell would go stale.
+    [ $DRYRUN -eq 0 ] && mkdir -p "$OUT/paper"
+    run_stage "$nm" "$wh" "$PY" "$BASE/paperfig.py" "$OUT" --all \
+      --outdir "$OUT/paper" ;;
 
   e7-tierA)
     # 中性填充文档当第三份"skill"：它不是 skill,所以它要是也走同一个方向,

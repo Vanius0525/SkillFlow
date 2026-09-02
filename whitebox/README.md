@@ -268,11 +268,13 @@ skill 的一段拥有，金标前缀 teacher-forcing 让每步重新成为独立
 | `e1_knockout.py` | **E1 注意力敲除层扫描 —— 依赖度 vs 层** |
 | `e6_counterfactual.py` | **E6 反事实 skill —— 答案跟着改过的表走吗**（不用 hook）|
 | `e7_repr.py` | **E7 表示层几何 —— 注入之后出现了什么 pattern**（最便宜的那个）|
+| `experiment.sh` | **一条命令：前置检查 → 流水线 → 收产物**。跑之前该确认的、跑完该收的，都在这里 |
 | `run-whitebox.sh` | **流水线：按顺序跑完多个实验**，断点续跑、逐阶段日志 |
 | `report.py` | 把一次 run 的所有 summary.json 汇总成一页 + **交叉校验** |
 | `whitebox.conf.example` | 机器配置模板（复制成 `whitebox.conf`，不进 git）|
 | `errors.py` | 错误类型学（第 4 步）。**纯后处理，不用 GPU** |
 | `did.py` | 双重分离的预注册判据：轴间距的双重差分 + 配对 bootstrap。**不用 GPU** |
+| `paperfig.py` | 把层扫描画成论文用的 tikz 片段。E2 画恢复率、E1 画 net 和它的 CI 带。**不用 GPU** |
 | `e6_diagnose.py` | E6 的 follow rate 无定义时读什么。**纯后处理，不用 GPU** |
 | `journal/` | **每次实跑的原始输出和当时的判断**，一次一个文件 |
 | `tasks/tier_a/render_skill.py` | 从换算表渲染 skill；E6 的反事实文档由它生成 |
@@ -351,6 +353,27 @@ $BASE/run-server.sh start
 - **只想重跑某一个阶段**：`./run-whitebox.sh --only e2-tierA --force`（不带
   `--force` 会因为已有结果而跳过）。
 - 梯队 a 用 1.7B,可以和 vLLM 共存;梯队 b 用 8B,一定要先 stop。
+
+### 一条命令：`experiment.sh`
+
+```bash
+./experiment.sh --smoke        # 几题几层验通路,一两分钟,数字无意义
+./experiment.sh --phase a      # 只跑 Tier A（1.7B,十几分钟,可以前台看）
+nohup ./experiment.sh > logs/exp-$(date +%m%d).log 2>&1 &   # 两梯全跑,8B 是小时级
+```
+
+它不重新实现流水线，阶段表和门槛都还在 `run-whitebox.sh` 里。它负责的是**跑之前
+必须确认的**（代码是不是推上去那份、工作区干不干净、显存让开没有）、**跑**、
+以及**跑完必须收的**（论文图在哪、末层恒等检查过没过）。
+
+写它是因为那三件事以前散在 README 的三个小节里，靠人记得照做——
+`e6_diagnose.py` 就是这么被忘了几个月的，而它一跑就把 E6 从「坏读数」变成了正面证据。
+
+退出码：**0** 全跑完 / **1** 前置没过（什么都没跑）/ **2** 跑到一半有阶段失败。
+
+跑完之后 `results/<run-id>/paper/` 里是每一条层扫描的 tikz 片段，
+取回来覆盖论文目录里的同名文件即可。正文的 Figure 2 是
+`fig-e2-tierA.tex` → `fig_e2sweep.tex`。
 
 ### 一条命令跑完一梯队
 

@@ -66,6 +66,10 @@ def load(run_dir: pathlib.Path) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("run_dir")
+    ap.add_argument("--out", default=None,
+                    help="write the two follow rates and the swing as json, so "
+                         "the run keeps the diagnosis next to the stage that "
+                         "needed it instead of only in a terminal")
     ap.add_argument("--show", type=int, default=6,
                     help="how many items to print raw generations for")
     ap.add_argument("--tasks", default=str(pathlib.Path(__file__).parent /
@@ -241,6 +245,24 @@ def main() -> None:
         print("    The model is not reading that row: whatever the skill is doing")
         print("    here, it is not supplying this number. Cross-check against E1 --")
         print("    a real attention peak on the skill span would contradict this.")
+
+    if args.out:
+        out = pathlib.Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with io.open(out, "w", encoding="utf-8", newline="\n") as f:
+            json.dump({
+                "experiment": "e6_diagnose", "n": n,
+                "swing": swing,
+                "lp_gap": {c: sum(r[c]["lp_cf"] - r[c]["lp_true"]
+                                  for r in rows) / n for c in CONDS},
+                # The post-hoc category, with its own control: the unperturbed
+                # row is what says the rule reads the document rather than
+                # picking up coincidental divisibility.
+                "names_factor": {c: {"edited": counts[c][0],
+                                     "original": counts[c][1]}
+                                 for c in counts},
+            }, f, ensure_ascii=False, indent=2)
+        print(f"\n  -> {out}")
 
 
 def near(pred: float | None, gold, rel_tol: float = 0.02) -> bool:
