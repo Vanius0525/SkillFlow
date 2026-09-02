@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import math
 import pathlib
 import sys
 
@@ -46,6 +47,52 @@ E1_STYLE = {
     "effect":  ("skillblue", "thick, densely dashed",   "skill span blocked"),
     "control": ("black!45",  "thin, dotted",            "filler span blocked"),
 }
+
+
+def nice_ticks(lo: float, hi: float, target: int = 6):
+    """Round tick values covering [lo, hi], plus how many decimals to print.
+
+    Both figures used to have a y axis with no scale on it: an axis line, and
+    for the patch sweep one annotated reference line at 1.0. A reader could see
+    that one curve sat above another and could not tell whether the gap was 0.5
+    or 5 -- which on this data is the difference between "a little better" and
+    "four times the document's entire effect".
+    """
+    span = hi - lo
+    if span <= 0:
+        return [lo], 0
+    mag = 10 ** math.floor(math.log10(span / max(target, 2)))
+    step = mag
+    for m in (1, 2, 2.5, 5, 10):
+        step = m * mag
+        if span / step <= target + 1:
+            break
+    first = math.ceil(lo / step) * step
+    ticks, v = [], first
+    while v <= hi + 1e-9:
+        ticks.append(round(v, 10))
+        v += step
+    # Decimals from the step, not from its magnitude: a step of 2.5 is >= 1 and
+    # still needs one, and printing it with none labels two different ticks "2"
+    # and "-2" -- a wrong axis reads exactly like a right one.
+    dec = 0
+    while dec < 3 and abs(round(step, dec) - step) > 1e-9:
+        dec += 1
+    return ticks, dec
+
+
+def y_axis(a, Y, ticks, dec, W, H, label):
+    """Gridlines, ticks and the rotated label. Shared by both figures."""
+    for v in ticks:
+        y = Y(v)
+        a(f"  \\draw[black!8] (0,{y:.3f}) -- ({W:.3f},{y:.3f});")
+        a(f"  \\draw[black!45] (-0.08,{y:.3f}) -- (0,{y:.3f});")
+        a(f"  \\node[anchor=east,inner sep=3pt,black!55] at (0,{y:.3f}) "
+          f"{{{v:.{dec}f}}};")
+    # far enough left to clear the tick labels: the old position (x=0 with an
+    # inner sep of 9pt) would now sit on top of them
+    a(f"  \\node[rotate=90,anchor=south,inner sep=9pt] at (-0.52,{H/2:.3f}) "
+      f"{{{label}}};")
 
 
 def emit_e1(src: pathlib.Path, out: str, W: float, H: float) -> int:
@@ -88,11 +135,11 @@ def emit_e1(src: pathlib.Path, out: str, W: float, H: float) -> int:
              for x, v in zip(reversed(xs), reversed(lo_ci))]
     a("  \\fill[skillred!12] " + " -- ".join(band) + " -- cycle;")
 
+    ticks, dec = nice_ticks(lo, hi)
+    y_axis(a, Y, ticks, dec, W, H, "net $\\Delta$ logprob (nats)")
     if lo < 0.0 < hi:
-        a(f"  \\draw[black!30,densely dotted] (0,{Y(0.0):.3f}) -- "
+        a(f"  \\draw[black!35,densely dotted] (0,{Y(0.0):.3f}) -- "
           f"({W:.3f},{Y(0.0):.3f});")
-        a(f"  \\node[anchor=west,black!45,inner sep=1pt] at "
-          f"({W+0.05:.3f},{Y(0.0):.3f}) {{$0$}};")
     a(f"  \\draw[black!45] (0,{Y(lo + pad):.3f}) -- (0,{Y(hi - pad):.3f});")
     a(f"  \\draw[black!45] (0,{Y(lo + pad):.3f}) -- ({W:.3f},{Y(lo + pad):.3f});")
     for x in (xs[0], xs[len(xs) // 2], xs[-1]):
@@ -100,8 +147,6 @@ def emit_e1(src: pathlib.Path, out: str, W: float, H: float) -> int:
           f"{Y(lo + pad):.3f}) {{{x}}};")
     a(f"  \\node[anchor=north,inner sep=8pt] at ({W/2:.3f},{Y(lo+pad):.3f}) "
       f"{{first layer of group}};")
-    a(f"  \\node[rotate=90,anchor=south,inner sep=9pt] at (0,{H/2:.3f}) "
-      f"{{$\\Delta$ logprob}};")
 
     for key in ("control", "effect", "net"):
         if key not in curves:
@@ -240,8 +285,8 @@ def main_one(stage_dir: pathlib.Path, out: str, Wcm: float, Hcm: float) -> int:
           f"{Y(lo + pad):.3f}) {{{lab}}};")
     a(f"  \\node[anchor=north,inner sep=8pt] at ({W/2:.3f},{Y(lo+pad):.3f}) "
       f"{{layer}};")
-    a(f"  \\node[rotate=90,anchor=south,inner sep=9pt] at (0,{H/2:.3f}) "
-      f"{{recovery}};")
+    ticks, dec = nice_ticks(lo, hi)
+    y_axis(a, Y, ticks, dec, W, H, "recovery")
 
     # thin curves first so the two that carry the claim sit on top
     for key in ("mismatched", "mean", "filler", "real"):
