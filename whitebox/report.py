@@ -280,8 +280,32 @@ def fmt_e2(s: dict) -> list[str]:
         body = acc[:-2] if len(acc) > 4 else acc
         peak = max(v for v in body if v == v)
         at = s["layers"][acc.index(peak)]
+        i = acc.index(peak)
         out.append(f"准确率读数： 无文档 {s['acc_no']:.3f} -> 有 skill "
                    f"{s['acc_yes']:.3f}   补丁峰值 {peak:.3f} @层 {at}")
+        # The controls on the accuracy channel, at that same layer. This is
+        # the comparison the logprob channel could not make on Tier A, where
+        # the filler recovers more than the skill does: accuracy and logprob
+        # are thresholds on the same distribution, so they can disagree, and
+        # when they do the disagreement is the finding.
+        parts = []
+        for k, lab in (("acc_filler", "中性文档"), ("acc_mean", "平均向量"),
+                       ("acc_mismatched", "别题向量")):
+            c = s.get(k)
+            if c and i < len(c) and c[i] == c[i]:
+                parts.append(f"{lab} {c[i]:.3f}")
+        if parts:
+            out.append("  同层对照(准确率)： " + "   ".join(parts))
+        fl = s.get("acc_filler")
+        if fl and i < len(fl) and fl[i] == fl[i]:
+            m = peak - fl[i]
+            out.append(f"  准确率上的内容余量 {m:+.3f}")
+            lp_m = (s["best_recovery"] - s["best_layer_filler"]
+                    if s.get("best_layer_filler") is not None else None)
+            if lp_m is not None and lp_m < 0.15 <= m:
+                out.append("  ^ 两条通道判得不一样：logprob 上中性文档恢复得"
+                           "一样多或更多,准确率上没有。两个都要报,并说明"
+                           "准确率是同一个分布上的阈值读数")
         span = s["acc_yes"] - s["acc_no"]
         if abs(span) < 1e-9:
             out.append("    两个基线相等,这条曲线没有可动的空间,只读 logprob 那条")
