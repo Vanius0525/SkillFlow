@@ -188,11 +188,25 @@ def lp_gain(rows: list[dict], cond: str) -> float:
     return sum(got) / len(got) if got else NAN
 
 
-def print_groups(layers: list[dict], present: list[str], i_peak: int) -> None:
-    d = layers[i_peak]
+def damaged(layers: list[dict]) -> list[int]:
+    """Indices where the real condition's logprob recovery is negative.
+
+    A patch that lands on a layer whose forward pass it damages raises the
+    accuracy of every condition at once -- the mismatched and mean vectors are
+    equally good at disturbing a computation. So a layer inside this set can
+    show a control 'recovering' when nothing was recovered, and the aggregate
+    accuracy peak of Tier A (layer 19) sits inside it.
+    """
+    return [i for i, d in enumerate(layers)
+            if d.get("recovery", {}).get("real", NAN) < 0]
+
+
+def print_groups(layers: list[dict], present: list[str], i: int,
+                 why: str) -> None:
+    d = layers[i]
     rows = d["rows"]
-    print("\n  --- which items the patch moves   (layer {}, split by what the"
-          " skill did)".format(d["layer"]))
+    print("\n  --- which items the patch moves   (layer {}, {})"
+          .format(d["layer"], why))
     print("  {:<22}{:>4}{}   {:>9}".format(
         "group", "n", "".join(LABEL[c].rjust(9) for c in present),
         "lp real"))
@@ -291,10 +305,25 @@ def print_tests(d: dict, why: str) -> None:
     print("      p is exact McNemar on those two counts alone.")
 
 
-def read_peak(d: dict, summary: dict, a_no: float, a_yes: float) -> None:
+def compact(nums: list[int]) -> str:
+    """[17,18,19,20] -> '17-20'; keeps a warning about a region readable."""
+    if not nums:
+        return "none"
+    out, start, prev = [], nums[0], nums[0]
+    for n in nums[1:] + [None]:
+        if n != prev + 1:
+            out.append(str(start) if start == prev else f"{start}-{prev}")
+            start = n
+        prev = n
+    return ", ".join(out)
+
+
+def read_peak(d: dict, summary: dict, a_no: float, a_yes: float,
+              why: str = "") -> None:
     rows = d["rows"]
     span = a_yes - a_no
-    print("\n  reading layer {}:".format(d["layer"]))
+    print("\n  reading layer {}{}:".format(
+        d["layer"], "   ({})".format(why.split(" -- ")[0]) if why else ""))
     if not has(d, "filler"):
         print("    No filler condition in this run. Without it the accuracy")
         print("    channel cannot separate content from document-presence")
@@ -371,22 +400,47 @@ def report(stage: pathlib.Path) -> None:
 
     i_peak = peak_index(layers)
     print_curves(layers, present, i_peak)
-    print_groups(layers, present, i_peak)
-    print_fixed_curve(layers, present, i_peak)
 
-    # The peak is where the effect is largest and also where selection makes a p
-    # optimistic. The logprob best layer was fixed before this channel was looked
-    # at, so it is the honest one; both are printed because a conclusion holding
-    # at only one of them is a conclusion about layer choice.
-    print_tests(layers[i_peak],
-                "accuracy peak (selected on this curve -- p is optimistic)")
+    # Every table below is read at a layer, and which layer is the whole
+    # argument. The peak is where the effect looks largest and where selecting
+    # on this curve makes a p optimistic; the logprob best layer was fixed
+    # before this channel was looked at. They are printed together because a
+    # conclusion that holds at only one of them is a conclusion about layer
+    # choice, not about skills.
+    want = [(i_peak, "accuracy peak -- selected on this curve, p is optimistic")]
     bl = summary.get("best_layer")
     i_bl = next((i for i, d in enumerate(layers) if d["layer"] == bl), None)
     if i_bl is not None and i_bl != i_peak:
-        print_tests(layers[i_bl],
-                    "logprob best layer (pre-specified for this channel)")
+        want.append((i_bl, "logprob best layer -- pre-specified for this "
+                           "channel"))
 
-    read_peak(layers[i_peak], summary, a_no, a_yes)
+    # The warning that decides which of the two to believe. An accuracy peak
+    # sitting where the patch damages the forward pass is not a peak of the
+    # effect; it is the layer where disturbing the computation at all helps
+    # most, which is why the controls rise there too.
+    dmg = damaged(layers)
+    if i_peak in dmg:
+        print("\n  [!] The accuracy peak (layer {}) is a layer where the real"
+              " patch's logprob".format(layers[i_peak]["layer"]))
+        print("      recovery is NEGATIVE -- the forward pass is being damaged"
+              " there, and a")
+        print("      damaged pass lifts every condition at once. Layers {} are"
+              " in that state."
+              .format(compact([layers[i]["layer"] for i in dmg])))
+        if i_bl is not None and i_bl not in dmg:
+            print("      Read layer {} instead: it is outside that region AND"
+                  " was chosen".format(layers[i_bl]["layer"]))
+            print("      before this channel was looked at. Where the two"
+                  " disagree, the")
+            print("      controls at the peak are the disagreement.")
+
+    for i, why in want:
+        print_groups(layers, present, i, why)
+    print_fixed_curve(layers, present, i_peak)
+    for i, why in want:
+        print_tests(layers[i], why)
+    for i, why in want:
+        read_peak(layers[i], summary, a_no, a_yes, why)
 
 
 def main() -> None:
