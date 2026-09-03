@@ -124,6 +124,22 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# --smoke must never share a results directory with a real run.
+#
+# A stage skips itself when its summary.json already exists -- that is what
+# makes an interrupted run resumable, and it is keyed on the RUN_ID alone. A
+# smoke pass writes exactly those files with 8 items and 4 layers, so a real
+# run started afterwards under the same RUN_ID skips every stage and reports
+# the smoke numbers as results. Nothing in the summary says they are smoke:
+# n=8 and "layers 0..24" are the only tell, and they are easy to read past.
+#
+# The obvious fix is to tell people not to reuse the id, which is the fix that
+# already failed. Giving smoke its own suffix makes the collision impossible.
+if [ $SMOKE -eq 1 ] && [ "${RUN_ID%-smoke}" = "$RUN_ID" ]; then
+  RUN_ID="$RUN_ID-smoke"
+fi
+OUT=$BASE/results/$RUN_ID
+
 name_of()  { echo "${1%%|*}"; }
 phase_of() { local r=${1#*|}; echo "${r%%|*}"; }
 what_of()  { echo "${1##*|}"; }

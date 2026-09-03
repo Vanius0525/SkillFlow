@@ -46,6 +46,22 @@ step() { echo; hr; echo " $*"; hr; }
 # ---------------------------------------------------------------- 0. 前置
 step "0. 前置检查"
 
+# --smoke must never share a results directory with a real run.
+#
+# A stage skips itself when its summary.json already exists -- that is what
+# makes an interrupted run resumable, and it is keyed on the RUN_ID alone. A
+# smoke pass writes exactly those files with 8 items and 4 layers, so a real
+# run started afterwards under the same RUN_ID skips every stage and reports
+# the smoke numbers as results. Nothing in the summary says they are smoke:
+# n=8 and "layers 0..24" are the only tell, and they are easy to read past.
+#
+# The obvious fix is to tell people not to reuse the id, which is the fix that
+# already failed. Giving smoke its own suffix makes the collision impossible.
+if [ -n "${SMOKE[0]+x}" ] && [ "${RUN_ID%-smoke}" = "$RUN_ID" ]; then
+  RUN_ID="$RUN_ID-smoke"
+fi
+OUT=$BASE/results/$RUN_ID
+
 echo "run id     : $RUN_ID"
 echo "梯队       : $PHASE${SMOKE[0]+   (smoke)}"
 echo "commit     : $(git -C "$REPO" rev-parse --short HEAD 2>/dev/null || echo '?')"
