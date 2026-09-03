@@ -30,8 +30,17 @@ Two things the control has to get right, both of which were wrong here once:
   where it sits     Blocking an early span is not the same perturbation as
                     blocking a late one, so with a fixed document order the
                     position of the two documents is confounded with their
-                    content. Items alternate which document comes first, and the
-                    two halves are reported separately at the peak.
+                    content: net = content + a position term whose sign the
+                    order sets. Averaging both orders cancels that term.
+                    --order both (the default) does the averaging WITHIN each
+                    item. The earlier default, --order alternate, did it across
+                    items, which is equally unbiased but makes the cancellation
+                    carry the difference between two halves of the item set --
+                    and on Tier A the position term (+0.100) was larger than
+                    the content term (+0.083), so that penalty is what put zero
+                    inside the interval. The two orders are still reported
+                    separately at the peak, and opposite signs there are the
+                    counterbalance working, not a broken measurement.
 
 The filler is blocked at exactly the skill's token count, taken from the filler's
 start. That requires the filler to be the longer document; if it is not, the run
@@ -143,10 +152,15 @@ def main():
     ap.add_argument("--limit", type=int, default=40)
     ap.add_argument("--group", type=int, default=1,
                     help="layers knocked out together; 4 for a coarse first pass")
-    ap.add_argument("--order", choices=["alternate", "skill-first", "filler-first"],
-                    default="alternate",
-                    help="document order in the prompt; alternate counterbalances "
-                         "it across items so position is not confounded with content")
+    ap.add_argument("--order", choices=["both", "alternate", "skill-first",
+                                        "filler-first"],
+                    default="both",
+                    help="document order in the prompt. 'both' runs every item "
+                         "in both orders and averages them, so the position "
+                         "term cancels WITHIN each item; 'alternate' splits the "
+                         "item set and cancels it across items, which is "
+                         "unbiased but pays a between-item variance penalty "
+                         "(HANDOFF 12.3u). 'both' costs twice the forwards.")
     ap.add_argument("--gate-unconfirmed", action="store_true",
                     help="the Phase 0 effect this experiment divides by was NOT "
                          "confirmed. Runs anyway, but marks the result: a "
@@ -172,11 +186,31 @@ def main():
     skill_doc = f"\n# Skill: {skill_name}\n\n{skill_body}"
     filler_doc = f"\n# Skill: archive-formatting\n\n{filler_body}"
 
-    def combined_for(i: int) -> tuple[str, str]:
-        skill_first = (args.order == "skill-first" or
-                       (args.order == "alternate" and i % 2 == 0))
-        docs = (skill_doc, filler_doc) if skill_first else (filler_doc, skill_doc)
-        return docs[0] + docs[1], ("skill_first" if skill_first else "filler_first")
+    def orders_for(i: int) -> list[str]:
+        """Which document orders this item is measured under.
+
+        Within one item the skill span and the filler span sit at different
+        positions, so net = content + a position term whose sign is set by the
+        order. Averaging the two orders cancels that term. 'alternate' does the
+        averaging across DIFFERENT items -- unbiased, but the cancellation then
+        also carries the difference between two halves of the item set, and on
+        Tier A the position term (+0.100) was larger than the content term
+        (+0.083), so that penalty dominated the interval. 'both' measures each
+        item under each order and cancels within the item, which is what the
+        design wanted in the first place.
+        """
+        if args.order == "both":
+            return ["skill_first", "filler_first"]
+        if args.order == "skill-first":
+            return ["skill_first"]
+        if args.order == "filler-first":
+            return ["filler_first"]
+        return ["skill_first" if i % 2 == 0 else "filler_first"]
+
+    def combined_for(order: str) -> str:
+        docs = ((skill_doc, filler_doc) if order == "skill_first"
+                else (filler_doc, skill_doc))
+        return docs[0] + docs[1]
 
     r = M.load(args.model, device=args.device)
     groups = [list(range(i, min(i + args.group, r.n_layers)))
@@ -216,32 +250,37 @@ def main():
     base, dropped = [], 0
     for i, it in enumerate(items):
         q, gold, unit = fields(it, args.mode)
-        combined, order = combined_for(i)
-        ids = M.encode(r, M.render(r, M.build_messages(q, combined, args.mode, unit)))
-        s_span = M.find_span(r, ids, skill_body.strip())
-        f_span = M.find_span(r, ids, filler_body.strip())
-        if s_span is None or f_span is None:
-            dropped += 1
-            continue
-        width = s_span[1] - s_span[0]                  # the whole skill body
-        if f_span[1] - f_span[0] < width:
-            print(f"  [FAIL] the filler is shorter than the skill "
-                  f"({f_span[1] - f_span[0]} vs {width} tokens). The control "
-                  f"cannot be\n         width-matched without truncating the "
-                  f"skill, which would leave its\n         content unblocked. "
-                  f"Lengthen {FILLER.name} and re-run.")
-            raise SystemExit(1)
-        lp0, _ = logprob_blocked(r, ids, gold)
-        base.append({"id": it["id"], "gold": gold, "ids": ids, "lp0": lp0,
-                     "order": order,
-                     "skill": (s_span[0], s_span[1]),
-                     "filler": (f_span[0], f_span[0] + width),
-                     "width": width})
+        for order in orders_for(i):
+            combined = combined_for(order)
+            ids = M.encode(
+                r, M.render(r, M.build_messages(q, combined, args.mode, unit)))
+            s_span = M.find_span(r, ids, skill_body.strip())
+            f_span = M.find_span(r, ids, filler_body.strip())
+            if s_span is None or f_span is None:
+                dropped += 1
+                continue
+            width = s_span[1] - s_span[0]              # the whole skill body
+            if f_span[1] - f_span[0] < width:
+                print(f"  [FAIL] the filler is shorter than the skill "
+                      f"({f_span[1] - f_span[0]} vs {width} tokens). The control "
+                      f"cannot be\n         width-matched without truncating the "
+                      f"skill, which would leave its\n         content unblocked. "
+                      f"Lengthen {FILLER.name} and re-run.")
+                raise SystemExit(1)
+            lp0, _ = logprob_blocked(r, ids, gold)
+            base.append({"id": it["id"], "gold": gold, "ids": ids, "lp0": lp0,
+                         "order": order,
+                         "skill": (s_span[0], s_span[1]),
+                         "filler": (f_span[0], f_span[0] + width),
+                         "width": width})
     if dropped:
         print(f"  [!] {dropped} items dropped: a span could not be located in the "
               f"tokenised prompt")
     if not base:
         print("  [FAIL] no usable items"); raise SystemExit(1)
+    # base holds one record per (item, order), so with --order both it is twice
+    # the item count. Everything reported as n is the ITEM count.
+    n_unique = len({b["id"] for b in base})
     n_first = sum(1 for b in base if b["order"] == "skill_first")
     print(f"  blocked width: {base[0]['width']} tokens -- the entire skill body, "
           f"matched\n                 against the same count from the filler")
@@ -255,13 +294,23 @@ def main():
         eff, ctl, net = [], [], []
         by_order = {"skill_first": [], "filler_first": []}
         fired_total = 0
+        # Per ITEM, not per record. With --order both an item contributes two
+        # records, and averaging them is what cancels the position term; a
+        # bootstrap over records would resample the two halves of one item
+        # independently and throw that pairing away, reporting an interval
+        # narrower than the design earns.
+        per_item = {}
         for b in base:
             lp_s, f1 = logprob_blocked(r, b["ids"], b["gold"], g, [b["skill"]])
             lp_f, f2 = logprob_blocked(r, b["ids"], b["gold"], g, [b["filler"]])
             fired_total += (f1 or 0) + (f2 or 0)
             e, c = b["lp0"] - lp_s, b["lp0"] - lp_f
-            eff.append(e); ctl.append(c); net.append(e - c)
+            per_item.setdefault(b["id"], []).append((e, c))
             by_order[b["order"]].append(e - c)
+        for rec in per_item.values():
+            e = sum(x for x, _ in rec) / len(rec)
+            c = sum(y for _, y in rec) / len(rec)
+            eff.append(e); ctl.append(c); net.append(e - c)
 
         if fired_total == 0:
             print(f"  [FAIL] layers {g[0]}-{g[-1]}: the knockout hook never fired.")
@@ -297,7 +346,8 @@ def main():
 
     summary = {
         "experiment": "e1_knockout",
-        "run_id": run_id, "n_items": len(base), "group": args.group,
+        "run_id": run_id, "n_items": n_unique, "group": args.group,
+        "n_records": len(base),
         "groups": [per_group[gi]["layers"] for gi in sorted(per_group)],
         "net": nets, "effect": effs, "control": ctls,
         "best_layers": bd["layers"], "best_net": bd["net"],
@@ -316,7 +366,7 @@ def main():
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
 
     print(f"\n{'='*64}")
-    print(f"  {len(groups)} groups of {args.group}, n={len(base)}, "
+    print(f"  {len(groups)} groups of {args.group}, n={n_unique}, "
           f"{base[0]['width']} tokens blocked")
     print(f"  effect   {sparkline(effs)}")
     print(f"  control  {sparkline(ctls)}")
@@ -331,9 +381,20 @@ def main():
     bo = bd["net_by_order"]
     sf, ff = bo["skill_first"], bo["filler_first"]
     print(f"    by document order: skill-first {sf:+.3f}, filler-first {ff:+.3f}")
-    if sf == sf and ff == ff and (sf > 0) != (ff > 0):
-        print("    [!] The two orders disagree in sign. Position, not content, is")
-        print("        driving this -- do not read the peak as a skill-reading site.")
+    if sf == sf and ff == ff:
+        pos, con = (sf - ff) / 2.0, (sf + ff) / 2.0
+        print(f"      position term {pos:+.3f}, content term {con:+.3f}")
+        if abs(pos) >= abs(con):
+            print("    [!] The position term is at least as large as the content")
+            print("        term. Opposite signs here are the counterbalance doing")
+            print("        its job, not a broken measurement -- net is still the")
+            print("        average of the two and so is position-free. What it")
+            if args.order == "both":
+                print("        costs is variance, and --order both has already")
+                print("        paid that down as far as this design can.")
+            else:
+                print("        costs is variance, and the two halves are DIFFERENT")
+                print("        items. Re-run with --order both.")
 
     print("\n  reading it:")
     if bd["net_ci95"][0] <= 0:

@@ -444,13 +444,35 @@ def main():
 
     # ---- probe -------------------------------------------------------------
     probe = {}
-    if args.probe == "family":
-        y = [it.get("family") for it in items]
+    if args.probe != "none":
+        # WHICH label is the whole experiment.
+        #
+        # --probe family asks which conversion table the item needs. That is a
+        # property of the question text, so it is decodable whether or not a
+        # document is in context: on Tier A it read 1.00 in all three
+        # conditions INCLUDING no_skill (permuted 0.31-0.46, so the probe
+        # machinery itself was fine). A measure with no headroom cannot show an
+        # injection doing anything -- the same requirement section 2 puts on
+        # the behavioural gate, applied to the representation.
+        #
+        # --probe answer asks for the gold option letter instead. Without a
+        # document the model answers at 0.231 against a chance level of 0.25,
+        # so the headroom is there by construction and the question becomes the
+        # one E7 wanted: does the injection make the answer linearly available?
+        # The filler condition is the control that says whether any long
+        # document would have done as much.
+        field, what = (("family", "which conversion table does this item need")
+                       if args.probe == "family" else
+                       ("answer_mc", "which option is correct"))
+        y = [it.get(field) for it in items]
         if any(v is None for v in y):
-            print("\n  [!] --probe family needs Tier A items (no `family` field); "
-                  "skipped")
+            print(f"\n  [!] --probe {args.probe} needs a `{field}` field on the "
+                  f"items; skipped")
+        elif len(set(y)) < 2:
+            print(f"\n  [!] --probe {args.probe}: every item carries the same "
+                  f"`{field}`; nothing to separate")
         else:
-            print("\n  linear probe: which conversion table does this item need")
+            print(f"\n  linear probe: {what}")
             for cond, X in [("no_skill", H)] + [(k, H + D[k]) for k in D]:
                 acc = [probe_cv(X[:, li], y) for li in range(len(layers))]
                 perm = list(y)

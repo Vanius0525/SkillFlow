@@ -78,7 +78,13 @@ STAGES=(
   "e7-metrics|0|几何指标自检：余弦/有效维数/探针在已知数据上给不给出已知答案"
   "e0-tierA|a|有没有值得解释的效应？不过门槛,后面全是在解释噪声（含各类干扰项的间距）"
   "e0-tierA-filler|a|中性文档对照：Tier A 的效应里有多少只是「上下文里多了份长文档」"
-  "e0-tierA-num|a|同一批题改成填空：+36pp 里有多少是「会算」,多少是「会在四个选项里选」"
+  # e0-tierA-num 已下线（2026-09-04）。它测到的是 0.000 -> 0.000：同一批题上模型
+  # 会在四个选项里选（mc 0.231 -> 0.436），一个数都算不出来。贴地板不是可报告的
+  # 零结果（§2 要求两头都有余量），而修它要么重造题、要么给草稿纸换掉因变量 ——
+  # 两条都不做，所以默认不跑。「会选不会算」这个观察本身留在 §12.3u。
+  # 阶段表里没有它了，--only 也就找不到它；下面的 case 分支留着做记录。要再跑：
+  #   python e0_effect.py --model ../models/Qwen3-1.7B --tasks tasks/tier_a/tasks.jsonl \
+  #     --skill tasks/tier_a/SKILL.zorb-units.md --mode num --run-id <id>/e0-tierA-num
   "errors-tierA|a|skill 消掉的是哪一类错？格式 / 选错表 / 读错行"
   "errors-tierA-filler|a|中性文档消掉的是哪一类错 —— 和 errors-tierA 相减才是内容修的那部分"
   "e7-tierA|a|注入之后表示层出现了什么 pattern？一个共享方向还是逐题内容"
@@ -438,7 +444,7 @@ for entry in "${STAGES[@]}"; do
     run_stage "$nm" "$wh" "$PY" "$BASE/e7_repr.py" \
       --model "$DEV_MODEL" --device "$DEVICE" \
       --tasks "$A_TASKS" --skill "$A_SKILL" \
-      --skill "$BASE/tasks/filler-neutral.md" --mode mc --probe family \
+      --skill "$BASE/tasks/filler-neutral.md" --mode mc --probe answer \
       ${A_LIMIT[@]+"${A_LIMIT[@]}"} --run-id "$RUN_ID/$nm" ;;
 
   e6-tierA)
