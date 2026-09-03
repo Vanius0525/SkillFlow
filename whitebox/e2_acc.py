@@ -24,6 +24,12 @@ layer:
      minus filler is 8 items, real minus mismatched is 3 -- so the difference
      alone is not a readable quantity. Paired discordant counts, an exact
      McNemar p, and a paired bootstrap CI are.
+  4. WHICH items move. An aggregate accuracy of 18/39 under the patch and 17/39
+     with the document can be the same 17 items plus one, or two nearly
+     disjoint sets of the same size, and no curve separates those. Splitting on
+     what the skill itself did to each item -- fixed (wrong -> right), never
+     (wrong -> wrong), kept (right -> right), broken (right -> wrong) -- does,
+     and the fixed group is the one the effect is made of.
 
 The peak layer is chosen by argmax and then tested at that same layer, which
 biases any p computed there. That is why the pre-specified layer from
@@ -133,12 +139,133 @@ def has(d: dict, cond: str) -> bool:
 
 
 def print_curves(layers: list[dict], present: list[str], i_peak: int) -> None:
-    head = "layer".rjust(5) + "".join(LABEL[c].rjust(10) for c in present)
-    print("\n  " + head)
+    """Both channels of the same sweep, side by side, one row per layer.
+
+    They are printed together because on Tier A they disagree, and the
+    disagreement is only visible layer by layer: the logprob column goes
+    negative around layers 13-20 where the accuracy column sits flat at the
+    no-document baseline, which is a forward pass being damaged rather than
+    information that has not converged yet.
+    """
+    w = len(present) * 9
+    print("\n  {:>5}  {:^{w}}   {:^{w}}".format(
+        "", "recovery (logprob)", "accuracy", w=w))
+    print("  {:>5}  {}   {}".format(
+        "layer",
+        "".join(LABEL[c].rjust(9) for c in present),
+        "".join(LABEL[c].rjust(9) for c in present)))
     for i, d in enumerate(layers):
-        cells = "".join("{:>10.3f}".format(d["acc"].get(c, NAN)) for c in present)
-        print("  {:>5}{}{}".format(d["layer"], cells, " *" if i == i_peak else ""))
-    print("        * peak of the real curve (last two layers excluded)")
+        rec = "".join("{:>9.2f}".format(d.get("recovery", {}).get(c, NAN))
+                      for c in present)
+        acc_ = "".join("{:>9.3f}".format(d["acc"].get(c, NAN)) for c in present)
+        print("  {:>5}  {}   {}{}".format(
+            d["layer"], rec, acc_, " *" if i == i_peak else ""))
+    print("        * peak of the real accuracy curve (last two layers excluded)")
+
+
+# What the skill itself did to each item, which is the only split that says
+# whether the patch moves the items the effect is made of.
+GROUPS = (("fixed", "wrong -> right", 0, 1),
+          ("never", "wrong -> wrong", 0, 0),
+          ("kept", "right -> right", 1, 1),
+          ("broken", "right -> wrong", 1, 0))
+
+
+def subset(rows: list[dict], no: int, yes: int) -> list[dict]:
+    return [r for r in rows
+            if r.get("ok_no") is not None and r.get("ok_yes") is not None
+            and int(r["ok_no"]) == no and int(r["ok_yes"]) == yes]
+
+
+def lp_gain(rows: list[dict], cond: str) -> float:
+    """Mean lp(patched) - lp(no document) over a subset, in nats.
+
+    Not the recovery RATIO here. Inside a group the denominator lp_yes - lp_no
+    is what defined the group, so dividing by it would report the selection
+    back to us; the numerator alone is still the thing the patch did.
+    """
+    got = [r["lp_" + cond] - r["lp_no"] for r in rows if "lp_" + cond in r]
+    return sum(got) / len(got) if got else NAN
+
+
+def print_groups(layers: list[dict], present: list[str], i_peak: int) -> None:
+    d = layers[i_peak]
+    rows = d["rows"]
+    print("\n  --- which items the patch moves   (layer {}, split by what the"
+          " skill did)".format(d["layer"]))
+    print("  {:<22}{:>4}{}   {:>9}".format(
+        "group", "n", "".join(LABEL[c].rjust(9) for c in present),
+        "lp real"))
+    for name, arrow, no, yes in GROUPS:
+        sub = subset(rows, no, yes)
+        if not sub:
+            continue
+        cells = "".join("{:>9.3f}".format(acc(sub, c)) for c in present)
+        print("  {:<22}{:>4}{}   {:>+9.2f}".format(
+            "{} ({})".format(name, arrow), len(sub), cells, lp_gain(sub, "real")))
+    print("      Read down the real column. fixed is where the behavioural")
+    print("      effect lives; kept and never are where a patch that only")
+    print("      perturbs the forward pass would show up.")
+
+    # The cross-tab the aggregate cannot give: among the items that were wrong
+    # without a document, does the patch get right the SAME ones the document
+    # gets right? Same size and same identity are different claims.
+    wrong = [r for r in rows if r.get("ok_no") == 0]
+    if wrong and all(r.get("ok_real") is not None for r in wrong):
+        a = sum(1 for r in wrong if r["ok_yes"] and r["ok_real"])
+        b = sum(1 for r in wrong if not r["ok_yes"] and r["ok_real"])
+        c = sum(1 for r in wrong if r["ok_yes"] and not r["ok_real"])
+        e = sum(1 for r in wrong if not r["ok_yes"] and not r["ok_real"])
+        print("\n  among the {} items wrong without a document:".format(len(wrong)))
+        print("                     skill right   skill wrong")
+        print("      patch right {:>10}{:>14}".format(a, b))
+        print("      patch wrong {:>10}{:>14}".format(c, e))
+        if a + b:
+            print("      {:.0%} of what the patch fixes is also fixed by the"
+                  " document.".format(a / (a + b)))
+        if b > a:
+            print("      [!] The patch mostly fixes items the document does NOT.")
+            print("          Then the aggregate agreement between the two is a")
+            print("          coincidence of counts, not of mechanism, and the")
+            print("          curve is not measuring the behavioural effect.")
+
+
+def print_fixed_curve(layers: list[dict], present: list[str],
+                      i_peak: int) -> None:
+    """The layer sweep restricted to the items the skill fixed.
+
+    This is the subgroup the behavioural effect is made of: on Tier A the 39
+    items give +20.5pp, and that number is 13 items turning from wrong to right
+    against 5 turning the other way. Asking whether the patch reproduces the
+    effect means asking what it does to those 13, not to the 39.
+
+    The group is defined by the with-skill outcome, so acc is 0 by construction
+    at the no-document baseline and 1 with the document, and both baselines are
+    uninformative here. Only the patch columns carry anything. For the same
+    reason the logprob gain in this group is optimistic: selecting items where
+    the with-skill forward pass happened to land right selects upward.
+    """
+    fixed_n = len(subset(layers[0]["rows"], 0, 1))
+    if not fixed_n:
+        print("\n  No item went wrong -> right under the skill; there is no")
+        print("  subgroup for the behavioural effect to live in.")
+        return
+    print("\n  --- the {} items the skill fixed (wrong -> right), by layer"
+          .format(fixed_n))
+    print("  {:>5}  {}   {:>9}".format(
+        "layer", "".join(LABEL[c].rjust(9) for c in present), "lp real"))
+    for i, d in enumerate(layers):
+        sub = subset(d["rows"], 0, 1)
+        cells = "".join("{:>9.3f}".format(acc(sub, c)) for c in present)
+        print("  {:>5}  {}   {:>+9.2f}{}".format(
+            d["layer"], cells, lp_gain(sub, "real"),
+            " *" if i == i_peak else ""))
+    peak = acc(subset(layers[i_peak]["rows"], 0, 1), "real")
+    print("      A patch that carries the effect puts this column near 1.0 at")
+    print("      the peak; 0.5 means half of the behavioural effect is in the")
+    print("      vector and the rest is not. Here it is {:.3f} on {} items,"
+          .format(peak, fixed_n))
+    print("      so read it as a direction, not as a rate.")
 
 
 def print_tests(d: dict, why: str) -> None:
@@ -244,6 +371,8 @@ def report(stage: pathlib.Path) -> None:
 
     i_peak = peak_index(layers)
     print_curves(layers, present, i_peak)
+    print_groups(layers, present, i_peak)
+    print_fixed_curve(layers, present, i_peak)
 
     # The peak is where the effect is largest and also where selection makes a p
     # optimistic. The logprob best layer was fixed before this channel was looked
