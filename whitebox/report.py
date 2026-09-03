@@ -271,6 +271,23 @@ def fmt_e2(s: dict) -> list[str]:
            f"CI95 [{lo:+.3f},{hi:+.3f}]",
            f"同层对照： 别题向量 {s['best_layer_mismatched']:+.3f}   "
            f"平均向量 {s['best_layer_meanvec']:+.3f}"]
+    # The accuracy reading of the same sweep, when the run has one. It is the
+    # channel bf16 cannot damage (HANDOFF-whitebox.md 12.3q), so it says
+    # whether the recovery shape depends on the dtype; it is also binary on a
+    # few dozen items, so it is a shape check and not an effect size.
+    acc = s.get("acc_real")
+    if acc and s.get("acc_no") is not None:
+        body = acc[:-2] if len(acc) > 4 else acc
+        peak = max(v for v in body if v == v)
+        at = s["layers"][acc.index(peak)]
+        out.append(f"准确率读数： 无文档 {s['acc_no']:.3f} -> 有 skill "
+                   f"{s['acc_yes']:.3f}   补丁峰值 {peak:.3f} @层 {at}")
+        span = s["acc_yes"] - s["acc_no"]
+        if abs(span) < 1e-9:
+            out.append("    两个基线相等,这条曲线没有可动的空间,只读 logprob 那条")
+        elif (peak - s["acc_no"]) / span < 0.3 and s["best_recovery"] > 0.5:
+            out.append("[!] logprob 恢复了一大半而准确率几乎没动 —— 补丁在推"
+                       "金 token 的概率,但没把它推成 argmax")
     if s["best_layer_mismatched"] > 0.4:
         out.append("[!] 别题的向量也能恢复 —— 这一层测到的是扰动,不是 skill")
     # The filler condition is the one that decides whether any of the above is

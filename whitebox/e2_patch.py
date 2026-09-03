@@ -94,15 +94,32 @@ def fields(item, mode):
     return item["question"], item["answer_raw"], item.get("unit") or None
 
 
+# Option letters -> single token ids, filled in main() when the mode is mc.
+# Empty for --mode num, where there are no options and the accuracy curve is
+# not defined.
+OPTION_IDS: dict[str, int] = {}
+
+
 @torch.no_grad()
-def logprob_with_patch(r, ids, answer, layer=None, position=None, vector=None):
-    """
-    Mean logprob of `answer`, optionally patching one position of one layer.
+def score_with_patch(r, ids, answer, layer=None, position=None, vector=None):
+    """(mean logprob of `answer`, is the argmax over options `answer`?).
+
+    Both readings come off one forward, so the accuracy curve is free, and it
+    is worth having because the two channels fail differently. bf16 costs a
+    gold log-probability 0.5 to 2.5 nats when the gold token sits deep in the
+    tail, and under 0.01 when it is the argmax (patchcheck.py) -- so accuracy
+    is immune to the arithmetic the recovery ratio is exposed to, and a curve
+    shape that shows up in both does not rest on the dtype.
+
+    The price is power. Accuracy is binary, chance is 25%, and 39 items do not
+    resolve a small shift in it; that is why the logprob is still the primary
+    dependent variable (HANDOFF-whitebox.md 2). Read the accuracy curve for
+    whether the shape survives, not for an effect size.
 
     The patch is applied inside a single forward over prompt+answer, so
     `position` is an absolute index into that sequence -- it must be the last
-    PROMPT token, not the last token, or the intervention lands inside the answer
-    and measures something else entirely.
+    PROMPT token, not the last token, or the intervention lands inside the
+    answer and measures something else entirely.
     """
     ans_ids = r.tok(answer, return_tensors="pt",
                     add_special_tokens=False).input_ids.to(r.device)
@@ -116,7 +133,21 @@ def logprob_with_patch(r, ids, answer, layer=None, position=None, vector=None):
 
     lp = torch.log_softmax(logits[:, :-1], dim=-1)
     picked = lp.gather(-1, full[:, 1:].unsqueeze(-1)).squeeze(-1)
-    return picked[0, -ans_ids.shape[1]:].mean().item()
+    value = picked[0, -ans_ids.shape[1]:].mean().item()
+
+    ok = None
+    if OPTION_IDS:
+        # The row that emits the first answer token -- the same cell the
+        # logprob above is read from, and the one the patch overwrites.
+        row = logits[0, int(ids.shape[1]) - 1]
+        best = max(OPTION_IDS, key=lambda t: row[OPTION_IDS[t]].item())
+        ok = best == answer
+    return value, ok
+
+
+def logprob_with_patch(r, ids, answer, layer=None, position=None, vector=None):
+    """Just the logprob. Kept because most callers do not want the pair."""
+    return score_with_patch(r, ids, answer, layer, position, vector)[0]
 
 
 def bootstrap_ci(vals, n=2000, seed=0):
@@ -216,6 +247,18 @@ def main():
         "filler": str(args.filler) if args.filler else None,
     })
 
+    # One option letter, one token -- checked, not assumed: a tokenizer that
+    # splits "A" would make the argmax over options meaningless, and silently.
+    if args.mode == "mc":
+        for letter in "ABCD":
+            t = r.tok(letter, add_special_tokens=False).input_ids
+            if len(t) == 1:
+                OPTION_IDS[letter] = int(t[0])
+        if len(OPTION_IDS) != 4:
+            print("  [!] option letters are not single tokens on this "
+                  "tokenizer -- the accuracy curve is disabled.")
+            OPTION_IDS.clear()
+
     # ---- pass 1: baselines and the cached vectors -------------------------
     # One forward with the skill gives every layer's residual at once, so the
     # cache costs one pass per item rather than one per layer.
@@ -227,8 +270,8 @@ def main():
         ids_no = M.encode(r, M.render(r, M.build_messages(q, None, args.mode, unit)))
         ids_yes = M.encode(r, M.render(r, M.build_messages(q, skill, args.mode, unit)))
 
-        lp_no = logprob_with_patch(r, ids_no, gold)
-        lp_yes = logprob_with_patch(r, ids_yes, gold)
+        lp_no, ok_no = score_with_patch(r, ids_no, gold)
+        lp_yes, ok_yes = score_with_patch(r, ids_yes, gold)
 
         vecs_f, lp_filler_ctx = None, float("nan")
         if filler:
@@ -250,6 +293,7 @@ def main():
         base.append({
             "id": it["id"], "gold": gold,
             "lp_no": lp_no, "lp_yes": lp_yes,
+            "ok_no": ok_no, "ok_yes": ok_yes,
             "delta": lp_yes - lp_no,
             "prompt_len_no": int(ids_no.shape[1]),
             "ids_no": ids_no, "vecs": vecs,
@@ -301,18 +345,22 @@ def main():
         for i, b in enumerate(base):
             # last K PROMPT tokens, absolute indices into prompt+answer
             pos = list(range(b["prompt_len_no"] - args.tail_k, b["prompt_len_no"]))
-            real = logprob_with_patch(r, b["ids_no"], b["gold"], L, pos, b["vecs"][L])
-            mism = logprob_with_patch(r, b["ids_no"], b["gold"], L, pos,
-                                      base[shifted[i]]["vecs"][L])
-            meanp = logprob_with_patch(r, b["ids_no"], b["gold"], L, pos, mean_vec[L])
+            real, a_real = score_with_patch(
+                r, b["ids_no"], b["gold"], L, pos, b["vecs"][L])
+            mism, a_mism = score_with_patch(
+                r, b["ids_no"], b["gold"], L, pos, base[shifted[i]]["vecs"][L])
+            meanp, a_mean = score_with_patch(
+                r, b["ids_no"], b["gold"], L, pos, mean_vec[L])
             row = {"id": b["id"], "lp_real": real, "lp_mismatched": mism,
-                   "lp_mean": meanp, "lp_no": b["lp_no"], "lp_yes": b["lp_yes"]}
+                   "lp_mean": meanp, "lp_no": b["lp_no"], "lp_yes": b["lp_yes"],
+                   "ok_real": a_real, "ok_mismatched": a_mism, "ok_mean": a_mean,
+                   "ok_no": b["ok_no"], "ok_yes": b["ok_yes"]}
             if filler:
                 # Same item, same position, same layer -- the only thing that
                 # differs from lp_real is WHICH document was in context when the
                 # vector was captured. So real minus filler is the part of the
                 # recovery that is about content rather than about presence.
-                row["lp_filler"] = logprob_with_patch(
+                row["lp_filler"], row["ok_filler"] = score_with_patch(
                     r, b["ids_no"], b["gold"], L, pos, b["vecs_f"][L])
             rows.append(row)
 
@@ -348,9 +396,19 @@ def main():
         def destroyed(key):
             return sum(1 for x in rows if x[key] < x["lp_no"] - 20)
 
+        # Raw accuracy, not an accuracy recovery ratio. The denominator
+        # would be acc_yes - acc_no, a difference of two binomials on 39 items;
+        # dividing by it turns a wide interval into an unbounded one. The two
+        # baselines are reported alongside so the curve can be read against
+        # them directly.
+        def acc(key):
+            got = [x[f"ok_{key}"] for x in rows if x.get(f"ok_{key}") is not None]
+            return sum(got) / len(got) if got else float("nan")
+
         keys = ("real", "mismatched", "mean") + (("filler",) if filler else ())
         per_layer[L] = {
             "layer": L, "rows": rows,
+            "acc": {k: acc(k) for k in keys},
             "recovery": {k: recov(f"lp_{k}") for k in keys},
             "ci95": {k: recov_boot(f"lp_{k}") for k in keys},
             "destroyed": {k: destroyed(f"lp_{k}") for k in keys},
@@ -360,9 +418,11 @@ def main():
         dd = per_layer[L]["destroyed"]
         broke = "".join(f" [{k[:4]}:{dd[k]} broken]" for k in dd if dd[k])
         fil = f"  filler {rr['filler']:+.3f}" if filler else ""
+        ac = per_layer[L]["acc"]["real"]
+        acs = f"  acc {ac:.3f}" if ac == ac else ""
         print(f"    layer {L:>3}  real {rr['real']:+.3f}  "
               f"mismatched {rr['mismatched']:+.3f}  mean {rr['mean']:+.3f}{fil}"
-              f"{broke}   [{n+1}/{len(layers)}, {el:.0f}s]", flush=True)
+              f"{acs}{broke}   [{n+1}/{len(layers)}, {el:.0f}s]", flush=True)
 
     # ---- report ------------------------------------------------------------
     with io.open(out_dir / "per_layer.jsonl", "w", encoding="utf-8", newline="\n") as f:
@@ -373,6 +433,20 @@ def main():
     curve = [per_layer[L]["recovery"]["real"] for L in layers]
     ctrl = [per_layer[L]["recovery"]["mismatched"] for L in layers]
     mcur = [per_layer[L]["recovery"]["mean"] for L in layers]
+
+    # The second, numerically independent reading of the same intervention.
+    # None when the mode has no options to take an argmax over.
+    def base_acc(key):
+        got = [b[key] for b in base if b[key] is not None]
+        return sum(got) / len(got) if got else None
+
+    acc_no, acc_yes = base_acc("ok_no"), base_acc("ok_yes")
+    have_acc = acc_no is not None
+
+    def acc_curve(key):
+        if not have_acc:
+            return None
+        return [per_layer[L]["acc"][key] for L in layers]
     # Exclude the final layers from "best layer".
     #
     # Patching the last block at the last prompt token overwrites the state that
@@ -418,6 +492,15 @@ def main():
         "recovery_filler": ([per_layer[L]["recovery"]["filler"] for L in layers]
                             if filler else None),
         "best_layer_filler": br.get("filler"),
+        # Accuracy: raw per layer, with the two baselines it is read against.
+        # Immune to the bf16 error that costs the logprob channel 0.5 to 2.5
+        # nats on tail items (HANDOFF-whitebox.md 12.3q), so a shape present in
+        # both curves does not depend on the dtype the run used.
+        "acc_no": acc_no, "acc_yes": acc_yes,
+        "acc_real": acc_curve("real"),
+        "acc_mismatched": acc_curve("mismatched"),
+        "acc_mean": acc_curve("mean"),
+        "acc_filler": acc_curve("filler") if filler else None,
     }
     (out_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -431,6 +514,16 @@ def main():
     if filler:
         print(f"  filler doc  "
               f"{sparkline([per_layer[L]['recovery']['filler'] for L in layers])}")
+    if have_acc:
+        ac = acc_curve("real")
+        print(f"  accuracy    {sparkline(ac)}")
+        print(f"    baselines: no-skill {acc_no:.3f} -> with-skill {acc_yes:.3f}"
+              f"   patched best {max(ac[:len(ac) - 2] or ac):.3f}")
+        if abs(acc_yes - acc_no) < 1e-9:
+            print("    ^ the two baselines are equal, so this curve has no room "
+                  "to show")
+            print("      anything. Read the logprob curve.")
+
     print(f"\n  best layer {best} (final {len(tail_layers)} excluded): "
           f"recovery {br['real']:+.3f} CI95 [{bci[0]:+.3f}, {bci[1]:+.3f}]")
     print(f"    mismatched control at that layer: {br['mismatched']:+.3f}")
