@@ -2305,6 +2305,184 @@ argmax 就行。`e2_patch.py` 拆成 `score_with_patch` 返回 `(logprob, 是否
 Tier A 现有的所有结果都是 bf16 下测的。**fp32 重跑之前，Tier A 的 logprob 类
 数字（E0 的 Δlogprob、E2 的恢复率）都要当作带未量化误差。** acc 类数字不受影响。
 
+### 12.3r 当前进度与下一步（2026-09-03，接手先读这一节）
+
+这一节是给**新会话接手**写的：现在在哪里、哪些数可信、下一步按什么顺序做。
+上一次真跑是 Tier A 的 `20260903-074552`（fp32）。
+
+#### 0. 先做这件事：本地有三个 commit 没推上去
+
+写这段时本机连不上 github（443 超时）。落在本地的：
+
+| commit | 内容 |
+|---|---|
+| `ed12599` | `experiment.sh` 补执行位（644 → 755）。没推之前服务器上要写 `bash ./experiment.sh` |
+| `2b4bc19` | `--smoke` 自带 `-smoke` 后缀，防止 smoke 和真跑共用 RUN_ID |
+| `84091b8` | `report.py` 打准确率的**同层对照**（这一行现在服务器上看不到） |
+
+**第一步就是 `git push origin master`**，然后服务器 `git fetch && git reset --hard origin/master`。
+
+#### 1. Tier A 已经跑干净了
+
+`results/20260903-074552`，Qwen3-1.7B，**float32**，39 题，逐层 0..27，约 25 分钟。
+
+**`末层恒等检查 = 1.000 [OK]`** —— §12.3p/§12.3q 追了两轮的补丁通路自证，第一次通过。
+**这一跑每一层的数是可信的**（在门槛允许的范围内读）。
+
+主要数字：
+
+| | 值 |
+|---|---|
+| e0-tierA | acc 0.231 → 0.436（**+20.5pp**，CI [0.0, +41.0]）；logprob +0.693（CI [−2.289, +3.673]） |
+| 门槛 | **仍然不过**，差在 logprob 那一档（CI 下界 −2.289，要 >0） |
+| e0-tierA-filler | acc −7.7pp；logprob **+2.099（CI 不含 0）** —— 中性文档比 skill 更能推 gold |
+| e0-tierA-num | acc 0.000 → 0.000，**地板**，不是可报告的零结果 |
+| errors-tierA | 修好 13 题，**85% 来自 wrong_family（选择）** |
+| e7-tierA | zorb 峰值层 27，‖d‖/‖h‖ 0.795，逐题余弦 +0.73，有效维数 1.8/39 |
+| | filler 峰值层 **27**，0.609，+0.92，1.2/39；**跨文档余弦 +0.95** |
+| e2-tierA | 最佳层 21，real +1.470，filler **+2.783**，mean **+5.435**，mismatched −3.249 |
+| e2-tierA-k4 | 最佳层 21，real +1.639，filler +2.807，mean +5.603，mismatched −3.004 |
+| e1-tierA | 峰值层 24-27，net +0.085（CI 含 0）；**顺序拆分符号相反** |
+
+#### 2. fp32 的实际效果：比预期小得多，要如实记
+
+§12.3q 测到单题 bf16 误差 0.5–2.5 nats。但在 39 题的**均值**上：
+
+| | bf16（§12.3o） | fp32（本次） |
+|---|---|---|
+| Δacc | +20.5pp | **+20.5pp**（完全一致，acc 本来就免疫） |
+| Δlogprob | +0.641 | +0.693（**只动了 0.05**） |
+| e2 最佳层 | 21 | 21 |
+| e2 real@21 | +1.651 | +1.470 |
+
+**逐题误差在 39 题上平均掉了大半。** 这不推翻 §12.3q 的处置（配对 bootstrap 仍然
+不覆盖这一项，而且恒等自证只有 fp32 下才成立），但论文里不能把它写成「修正后结论
+改变了」——结论没改变，改变的是我们**能证明通路是对的**。
+
+这也把 Tier B 的先验改了：**8B 大概率不需要 fp32**，见下面第 5 步。
+
+#### 3. 这一跑新加的：层扫描的准确率读数
+
+`e2_patch.py` 现在同时报 acc（§12.3q 那一小节）。Tier A 的 real 曲线：
+
+```
+层    0-16      17      19      21-27        基线
+acc  .23-.26   .385   .462    .410-.436     无文档 .231 → 有 skill .436
+```
+
+前 17 层平在无文档基线上，17 层起跳，19 层达峰，之后**稳在有 skill 的基线上**。
+
+顺带解释了 logprob 曲线中段那些负值：**层 13–20 real 掉到 −2.6 且带
+`[real:1 broken]`，而同区间 acc 平在随机水平** —— 那是前向被打坏了，不是
+「信息还没汇聚」。两条通道一起看才分得开这两种读法，这正是加 acc 的理由。
+
+#### 4. 下一步，按顺序
+
+**(a) 推代码，服务器同步。** 见第 0 节。
+
+**(b) 取 acc 的对照曲线 —— 这是 E2 生死的判据。**
+
+logprob 通道上 filler(+2.783) > real(+1.470)，E2 因此不能作 H1/H2 的证据。
+acc 的对照曲线已经在磁盘上（`acc_filler` / `acc_mean` / `acc_mismatched` 都写进了
+`per_layer.jsonl` 和 `fig-*-acc.tex`），但旧版 `report.py` 没打出来。`84091b8` 推上去
+之后重跑 `report.py` 即可，或者直接：
+
+```bash
+cd $BASE/whitebox
+python - <<'PY'
+import json, io
+for st in ("e2-tierA", "e2-tierA-k4"):
+    rows = [json.loads(l) for l in
+            io.open(f"results/20260903-074552/{st}/per_layer.jsonl",
+                    encoding="utf-8") if l.strip()]
+    print(f"\n=== {st} ===   层   real  filler   mean  mismat")
+    for r in rows:
+        a = r["acc"]; g = lambda k: a.get(k, float("nan"))
+        print(f"            {r['layer']:>5}  {g('real'):.3f}  {g('filler'):.3f}"
+              f"  {g('mean'):.3f}  {g('mismatched'):.3f}")
+PY
+```
+
+**判据（写在看到数字之前）**：
+
+- **filler 停在 0.23 附近而 real 爬到 0.436** → 准确率通道分得开内容和在场，
+  logprob 通道分不开。**两条都要报**，并说明 acc 是同一个分布上的阈值读数。
+  这种情况下 E2 可以留在论文里，但只能靠 acc 那条腿。
+- **filler 也爬到 0.436** → 两条通道一致地说 E2 测的是「上下文里有份长文档」。
+  照实写，E2 不作 H1/H2 的证据。
+
+**(c) 量 8B 的 bf16 误差**（几分钟）：
+
+```bash
+python patchcheck.py --model ../models/Qwen3-8B \
+  --tasks tasks/tier_b2/tasks.jsonl \
+  --skill tasks/tier_b/SKILL.pchem-constants.md --limit 8
+python patchcheck.py --model ../models/Qwen3-8B \
+  --tasks tasks/tier_b2/tasks.jsonl \
+  --skill tasks/tier_b/SKILL.pchem-constants.md --limit 4 --dtype float32
+```
+
+fp32 OOM 就退 `--device cpu --limit 3`。
+
+**(d) 试 8B 的 fp32 装不装得下**（smoke，几分钟，落进 `-smoke` 目录）：
+
+```bash
+WB_TIERB_DTYPE=float32 bash ./experiment.sh --smoke --phase b
+```
+
+8B fp32 ≈ 32GB 权重 + 激活 + `answer_logprob` 的 `.float()` 整条 logits
+（N × 151936 × 4B），48GB 卡上峰值估计 37–38GB。**跑通就用 fp32，恒等能自证；
+OOM 就回 bf16，并把恒等读数当已知偏差记录**（(c) 给的就是它的量级）。
+注意：**bf16 下末层恒等一定读不到 1.000，那是 bf16 的性质，不是新 bug。**
+
+**(e) 跑 Tier B，接在 Tier A 同一个 RUN_ID 里**（小时级）：
+
+```bash
+mkdir -p logs
+RUN_ID=20260903-074552 WB_TIERB_DTYPE=<(d) 定的> \
+  nohup bash ./experiment.sh --phase b > logs/exp-b-0903.log 2>&1 &
+tail -f logs/exp-b-0903.log
+```
+
+用 Tier A 那个 RUN_ID 是有意的：Tier A 的阶段判为已跑而跳过，**八条曲线汇进同一个
+`paper/`**。规模：e0/e7 各 116 题，e2 每条 40 题 × 18 层 × 4 条件，e1 每条 40 题 × 9 组。
+bf16 约 2–4 小时。
+
+**Tier B 的四条层扫描从来没画过 —— 这是这一轮最大的空白。**
+
+**(f) 跑完看四处**：`e0-tierB-const/proc` 过不过门槛、`did-tierB` 的预注册判决、
+两条 e2 的准确率读数、`ls results/20260903-074552/paper/`（应当有 8 条曲线的图，
+其中 4 条 e2 各多一张 `-acc`）。
+
+#### 5. 这一跑暴露的三个缺陷（和 fp32 无关，都是一直存在）
+
+- **E1 坏了。** 顺序拆分 `skill 在前 +0.183 / filler 在前 −0.017`，**符号相反**——
+  测到的是文档在 prompt 里的位置，不是内容。加上峰值 CI 含 0，而 E6 说模型确实在
+  跟着文档走，交叉校验已经直接判了 E1 不可用。**修它之前不要引用 E1 的任何结论。**
+- **E7 的探针没有意义。** 三个条件都是 1.00，**包括 `no_skill`**（打乱标签 0.44）。
+  无文档时就能完美分开，说明探针分的是题目本身的属性，不是注入。别放进论文。
+- **`方向反了` 这条轴 n 太小。** skill +14.797、filler +4.019，CI 都不含 0，但
+  **配对计数是 +2/−0**，只有两道题在动。不能当证据。
+
+#### 6. 论文当前状态
+
+`skillflow_iclr27.tex`（本地，不在 git 里）：Threats 已从「三条限制」改成四条，
+第四条讲 bf16 的 logprob 误差（§12.3q），**并明说本节的数是 bf16 测的**。
+15 页，0 error，0 overfull。
+
+**表 a–d 和 Figure 2 仍然是 `20260830-*` 那两跑的数**。要不要换成
+`20260903-074552`，取决于 (b) 的判据结果——如果 E2 因为 acc 对照而改变定性，
+换表的同时那段叙述也要重写。**在 (b) 出结果之前不要动表。**
+
+#### 7. 一个操作教训（已经从结构上堵掉）
+
+`20260903-072820` 那个目录是**垃圾**：`--smoke` 和真跑共用了同一个 RUN_ID，
+阶段的「已跑过就跳过」缓存把 8 题 4 层的 smoke 数字当结果汇总了一遍，
+门槛横幅、交叉校验、图全都围着它渲染了一遍。可以删掉。
+
+`2b4bc19` 让 `--smoke` 自带 `-smoke` 后缀，两者不可能再落进同一个目录。
+写「记得换 RUN_ID」是已经失败过的修法。
+
 ### 12.4 还没验证的部分
 
 **所有和 GPU 相关的东西。** 本机没有 CUDA，`model.py` / `selftest.py` /
