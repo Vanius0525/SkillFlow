@@ -146,6 +146,51 @@ def main() -> int:
     else:
         print("     -> 补丁生效了。那么差在 answer_logprob 读的位置或聚合方式上。")
 
+    # ---- 6. is answer_logprob reading that logit vector? -------------------
+    #
+    # 4b compares logits and passes; check 4 compares logprobs and fails. The
+    # only thing between them is answer_logprob, which appends the answer token
+    # and reads the second-to-last row. That must be the same cell 4b just
+    # compared. If 6a already disagrees -- no patching anywhere in it -- then
+    # the identity was never about the patch at all.
+    tok_a = int(ans[0, 0])
+    lp_ref = torch.log_softmax(ref, dim=-1)[tok_a].item()
+    lp_fn = M.answer_logprob(r, iy, gold)
+    ok6a = abs(lp_ref - lp_fn) < 1e-2
+    print(f"\n[{'OK ' if ok6a else 'BAD'}] 6a. answer_logprob(yes) == "
+          f"log_softmax(源前向最后一行)[金 token]: "
+          f"{lp_ref:+.4f} vs {lp_fn:+.4f}")
+
+    lp_got = torch.log_softmax(got, dim=-1)[tok_a].item()
+    with M.patch_layer(r, L, [int(ino.shape[1]) - 1], v):
+        lp_fn_p = M.answer_logprob(r, ino, gold)
+    ok6b = abs(lp_got - lp_fn_p) < 1e-2
+    print(f"[{'OK ' if ok6b else 'BAD'}] 6b. answer_logprob(补丁后) == "
+          f"log_softmax(补丁后 logits)[金 token]: "
+          f"{lp_got:+.4f} vs {lp_fn_p:+.4f}")
+
+    # Deterministic code makes this free. If it is not free, nothing above
+    # means anything and the per-item spread in check 4 is just noise.
+    lp_again = M.answer_logprob(r, iy, gold)
+    ok6c = lp_again == lp_fn
+    print(f"[{'OK ' if ok6c else 'BAD'}] 6c. 同一个调用跑两次相同: "
+          f"{lp_fn:+.6f} vs {lp_again:+.6f}")
+
+    # 4b again, at the sequence length answer_logprob actually uses. Causal
+    # attention means appending the answer token cannot change any row before
+    # it, so a failure here is the shape changing the arithmetic -- and check 4
+    # runs at exactly this shape while 4b does not.
+    with torch.no_grad():
+        fy = torch.cat([iy, ans.to(iy.device)], dim=1)
+        fn = torch.cat([ino, ans.to(ino.device)], dim=1)
+        ref2 = r.model(fy, use_cache=False).logits[0, -2].float()
+        with M.patch_layer(r, L, [int(ino.shape[1]) - 1], v):
+            got2 = r.model(fn, use_cache=False).logits[0, -2].float()
+    d2 = (got2 - ref2).abs().max().item()
+    print(f"[{'OK ' if d2 < 5e-2 else 'BAD'}] 6d. 追加答案 token 后同一行仍相同: "
+          f"max|diff| {d2:.4g}   (金 token logit "
+          f"{ref2[tok_a].item():+.3f} vs {got2[tok_a].item():+.3f})")
+
     # ---- 5. the same thing one layer earlier ------------------------------
     #
     # Not an identity -- block L still runs on top -- so it is only a scale for
