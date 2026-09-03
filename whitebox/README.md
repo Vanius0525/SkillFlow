@@ -295,6 +295,7 @@ skill 的一段拥有，金标前缀 teacher-forcing 让每步重新成为独立
 | `e7_repr.py` | **E7 表示层几何 —— 注入之后出现了什么 pattern**（最便宜的那个）|
 | `experiment.sh` | **一条命令：前置检查 → 流水线 → 收产物**。跑之前该确认的、跑完该收的，都在这里 |
 | `run-whitebox.sh` | **流水线：按顺序跑完多个实验**，断点续跑、逐阶段日志 |
+| `tierb.sh` | **Tier B 单独跑**：自己的 RUN_ID、必须显式给 `--dtype`、`--full` 把两条 e2 放到 116 题，跑完自动出 e2_acc 读数和 latex 清单 |
 | `report.py` | 把一次 run 的所有 summary.json 汇总成一页 + **交叉校验** |
 | `whitebox.conf.example` | 机器配置模板（复制成 `whitebox.conf`，不进 git）|
 | `errors.py` | 错误类型学（第 4 步）。**纯后处理，不用 GPU** |
