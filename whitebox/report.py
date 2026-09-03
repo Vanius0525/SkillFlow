@@ -115,10 +115,23 @@ def fmt_e0(s: dict) -> list[str]:
                 continue
             lo, hi = st["ci95"]
             tag = "  CI 不含 0" if (lo > 0 or hi < 0) else "  CI 含 0"
-            out.append(f"轴间距 {LAB.get(ax, ax)}： {st['no_skill']:+.3f} -> "
+            # The axis is only defined on items that ship that foil, so its n is
+            # not the run's n. Tier A's `inverted` axis has two: build.py keeps
+            # three distractors out of a shuffled candidate pool, and the
+            # inverted value usually does not survive the cut. A paired
+            # bootstrap over two concordant items excludes 0 essentially always,
+            # so the CI has to be printed next to the n or it reads as evidence.
+            n_ax = st.get("n")
+            n_s = f"  n={n_ax}" if n_ax is not None else ""
+            out.append(f"轴间距 {LAB.get(ax, ax)}：{n_s}  {st['no_skill']:+.3f} -> "
                        f"{st['with_skill']:+.3f}  (delta {st['delta']:+.3f}, "
                        f"CI95 [{lo:+.3f},{hi:+.3f}])  配对 "
                        f"+{st['gained']}/-{st['lost']}{tag}")
+            if n_ax is not None and n_ax < 8:
+                out.append(f"    [!] 这条轴只有 {n_ax} 道题带这种干扰项 —— "
+                           "CI 是在这几题上 bootstrap 出来的,**不能当证据**。"
+                           "要修在 build.py：干扰项池是 shuffle 后截前三个,"
+                           "改成按类型优先")
 
     acc_no, d_acc = s["acc_no_skill"], s["delta_acc_pp"]
     lp_lo = s.get("delta_logprob_ci95", [0.0, 0.0])[0]
@@ -385,9 +398,30 @@ def fmt_e1(s: dict, e0_delta: float = float("nan")) -> list[str]:
     if bo:
         sf, ff = bo.get("skill_first"), bo.get("filler_first")
         out.append(f"按文档顺序拆开： skill 在前 {sf:+.3f}   filler 在前 {ff:+.3f}")
-        if sf is not None and ff is not None and sf == sf and ff == ff \
-                and (sf > 0) != (ff > 0):
-            out.append("[!] 两种顺序符号相反 —— 测到的是位置,不是内容")
+        # Opposite signs are what a WORKING counterbalance looks like.
+        #
+        # Within one item the skill span and the filler span sit at different
+        # positions, so net carries content plus a position term whose sign is
+        # set by the order. e1_knockout alternates the order across items, and
+        # the overall net is the average of these two halves -- the position
+        # term cancels there by construction. The earlier reading of this line
+        # ("測到的是位置,不是内容") therefore fired on the design doing its job.
+        #
+        # What the split actually measures is how much work the counterbalance
+        # has to do: half the gap is the position term, half the sum is the
+        # content term. Position larger than content does not bias the estimate,
+        # it inflates its variance -- and the two halves are DIFFERENT items, so
+        # the cancellation also pays a between-item variance penalty it would
+        # not pay if each item were run in both orders.
+        if sf is not None and ff is not None and sf == sf and ff == ff:
+            pos, con = (sf - ff) / 2.0, (sf + ff) / 2.0
+            out.append(f"  ^ 位置项 {pos:+.3f}，内容项 {con:+.3f}"
+                       "（内容项就是上面的 net，两半的平均）")
+            if abs(pos) >= abs(con):
+                out.append("  [!] **位置项不小于内容项** —— 估计量没有偏"
+                           "（两半的平均把位置消掉了,符号相反正是它在起作用）,"
+                           "但方差被位置主导,而且两半是**不同的题**。"
+                           "要收紧就让每道题跑两个顺序,不是加题")
     if lo <= 0:
         out.append("峰值 CI 含 0 —— 没有哪一层的依赖超过「挡住同样长度的任意片段」")
     return out
