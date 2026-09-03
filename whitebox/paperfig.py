@@ -81,6 +81,53 @@ def nice_ticks(lo: float, hi: float, target: int = 6):
     return ticks, dec
 
 
+def damaged_bands(rows: list[dict]) -> list[tuple[int, int]]:
+    """Contiguous layer ranges where the real patch's logprob recovery is < 0.
+
+    A patch that damages the forward pass at layer L raises the accuracy of
+    every condition at L, controls included, so an accuracy figure that does
+    not mark those layers invites exactly the wrong reading: on Tier A the
+    aggregate accuracy peaks at layer 19, inside the damaged region, while the
+    layer the text reports is 21. A reader comparing figure to text finds them
+    arguing against each other, and the figure wins.
+
+    Drawn as a light band rather than dropped, because the curve through the
+    damaged region is real data about what a disturbance does.
+    """
+    bad = [r["layer"] for r in rows
+           if isinstance(r.get("recovery", {}).get("real"), (int, float))
+           and r["recovery"]["real"] < 0]
+    if not bad:
+        return []
+    # A single positive layer inside a negative run is a blip around zero, not
+    # a healthy region: on Tier A layers 4 and 12 read +0.19 and +0.10 amid
+    # neighbours at -0.3 to -2.0. Merging across a one-layer gap turns what
+    # would be five ragged strips into the one band the text talks about.
+    out, start, prev = [], bad[0], bad[0]
+    for n in bad[1:] + [None]:
+        if n is None or n > prev + 2:
+            out.append((start, prev))
+            start = n
+        prev = n
+    return out
+
+
+def emit_bands(a, rows, X, Y, lo, hi, note_at=None):
+    """The band, plus one label on the widest of them."""
+    bands = damaged_bands(rows)
+    widest = max(bands, key=lambda b: b[1] - b[0], default=None)
+    for x0, x1 in bands:
+        if x1 == x0:
+            continue
+        a(f"  \\fill[black!7] ({X(x0):.3f},{Y(lo):.3f}) rectangle "
+          f"({X(x1):.3f},{Y(hi):.3f});")
+    if widest and widest[1] > widest[0] and note_at is not None:
+        mid = (X(widest[0]) + X(widest[1])) / 2
+        a(f"  \\node[anchor=south,black!45,font=\\tiny,inner sep=1pt] at "
+          f"({mid:.3f},{Y(note_at):.3f}) {{forward pass damaged}};")
+    return bands
+
+
 def y_axis(a, Y, ticks, dec, W, H, label):
     """Gridlines, ticks and the rotated label. Shared by both figures."""
     for v in ticks:
@@ -238,6 +285,7 @@ def emit_e2_acc(stage_dir: pathlib.Path, out: str, W: float, H: float) -> int:
     a("\\definecolor{skillred}{HTML}{A93B26}")
     a("\\definecolor{skillblue}{HTML}{35697B}")
     a("\\begin{tikzpicture}[x=1cm,y=1cm,font=\\scriptsize]")
+    emit_bands(a, rows, X, Y, lo, hi, note_at=hi)
 
     for lab, v in refs:
         if not lo < v < hi:
@@ -336,6 +384,7 @@ def emit_e2_fixed(stage_dir: pathlib.Path, out: str, W: float, H: float) -> int:
     a("\\definecolor{skillred}{HTML}{A93B26}")
     a("\\definecolor{skillblue}{HTML}{35697B}")
     a("\\begin{tikzpicture}[x=1cm,y=1cm,font=\\scriptsize]")
+    emit_bands(a, rows, X, Y, lo, hi, note_at=hi)
     a(f"  \\draw[black!35,densely dashed] (0,{Y(1.0):.3f}) -- "
       f"({W:.3f},{Y(1.0):.3f});")
     a(f"  \\node[anchor=west,black!50,inner sep=2pt] at "
