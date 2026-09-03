@@ -307,6 +307,19 @@ def fmt_e2(s: dict) -> list[str]:
                            "一样多或更多,准确率上没有。两个都要报,并说明"
                            "准确率是同一个分布上的阈值读数")
         span = s["acc_yes"] - s["acc_no"]
+        # The mismatched control, judged on THIS channel. The check further
+        # down reads best_layer_mismatched, which is the logprob ratio; on
+        # Tier A that is -3.2 and stays silent while accuracy has another
+        # item's vector at three quarters of the span. Same sweep, opposite
+        # reading, and only this one bears on whether the vector is per-item.
+        mm = s.get("acc_mismatched")
+        if mm and i < len(mm) and mm[i] == mm[i] and abs(span) > 1e-9:
+            share = (mm[i] - s["acc_no"]) / span
+            if share > 0.5:
+                out.append(f"  [!] 准确率上**别题的向量也恢复了 {share:.0%}** —— "
+                           "补丁带的是这份 skill 的通用状态,不是这道题的内容。"
+                           "可以说 H2 的强形式,不能说「向量里有这题的答案」。"
+                           "差多少题、显著不显著,跑 e2_acc.py")
         if abs(span) < 1e-9:
             out.append("    两个基线相等,这条曲线没有可动的空间,只读 logprob 那条")
         elif (peak - s["acc_no"]) / span < 0.3 and s["best_recovery"] > 0.5:
