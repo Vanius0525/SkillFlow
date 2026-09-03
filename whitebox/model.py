@@ -15,6 +15,7 @@ mask, which knockout() needs. Eager is slower; correctness first.
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import re
 from contextlib import contextmanager
@@ -62,8 +63,33 @@ class Runner:
         }
 
 
-def load(model_id: str, device: str = "cuda", dtype=torch.bfloat16,
+def _default_dtype():
+    """bf16, or whatever WB_DTYPE names.
+
+    Not a knob for speed. bf16 keeps 7 mantissa bits, and Qwen3's late layers
+    carry activations in the hundreds, so a GEMM that reduces in a different
+    order at a different sequence length shifts the residual stream by ~1% of
+    it. That is invisible in the argmax -- accuracy is unaffected -- and it is
+    not invisible in the logprob of a token sitting deep in the tail, where the
+    gold logit is a small number next to a logsumexp dominated by some other
+    token: patchcheck.py measures 0.5 to 2.5 nats of error per item on Tier A,
+    against a true value read in fp32.
+
+    Every logprob quantity in this study is a difference of such numbers, and
+    the paired bootstrap resamples items while treating each item's measured
+    value as exact, so it does not cover this. Tier A is scored in fp32 for
+    that reason; run-whitebox.sh sets it per tier.
+    """
+    name = os.environ.get("WB_DTYPE", "bfloat16").strip() or "bfloat16"
+    dt = getattr(torch, name, None)
+    if not isinstance(dt, torch.dtype):
+        raise SystemExit(f"[FAIL] WB_DTYPE={name!r} is not a torch dtype")
+    return dt
+
+
+def load(model_id: str, device: str = "cuda", dtype=None,
          attn: str = "eager") -> Runner:
+    dtype = _default_dtype() if dtype is None else dtype
     tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
     common = dict(attn_implementation=attn, trust_remote_code=True)
     try:

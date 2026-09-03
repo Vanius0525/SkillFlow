@@ -42,6 +42,18 @@ PY=${WB_PYTHON:-python}
 DEV_MODEL=${WB_DEV_MODEL:-$REPO/models/Qwen3-1.7B}
 MAIN_MODEL=${WB_MAIN_MODEL:-$REPO/models/Qwen3-8B}
 DEVICE=${WB_DEVICE:-cuda}
+# bf16 keeps 7 mantissa bits. Qwen3's late layers carry activations in the
+# hundreds, so a GEMM reducing in a different order at a different sequence
+# length moves the residual stream by ~1% of it -- invisible in the argmax,
+# and worth 0.5 to 2.5 nats on a gold token sitting deep in the tail
+# (patchcheck.py, measured against fp32). Every logprob number here is a
+# difference of such numbers and the paired bootstrap does not cover it.
+# Tier A is 1.7B and fp32 costs minutes, so it pays. Tier B is 8B: 32GB of
+# fp32 weights on a 48GB card with no tensor cores, hours become many more
+# hours, and nobody has measured the error there yet -- run patchcheck against
+# the 8B first, then decide.
+DTYPE_A=${WB_TIERA_DTYPE:-float32}
+DTYPE_B=${WB_TIERB_DTYPE:-bfloat16}
 TIERB_N=${WB_TIERB_LIMIT:-120}
 E2_N=${WB_E2_LIMIT:-40}
 E1_N=${WB_E1_LIMIT:-40}
@@ -244,6 +256,7 @@ echo "   run id     : $RUN_ID   ->  results/$RUN_ID/"
 echo "   配置       : ${CONFIG#"$REPO"/}$([ -f "$CONFIG" ] || echo ' (没有,用默认值)')"
 echo "   开发模型   : $DEV_MODEL"
 echo "   主模型     : $MAIN_MODEL"
+echo "   精度       : 梯队 a $DTYPE_A   梯队 b $DTYPE_B"
 echo "   梯队       : ${PHASE:-all}${ONLY:+   只跑 $ONLY}${FROM:+   从 $FROM 起}"
 echo "   开始       : $(date '+%F %T')"
 echo "=============================================================="
@@ -264,6 +277,8 @@ fi
   echo "git_dirty  : $(git -C "$REPO" status --porcelain 2>/dev/null | wc -l) files modified"
   echo "dev_model  : $DEV_MODEL"
   echo "main_model : $MAIN_MODEL"
+  echo "dtype_a    : $DTYPE_A"
+  echo "dtype_b    : $DTYPE_B"
   echo "host       : $(hostname 2>/dev/null || echo '?')"
 } > "$OUT/run-info.txt"
 
@@ -292,6 +307,10 @@ fi
 for entry in "${STAGES[@]}"; do
   nm=$(name_of "$entry"); wh=$(what_of "$entry")
   should_run "$entry" || continue
+  case "$(phase_of "$entry")" in
+    b) export WB_DTYPE="$DTYPE_B" ;;
+    *) export WB_DTYPE="$DTYPE_A" ;;
+  esac
   case "$nm" in
 
   check)
