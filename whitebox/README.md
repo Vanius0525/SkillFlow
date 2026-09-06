@@ -304,6 +304,7 @@ skill 的一段拥有，金标前缀 teacher-forcing 让每步重新成为独立
 | `errors.py` | 错误类型学（第 4 步）。**纯后处理，不用 GPU** |
 | `did.py` | 双重分离的预注册判据：轴间距的双重差分 + 配对 bootstrap。**不用 GPU** |
 | `paperfig.py` | 把层扫描画成论文用的 tikz 片段。E2 画恢复率、E1 画 net 和它的 CI 带。**不用 GPU** |
+| `e10_span.py` | **E10 就地移植**：把 skill 自己那段 token 的残差搬进等长的对照 prompt，看模型还读不读得到。E2 补的是末位置的摘要，这个补的是文档原位 —— 曲线掉下去的那一层就是「最后一层还能读到文档」 |
 | `e6_diagnose.py` | E6 的 follow rate 无定义时读什么。**纯后处理，不用 GPU** |
 | `e2_acc.py` | E2 的**逐层恢复率 + 准确率两条曲线**、四条对照、配对 McNemar/bootstrap，以及**按 skill 修没修好这道题分组**（fixed / never / kept / broken）。logprob 那条腿在 Tier A 上不可用时，判据落在这里（§12.3s）。**纯后处理，不用 GPU** |
 | `journal/` | **每次实跑的原始输出和当时的判断**，一次一个文件 |

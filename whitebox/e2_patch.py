@@ -135,18 +135,31 @@ def score_with_patch(r, ids, answer, layer=None, position=None, vector=None):
     picked = lp.gather(-1, full[:, 1:].unsqueeze(-1)).squeeze(-1)
     value = picked[0, -ans_ids.shape[1]:].mean().item()
 
-    ok = None
+    ok, opts = None, None
     if OPTION_IDS:
         # The row that emits the first answer token -- the same cell the
         # logprob above is read from, and the one the patch overwrites.
         row = logits[0, int(ids.shape[1]) - 1]
         best = max(OPTION_IDS, key=lambda t: row[OPTION_IDS[t]].item())
         ok = best == answer
-    return value, ok
+        # The whole option distribution, not just the gold entry.
+        #
+        # A patch can raise lp(gold) two ways that mean opposite things: by
+        # moving mass onto the gold option (selection), or by moving mass onto
+        # the option set as a whole and leaving the ranking inside it alone.
+        # The second raises lp(gold) without changing the argmax, which is
+        # exactly the pattern the mean vector shows -- recovery +5.44 with
+        # accuracy at the no-document baseline. Storing all four letters makes
+        # the two separable after the fact: `margin` moves under selection and
+        # not under a uniform lift, `mass` moves under both.
+        rl = torch.log_softmax(row.float(), dim=-1)
+        opts = {t: float(rl[i]) for t, i in OPTION_IDS.items()}
+        opts["_best"] = best
+    return value, ok, opts
 
 
 def logprob_with_patch(r, ids, answer, layer=None, position=None, vector=None):
-    """Just the logprob. Kept because most callers do not want the pair."""
+    """Just the logprob. Kept because most callers do not want the triple."""
     return score_with_patch(r, ids, answer, layer, position, vector)[0]
 
 
@@ -270,8 +283,8 @@ def main():
         ids_no = M.encode(r, M.render(r, M.build_messages(q, None, args.mode, unit)))
         ids_yes = M.encode(r, M.render(r, M.build_messages(q, skill, args.mode, unit)))
 
-        lp_no, ok_no = score_with_patch(r, ids_no, gold)
-        lp_yes, ok_yes = score_with_patch(r, ids_yes, gold)
+        lp_no, ok_no, op_no = score_with_patch(r, ids_no, gold)
+        lp_yes, ok_yes, op_yes = score_with_patch(r, ids_yes, gold)
 
         vecs_f, lp_filler_ctx = None, float("nan")
         if filler:
@@ -294,6 +307,7 @@ def main():
             "id": it["id"], "gold": gold,
             "lp_no": lp_no, "lp_yes": lp_yes,
             "ok_no": ok_no, "ok_yes": ok_yes,
+            "opt_no": op_no, "opt_yes": op_yes,
             "delta": lp_yes - lp_no,
             "prompt_len_no": int(ids_no.shape[1]),
             "ids_no": ids_no, "vecs": vecs,
@@ -345,23 +359,34 @@ def main():
         for i, b in enumerate(base):
             # last K PROMPT tokens, absolute indices into prompt+answer
             pos = list(range(b["prompt_len_no"] - args.tail_k, b["prompt_len_no"]))
-            real, a_real = score_with_patch(
+            donor = base[shifted[i]]
+            real, a_real, o_real = score_with_patch(
                 r, b["ids_no"], b["gold"], L, pos, b["vecs"][L])
-            mism, a_mism = score_with_patch(
-                r, b["ids_no"], b["gold"], L, pos, base[shifted[i]]["vecs"][L])
-            meanp, a_mean = score_with_patch(
+            mism, a_mism, o_mism = score_with_patch(
+                r, b["ids_no"], b["gold"], L, pos, donor["vecs"][L])
+            meanp, a_mean, o_mean = score_with_patch(
                 r, b["ids_no"], b["gold"], L, pos, mean_vec[L])
             row = {"id": b["id"], "lp_real": real, "lp_mismatched": mism,
                    "lp_mean": meanp, "lp_no": b["lp_no"], "lp_yes": b["lp_yes"],
                    "ok_real": a_real, "ok_mismatched": a_mism, "ok_mean": a_mean,
-                   "ok_no": b["ok_no"], "ok_yes": b["ok_yes"]}
+                   "ok_no": b["ok_no"], "ok_yes": b["ok_yes"],
+                   "opt_real": o_real, "opt_mismatched": o_mism,
+                   "opt_mean": o_mean, "opt_no": b["opt_no"],
+                   "opt_yes": b["opt_yes"],
+                   # Whose vector the mismatched condition borrowed, and what
+                   # that item's gold letter is. If patching another item's
+                   # state transplants its ANSWER rather than merely disturbing
+                   # the pass, the mismatched argmax lands on this letter more
+                   # often than the 25% the balanced key would give by chance.
+                   "donor_id": donor["id"], "donor_gold": donor["gold"]}
             if filler:
                 # Same item, same position, same layer -- the only thing that
                 # differs from lp_real is WHICH document was in context when the
                 # vector was captured. So real minus filler is the part of the
                 # recovery that is about content rather than about presence.
-                row["lp_filler"], row["ok_filler"] = score_with_patch(
-                    r, b["ids_no"], b["gold"], L, pos, b["vecs_f"][L])
+                row["lp_filler"], row["ok_filler"], row["opt_filler"] = \
+                    score_with_patch(r, b["ids_no"], b["gold"], L, pos,
+                                     b["vecs_f"][L])
             rows.append(row)
 
         # Ratio of MEANS, not the mean of per-item ratios.

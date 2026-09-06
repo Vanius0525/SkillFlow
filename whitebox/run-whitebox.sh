@@ -94,6 +94,7 @@ STAGES=(
   "e6-diagnose-tierA-near|a|同上,近似口味"
   "e2-tierA|a|效应能不能压进一个向量？能=H2 选择,不能=H1 检索"
   "e2-tierA-k4|a|换成补 K 个位置还压不进吗？区分「压不进」和「一个位置装不下」"
+  "e10-tierA|a|把 skill 自己那段 token 的残差就地移植进对照组：模型还能不能在原位读它"
   "e1-tierA|a|哪些层在读 skill？早层=读一次,中后层持续=反复回看"
   "e0-tierB-const|b|选装置任务上,只给常数的 skill 有没有效应（含轴间距）"
   "e0-tierB-proc|b|选装置任务上,只给方法的 skill 有没有效应（含轴间距）"
@@ -472,6 +473,18 @@ for entry in "${STAGES[@]}"; do
       --filler "$BASE/tasks/filler-neutral.md" \
       ${E2_STEP[@]+"${E2_STEP[@]}"} ${K4[@]+"${K4[@]}"} \
       ${GATE_FLAG[@]+"${GATE_FLAG[@]}"} \
+      --run-id "$RUN_ID/$nm" ;;
+
+  e10-tierA)
+    # The complement of e2-tierA. e2 patches the model's own summary of the
+    # document at the last prompt token; this patches the document's own token
+    # span, in a recipient built by token substitution so both runs have the
+    # same length and the same positions. It needs no gate flag: its
+    # denominator is skill-minus-recipient, and both sides carry a document.
+    run_stage "$nm" "$wh" "$PY" "$BASE/e10_span.py" \
+      --model "$DEV_MODEL" --device "$DEVICE" \
+      --tasks "$A_TASKS" --skill "$A_SKILL" --mode mc --limit "$E2_N" \
+      ${E2_STEP[@]+"${E2_STEP[@]}"} \
       --run-id "$RUN_ID/$nm" ;;
 
   e1-tierA)

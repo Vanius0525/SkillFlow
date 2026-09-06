@@ -379,9 +379,11 @@ def load_skill(path: str | pathlib.Path) -> str:
 
 
 @torch.no_grad()
-def capture_block_outputs(r: Runner, ids: torch.Tensor, layers, k: int = 1):
+def capture_block_outputs(r: Runner, ids: torch.Tensor, layers, k: int = 1,
+                          span: tuple[int, int] | None = None):
     """
-    {L: [k, d]} -- the raw output of block L at the last k positions.
+    {L: [k, d]} -- the raw output of block L at the last k positions, or at the
+    half-open position range `span` when one is given.
 
     Read through a forward hook on each block rather than from
     `output_hidden_states`, because the two disagree at exactly one layer.
@@ -405,7 +407,8 @@ def capture_block_outputs(r: Runner, ids: torch.Tensor, layers, k: int = 1):
     def mk(L):
         def hook(_mod, _inp, o):
             hs = o[0] if isinstance(o, tuple) else o
-            out[L] = hs[0, -k:].detach().clone()
+            sl = slice(span[0], span[1]) if span else slice(hs.shape[1] - k, None)
+            out[L] = hs[0, sl].detach().clone()
         return hook
 
     try:
