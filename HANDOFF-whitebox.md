@@ -2952,12 +2952,37 @@ Tier A 上**两份文档的 `||d||/||h||` 峰值都落在层 27**，也就是**�
    一个会因为精度从 6 跳到 27 的峰值，本身就不稳。
 3. E2 出于同样的理由**排除了末两层**（补丁写穿）。E7 没有排除任何层。
 
-**查法**：`per_skill` 里应当有逐层的数。分开看 `||d||` 本身和 `||h||` 本身，如果
-`||d||` 在中间层就平了、只是 `||h||` 在末层掉下去，那么「峰值层 27」是伪的，
+**查不了 —— 之前只存了比值。** `per_skill` 里原本只有 `rel_norm`，分子分母都没留。
+已经改了：现在同时存 `delta_norm`（分子 `mean||d||`）和 `base_norm`（分母 `mean||h||`），
+**重跑一次 e7-tierA 就能判**：
+
+```bash
+python - <<'EOF'
+import json
+d = json.load(open("results/<新 run>/e7-tierA/summary.json"))
+for name, r in d["per_skill"].items():
+    L = d["layers"]
+    pr_ = max(range(len(L)), key=lambda i: r["rel_norm"][i])
+    pd_ = max(range(len(L)), key=lambda i: r["delta_norm"][i])
+    print(f"{name}: rel 峰值层 {L[pr_]}   ||d|| 峰值层 {L[pd_]}")
+    print("   ||h|| 末层/中层 =", round(r["base_norm"][-1]/max(r["base_norm"][len(L)//2],1e-9), 3))
+EOF
+```
+
+**两个峰值层不一致，或者 `||h||` 末层比中层小很多 → 「峰值层 27」是分母造成的**，
 应当改报 `||d||` 的峰值层，或者和 E2 一样排除末两层。
 
 **在这件事查清楚之前，不要把 Tier A 的 `峰值层 27 / 0.795` 放进论文。**
 cos 和 PR 两列不受这个影响（它们不除以 `||h||`），可以先用。
+
+#### 6. 已做的处置（2026-09-06）
+
+论文表 5(b) **已经换成 Tier A**，只放 cos / 夹角 / PR 三列 —— **峰值层和
+`||d||/||h||` 两列按第 4 节的理由留空**，等重跑之后再决定放不放。Tier B 的三行
+跨文档余弦作为对照留在同一张表里（那是「两份内容互斥的 skill 方向也一致」的最强
+形式，Tier A 只有一份 skill，拿不出这个对比）。caption 里写明了 Tier B 的 0.98/1.0
+是指标到顶而不是三份文档相同。正文补了一段把几何和 Figure 3 接起来：
+filler 的逐题位移在 23° 锥内、skill 散到 43°，以及 cos 0.95 的正交分量仍有 0.31。
 
 #### 5. 重跑不会改变这些数
 

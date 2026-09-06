@@ -353,16 +353,29 @@ def main():
     report = {}
     for name, d in D.items():
         rel, cos, pr, top1 = [], [], [], []
+        # The two halves of rel_norm, kept separately.
+        #
+        # rel_norm is a ratio, and the final block shrinks the residual stream
+        # it divides by -- on 8B patchcheck measures max|h| falling from 380 at
+        # layer 32 to 69.5 at layer 35, and section 12.3n already attributed one
+        # spurious "last layer" reading to exactly that collapsing denominator.
+        # Tier A's peak sits at the last layer for both documents, so the ratio
+        # alone cannot say whether the displacement grew or the state shrank.
+        # Storing the numerator and the denominator answers it without a rerun.
+        dnorm, hnorm = [], []
         for li in range(len(layers)):
             dl = d[:, li]                                # [n, d]
-            rel.append(float(dl.norm(dim=-1).mean() /
-                             H[:, li].norm(dim=-1).mean().clamp_min(1e-6)))
+            dn = float(dl.norm(dim=-1).mean())
+            hn = float(H[:, li].norm(dim=-1).mean())
+            dnorm.append(dn); hnorm.append(hn)
+            rel.append(dn / max(hn, 1e-6))
             cos.append(mean_pairwise_cosine(dl))
             pr.append(participation_ratio(dl))
             s = torch.linalg.svdvals(dl - dl.mean(0, keepdim=True))
             top1.append(float((s[0] ** 2) / (s ** 2).sum().clamp_min(1e-12)))
         report[name] = {"rel_norm": rel, "mean_pairwise_cos": cos,
-                        "participation_ratio": pr, "var_explained_pc1": top1}
+                        "participation_ratio": pr, "var_explained_pc1": top1,
+                        "delta_norm": dnorm, "base_norm": hnorm}
 
         peak = max(range(len(layers)), key=lambda i: rel[i])
         print(f"\n  {name}")
