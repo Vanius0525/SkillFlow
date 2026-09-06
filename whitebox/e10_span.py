@@ -130,6 +130,45 @@ def score(r, ids, answer, layer=None, positions=None, vector=None):
     return value, ok, opts
 
 
+@torch.no_grad()
+def score_all_layers(r, ids, answer, layers, positions, vecs):
+    """The same measurement with the span replaced at EVERY layer at once.
+
+    The ceiling for the sweep, and the control that says what a flat or zero
+    sweep means. Patching one layer leaves the span inconsistent above it: the
+    transplanted states are the skill's, but the layers above recompute from a
+    context that is otherwise the recipient's. Replacing every layer removes
+    that inconsistency, so the span simply IS the skill's representation at all
+    depths and the question attends to it normally.
+
+      near the with-skill baseline -> the transplant mechanism works, and the
+                                      single-layer curve is measuring where one
+                                      layer's worth of it suffices
+      far below it                 -> the mechanism itself does not carry, and
+                                      no reading of the sweep is safe
+
+    One forward per item rather than per layer, so it costs nothing next to the
+    sweep.
+    """
+    import contextlib
+    ans_ids = r.tok(answer, return_tensors="pt",
+                    add_special_tokens=False).input_ids.to(r.device)
+    full = torch.cat([ids, ans_ids], dim=1)
+    with contextlib.ExitStack() as st:
+        for L in layers:
+            st.enter_context(M.patch_layer(r, L, positions, vecs[L],
+                                           prefill_only=False))
+        logits = r.model(full, use_cache=False).logits.float()
+    lp = torch.log_softmax(logits[:, :-1], dim=-1)
+    picked = lp.gather(-1, full[:, 1:].unsqueeze(-1)).squeeze(-1)
+    value = picked[0, -ans_ids.shape[1]:].mean().item()
+    ok = None
+    if OPTION_IDS:
+        row = logits[0, int(ids.shape[1]) - 1]
+        ok = max(OPTION_IDS, key=lambda t: row[OPTION_IDS[t]].item()) == answer
+    return value, ok
+
+
 def bootstrap_ci(vals, n=2000, seed=0):
     if not vals:
         return (float("nan"), float("nan"))
@@ -247,10 +286,14 @@ def main() -> None:
             if donor is None:
                 donor, recip = probe[0]
 
+        # The ceiling: every layer replaced at once, one forward per item.
+        lp_all, ok_all = score_all_layers(
+            r, ids_c, gold, layers, list(range(s_span[0], s_span[1])), donor)
+
         base.append({"id": it["id"], "gold": gold, "ids_c": ids_c,
                      "span": (s_span[0], s_span[1]), "width": width,
-                     "lp_hi": lp_hi, "lp_lo": lp_lo,
-                     "ok_hi": ok_hi, "ok_lo": ok_lo,
+                     "lp_hi": lp_hi, "lp_lo": lp_lo, "lp_all": lp_all,
+                     "ok_hi": ok_hi, "ok_lo": ok_lo, "ok_all": ok_all,
                      "opt_hi": op_hi, "opt_lo": op_lo})
         if (i + 1) % 10 == 0:
             print(f"    {i+1}/{len(items)}", flush=True)
@@ -356,12 +399,22 @@ def main() -> None:
     worst_self = max(per_layer[L]["self_max_dev_nats"] for L in layers)
     a_lo, a_hi = per_layer[layers[0]]["acc"]["lo"], per_layer[layers[0]]["acc"]["hi"]
 
+    n = len(base)
+    lp_all = sum(b["lp_all"] for b in base) / n
+    lp_lo_m = sum(b["lp_lo"] for b in base) / n
+    lp_hi_m = sum(b["lp_hi"] for b in base) / n
+    acc_all = (sum(b["ok_all"] for b in base) / n
+               if base[0]["ok_all"] is not None else float("nan"))
+    rec_all = ((lp_all - lp_lo_m) / (lp_hi_m - lp_lo_m)
+               if abs(lp_hi_m - lp_lo_m) > 1e-6 else float("nan"))
+
     summary = {
         "experiment": "e10_span", "run_id": run_id,
         "n_items": len(base), "layers": layers,
         "span_width_tokens": b0["width"],
         "recovery": curve, "acc_real": accs,
         "acc_lo": a_lo, "acc_hi": a_hi,
+        "recovery_all_layers": rec_all, "acc_all_layers": acc_all,
         "acc_self": [per_layer[L]["acc"]["self"] for L in layers],
         "self_max_dev_nats": worst_self,
         "donor_item_drift": drift,
@@ -377,6 +430,19 @@ def main() -> None:
     print(f"  recovery  {sparkline(curve)}")
     print(f"  accuracy  {sparkline(accs)}   recipient {a_lo:.3f} -> "
           f"donor {a_hi:.3f}")
+    print(f"\n  ceiling (every layer replaced at once): recovery "
+          f"{rec_all:+.3f}   acc {acc_all:.3f}")
+    if rec_all < 0.5:
+        print("    [!] Even replacing the span at EVERY layer does not bring "
+              "the effect back.")
+        print("        The transplant mechanism itself is not carrying, so a "
+              "flat or zero")
+        print("        single-layer curve says nothing about which layers read "
+              "the document.")
+    else:
+        print("    The mechanism carries, so the single-layer curve below is "
+              "measuring")
+        print("    where one layer's worth of it is enough.")
     print(f"\n  path self-proof: worst `self` deviation {worst_self:.3e} nats "
           f"({'OK' if worst_self < 1e-4 else 'BROKEN -- read nothing above'})")
 
