@@ -214,6 +214,15 @@ def main() -> None:
 
     r = M.load(args.model, device=args.device)
     layers = list(range(0, r.n_layers, args.layer_step))
+    # The donor states are captured at EVERY layer, not only the swept
+    # ones. --layer-step subsamples the sweep to make a smoke run cheap,
+    # but the ceiling below has to replace the span at every depth or it
+    # is not a ceiling: leaving gaps lets the span recompute from the
+    # recipient's context in between, which reads low and would fire the
+    # 'the mechanism does not carry' warning on a run that is only
+    # subsampled. Capturing the full set costs one dict of
+    # n_layers x span x d, which is the 316 MB already budgeted.
+    all_layers = list(range(r.n_layers))
 
     if args.mode == "mc":
         for letter in "ABCD":
@@ -281,14 +290,17 @@ def main() -> None:
         # the first two items only: the first pair is what the sweep uses, the
         # second exists to test the independence claim.
         if len(probe) < 2:
-            probe.append((M.capture_block_outputs(r, ids_s, layers, span=s_span),
-                          M.capture_block_outputs(r, ids_c, layers, span=s_span)))
+            probe.append((M.capture_block_outputs(r, ids_s, all_layers,
+                                                  span=s_span),
+                          M.capture_block_outputs(r, ids_c, all_layers,
+                                                  span=s_span)))
             if donor is None:
                 donor, recip = probe[0]
 
         # The ceiling: every layer replaced at once, one forward per item.
         lp_all, ok_all = score_all_layers(
-            r, ids_c, gold, layers, list(range(s_span[0], s_span[1])), donor)
+            r, ids_c, gold, all_layers, list(range(s_span[0], s_span[1])),
+            donor)
 
         base.append({"id": it["id"], "gold": gold, "ids_c": ids_c,
                      "span": (s_span[0], s_span[1]), "width": width,
@@ -319,11 +331,12 @@ def main() -> None:
             "experiment assumes. Stopping.")
     drift = float("nan")
     if len(probe) > 1:
-        mid = layers[len(layers) // 2]
+        mid = all_layers[len(all_layers) // 2]
+        ends = (all_layers[0], mid, all_layers[-1])
         drift = max(float((probe[0][j][L] - probe[1][j][L]).abs().max())
-                    for j in (0, 1) for L in (layers[0], mid, layers[-1]))
-        print(f"  item-independence check (layers {layers[0]}, {mid}, "
-              f"{layers[-1]}): max|d| = {drift:.2e}")
+                    for j in (0, 1) for L in ends)
+        print(f"  item-independence check (layers {ends[0]}, {mid}, "
+              f"{ends[-1]}): max|d| = {drift:.2e}")
         if drift > 1e-3:
             raise SystemExit(
                 f"[FAIL] the span states differ across items by {drift:.2e}. "
@@ -344,7 +357,7 @@ def main() -> None:
                                      donor[L])
             lp_s, ok_s, op_s = score(r, b["ids_c"], b["gold"], L, pos,
                                      recip[L])
-            rows.append({"id": b["id"],
+            rows.append({"id": b["id"], "gold": b["gold"],
                          "lp_real": lp_r, "lp_self": lp_s,
                          "lp_lo": b["lp_lo"], "lp_hi": b["lp_hi"],
                          "ok_real": ok_r, "ok_self": ok_s,
@@ -415,6 +428,9 @@ def main() -> None:
         "recovery": curve, "acc_real": accs,
         "acc_lo": a_lo, "acc_hi": a_hi,
         "recovery_all_layers": rec_all, "acc_all_layers": acc_all,
+        # The ceiling spans every layer even when the sweep is
+        # subsampled, so this is not len(layers).
+        "ceiling_n_layers": len(all_layers),
         "acc_self": [per_layer[L]["acc"]["self"] for L in layers],
         "self_max_dev_nats": worst_self,
         "donor_item_drift": drift,

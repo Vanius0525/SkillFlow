@@ -366,7 +366,8 @@ def main():
                 r, b["ids_no"], b["gold"], L, pos, donor["vecs"][L])
             meanp, a_mean, o_mean = score_with_patch(
                 r, b["ids_no"], b["gold"], L, pos, mean_vec[L])
-            row = {"id": b["id"], "lp_real": real, "lp_mismatched": mism,
+            row = {"id": b["id"], "gold": b["gold"],
+                   "lp_real": real, "lp_mismatched": mism,
                    "lp_mean": meanp, "lp_no": b["lp_no"], "lp_yes": b["lp_yes"],
                    "ok_real": a_real, "ok_mismatched": a_mism, "ok_mean": a_mean,
                    "ok_no": b["ok_no"], "ok_yes": b["ok_yes"],

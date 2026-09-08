@@ -305,6 +305,213 @@ def print_tests(d: dict, why: str) -> None:
     print("      p is exact McNemar on those two counts alone.")
 
 
+# ---------------------------------------------------------------------------
+# the option distribution
+#
+# Recorded by e2_patch.py since fd4020e, and never yet read: a patch can raise
+# lp(gold) two ways that mean opposite things, and the gold entry alone cannot
+# tell them apart.
+#
+#   mass   = logsumexp of the four option logprobs
+#          = log P(the next token is an option letter at all)
+#   margin = lp(gold) - max(the other three)
+#
+# A uniform lift of the option set moves mass and leaves margin alone. A choice
+# inside the set moves margin. HANDOFF-whitebox.md 12.3w pre-registered this as
+# the test of why the mean vector recovers +5.44 in logprob while its accuracy
+# sits at the no-document baseline: if that is a uniform lift, the logprob
+# channel is measuring confidence that an answer is due, not confidence in which
+# answer.
+# ---------------------------------------------------------------------------
+
+OPT_LETTERS = ("A", "B", "C", "D")
+
+
+def logsumexp(xs: list[float]) -> float:
+    m = max(xs)
+    return m + math.log(sum(math.exp(x - m) for x in xs))
+
+
+def opt_pair(row: dict, cond: str) -> tuple[float, float] | None:
+    """(mass, margin) for one item under one condition, or None.
+
+    None covers both a run made before the option logprobs were recorded and a
+    condition that is absent from this run, so callers test one thing.
+    """
+    d = row.get("opt_" + cond)
+    gold = row.get("gold")
+    if not isinstance(d, dict) or gold not in OPT_LETTERS:
+        return None
+    try:
+        lps = [float(d[t]) for t in OPT_LETTERS]
+    except (KeyError, TypeError, ValueError):
+        return None
+    others = [float(d[t]) for t in OPT_LETTERS if t != gold]
+    return logsumexp(lps), float(d[gold]) - max(others)
+
+
+def opt_means(rows: list[dict], cond: str) -> tuple[float, float, int]:
+    got = [p for p in (opt_pair(r, cond) for r in rows) if p is not None]
+    if not got:
+        return NAN, NAN, 0
+    n = len(got)
+    return (sum(m for m, _ in got) / n, sum(g for _, g in got) / n, n)
+
+
+def print_options(d: dict, present: list[str], why: str) -> None:
+    """Mass and margin for every condition at one layer, against the no-document
+    baseline. Silent on runs that predate the option logprobs."""
+    rows = d["rows"]
+    if not opt_means(rows, "no")[2]:
+        return
+    base_mass, base_margin, n = opt_means(rows, "no")
+
+    print("\n  --- what the patch moves in the option distribution   (layer {},"
+          " {})".format(d["layer"], why.split(" -- ")[0]))
+    print("      mass = log P(next token is an option letter);  margin ="
+          " lp(gold) - max(other three).")
+    print("      A uniform lift of the option set moves mass alone; choosing"
+          " between the")
+    print("      options moves margin.")
+    print("  {:<12}{:>4}{:>10}{:>10}{:>10}{:>10}{:>9}".format(
+        "condition", "n", "mass", "d mass", "margin", "d margin", "acc"))
+
+    # yes first: it is the reference the patched conditions are read against.
+    order = ["no", "yes"] + [c for c in present if c not in ("no", "yes")]
+    seen, stats = set(), {}
+    for c in order:
+        if c in seen:
+            continue
+        seen.add(c)
+        m, g, k = opt_means(rows, c)
+        if not k:
+            continue
+        stats[c] = (m, g)
+        print("  {:<12}{:>4}{:>10.3f}{:>+10.3f}{:>10.3f}{:>+10.3f}{:>9.3f}"
+              .format(LABEL[c], k, m, m - base_mass, g, g - base_margin,
+                      acc(rows, c)))
+
+    if "yes" not in stats:
+        return
+    skill_margin = stats["yes"][1] - base_margin
+    skill_mass = stats["yes"][0] - base_mass
+    print("      The document itself moves margin {:+.3f} and mass {:+.3f}."
+          .format(skill_margin, skill_mass))
+
+    # The pre-registered reading. Stated for whichever conditions are present
+    # rather than for the mean vector alone: the same confusion is available to
+    # any of them, and on this run filler is the one that recovered most.
+    for c in ("mean", "filler", "mismatched", "real"):
+        if c not in stats:
+            continue
+        dm, dg = stats[c][0] - base_mass, stats[c][1] - base_margin
+        if abs(skill_margin) > 0.1:
+            share = " ({:.0%} of the document's)".format(dg / skill_margin)
+        else:
+            share = ""
+        flat = abs(acc(rows, c) - acc(rows, "no")) < 0.05
+        if dm > 0.5 and abs(dg) < 0.15:
+            print("\n    {}: mass {:+.3f}, margin {:+.3f}{}."
+                  .format(LABEL[c], dm, dg, share))
+            print("    It lifts the option set as a whole and does not choose")
+            print("    inside it. Whatever logprob recovery this condition")
+            print("    shows is confidence that an answer is due, not")
+            print("    confidence in which answer.")
+            if flat:
+                print("    Its accuracy sits at the no-document baseline, which")
+                print("    is what a uniform lift predicts.")
+            else:
+                print("    [!] Its accuracy moves anyway, which a uniform lift")
+                print("        does not predict. One of the two is not")
+                print("        measuring what it is read as.")
+        elif dg >= 0.15:
+            print("\n    {}: margin {:+.3f}{} as well as mass {:+.3f}."
+                  .format(LABEL[c], dg, share, dm))
+            print("    It chooses between the options and does not merely lift")
+            print("    them, so this condition's logprob gain is about which")
+            print("    answer.")
+            if flat:
+                print("    [!] Its accuracy is still at the no-document")
+                print("        baseline. A margin that moves without the argmax")
+                print("        following means the gold option was not close")
+                print("        enough to the top for the shift to cross it.")
+        elif dg <= -0.15:
+            print("\n    {}: margin {:+.3f}{}, mass {:+.3f}. It moves the"
+                  .format(LABEL[c], dg, share, dm))
+            print("    margin DOWN: it is choosing, and choosing against the")
+            print("    gold option. A patch that merely disturbed the forward")
+            print("    pass would flatten the margin toward zero rather than")
+            print("    push it negative.")
+
+
+def binom_sf(k: int, n: int, p: float) -> float:
+    """P(X >= k) for X ~ Binomial(n, p). One-sided, exact; n is at most a few
+    dozen items here."""
+    return sum(math.comb(n, i) * p ** i * (1 - p) ** (n - i)
+               for i in range(k, n + 1))
+
+
+def print_donor_answer(d: dict, why: str) -> None:
+    """Does the mismatched vector carry the donor's ANSWER, or only disturb the
+    pass?
+
+    The sharper of the two questions 12.3w left open, and the most direct
+    evidence about content anywhere in this study. The mismatched condition
+    patches another item's vector; the mismatch is a rotation by one, so the
+    donor is known and its gold letter is recorded. build.py rotates the correct
+    option with target_slot = idx % 4, so a letter drawn at random hits the
+    donor's gold 25% of the time. Above that, and the transplanted state is
+    carrying the donor's answer rather than noise.
+
+    Items where the donor's gold letter happens to equal this item's own are
+    dropped: there the two hypotheses predict the same letter and the item
+    cannot separate them.
+    """
+    rows = d["rows"]
+    usable = [r for r in rows
+              if isinstance(r.get("opt_mismatched"), dict)
+              and r.get("donor_gold") in OPT_LETTERS
+              and r.get("gold") in OPT_LETTERS]
+    if not usable:
+        return
+    clean = [r for r in usable if r["donor_gold"] != r["gold"]]
+    print("\n  --- does the mismatched vector carry the donor's answer?   "
+          "(layer {})".format(d["layer"]))
+    if not clean:
+        print("      Every donor's gold letter equals its recipient's, so the")
+        print("      two readings predict the same letter and this run cannot")
+        print("      separate them.")
+        return
+    n = len(clean)
+    k_donor = sum(1 for r in clean
+                  if r["opt_mismatched"].get("_best") == r["donor_gold"])
+    k_own = sum(1 for r in clean
+                if r["opt_mismatched"].get("_best") == r["gold"])
+    p = binom_sf(k_donor, n, 0.25)
+    print("      On the {} items whose donor has a different gold letter:"
+          .format(n))
+    print("        argmax == DONOR's gold   {:>3}/{:<3} = {:.3f}   "
+          "p={:.3f} against 0.25".format(k_donor, n, k_donor / n, p))
+    print("        argmax == its OWN gold   {:>3}/{:<3} = {:.3f}"
+          .format(k_own, n, k_own / n))
+    if p < 0.05 and k_donor / n > 0.25:
+        print("      Above chance. The vector taken from another item is putting"
+              " THAT item's")
+        print("      answer into this one -- positive evidence that the"
+              " transplanted state")
+        print("      carries content, and the most direct such evidence in this"
+              " study.")
+    else:
+        print("      At chance. The mismatched vector disturbs the forward pass"
+              " without")
+        print("      transplanting the donor's answer, so its logprob drop is a"
+              " perturbation")
+        print("      and not a wrong answer being written in.")
+    if n < 12:
+        print("      [!] n={} -- too few items for this to be worth quoting."
+              .format(n))
+
+
 def compact(nums: list[int]) -> str:
     """[17,18,19,20] -> '17-20'; keeps a warning about a region readable."""
     if not nums:
@@ -439,6 +646,10 @@ def report(stage: pathlib.Path) -> None:
     print_fixed_curve(layers, present, i_peak)
     for i, why in want:
         print_tests(layers[i], why)
+    for i, why in want:
+        print_options(layers[i], present, why)
+    for i, why in want:
+        print_donor_answer(layers[i], why)
     for i, why in want:
         read_peak(layers[i], summary, a_no, a_yes, why)
 
