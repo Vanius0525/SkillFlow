@@ -76,9 +76,22 @@ def main() -> None:
     ap.add_argument("--mode", choices=["mc", "num"], required=True)
     ap.add_argument("--limit", type=int, default=40)
     ap.add_argument("--layer-step", type=int, default=1)
+    ap.add_argument("--dtype", default=None,
+                    help="float32 or bfloat16. REQUIRED in practice: the self "
+                         "arm is algebraically an exact no-op, and under "
+                         "bfloat16 it still reads ~0.66 nats off because the "
+                         "capture forward and the scoring forward have "
+                         "different sequence lengths and reduce in a different "
+                         "order (HANDOFF 12.3q). Left unset it follows "
+                         "$WB_DTYPE and then bfloat16, which is how the first "
+                         "run of this script tripped the self-arm warning.")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
+
+    if args.dtype:
+        import os
+        os.environ["WB_DTYPE"] = args.dtype
 
     run_id = args.run_id or time.strftime("%Y%m%d-%H%M%S")
     out_dir = HERE / "results" / run_id
