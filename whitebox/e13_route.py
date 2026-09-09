@@ -34,23 +34,37 @@ ARMS (each is a rectangular block of the attention matrix, one layer at a time)
     all_to_skill      every query   -> skill span      E1's arm, for scale
     q_to_skill        question span -> skill span      the relay
     last_to_skill     last prompt position -> skill    the direct route
-    q_to_random       question span -> a same-width non-skill key span
+    q_to_nonskill     question span -> everything before the question that is
+                      NOT the skill (preamble + glue)
     lastq_to_skill    a same-width query window that is NOT the question,
                       placed after the skill -> skill span
 
-The last two are the controls that keep a positive result from being "blocking
-anything hurts": q_to_random holds the query side fixed and moves the keys,
-lastq_to_skill holds the keys fixed and moves the queries. A route claim needs
-its arm to beat BOTH.
+lastq_to_skill is the exactly-matched control: same keys, the query window
+moved. q_to_nonskill moves the keys instead but CANNOT be width-matched -- no
+non-skill region of the skill's width exists before the question -- so it reads
+as a direction, not as a matched floor. An earlier version of that arm took a
+same-width window from position 0 and thereby swallowed the whole skill span,
+making the control a superset of the treatment; the numbers from that version
+are void.
+
+WHICH LAYERS EACH POINT BLOCKS (--sweep)
+
+The first run blocked ONE layer at a time, E1's shape, and found nothing: the
+exactly-matched control read the unblocked baseline at nearly every layer, so
+those were real nulls at this power rather than a broken instrument. The reason
+is structural -- a 688-token span is redundantly readable across depths, so a
+model denied it at layer L reads it at L+1. --sweep from blocks L..end instead
+and asks by which depth the reading is already finished; --sweep upto blocks
+0..L for the mirror question. 'from' is the default because the cumulative form
+is the one with power.
 
 PRE-REGISTERED, WRITTEN BEFORE THE RUN
 
 If the relay carries the content, q_to_skill should cost most in the layers at
-and just below E12's window onset -- roughly 8-16 -- and q_to_random should be
-flat there. If instead last_to_skill dominates at every depth, the question
-tokens are a place the content can be READ from rather than the road it takes,
-and E12's window is then a consequence of the skill span still being visible to
-them, not evidence of routing.
+and just below E12's window onset -- roughly 8-16. If instead last_to_skill
+dominates at every depth, the question tokens are a place the content can be
+READ from rather than the road it takes, and E12's window is then a consequence
+of the skill span still being visible to them, not evidence of routing.
 
 A knockout that never fires looks exactly like one that fires and changes
 nothing, so the hook's own invocation count is asserted, as in e1_knockout.
@@ -151,6 +165,13 @@ def main() -> None:
     ap.add_argument("--mode", choices=["mc", "num"], required=True)
     ap.add_argument("--limit", type=int, default=40)
     ap.add_argument("--layer-step", type=int, default=1)
+    ap.add_argument("--sweep", choices=["single", "from", "upto"],
+                    default="from",
+                    help="'single' blocks layer L only (E1's shape, and close to "
+                         "powerless on a 688-token span); 'from' blocks L..end "
+                         "and asks by which depth the reading is already done; "
+                         "'upto' blocks 0..L. Default 'from' because the "
+                         "cumulative form is the one with power.")
     ap.add_argument("--dtype", default=None,
                     help="float32 or bfloat16; see e12_taskspan for why this "
                          "should not be left to the default")
@@ -188,11 +209,11 @@ def main() -> None:
         "experiment": "e13_route", "run_id": run_id, "tasks": str(args.tasks),
         "skill": str(args.skill), "mode": args.mode, "n_items": len(items),
         "layers": layers, "dv": "answer_logprob + option argmax",
-        "dtype": args.dtype,
+        "dtype": args.dtype, "sweep": args.sweep,
     })
 
     ARMS = ["all_to_skill", "q_to_skill", "last_to_skill",
-            "q_to_random", "lastq_to_skill"]
+            "q_to_nonskill", "lastq_to_skill"]
     lp = {a: {L: [] for L in layers} for a in ARMS}
     ok = {a: {L: [] for L in layers} for a in ARMS}
     base_lp, base_ok, dropped, fired_min = [], [], 0, None
@@ -209,15 +230,21 @@ def main() -> None:
         n_prompt = int(ids.shape[1])
         qw = q_span[1] - q_span[0]
 
-        # A key span the same width as the skill's, placed where the skill is
-        # not. The prompt is [chat preamble][skill][chat glue][question][suffix],
-        # so anything of that width outside the skill has to overlap the
-        # question; the honest control is therefore a same-width window taken
-        # from the FRONT of the sequence, which is the chat preamble plus
-        # whatever of the skill's own leading tokens fall inside it. Clamped so
-        # it never reaches into the question.
-        rk_hi = min(s_span[0] + (s_span[1] - s_span[0]), q_span[0])
-        rand_key = (0, max(1, rk_hi))
+        # The key-side control: everything before the question that is NOT the
+        # skill -- the chat preamble and the glue between the system and user
+        # turns.
+        #
+        # It is NOT width-matched, and cannot be. The prompt is
+        # [preamble][skill 688 tok][glue][question 45 tok][suffix], so no
+        # non-skill region of the skill's width exists before the question; an
+        # earlier version of this arm took a same-width window from position 0
+        # and therefore SWALLOWED THE WHOLE SKILL SPAN, making the "control"
+        # a superset of the treatment. Reporting the honest asymmetric control
+        # and its width beats reporting a matched one that is not.
+        #
+        # The load-bearing control here is the query-side one below, which is
+        # exactly matched: same keys, a same-width query window elsewhere.
+        nonskill = (0, max(1, s_span[0]))
 
         # A query window the same width as the question's, taken from just
         # before the question -- it sits after the skill, so it CAN attend to
@@ -226,19 +253,38 @@ def main() -> None:
         lastq = (lq_lo, max(lq_lo + 1, q_span[0]))
 
         blocks = {
-            "all_to_skill":   [((0, n_prompt), s_span)],
-            "q_to_skill":     [(q_span, s_span)],
-            "last_to_skill":  [((n_prompt - 1, n_prompt), s_span)],
-            "q_to_random":    [(q_span, rand_key)],
-            "lastq_to_skill": [(lastq, s_span)],
+            "all_to_skill":    [((0, n_prompt), s_span)],
+            "q_to_skill":      [(q_span, s_span)],
+            "last_to_skill":   [((n_prompt - 1, n_prompt), s_span)],
+            "q_to_nonskill":   [(q_span, nonskill)],
+            "lastq_to_skill":  [(lastq, s_span)],
         }
 
         b_lp, b_ok, _ = score_blocked(r, ids, gold)
         base_lp.append(b_lp); base_ok.append(bool(b_ok))
 
         for L in layers:
+            # --sweep decides WHICH layers this point blocks.
+            #
+            # single: layer L alone. That is E1's shape, and on a 688-token
+            #   span it is close to powerless -- the content is available
+            #   redundantly at other depths, so the model re-reads it one layer
+            #   up and accuracy does not move. The first run of this script
+            #   showed exactly that: the exactly-matched control read the
+            #   unblocked baseline at nearly every layer, so the nulls were
+            #   real nulls rather than a broken instrument.
+            # from:   layers L..end. Asks "by which depth has the model already
+            #   taken what it needs" -- if blocking from L on costs nothing,
+            #   extraction finished before L.
+            # upto:   layers 0..L. The mirror: how early can the reading start.
+            if args.sweep == "single":
+                lset = [L]
+            elif args.sweep == "from":
+                lset = list(range(L, r.n_layers))
+            else:
+                lset = list(range(0, L + 1))
             for arm in ARMS:
-                v, o, f = score_blocked(r, ids, gold, [L], blocks[arm])
+                v, o, f = score_blocked(r, ids, gold, lset, blocks[arm])
                 lp[arm][L].append(v); ok[arm][L].append(bool(o))
                 fired_min = f if fired_min is None else min(fired_min, f)
         if (i + 1) % 5 == 0:
@@ -257,7 +303,7 @@ def main() -> None:
 
     print("\n" + "=" * 84)
     print(f"  E13 attention routing   n={n}  dropped={dropped}  "
-          f"hook fired >= {fired_min} times per forward")
+          f"sweep={args.sweep}  hook fired >= {fired_min} times per forward")
     print("=" * 84)
     print(f"  with skill, nothing blocked:  logprob {mean_base:+.3f}   "
           f"acc {acc_base:.3f}")
@@ -271,11 +317,13 @@ def main() -> None:
     for L in layers:
         print(f"  {L:5d}  " + "".join(
             f"{sum(ok[a][L])/n:16.3f}" for a in ARMS))
-    print("\n  Read q_to_skill against BOTH controls. It has to beat")
-    print("  q_to_random (same queries, other keys) and lastq_to_skill")
-    print("  (other queries, same keys) before it says anything about routing.")
+    print("\n  lastq_to_skill is the exactly-matched control: same keys, a")
+    print("  same-width query window elsewhere. q_to_nonskill is NOT width-")
+    print("  matched -- no non-skill region of the skill's width exists before")
+    print("  the question -- so read it as a direction, not as a matched floor.")
 
     summary = {"experiment": "e13_route", "run_id": run_id, "n_items": n,
+               "sweep": args.sweep,
                "dropped": dropped, "layers": layers, "arms": ARMS,
                "base_logprob": mean_base, "base_acc": acc_base,
                "delta_logprob": {a: [sum(lp[a][L]) / n - mean_base
