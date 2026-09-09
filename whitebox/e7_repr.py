@@ -275,9 +275,12 @@ def main():
     ap.add_argument("--mode", choices=["mc", "num"])
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--layer-step", type=int, default=1)
-    ap.add_argument("--probe", choices=["none", "family"], default="none",
+    ap.add_argument("--probe", choices=["none", "family", "answer"],
+                    default="none",
                     help="'family' probes which conversion table the item needs "
-                         "(Tier A only)")
+                         "(Tier A only, and it has no headroom left -- see the "
+                         "comment on the probe block); 'answer' probes the gold "
+                         "option letter, which does")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--boot", type=int, default=1000,
                     help="bootstrap draws for the cross-document "
