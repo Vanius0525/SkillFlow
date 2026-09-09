@@ -178,8 +178,9 @@ def main() -> None:
             self_dev = max(self_dev, abs(lp_s - lp_lo))
 
         # ceiling: every layer at once, so the span cannot recompute in a gap
-        lp_c, ok_c, _ = E10.score_all_layers(r, ids_c, gold, all_layers, pos,
-                                             v_donor)
+        # score_all_layers returns (logprob, ok) -- two values, unlike score()
+        lp_c, ok_c = E10.score_all_layers(r, ids_c, gold, all_layers, pos,
+                                          v_donor)
         ceil_ok.append(bool(ok_c))
         rows.append({"id": it["id"], "gold": gold,
                      "q_span": list(q_span), "skill_span": list(s_span),
