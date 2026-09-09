@@ -154,16 +154,40 @@ def main(argv=None):
     p.add_argument("--prefixes", default="", help="JSON of graft prefixes (P7)")
     p.add_argument("--no-tool-protocol", action="store_true",
                    help="omit the explicit TOOL_CALL syntax note (upstream parity)")
+    p.add_argument("--engine", choices=["vllm", "hf"], default="vllm",
+                   help="'vllm' talks to an OpenAI-compatible server at "
+                        "--base-url. 'hf' loads the weights in-process with "
+                        "transformers, using the same tokenizer, chat-template "
+                        "call and eager attention as wb_replay -- which makes "
+                        "the generation and replay token streams identical by "
+                        "construction rather than checking them afterwards "
+                        "(GATE-W0). One stream only, so --workers is forced to "
+                        "1; howskill/hf_client.py says why batching is "
+                        "deliberately absent.")
+    p.add_argument("--hf-model-dir", default="",
+                   help="--engine hf: the directory holding the weights. Falls "
+                        "back to $WB_MODEL / $WB_MAIN_MODEL. Not the same thing "
+                        "as --model, which is a served-model NAME.")
+    p.add_argument("--hf-dtype", default="bfloat16")
     a = p.parse_args(argv)
+
+    if a.engine == "hf" and a.workers != 1:
+        print(f"  [note] --engine hf serialises on one GPU; forcing "
+              f"--workers 1 (was {a.workers}).")
+        a.workers = 1
 
     skills, instances, by_id, pairs, _gt = load_data()
     insts = subset(restrict(instances, a.calculators), a.n_per_calc, a.seed)
     prefixes = json.load(open(a.prefixes, encoding="utf-8")) if a.prefixes else None
 
-    client = ChatClient(base_url=a.base_url, model=a.model,
-                        temperature=a.temperature, max_tokens=a.max_tokens,
-                        thinking=a.thinking, seed=a.seed,
-                        logprobs=a.logprobs or None)
+    if a.engine == "hf":
+        from howskill.hf_client import from_args as _hf_from_args
+        client = _hf_from_args(a)
+    else:
+        client = ChatClient(base_url=a.base_url, model=a.model,
+                            temperature=a.temperature, max_tokens=a.max_tokens,
+                            thinking=a.thinking, seed=a.seed,
+                            logprobs=a.logprobs or None)
 
     os.makedirs(a.out, exist_ok=True)
     tag = a.tag or f"{a.arm}-{a.schedule}-T{a.temperature}-s{a.seed}"
