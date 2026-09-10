@@ -109,12 +109,46 @@ def vllm_logprobs(row: dict) -> list[float] | None:
     return None
 
 
-def gate_w0(ours: np.ndarray, theirs: list[float]) -> dict:
+#: Mean absolute difference, in nats, allowed between the generator's
+#: per-token log-probabilities and the replay's. This is the gate.
+#:
+#: Measured, not picked. On 142 forwards of the gold arm (Qwen3-8B bf16,
+#: generation and replay both through HF with the same tokenizer, chat template
+#: and eager attention) the MAD distribution was: min 0.00144, median 0.00575,
+#: p95 0.00916, max 0.01704. Nothing came within a factor of three of 0.05, the
+#: threshold P8-WHITEBOX.md §5b item 5 wrote down as provisional. 0.05 stays:
+#: it is ~3x the observed worst case, so it still catches a real misalignment
+#: (a one-token shift moves this by whole nats) without flagging arithmetic.
+MAD_MAX = 0.05
+
+#: Correlation is reported but NOT gated, because it measures sequence length
+#: as much as it measures agreement. Same 142 forwards, 5th percentile of corr
+#: by completion length:
+#:
+#:     <150 tokens   0.9555        250-400   0.9858
+#:     150-250       0.9634        400-600   0.9864
+#:                                 >600      0.9924
+#:
+#: The reason is structural: these are log-probabilities of greedily chosen
+#: tokens, so most are near zero and the sequence has little variance. Pearson
+#: r divides by that variance, so on a short completion a single token moving
+#: by 0.005 nats -- bf16 noise, the same noise the passing cases carry -- drops
+#: r below 0.99 while MAD stays at 0.003. Gating on r therefore rejected 41% of
+#: forwards whose absolute error was indistinguishable from the accepted ones.
+#: It is kept in the record as a diagnostic: r far below this band WITH a large
+#: MAD is what a true token misalignment looks like.
+CORR_FLOOR_INFO = 0.95
+
+
+def gate_w0(ours: np.ndarray, theirs: list[float],
+            argmax_match: float | None = None) -> dict:
     """Compare replayed logprobs against the generator's.
 
-    Correlation alone is too forgiving — a one-token shift still correlates
-    highly on smooth sequences — so the mean absolute difference is reported
-    with it, and both have to pass.
+    The gate is MAD (see MAD_MAX). `corr` is recorded, not gated (see
+    CORR_FLOOR_INFO). `argmax_match`, when the caller can supply it, is the
+    fraction of generated positions where the replay's argmax is the token that
+    was actually generated -- under greedy decoding that should be ~1.0, and it
+    is the check P8-WHITEBOX.md §3.5 asks for alongside the logprob comparison.
     """
     n = min(len(ours), len(theirs))
     if n < 5:
@@ -126,8 +160,37 @@ def gate_w0(ours: np.ndarray, theirs: list[float]) -> dict:
     else:
         corr = float(np.corrcoef(a, b)[0, 1])
     mad = float(np.mean(np.abs(a - b)))
-    return {"n": n, "corr": corr, "mad": mad,
-            "ok": bool(corr >= 0.99 and mad <= 0.05)}
+    g = {"n": n, "corr": corr, "mad": mad, "ok": bool(mad <= MAD_MAX)}
+    if argmax_match is not None:
+        g["argmax_match"] = float(argmax_match)
+        # Greedy decoding: a replay that disagrees with the generator about
+        # which token won is misaligned regardless of what MAD says.
+        g["ok"] = bool(g["ok"] and argmax_match >= 0.99)
+    return g
+
+
+def argmax_agreement(out, enc, start: int) -> float:
+    """Fraction of generated positions where the replay's argmax IS the token
+    that was generated there.
+
+    Under greedy decoding the generator took the argmax at every step, so a
+    correctly aligned replay reproduces that choice. This is insensitive to the
+    arithmetic noise that makes the logprob comparison fiddly -- a 0.005 nat
+    shift almost never changes which token is on top -- and it is sensitive to
+    exactly the failure the gate exists for: a one-position shift makes the
+    replay predict the PREVIOUS token's successor and the agreement collapses.
+    """
+    import torch
+    logits = out.logits[0]
+    ids = enc["input_ids"][0].to(logits.device)
+    if start < 1 or start >= ids.shape[0]:
+        return float("nan")
+    pred = logits[start - 1:-1].argmax(dim=-1)
+    got = ids[start:]
+    m = min(pred.shape[0], got.shape[0])
+    if m == 0:
+        return float("nan")
+    return float((pred[:m] == got[:m]).float().mean().item())
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +285,8 @@ def main(argv=None):
                 out = rep.forward(enc)
 
                 g = gate_w0(rep.token_logprobs(out, enc, n_prompt),
-                            vllm_logprobs(row) or [])
+                            vllm_logprobs(row) or [],
+                            argmax_match=argmax_agreement(out, enc, n_prompt))
                 rec[f"gate_w0_{tag}"] = g
                 if not g["ok"]:
                     n_gate_fail += 1
@@ -270,10 +334,13 @@ def main(argv=None):
 
     print(f"\n-> {a.out}")
     if n_gate_fail:
-        print(f"[FAIL] GATE-W0 failed on {n_gate_fail} forwards. The replay does "
-              f"not reproduce generation; every internal number above is "
+        print(f"[FAIL] GATE-W0 failed on {n_gate_fail} forwards "
+              f"(MAD > {MAD_MAX} nats, or argmax agreement < 0.99). The replay "
+              f"does not reproduce generation; every internal number above is "
               f"suspect. Check the chat template, --thinking, and whether the "
-              f"run was made with --logprobs.")
+              f"run was made with --logprobs. Note `corr` is diagnostic only -- "
+              f"it tracks completion length as much as agreement, so a low corr "
+              f"with a small MAD is arithmetic, not misalignment.")
         return 1
     return 0
 
