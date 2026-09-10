@@ -35,6 +35,44 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(HERE, "data")
 
 
+def limit_threads(verbose: bool = True) -> int:
+    """Cap CPU threads at the container's actual CPU quota, not `nproc`.
+
+    On the Inspire 4090 boxes `nproc` reports the host's 128 cores while the
+    cgroup grants 10. torch and OpenBLAS size their pools from the former, so
+    every CPU-side op runs ~13x oversubscribed. Measured on the gold arm: the
+    replay started at 11 s/instance and degraded to 54 s/instance as the items
+    got longer, with the GPU sitting at 0% utilisation and load average at 24.
+    The work here is GPU-light and CPU-heavy by construction -- hidden states
+    are pulled to CPU and reduced to scalars -- so that oversubscription is the
+    whole cost.
+
+    Must run before torch/numpy build their pools, i.e. first thing in main();
+    torch is imported lazily inside Replayer for exactly this reason.
+    """
+    quota = None
+    try:
+        with open("/sys/fs/cgroup/cpu.max", encoding="utf-8") as fh:
+            a, b = fh.read().split()
+            if a != "max":
+                quota = max(1, int(int(a) / int(b)))
+    except (OSError, ValueError):
+        pass
+    if quota is None:                      # cgroup v1, or not containerised
+        try:
+            quota = len(os.sched_getaffinity(0))
+        except AttributeError:
+            quota = os.cpu_count() or 1
+    n = str(quota)
+    for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+                "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+        os.environ.setdefault(var, n)
+    if verbose:
+        print(f"[threads] cpu quota {quota}, nproc {os.cpu_count()} "
+              f"-> capping CPU pools at {quota}")
+    return quota
+
+
 # ---------------------------------------------------------------------------
 # model side
 # ---------------------------------------------------------------------------
@@ -214,6 +252,7 @@ def load_rows(results_dir: str, needle: str) -> dict:
 
 
 def main(argv=None):
+    limit_threads()
     p = argparse.ArgumentParser()
     p.add_argument("--results", required=True)
     p.add_argument("--cells", default=os.path.join(DATA, "cells.json"))

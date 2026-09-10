@@ -39,7 +39,7 @@ import numpy as np
 
 from howskill import arms as arms_mod
 from howskill.prompts import build_prompt_spans
-from howskill.wb_replay import Replayer, load_rows
+from howskill.wb_replay import Replayer, load_rows, limit_threads
 from howskill.wb_spans import char_to_token_span
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -113,6 +113,7 @@ class Scorer(Replayer):
 
 
 def main(argv=None):
+    limit_threads()   # see wb_replay.limit_threads: nproc is 128, the quota is 10
     p = argparse.ArgumentParser()
     p.add_argument("--results", required=True)
     p.add_argument("--cells", default=os.path.join(DATA, "cells.json"))
