@@ -421,7 +421,7 @@ formula quarter gives the largest standalone recovery ($0.56$), compared with
 $0.89$ for the full span. With the skill before the question, causal masking
 prevents its states from depending on later question tokens: states are
 identical across instances at equal prompt length and nearly identical
-otherwise (cosine $\ge0.997$). Placing the skill after the question allows
+otherwise (cosine $\ge0.994$ over all $48$ calculators). Placing the skill after the question allows
 such dependence. Even then, states from other instances of the same skill
 recover $0.98$ at layer $8$, close to the current instance's $1.02$. At layer
 $16$, the gap widens to $0.29$ versus $0.49$, while the instance-specific

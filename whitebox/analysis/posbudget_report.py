@@ -30,7 +30,8 @@ BY = ROOT / "howskill/results/p8-wb/fetched/by-host"
 OUT = ROOT / "whitebox/analysis/out"
 
 PB_TAGS = ["pb-ev", "pb-rn", "pb-mx", "pb-wf", "pb-wd", "pb-we", "pb-wr",
-           "pb-td", "pb-tq", "pb-c256", "pb-chalf", "pb-sh", "pb-wh"]
+           "pb-td", "pb-tq", "pb-c256", "pb-chalf", "pb-sh", "pb-wh",
+           "pb-sn", "pb-sx"]
 FP_TAGS = ["fp-a", "fp-b", "fp-c"]
 BATTERY = ["full-battery-a", "full-battery-b", "full-quarters"]
 BUDGETS = ["1", "4", "16", "64", "256", "half", "full"]
@@ -217,6 +218,8 @@ def main():
     # fragmentation, displacement and half-span windows (added 04:50, §1.5)
     PB_TAGS_EXTRA = [f"c{n}x{b}" for b in ("256", "half") for n in (1, 2, 4, 8, 16, 32)] \
         + [f"sh{d}" for d in ("1", "4", "16", "64", "256")] \
+        + [f"{k}{d}" for k in ("sn", "sb") for d in ("1", "4", "16")] \
+        + [f"{k}{d}" for k in ("xf", "xl") for d in ("1", "16")] \
         + [f"{w}half" for w in ("wf", "we", "wd", "wr")]
     for arm in PB_TAGS_EXTRA:
         key = f"ok_{arm}_L8"
@@ -460,16 +463,32 @@ def figure(rep):
     if "dshuf" in A:
         d_.errorbar([m_med * 0.9], [A["dshuf"]["rho"]], yerr=err(A["dshuf"]), color="#555555",
                     marker="x", ms=5, capsize=1.6, elinewidth=0.7)
-        d_.annotate("random\npermutation", (m_med * 0.9, A["dshuf"]["rho"]), xytext=(0, 16),
+        d_.annotate("random\npermutation", (m_med * 0.9, A["dshuf"]["rho"]), xytext=(0, 22),
                     textcoords="offset points", ha="center", fontsize=6.2, color="#555555")
+    for key, lab, col, mk in (("sn", "shifted later, no wrap", "#CC79A7", "s"),
+                              ("sb", "shifted earlier, no wrap", "#0072B2", "D")):
+        pts = [(int(dd), A.get(f"{key}{dd}")) for dd in ("1", "4", "16")]
+        pts = [(x, v) for x, v in pts if v]
+        if pts:
+            d_.errorbar([x * (1.06 if key == "sn" else 0.94) for x, _ in pts], [v["rho"] for _, v in pts],
+                        yerr=[[max(v["rho"] - v["ci_cluster"][0], 0) for _, v in pts],
+                              [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in pts]],
+                        color=col, marker=mk, ms=3.6, lw=1.0, ls="--", mfc="white", mew=1.0,
+                        capsize=1.4, elinewidth=0.6, label=lab)
+    edge = [(k, A.get(k)) for k in ("xf1", "xf16", "xl1", "xl16") if A.get(k)]
+    if edge:
+        d_.errorbar([0.62, 0.68, 0.74, 0.80][:len(edge)], [v["rho"] for _, v in edge],
+                    yerr=[[max(v["rho"] - v["ci_cluster"][0], 0) for _, v in edge],
+                          [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in edge]],
+                    color="#009E73", marker="v", ms=3.6, ls="none", capsize=1.4, elinewidth=0.6,
+                    label="in place, first/last 1 or 16 dropped")
+    d_.plot([], [], color="#D55E00", marker="o", ms=4, lw=1.5, label="cyclic shift")
+    d_.legend(loc="upper right", frameon=False, fontsize=6.0, handlelength=1.6)
     d_.set_xscale("log", base=2)
     d_.set_xticks([0.5, 1, 4, 16, 64, 256]); d_.set_xticklabels(["0", "1", "4", "16", "64", "256"])
     frame(d_, "(d) the whole span, displaced by $D$ positions")
     d_.set_xlabel("displacement $D$ (positions; last point: half the span)")
-    d_.text(0.99, 0.60, f"all panels: the same {rep['n_items']} rescued items\n"
-            f"({rep['n_calcs']} calculators), Qwen3-8B, layer 8\n"
-            "dashed: whole span written in place", transform=d_.transAxes,
-            ha="right", va="center", fontsize=6.2, color="#555555")
+    pass
     for ext in ("pdf", "png"):
         # written next to the numbers, not into paper/: the manuscript is
         # edited separately and pulls figures from here when it adopts them
