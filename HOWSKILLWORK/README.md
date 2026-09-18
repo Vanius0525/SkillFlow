@@ -22,9 +22,10 @@
 | **P8 单步三臂行为跑** | ✅ **完成**（2026-09-10，见下） |
 | **P8 四格 R/F/K/B** | ✅ **完成**，GATE-W1 通过（R=366 / F=152） |
 | **P8 GATE-W0 重放一致性** | ✅ **通过 600/600**（门槛本身是坏的，已修，见 [`P8-WHITEBOX.md`](P8-WHITEBOX.md) §5c） |
-| **P8 M1/M2（gold 臂）** | ✅ 有第一份 R vs F 读数（层 10–16 可分，效应很小） |
-| **P8 GATE-W2（中性对照）** | 🔄 **在跑** —— 没有它，上一行那个分离算不算数是未定的 |
-| P8 M4 因果（敲除 + 嫁接） | ⬜ `wb_patch.py` 已就位，没跑过 |
+| **P8 M1/M2（gold 臂）** | ✅ 有读数，但**被 GATE-W2 判为存在效应**，见下一行 |
+| **P8 GATE-W2（中性对照）** | ❌ **不通过**（2026-09-11）。层 10–16 的 R vs F 分离在错配 skill 上几乎逐点复现（−0.0035 vs −0.0037 … −0.0052 vs −0.0068），`content-specific layers: NONE`。**那份分离是「有份文档在场」，不是内容。** 详见 `../HANDOFF-whitebox.md` §20 |
+| **P8 M5 差向量（`wb_diffvec.py`）** | 🔄 **在跑**（2026-09-11 新增）。几何已出：同 calculator 的内容向量 cos 0.79，跨 calculator 0.21 |
+| P8 M4 因果（敲除 + 嫁接） | ⬜ `wb_patch.py` 已就位，没跑过 —— **且它的 `ANSWER:` cue 会把行为效应抹平，见下** |
 | P4–P7 / ALFWorld 深度线 | ⏸ 暂停（依赖长程循环） |
 
 ### P8 单步三臂（2026-09-10，Qwen3-8B，单轮无工具，贪心，`--engine hf`）
@@ -49,8 +50,21 @@ CI 按 calculator 聚类 bootstrap（55 簇），所以区间宽是口径正确�
 `no_skill` 只有 839/1100 —— 实例被平台回收打断。**决定不补**：
 四格只用三臂交集，838 下 R/F 都远超门槛。注意 `run.py` 不做断点续跑。
 
-**完整的会话状态、下一步、以及 R vs F 那份读数的数字，在
-[`../HANDOFF-whitebox.md`](../HANDOFF-whitebox.md) §12.3aa 第 2 节。**
+### ⚠ `ANSWER:` cue 抹平了效应（2026-09-11 实测）
+
+`wb_patch.py` 在 `"\nANSWER: "` cue 下打分（不许推理）。40 条实例（20 R + 20 F，Qwen3-8B）：
+
+| | 无 skill | 错配 skill | gold skill |
+|---|---|---|---|
+| 解码准确率 | 0.175 | 0.175 | **0.175** |
+| lp(gold answer) | −2.969 | −2.928 | −2.368 |
+
+**logprob 动了 +0.60 nats，准确率一动不动。** 在这批材料上 skill 是通过 chain of thought
+起作用的，cue 把 CoT 拿掉，补丁就没有东西可以恢复。**真 skill 上的因果实验一律走
+`--task-mode cot`**（`wb_diffvec.py` 已支持：不加 cue，解码 320 token，用同一个判分器打分）。
+
+**完整的会话状态、下一步，在 [`../HANDOFF-whitebox.md`](../HANDOFF-whitebox.md)
+§12.3ab（最新）与 §12.3aa。论文脉络在 [`PAPER-SKILLVECTOR.md`](PAPER-SKILLVECTOR.md)。**
 
 ---
 
@@ -63,6 +77,7 @@ CI 按 calculator 聚类 bootstrap（55 簇），所以区间宽是口径正确�
 | [`PROTOCOL.md`](PROTOCOL.md) | **可执行流程**。harness 决策、P0–P8 阶段、GATE 判据与停止规则、算力预算 |
 | [`RESULTS-P1.md`](RESULTS-P1.md) | **P1 实测结果**。GATE-1 判定、5 轮上限吃掉 −3.9pp 的诊断、工具调用与准确率的待查观察 |
 | [`P8-WHITEBOX.md`](P8-WHITEBOX.md) | **白盒设计**。三篇方法学论文的可用部分、R/F/K/B 四格、五组测量与 GATE-W |
+| [`PAPER-SKILLVECTOR.md`](PAPER-SKILLVECTOR.md) | **论文脉络**。主张 → 判据 → 证据的对照表、章节安排、主图主表、还缺什么 |
 | [`ALFWORLD.md`](ALFWORLD.md) | ⏸ **已暂停**。深度轴的第二任务。LatentSkill 复现规格、GATE-1′、功效与聚类单元的两个未决问题 |
 | [`P0-FINDINGS.md`](P0-FINDINGS.md) | **P0 实测结果**。skill 的真实模块结构、四条推翻原设计的发现、step 级 GT 的 join、中性配对审计 |
 | [`../howskill/`](../howskill/) | **代码与数据**，可直接搬到 4090。见其 `README.md` |

@@ -429,3 +429,17 @@ inspect 是"react agent + JSON 工具 + 无 skill"，正好落在左上角那格
 3. **工具集**（如果最终去掉 `web_browser`）：inspect 那一格不再是官方参考实现。
 4. **单次运行**：`REPEATS=1` 时没有方差估计。
 5. **token 口径**：三家 prompt 开销不同，token 数不可直接比较。
+
+---
+
+## 10. 启智 CPU→H100 开发路径核对（2026-09-17）
+
+- 当前问题：确认能否在 `CPU资源空间` 联网准备，再让 `分布式训练空间` H100 运行同一项目共享盘里的代码和权重。
+- 已核对：本机 `inspire` 为 v7.1.8，提示 v7.1.9 可用；本地 `inspire update --check` 失败。已读取当前 inspire skill 的 Notebook、共享路径、联网源和工作流说明；历史个人环境记录为 `me` / `公共科研项目` / `wt-dev-cpu`，CPU 与 GPU 若使用同一个 Project，项目共享路径可跨 Workspace 访问。历史实测 CPU 可连 GitHub 和 Hugging Face，H100/H200 使用 JupyterTerminal 且目标 Workspace 通常无公网；这些均待当日复验。
+- 失败尝试与诊断：`inspire notebook list --workspace CPU资源空间` 在沙箱内因 `~/.inspire/accounts/me/web_session.json.refresh.lock` 只读失败；沙箱外重试及 `--debug` 重试均约 19 秒后返回 `Could not list notebooks`。调试日志 `/home/vanius/.cache/inspire-skill/logs/inspire-debug-20260917-131951-219045-310527-13fd2ffb.log` 第 61 行给出直接原因：`APIRequestContext.post: getaddrinfo EAI_AGAIN qz.sii.edu.cn`；本机 `getent ahostsv4 qz.sii.edu.cn` 也失败。未执行 `account check`、未重试登录、未新建实例。
+- 未解：本机 DNS 失败是当前运行环境限制还是主机网络问题；`wt-dev-cpu` 是否仍存在并运行；当前 CPU quota/image、H100 quota 及跨 Workspace 挂载状态。
+- 下一步：平台恢复可查询后先查实例、quota、image、availability。若已有 `wt-dev-cpu`，优先复用；否则按 Live quota 创建 `wt-` 前缀 CPU Notebook。CPU 侧对具体公网端点做短探针，将代码与下载内容放 `.../czxs253130660/` 个人共享路径；再在同一 `公共科研项目` 的 H100 Notebook 用 `exec` 验证文件可见与 CUDA，正式长任务用 GPU Job。
+
+## Open Ideas / 值得深挖的问题
+
+当前平台操作核对未产生独立科研 idea。
