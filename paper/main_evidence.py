@@ -228,5 +228,102 @@ def depth():
     (HERE/'main-evidence-values.json').write_text(json.dumps(data,indent=2)+'\n')
     print(json.dumps(data))
 
+def depth_v2(out_dir=HERE, force=False):
+    """Figure 3 on one layer axis, every layer measured (2026-09-19).
+
+    The earlier figure plotted (a) against an axis running to 35 with data to
+    20, (b) against "block from L onward" at stride 4, and (c) as unordered
+    categorical bars (16, 8-11, 12-15, ...). Here both panels share the layer
+    axis 0-35 and every point is measured:
+      (a) span states written at layer L; attention to the skill blocked from
+          L onward; the last prompt position written at L -- all on the same
+          screened items (the knockout on their rescued subset), so the two
+          boundaries are read on the same items;
+      (b) every window drawn across the layers it writes, at its recovery.
+    Returns False (drawing nothing) until every curve is complete, unless
+    `force` (layout checks only).
+    """
+    row = next(r for r in rep.resolved_rows() if r[0] == 'MedCalc' and r[1] == 'Qwen3-8B')
+    dep_tags, ko_tags = row[5], row[7]
+    dep = rep.restricted(rep.load(dep_tags))
+    groups = set(dep)
+    span = {L: rep.rho(dep, f'ok_real_L{L}') for L in range(36)}
+    kc, kn = rep.ko_curve(ko_tags, groups=groups)
+    tq = rep.restricted(rep.load(['full-battery-a', 'pb-tq', 'fp-a', 'fp-b', 'fp-c',
+                                  'fp1-a', 'fp1-b', 'fp1-c', 'fp1-d']))
+    last = {L: rep.rho(tq, f'ok_tq1_L{L}') for L in range(36)}
+    wins = rep.restricted(rep.load(['full-battery-a', 'x8-win-a', 'x8-win-b', 'win1-a', 'win1-b']))
+    wdef = [(0, 3), (4, 7), (8, 11), (12, 15), (16, 19), (20, 23), (24, 27), (28, 31), (32, 35),
+            (14, 19), (16, 35), (0, 35)]
+    wv = {w: rep.rho(wins, f'ok_real_w{w[0]}_{w[1]}') for w in wdef}
+    ready = (all(v is not None for v in span.values()) and len(kc) == 36
+             and all(v is not None for v in last.values()) and all(v is not None for v in wv.values()))
+    if not ready and not force:
+        return False
+    n = sum(map(len, dep.values()))
+    fig, (a, b) = plt.subplots(1, 2, figsize=(7.2, 2.55), layout='constrained',
+                               gridspec_kw={'width_ratios': [1.25, 1]})
+    xs = [L for L in range(36) if span[L] is not None]
+    a.plot(xs, [span[L] for L in xs], 'o-', color='#0072B2', ms=2.8, lw=1.5,
+           label='span states written at layer $L$')
+    ks = sorted(kc)
+    a.plot(ks, [kc[L] for L in ks], 's-', color='#D55E00', ms=2.6, lw=1.5,
+           label='attention to the skill blocked from $L$ on')
+    lx = [L for L in range(36) if last[L] is not None]
+    a.plot(lx, [last[L] for L in lx], '^--', color='#777777', ms=2.6, lw=1.0,
+           label='last prompt position written at $L$')
+    tb = next((L for L in xs if span[L] < .5), None)
+    rb = next((L for L in ks if kc[L] >= .5), None)
+    if tb is not None and rb is not None:
+        a.axvspan(tb - .5, rb - .5, color='#E69F00', alpha=.12, lw=0)
+        a.text((tb + rb) / 2 - .5, .62, 'still read,\nno longer\ntransferable', ha='center',
+               va='center', fontsize=6.3, color='#8a5a00')
+        for x in (tb - .5, rb - .5):
+            a.axvline(x, color='#555555', lw=.7, ls=':')
+    a.axhline(.5, color='#999999', lw=.6, ls=':')
+    a.set(xlabel='layer $L$', ylabel="fraction of the skill's gain", xlim=(-1, 36), ylim=(-.03, 1.08))
+    a.set_title('(a) transfer ends before reading does', loc='left', fontsize=8.5)
+    a.legend(loc='center left', fontsize=6.2, frameon=False, handlelength=1.8,
+             bbox_to_anchor=(0.0, 0.40))
+    # (b) windows as spans on the same axis
+    b.plot(xs, [span[L] for L in xs], '-', color='#0072B2', lw=.9, alpha=.35,
+           label='one layer at a time, from (a)')
+    import matplotlib.patches as mp
+    for (lo, hi) in wdef:
+        v = wv[(lo, hi)]
+        if v is None:
+            continue
+        long = hi - lo > 5
+        col = '#009E73' if (lo, hi) == (0, 35) else ('#CC79A7' if long else '#0072B2')
+        b.add_patch(mp.Rectangle((lo - .45, v - .018), hi - lo + .9, .036, color=col,
+                                 alpha=.55 if long else .9, lw=0))
+        if long or (lo, hi) in ((8, 11), (12, 15)):
+            b.text(hi + .6 if (lo, hi) != (0, 35) else 17.5, v + (.04 if (lo, hi) != (16, 35) else -.07),
+                   f'{lo}–{hi}: {v:.2f}', fontsize=6, color='#333333',
+                   ha='left' if (lo, hi) != (0, 35) else 'center')
+    b.axhline(.5, color='#999999', lw=.6, ls=':')
+    b.set(xlabel='layers written (each bar spans its window)', xlim=(-1, 36), ylim=(-.03, 1.08))
+    b.set_title('(b) writing more layers at once', loc='left', fontsize=8.5)
+    b.legend(loc='center right', fontsize=6.2, frameon=False, bbox_to_anchor=(1.0, 0.5))
+    for ax in (a, b):
+        ax.spines[['top', 'right']].set_visible(False)
+        ax.set_xticks([0, 4, 8, 12, 16, 20, 24, 28, 32, 35])
+    fig.savefig(out_dir/'fig-transfer-reading.pdf', bbox_inches='tight')
+    fig.savefig(out_dir/'fig-transfer-reading.png', bbox_inches='tight', dpi=180)
+    plt.close(fig)
+    data = {'sufficiency': [(L, span[L]) for L in xs], 'necessity': [(L, kc[L]) for L in ks],
+            'last_position': [(L, last[L]) for L in lx], 'n': n, 'groups': len(dep), 'ko_n': kn,
+            'windows': {f'w{lo}_{hi}': v for (lo, hi), v in wv.items()},
+            'window_n': sum(map(len, wins.values())), 'transfer_boundary': tb, 'reading_boundary': rb,
+            'sources': {'depth': dep_tags, 'knockout': ko_tags,
+                        'last': ['full-battery-a', 'pb-tq', 'fp-a', 'fp-b', 'fp-c', 'fp1-a', 'fp1-b', 'fp1-c', 'fp1-d'],
+                        'windows': ['full-battery-a', 'x8-win-a', 'x8-win-b', 'win1-a', 'win1-b']},
+            'version': 2}
+    if out_dir == HERE:
+        (HERE/'main-evidence-values.json').write_text(json.dumps(data, indent=2)+'\n')
+    return True
+
 if __name__=='__main__':
-    answer_format_full() or answer_format();span_battery();skill_content();depth();behaviour()
+    answer_format_full() or answer_format();span_battery();skill_content()
+    depth_v2() or depth()
+    behaviour()

@@ -59,6 +59,61 @@ DONE_ROWS = {"q06-bat-a": 467, "q06-bat-b": 467, "q06-depth-a": 467, "q06-depth-
              "t06-bat": 168, "t06-ko": 168}
 
 
+# 2026-09-19: one-layer fill-ins of every depth sweep and knockout, run on the
+# screened groups of each row (the knockout additionally only on its rescued
+# items). With them, both boundaries of a row are read at one-layer resolution
+# on the same items. Used only when every fill-in of the row is complete.
+FILL = {
+    ("MedCalc", "Qwen3-8B"): (["dep1-mc8-a", "dep1-mc8-b", "dep1-mc8-c", "dep1-mc8-d"],
+                              ["ko1-mc8-a", "ko1-mc8-b", "ko1-mc8-c", "ko1-mc8-d", "ko1-mc8-e", "ko1-mc8-f"]),
+    ("TheoremQA", "Qwen3-8B"): (["dep1-tqa8-a", "dep1-tqa8-b", "dep1-tqa8-c", "dep1-tqa8-d"],
+                                ["ko1-tqa8-a", "ko1-tqa8-b", "ko1-tqa8-c"]),
+    ("MedCalc", "Qwen3-0.6B"): (["dep1-mc06-a", "dep1-mc06-b"], ["ko1-mc06"]),
+    ("TheoremQA", "Qwen3-0.6B"): (["dep1-tqa06"], ["ko1-tqa06"]),
+    ("MedCalc", "Mistral-7B"): (["dep1-mcmis"], ["ko1-mcmis"]),
+    ("TheoremQA", "Mistral-7B"): (["dep1-tqamis-a", "dep1-tqamis-b"], ["ko1-tqamis"]),
+}
+DONE_ROWS.update({**{f"dep1-mc8-{x}": 135 for x in "abcd"}, **{f"ko1-mc8-{x}": 134 for x in "abcdef"},
+                  **{f"dep1-tqa8-{x}": 99 for x in "abcd"}, **{f"ko1-tqa8-{x}": 63 for x in "abc"},
+                  "dep1-mc06-a": 362, "dep1-mc06-b": 362, "ko1-mc06": 90,
+                  "dep1-tqa06": 132, "ko1-tqa06": 125, "dep1-mcmis": 92, "ko1-mcmis": 46,
+                  "dep1-tqamis-a": 115, "dep1-tqamis-b": 115, "ko1-tqamis": 65})
+
+
+def ko_curve(tags, groups=None):
+    """Knockout retention by block-from layer, merged across sweep files.
+
+    `load` cannot merge these: a fill-in's `layers`/`ok_block_from` would
+    overwrite the base run's. Here each file contributes its own layers;
+    ok_with / ok_without come from the run that decoded them. Items are the
+    rescued ones (with and not without); with `groups` (the row's screened
+    calculators) only those, i.e. the items its transfer curve is read on.
+    Only layers present for every such item enter the curve.
+    """
+    per = {}
+    for t in tags:
+        for q in sorted(BY.glob(f"*/{t}.jsonl")):
+            for line in open(q, encoding="utf-8"):
+                if not line.strip():
+                    continue
+                r = json.loads(line)
+                d = per.setdefault(r["instance_id"], {"calculator_id": r["calculator_id"], "ko": {}})
+                for k in ("ok_with", "ok_without"):
+                    if k in r:
+                        d[k] = r[k]
+                for L, ok in zip(r.get("layers", []), r.get("ok_block_from", [])):
+                    if L in d["ko"] and d["ko"][L] != ok:
+                        raise ValueError(f"Conflicting knockout L{L} for {r['instance_id']} in {q}")
+                    d["ko"][L] = ok
+    items = [d for d in per.values() if d.get("ok_with") and not d.get("ok_without")]
+    if groups is not None:
+        items = [d for d in items if d["calculator_id"] in groups]
+    if not items:
+        return {}, 0
+    layers = sorted(set.intersection(*(set(d["ko"]) for d in items)))
+    return {L: sum(bool(d["ko"][L]) for d in items) / len(items) for L in layers}, len(items)
+
+
 def complete(tags):
     for t in tags:
         if not list(BY.glob(f"*/{t}.jsonl")):
@@ -99,6 +154,10 @@ def resolved_rows():
         for i, tags in enumerate(NEW.get((task, model), (None,) * 4)):
             if tags and complete(tags):
                 selected[i] = tags
+        fill = FILL.get((task, model))
+        if fill and selected[1] and selected[3] and complete(fill[0] + fill[1]):
+            selected[1] = selected[1] + fill[0]
+            selected[3] = selected[3] + fill[1]
         yield (task, model, nl, layer, *selected)
 
 
@@ -220,7 +279,17 @@ def main():
         cell["rank_n"] = sum(map(len, rkg.values()))
         cell["rank_groups"] = len(rkg)
         cell["depth_n"] = sum(map(len, d.values()))
-        cell["reading"] = reading(load(ko), nl) if ko else None
+        fill = FILL.get((task, model))
+        if ko and fill and set(fill[1]) <= set(ko):
+            # one-layer resolution, on the rescued items of this row's
+            # screened groups: the same items the transfer curve is read on
+            kc, kn = ko_curve(ko, groups=set(d))
+            first = next((Lk for Lk in sorted(kc) if kc[Lk] >= 0.5), None)
+            cell["reading"] = (first / nl, kn) if first is not None else None
+            cell["ko_curve"] = kc
+            cell["paired"] = True
+        else:
+            cell["reading"] = reading(load(ko), nl) if ko else None
         out.append(cell)
 
     fmt = lambda x, p="{:.2f}": "--" if x is None else p.format(x)

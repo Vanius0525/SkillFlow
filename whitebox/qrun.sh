@@ -51,7 +51,7 @@ while true; do
   fi
   rm -f "$IDLE"
   IFS='|' read -r tag mod args <<<"$next"
-  if [ "$mod" = e14 ]; then
+  if [ "$mod" = e14 ] || [ "$mod" = e2 ]; then
     if [ ! -d "$OUT/tA/$tag" ]; then
       src=$(ls -d $B/wbout/*/tA/$tag 2>/dev/null | head -1)
       [ -n "$src" ] && cp -r "$src" "$OUT/tA/$tag" && log "restored $tag from $src"
@@ -64,6 +64,8 @@ while true; do
   log "start $tag (attempt $n)"
   if [ "$mod" = e14 ]; then
     (cd /root/wb/whitebox && exec $PY -u e14_decomp.py $args --run-id "tA/$tag" --resume) >> "$OUT/$tag.log" 2>&1
+  elif [ "$mod" = e2 ]; then
+    (cd /root/wb/whitebox && exec $PY -u e2_patch.py $args --run-id "tA/$tag") >> "$OUT/$tag.log" 2>&1
   else
     (cd /root/wb/howskill && exec $PY -u -m "howskill.$mod" $args --out "$OUT/$tag.jsonl" --resume) >> "$OUT/$tag.log" 2>&1
   fi

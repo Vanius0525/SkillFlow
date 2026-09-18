@@ -20,7 +20,17 @@ mkdir -p "$DEST"
 while true; do
   # *.done: qrun.sh's completion markers, so a rebuilt box does not redo a
   # finished job; tA/: e14_decomp's per-layer directories
-  [ -d /root/out/tA ] && cp -ru /root/out/tA "$DEST/" 2>/dev/null
+  # per file, by size, via a temporary name: `cp -ru` compared mtimes and,
+  # when it caught a layer file between e14's open() and its first flush,
+  # left a 0-byte copy that was never refreshed (d17-neutral L24-26, twice)
+  if [ -d /root/out/tA ]; then
+    find /root/out/tA -type f | while read -r f; do
+      d="$DEST/tA/${f#/root/out/tA/}"
+      if [ ! -f "$d" ] || [ "$(stat -c %s "$f")" != "$(stat -c %s "$d")" ]; then
+        mkdir -p "$(dirname "$d")" && cp -f "$f" "$d.part" 2>/dev/null && mv -f "$d.part" "$d"
+      fi
+    done
+  fi
   for f in /root/out/*.jsonl /root/out/*.log /root/out/*.done; do
     [ -e "$f" ] || continue
     b=$(basename "$f")

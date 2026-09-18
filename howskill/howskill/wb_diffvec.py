@@ -391,6 +391,9 @@ def main(argv=None):
     p.add_argument("--attn", default="sdpa", choices=["sdpa", "eager"])
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", required=True)
+    p.add_argument("--resume", action="store_true",
+                   help="accepted for the queue runner; the output is written "
+                        "once, at the end, so a rerun starts over")
     a = p.parse_args(argv)
 
     import torch

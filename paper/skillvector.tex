@@ -81,8 +81,8 @@ support the improvement, or is the content-specific difference responsible?
 
 We subtract hidden states and inject each difference back into the model. On
 the synthetic task, the change from no skill to a wrong skill recovers only
-$0.062$ of the correct skill's gain, whereas the correct-minus-wrong difference
-recovers $0.812$. Recovery also depends on answer format: the best state
+$0.098$ of the correct skill's gain, whereas the correct-minus-wrong difference
+recovers $0.805$. Recovery also depends on answer format: the best state
 replacement recovers $1.000$ for one-token multiple choice, $0.235$ for a short
 number and $0.003$ for step-by-step reasoning. Success at the final prompt
 position can therefore reflect transfer of a compact answer decision, while
@@ -294,9 +294,9 @@ sample sets; complete earlier measurements are retained and identified.
 Writing the receiver's own states back should leave its output unchanged.
 This identity control exposed a mismatch: capture omitted an attention mask
 that decoding supplied, changing $108/1{,}766$ Qwen3-8B outcomes ($6.1\%$).
-Matching the masks restored exact agreement on $80/80$ items across two reruns.
-Main span results and the clinical position comparison use the correction;
-the synthetic experiments remain \emph{pre-fix}. Appendix~\ref{app:limits} records
+Matching the masks restores exact agreement in every corrected run, for
+example on all $467$ MedCalc items and on all $9{,}308$ item--layer pairs of the
+synthetic decomposition. All main-text interventions use the correction. Appendix~\ref{app:limits} records
 provenance and Appendix~\ref{app:detail} implementation details. Small numerical
 discrepancies can propagate through long generations \citep{he2025nondeterminism}.
 
@@ -304,18 +304,18 @@ discrepancies can propagate through long generations \citep{he2025nondeterminism
 \label{sec:decomp}
 
 \paragraph{The smaller content component carries the improvement.}
-On the synthetic task with Qwen3-1.7B, we inject each component of
-Eq.~\ref{eq:decomp} at the final prompt position. On rescued items, the
-presence component recovers $0.062$ of the gain, matching the wrong-skill
-baseline; the content component recovers $0.812$, compared with $1.000$ for
-full state replacement. The effect extends to failures: across rescued,
-persistent-failure, kept and broken items, replacement gives accuracies of
-$1.000/0.000/1.000/0.000$, while content injection gives
-$0.812/0.112/1.000/0.125$. Content injection thus broadly reproduces both the
+On the synthetic task with Qwen3-1.7B ($358$ items, $82$ rescued), we inject
+each component of Eq.~\ref{eq:decomp} at the final prompt position. On rescued
+items, the presence component recovers $0.098$ of the gain, exactly the
+wrong-skill baseline; the content component recovers $0.805$, compared with
+$1.000$ for full state replacement. The effect extends to failures: across
+rescued, persistent-failure, kept and broken items, replacement gives
+accuracies of $1.000/0.000/1.000/0.000$, while content injection gives
+$0.805/0.075/1.000/0.186$. Content injection thus broadly reproduces both the
 benefits and the errors induced by the skill. Recovery also depends on the
-subtraction baseline. Using a skill with corrupted numbers gives
-$0.23$--$0.31$, and using shuffled sentences gives $0.19$--$0.29$, compared
-with $0.812$ for an unrelated skill. The content component must therefore be
+subtraction baseline. Using a skill with corrupted numbers or with shuffled sentences gives
+$0.17$--$0.26$ over layers $21$--$27$, compared with $0.805$ for an unrelated
+skill. The content component must therefore be
 interpreted relative to the specified wrong skill.
 
 \paragraph{Single-position recovery depends on answer format.}

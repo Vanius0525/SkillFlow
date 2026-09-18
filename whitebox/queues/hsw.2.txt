@@ -1,1 +1,2 @@
 dep1-mc06-a|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --per-calc 20 --max-calcs 55 --max-new 900 --mode decode --filler fixedskill --arms real --layers 1,3,5,7,15,17,18 --calcs 11,13,15,16,17,18,19,2,21,22,24,25,27,29,3,30,31,36,38,4,40,43,44,45,48,49,5,57,58,59,60,64,66,67,68,69,7,8
+rd-e2|e2|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-1.7B --tasks tasks/tier_a/tasks.large.jsonl --skill tasks/tier_a/SKILL.zorb-units.md --mode mc --limit 358 --filler tasks/filler-neutral.md --dtype float32

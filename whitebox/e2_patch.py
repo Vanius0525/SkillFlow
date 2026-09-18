@@ -231,8 +231,16 @@ def main():
                          "is undefined, not small. The curve SHAPE stays "
                          "diagnostic; the ratio does not.")
     ap.add_argument("--device", default="cuda")
+    ap.add_argument("--dtype", default=None,
+                    help="sets WB_DTYPE (Tier A logprobs are read in float32)")
+    ap.add_argument("--resume", action="store_true",
+                    help="accepted for the queue runner; this script writes its "
+                         "result once, at the end, and a rerun starts over")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
+    if args.dtype:
+        import os
+        os.environ["WB_DTYPE"] = args.dtype
     NL = chr(10)
 
     run_id = args.run_id or time.strftime("%Y%m%d-%H%M%S")
