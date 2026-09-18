@@ -480,7 +480,7 @@ states may activate pathways absent from an unpatched run
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{fig-rank-medcalc.pdf}
+\includegraphics[width=0.64\textwidth]{fig-rank-medcalc.pdf}
 \caption{Recovery after retaining $k$ leading centred directions and restoring
 the positional mean, on MedCalc after the fix. Each model is injected at an
 early layer. Despite a fourfold difference in hidden width, Qwen3-0.6B and
@@ -536,6 +536,24 @@ corrected implementation; attention knockout does not use state capture.}
 \label{fig:transferreading}
 \end{figure}
 
+\begin{table}[t]
+\caption{Replication with the corrected implementation. Injection layers are
+$8$ for Qwen3-8B, $6$ for Qwen3-0.6B and $4$ for Mistral-7B. Recovery
+intervals resample skill groups. Max control includes half-dose, other-skill,
+permutation and noise comparisons, including same-family means available on
+$41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n$ describes the battery;
+Mistral's MedCalc rank/depth results retain their earlier completed subsets.
+Handover brackets the transfer boundary as a fraction of model depth; reading
+is the first tested attention-knockout depth retaining at least half of rescued
+items. $k^{*}$ is the rank knee on the fixed grid. ``--'' marks a measurement
+not run after the fix.}
+\label{tab:replication}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\input{tab-replication}
+\end{table}
+
 \paragraph{Adding late intervention layers does not restore transfer.}
 To test whether a single late injection is simply too weak, we replace span
 states repeatedly within consecutive layer windows. The latest complete
@@ -576,24 +594,6 @@ separately to each run. Table~\ref{tab:replication} distinguishes completed
 comparisons from missing controls or attention knockouts. Results for
 Qwen3-1.7B, where skills rescue only $8$--$11\%$ of items, appear in Appendix
 Table~\ref{tab:laddermodels}.
-
-\begin{table}[t]
-\caption{Replication with the corrected implementation. Injection layers are
-$8$ for Qwen3-8B, $6$ for Qwen3-0.6B and $4$ for Mistral-7B. Recovery
-intervals resample skill groups. Max control includes half-dose, other-skill,
-permutation and noise comparisons, including same-family means available on
-$41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n$ describes the battery;
-Mistral's MedCalc rank/depth results retain their earlier completed subsets.
-Handover brackets the transfer boundary as a fraction of model depth; reading
-is the first tested attention-knockout depth retaining at least half of rescued
-items. $k^{*}$ is the rank knee on the fixed grid. ``--'' marks a measurement
-not run after the fix.}
-\label{tab:replication}
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\input{tab-replication}
-\end{table}
 
 Span recovery ranges from $0.74$ to $0.94$ across the six model--task
 combinations. The largest available control is $0.35$, for a same-family

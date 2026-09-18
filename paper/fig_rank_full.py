@@ -15,9 +15,12 @@ What changed from the figs.py version, and why:
     restricted per run, and the intervals bootstrap calculators (the unit the
     restriction and the dependence are defined on), not items.
 
-One panel per model, shared y. Solid: top-k centred directions (Eq. rank);
-dashed, hollow: bottom-k. The dotted horizontal line is that model's own
-untruncated transplant. k* is the pre-registered grid knee (replication.kstar).
+All three models share one axis, as in the figs.py layout, so the knees can be
+compared directly. Solid: top-k centred directions (Eq. rank); dashed, hollow
+squares in the model's colour: bottom-k. rho is normalised by the correct skill
+in the prompt (1.0) and the unpatched receiver (0.0); each model's untruncated
+transplant is in the caption. k* is the pre-registered grid knee
+(replication.kstar) and is quoted in the legend with n.
 """
 from __future__ import annotations
 
@@ -31,21 +34,22 @@ import matplotlib.pyplot as plt
 import replication as rep
 
 HERE = pathlib.Path(__file__).resolve().parent
-plt.rcParams.update({"font.size": 8, "axes.titlesize": 8.5, "axes.labelsize": 8,
-                     "xtick.labelsize": 7, "ytick.labelsize": 7, "pdf.fonttype": 42,
-                     "legend.fontsize": 6.8})
+plt.rcParams.update({"pdf.fonttype": 42})
 
-# (label, width, inject layer, [full tags], [fallback tags], colour, width-prediction)
+# (label, width, inject layer, [full tags], [fallback tags], colour, marker style)
 MODELS = [
     ("Qwen3-8B", 4096, 8,
      ["full-battery-a", "full-rank-a", "full-rank-b", "x8-rank-x", "x8-rank-lo"],
-     ["full-battery-a", "full-rank-a", "full-rank-b"], "#0072B2"),
+     ["full-battery-a", "full-rank-a", "full-rank-b"], "#0072B2",
+     dict(marker="o", lw=2.0, ms=5.5, capsize=3)),
     ("Qwen3-0.6B", 1024, 6,
      ["q06-bat-a", "q06-rank-a", "q06-rank-b", "q06-rank-lo"],
-     ["fixmask-lad06-rank"], "#56B4E9"),
+     ["fixmask-lad06-rank"], "#56B4E9",
+     dict(marker="^", lw=1.6, ms=5.0, capsize=2)),
     ("Mistral-7B", 4096, 4,
      ["mis-bat-a", "mis-rank-a", "mis-rank-b", "mis-rank-lo"],
-     ["mis3-rank-L4"], "#CC79A7"),
+     ["mis3-rank-L4"], "#CC79A7",
+     dict(marker="D", lw=1.6, ms=4.5, capsize=2)),
 ]
 TOP = (1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 96, 128, 256)
 BOTTOM = (4, 16, 32, 64, 128)
@@ -73,9 +77,12 @@ def main():
     ap.add_argument("--out", default=str(HERE))
     out = pathlib.Path(ap.parse_args().out)
     out.mkdir(parents=True, exist_ok=True)
-    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.35), sharey=True, layout="constrained")
+    fig, ax = plt.subplots(figsize=(5.8, 3.7))
     summary = {}
-    for ax, (name, width, L, tags, fallback, col) in zip(axes, MODELS):
+    # a small multiplicative dodge on the log axis keeps overlapping error bars
+    # of the three models legible at the same k
+    dodge = {"Qwen3-8B": 1.0, "Qwen3-0.6B": 2 ** -0.07, "Mistral-7B": 2 ** 0.07}
+    for name, width, L, tags, fallback, col, sty in MODELS:
         # Share the table's completed-run selection. File existence alone is
         # insufficient: current new rank shards contain only partial samples.
         used = next(row[6] for row in rep.resolved_rows()
@@ -90,44 +97,61 @@ def main():
                          "full_ci": [fa, fb], "kstar": ks,
                          "top": {k: [v, a, b] for k, v, a, b in top},
                          "bottom": {k: [v, a, b] for k, v, a, b in bot}}
+        dx = dodge[name]
+        label = f"{name}, layer {L} ($D\\!=\\!{width}$, $n\\!=\\!{n}$)"
+        if ks:
+            label += f", $k^*\\!=\\!{ks:.0f}$"
         if top:
-            ax.errorbar([k for k, *_ in top], [v for _, v, *_ in top],
+            ax.errorbar([k * dx for k, *_ in top], [v for _, v, *_ in top],
                         yerr=[[max(v - a, 0) for _, v, a, _ in top],
                               [max(b - v, 0) for _, v, _, b in top]],
-                        color=col, marker="o", ms=3.6, lw=1.6, capsize=1.6,
-                        elinewidth=0.7, label="top $k$ directions")
+                        color=col, alpha=0.95, label=label, **sty)
         if bot:
-            ax.errorbar([k for k, *_ in bot], [v for _, v, *_ in bot],
-                        yerr=[[max(v - a, 0) for _, v, a, _ in bot],
-                              [max(b - v, 0) for _, v, _, b in bot]],
-                        color=col, marker="s", ms=3.8, lw=1.1, ls="--", mfc="white",
-                        mew=1.1, capsize=1.6, elinewidth=0.7, label="bottom $k$ (control)")
-        if full is not None:
-            ax.axhline(full, color=col, ls=":", lw=1.0)
-            ax.text(1.05, full + 0.03, f"untruncated {full:.2f}", fontsize=6.4, color="#333333")
-        if ks:
-            ax.axvline(ks, color="#777777", lw=0.8, ls="-.", zorder=0)
-            ax.text(ks * 1.08, 0.04, f"$k^*={ks:.0f}$", fontsize=6.6, color="#333333")
-        if name == "Qwen3-0.6B":
-            ax.axvline(12, color="#bbbbbb", lw=0.8, ls=":", zorder=0)
-            ax.text(12 / 1.12, 0.62, "width-proportional\nprediction", fontsize=5.8,
-                    color="#777777", ha="right")
-        ax.axhline(0, color="#8c6d1f", lw=0.8, zorder=0)
-        ax.set_xscale("log", base=2)
-        ax.set_xticks([4, 16, 64, 128])
-        ax.set_xticklabels(["4", "16", "64", "128"])
-        ax.set_xlim(3, 160)
-        ax.set_ylim(-0.08, 1.12)
-        ax.set_title(f"{name} ($D={width}$, layer {L})", loc="left")
-        ax.text(0.98, 0.02, f"n = {n} ({len(groups)} calc.)", transform=ax.transAxes,
-                ha="right", va="bottom", fontsize=6.2, color="#555555")
-        ax.set_xlabel("retained centred directions $k$")
-        ax.spines[["top", "right"]].set_visible(False)
-        ax.grid(axis="y", color="#eeeeee", lw=0.6, zorder=-1)
-    axes[0].set_ylabel(r"recovery $\rho$")
-    axes[0].legend(loc="upper left", frameon=False, bbox_to_anchor=(0.0, 0.80))
+            # the control keeps the discarded half of the spectrum at the same
+            # rank; drawn without error bars, as in the original layout
+            ax.plot([k * dx for k, *_ in bot], [v for _, v, *_ in bot], ls="--",
+                    marker="s", color=col, ms=6, mfc="white", mew=1.5, lw=1.2)
+    ax.plot([], [], ls="--", marker="s", color="#666666", ms=6, mfc="white", mew=1.5,
+            lw=1.2, label="bottom $k$ directions (control)")
+    ax.annotate("width-proportional\nprediction for 0.6B", xy=(12, 0.5),
+                xytext=(4.2, 0.72), fontsize=6.8, color="#777777", ha="center",
+                arrowprops=dict(arrowstyle="->", color="#999999", lw=0.9))
+    ax.axvline(12, color="#999999", ls=":", lw=1.0, zorder=0)
+    ax.axhline(1.0, color="#009E73", ls="--", lw=1.1, zorder=0)
+    # rho is normalised by the correct skill in the prompt, not by the
+    # untruncated transplant, so this line is the skill itself
+    ax.text(150, 1.02, "the correct skill in the prompt", fontsize=7,
+            color="#009E73", ha="right")
+    ax.axhline(0.0, color="#8c6d1f", ls="-", lw=1.0, zorder=0)
+    ax.text(1.05, -0.10, "the wrong-skill receiver, unpatched", fontsize=7,
+            color="#8c6d1f")
+    ax.set_xscale("log", base=2)
+    ax.set_xticks([1, 2, 4, 8, 16, 32, 64, 128])
+    ax.set_xticklabels([1, 2, 4, 8, 16, 32, 64, 128], fontsize=8)
+    ax.set_xlim(0.85, 160)
+    ax.set_xlabel("rank $k$ the content matrix is truncated to, before "
+                  "injection", fontsize=9)
+    ax.set_ylabel("recovery $\\rho$, as a fraction of\nthe skill's own effect",
+                  fontsize=9)
+    ax.set_ylim(-0.20, 1.18)
+    ax.tick_params(axis="y", labelsize=8)
+    ax.spines[["top", "right"]].set_visible(False)
+    handles, labels = ax.get_legend_handles_labels()
+    # control first, then the models in MODELS order, as in the original legend
+    # (matplotlib lists plain lines before errorbar containers)
+    rank_of = lambda lab: (-1 if lab.startswith("bottom") else
+                           next(i for i, m in enumerate(MODELS) if lab.startswith(m[0] + ",")))
+    order = sorted(range(len(labels)), key=lambda i: rank_of(labels[i]))
+    ax.legend([handles[i] for i in order], [labels[i] for i in order],
+              fontsize=7.0, frameon=False, loc="upper center",
+              bbox_to_anchor=(0.5, -0.20), ncol=2, columnspacing=1.2,
+              handletextpad=0.5)
+    ax.set_title("the same truncation on three models, each injected at an "
+                 "early layer", fontsize=8.6)
+    fig.tight_layout()
     fig.savefig(out / "fig-rank-medcalc.pdf", bbox_inches="tight")
     fig.savefig(out / "fig-rank-medcalc.png", bbox_inches="tight", dpi=200)
+    plt.close(fig)
     (out / "fig-rank-values.json").write_text(json.dumps(summary, indent=1))
     for k, v in summary.items():
         print(k, v["tags"], "n", v["n"], "groups", v["groups"], "full %.2f" % v["full"],

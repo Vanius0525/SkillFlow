@@ -54,13 +54,13 @@
     "howskill/results/p8-step/p8-ctrl_neutral_no_tool.jsonl": "fc3c7a48052615aeeb6dcac8ef26352affb8e39f4563f96644187464d7f2772b"
   },
   "artifact_sha256": {
-    "skillvector.tex": "df39c48f45dabe49c14f8d9c24c224885a38136a8db6c29a938995f1a14f7f15",
+    "skillvector.tex": "db2d0a9e6720ed92f3695c31010062dcf2f07579acf27aa23a12acc04907c660",
     "tab-answer-format.tex": "f09f6a480f27a25bd46c40b4f2c8515efee23048de4a9d8d3d8d458d1e446a95",
-    "tab-big40.tex": "98df11905faa2d5ad5fea34d0fe0384fdc5fca930883a1e939384a28127da3be",
+    "tab-big40.tex": "b4dbb79797c1e0e1531ed649bd7b0e7ad4edd7faeb30f0c19ba91033244ab346",
     "tab-skill-content.tex": "babcffd1366b64cbe7abcbfd806a6cb76adc034d2d0a0c9852c06d31e6adba09",
     "tab-replication.tex": "f7756442bdc2a2b621139183fc528aadb54a26e44e5284e035b9cb733d85837b",
-    "fig-channels-medcalc.pdf": "f555c698e69292e801385aef87302fe1fb61aa631804507db1fba62a2bca9727",
-    "fig-rank-medcalc.pdf": "f6fc488f2dc7ebbef4c81b83d848fdc5016afe3076862733ae7a3d5f26a953a6",
+    "fig-channels-medcalc.pdf": "d03ec05cf547c911f141fa691461f57c2c53f6694d5d8cf444f3c173b36b957c",
+    "fig-rank-medcalc.pdf": "3f802b303b6d91e7e3636b08ec16c8af1248f363b51758f59e1dc4f25974b6ba",
     "fig-transfer-reading.pdf": "b7a5a0569ad7a86b93a92d050d4c7e3d40ecf5e9d51c1bb5b0e5b1e9f5c922d2"
   },
   "selection_policy": "latest complete local measurement family; no partial curves or incompatible baseline merges",

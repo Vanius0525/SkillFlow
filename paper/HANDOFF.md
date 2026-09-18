@@ -1,6 +1,16 @@
 # SkillVector 论文重写交接
 
-更新日期：2026-09-18。
+更新日期：2026-09-18（图表样式回退为当日第二轮）。
+
+## 2026-09-18 图表样式与分页回退到旧版布局
+
+- 用户任务：正文逻辑、表达和数据不改，把图表样式和分页改回桌面 `ICLR_2027__SkillVector/paper_` 那一版的风格和布局；数据继续用本仓库的新结果；图 2 的几条曲线要画在同一个坐标系里。
+- 图 2（`fig_rank_full.py`）：三个面板合并为一个坐标系，沿用旧版 `figs.fig_rank` 的样式（标记 o/^/D、1.0 处绿色虚线、0 处接收者线、12 处的宽度比例预测标注、图例放在图下方两列），tex 里的宽度恢复为 `0.64\textwidth`。bottom-k 对照按各模型颜色画空心方块虚线，与旧版一样不画误差条；图例写入 n 和 k*。为避免三条曲线在同一 k 上重叠，加了约 ±5% 的对数轴横向错位（dodge）。标题从 “before its own handover” 改为 “at an early layer”，和新图注一致（0.6B 在 MedCalc 上没有测 handover）。
+- 图 1（`fig_channels_full.py`）：改用旧版 `figs.fig_channels` 的样式：每个面板第一根柱子用深色，标题里写 n，每个面板在最低柱下方标出自己的基线（wrong-skill receiver / correct skill），x 轴标签也用旧版的。上面板的 y 轴标签缩短成 `last $\leq$256 prompt positions`，否则坐标轴被挤窄，两条基线标签会重叠。
+- 表 2（`main_evidence.span_battery`）：改为旧版排版：表头小写、`CI$_{95}$`、区间写成 `[a,\,b]`、recovery 带符号，三条参照行（correct skill / identity / unpatched）用斜体；保留新增的 n 列（same-family 只有 41 项）。`check_main_data.py` 里对应的 TeX 格式断言也同步改了。表 1、3、4 的样式新旧版本本来就一样。
+- 分页：把 `tab:replication` 的 table 环境（内容不变）从 §4.7 开头移到图 3 之后，得到和旧版相同的分页：p5 表1+图1，p6 表2+表3，p7 图2，p8 图3+表4，p9 正文与结论。正文仍是 9 页，全文 42 页，0 error、0 未定义引用、0 overfull。
+- 验证：图 1、图 2 生成器重跑后，`fig-channels-values.json` 和 `fig-rank-values.json` 与改动前逐字节一致；`battery-values.json` 没有变化；`check_main_data.py` 27207 项全部通过（manifest 哈希已更新）；和 HEAD 比较，tex 的行集合只有 includegraphics 宽度那一行不同。
+- 遗留：图 2 按旧版宽度 0.64\textwidth 缩放后，图例字号实际约 4pt，偏小（旧版也是这样），审稿时可能被提意见；如果要放大，需要从别处省出大约 3 行，否则会超 9 页。`overleaf-skillvector.zip` 仍然没有更新（原因同下一节）。
 
 ## 2026-09-18 正文逐段润色
 

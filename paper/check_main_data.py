@@ -95,7 +95,7 @@ for arm, values in battery['arms'].items():
     close(f'battery {arm}: accuracy',mean(rows,key),values['accuracy'])
     close(f'battery {arm}: paired recovery',rho(base,key),values['rho'])
     lo, hi = values['ci']
-    tail = f'& ${len(rows)}$ & ${values["accuracy"]:.3f}$ & $[{lo:.3f},{hi:.3f}]$ & ${values["rho"]:.2f}$'
+    tail = f'& ${len(rows)}$ & ${values["accuracy"]:.3f}$ & $[{lo:.3f},\\,{hi:.3f}]$ & ${values["rho"]:+.2f}$'
     check(f'battery {arm}: TeX values',tail in table)
 check('same-family row not normalised by 135-item baseline', battery['arms']['dnear_L8']['n']==41 and round(battery['arms']['dnear_L8']['rho'],2)==.12)
 

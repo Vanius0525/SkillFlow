@@ -50,7 +50,7 @@ def main():
     top = []
     for arm, label in (("tq1", "last prompt position"),
                        ("tq16", "last 16 prompt positions"),
-                       ("tq256", "last up to 256 positions after the skill")):
+                       ("tq256", r"last $\leq$256 prompt positions")):
         best = None
         for L in [8]:
             key = f"ok_{arm}_L{L}"
@@ -72,31 +72,44 @@ def main():
     gold = acc_ci(groups, "ok_gold_in_context")
     recv = acc_ci(groups, "ok_receiver")
 
-    fig, (axT, axB) = plt.subplots(2, 1, figsize=(4.9, 3.1), sharex=True,
-                                   gridspec_kw={"height_ratios": [3, 5]}, layout="constrained")
-    for ax, items, title in ((axT, top, "states written after the skill span (layer 8)"),
-                             (axB, bottom, "written over the skill's own span (layer 8)")):
+    # Layout and styling follow figs.fig_channels: horizontal bars, the first
+    # arm of each panel in the dark shade, each panel's own correct-skill and
+    # receiver lines labelled under its lowest bar.
+    fig, (axT, axB) = plt.subplots(2, 1, figsize=(4.9, 3.0), sharex=True,
+                                   gridspec_kw={"height_ratios": [len(top) + 0.7,
+                                                                  len(bottom) + 0.7]})
+    for ax, items, title in (
+            (axT, top, f"written at the last prompt positions, after the skill ($n={n}$)"),
+            (axB, bottom, f"written over the skill's own span ($n={n}$)")):
         y = list(range(len(items)))[::-1]
         vals = [v[1][0] for v in items]
         lo = [max(v[1][0] - v[1][1], 0) for v in items]
         hi = [max(v[1][2] - v[1][0], 0) for v in items]
-        cols = ["#0072B2" if (ax is axB and i == 0) else "#a6cee3" for i in range(len(items))]
+        cols = ["#0072B2"] + ["#a6cee3"] * (len(items) - 1)
         ax.barh(y, vals, color=cols, height=0.6, edgecolor="#31688e", lw=0.4)
         ax.errorbar(vals, y, xerr=[lo, hi], fmt="none", ecolor="#333333", capsize=2, lw=0.9)
         for yi, v, h in zip(y, vals, hi):
-            ax.text(min(v + h + 0.02, 1.08), yi, f"{v:.2f}", va="center", fontsize=7)
+            ax.text(min(v + h + 0.02, 1.16), yi, f"{v:.2f}", va="center", fontsize=7,
+                    color="#333333")
         ax.set_yticks(y)
-        ax.set_yticklabels([v[0] for v in items], fontsize=7.4)
+        ax.set_yticklabels([v[0] for v in items], fontsize=7.6)
         ax.axvline(gold[0], color="#009E73", lw=1.1, ls="--", zorder=0)
         ax.axvline(recv[0], color="#D55E00", lw=1.1, ls=":", zorder=0)
-        ax.set_title(title, fontsize=8.6, loc="left")
+        ax.set_title(title, fontsize=8.8, loc="left", pad=6)
         ax.set_xlim(0, 1.12)
         ax.spines[["top", "right"]].set_visible(False)
-    axT.text(.98, .45, f"correct skill: {gold[0]:.2f}", transform=axT.transAxes,
-             fontsize=6.6, color="#009E73", ha="right", va="center")
-    axB.set_xlabel(f"Accuracy ({n} items; receiver = {recv[0]:.2f})", fontsize=7.6)
+        ax.tick_params(axis="x", labelsize=7.5)
+        # baseline labels go UNDER the lowest bar, not over the title
+        ax.text(recv[0] + 0.012, -0.72, f"wrong-skill receiver ({recv[0]:.2f})",
+                fontsize=6.6, color="#D55E00", va="center")
+        ax.text(gold[0] - 0.012, -0.72, f"correct skill ({gold[0]:.2f})",
+                fontsize=6.6, color="#009E73", va="center", ha="right")
+        ax.set_ylim(-1.1, len(items) - 0.4)
+    axB.set_xlabel("accuracy on the rescued items the skill is needed for", fontsize=8)
+    fig.tight_layout()
     fig.savefig(out / "fig-channels-medcalc.pdf", bbox_inches="tight")
     fig.savefig(out / "fig-channels-medcalc.png", bbox_inches="tight", dpi=200)
+    plt.close(fig)
     vals = {"sources": tags, "n": n, "groups": len(groups), "gold": gold[:3], "receiver": recv[:3],
             "top": {a: {"layer": L, "acc": v[:3], "n": v[3]} for _, v, a, L in top},
             "bottom": {a: {"acc": v[:3], "n": v[3]} for _, v, a, _ in bottom}}

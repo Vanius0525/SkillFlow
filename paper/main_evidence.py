@@ -18,26 +18,29 @@ plt.rcParams.update({'font.size':8, 'axes.titlesize':9, 'axes.labelsize':8,
 def span_battery():
     tags = ['full-battery-a', 'full-battery-b']
     groups = rep.restricted(rep.load(tags))
-    arms = [('Correct skill in context', 'gold_in_context'),
-            (r'$h_{\mathrm{recv}}+d$ (full span)', 'real_L8'),
-            ('Correct content, shared prefix', 'realm_L8'),
-            (r'Half dose ($\alpha=0.5$)', 'a0.5_L8'),
-            ('Another skill (individual donor)', 'dcross_L8'),
-            ('Mean from another skill family', 'dfar_L8'),
-            ('Mean from the same skill family', 'dnear_L8'),
-            ('Positions permuted', 'dshuf_L8'),
-            ('Norm-matched Gaussian noise', 'drand_L8'),
-            ('Identity intervention', 'self_L8'),
-            ('Wrong skill, unpatched', 'receiver')]
+    # Typeset as the earlier tab-big40: lower-case labels, reference rows
+    # (the correct skill, the identity arm, the unpatched receiver) in italics,
+    # CI_95 and a signed recovery column.
+    arms = [(r'\emph{correct skill in context}', 'gold_in_context'),
+            (r'$h_{\text{recv}}+\dvec$ \ (full span)', 'real_L8'),
+            ('correct content, shared prefix', 'realm_L8'),
+            (r'half dose ($\alpha=0.5$)', 'a0.5_L8'),
+            ('another skill (individual donor)', 'dcross_L8'),
+            ('mean from another skill family', 'dfar_L8'),
+            ('mean from the same skill family', 'dnear_L8'),
+            ('positions permuted', 'dshuf_L8'),
+            ('norm-matched Gaussian noise', 'drand_L8'),
+            (r'\emph{identity intervention}', 'self_L8'),
+            (r'\emph{wrong skill, unpatched}', 'receiver')]
     out = [r'\begin{tabular}{@{}lrccc@{}}', r'\toprule',
-           r'Intervention & $n$ & Accuracy & 95\% CI & Recovery $\rho$ \\', r'\midrule']
+           r'intervention & $n$ & accuracy & CI$_{95}$ & recovery $\rho$ \\', r'\midrule']
     data = {'sources': tags, 'groups': len(groups), 'arms': {}}
     for label, arm in arms:
         key = 'ok_' + arm
         mean, lo, hi, n, ng = rep.accuracy(groups, key)
         value = rep.rho(groups, key)
         data['arms'][arm] = dict(n=n, groups=ng, accuracy=mean, ci=[lo,hi], rho=value)
-        out.append(f'{label} & ${n}$ & ${mean:.3f}$ & $[{lo:.3f},{hi:.3f}]$ & ${value:.2f}$ '+r'\\')
+        out.append(f'{label} & ${n}$ & ${mean:.3f}$ & $[{lo:.3f},\\,{hi:.3f}]$ & ${value:+.2f}$ '+r'\\')
     out += [r'\bottomrule', r'\end{tabular}']
     (HERE/'tab-big40.tex').write_text('\n'.join(out)+'\n')
     (HERE/'battery-values.json').write_text(json.dumps(data,indent=2)+'\n')
