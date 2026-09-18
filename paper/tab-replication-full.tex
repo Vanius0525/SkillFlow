@@ -1,0 +1,32 @@
+\begin{tabular}{@{}p{0.15\textwidth}p{0.22\textwidth}p{0.57\textwidth}@{}}
+\toprule
+task / model & measurement & values \\
+\midrule
+MedCalc / Qwen3-8B & battery, L8 ($n=135$, 14 groups) & transplant 0.89, own $d$ on shared prefix 0.65, $\alpha{=}0.5$ 0.04, another skill 0.05, another family 0.05, same family 0.12 ($n=41$), permuted 0.05, noise 0.02, null 0.00 \\
+ & sufficiency ($n=135$) & L0 0.98, L4 0.98, L8 0.89, L12 0.74, L13 0.16, L14 0.16, L15 0.06, L16 0.06, L17 0.07, L18 0.03, L19 0.02, L20 0.03 \\
+ & necessity ($n=466$ rescued) & L0 0.11, L4 0.23, L8 0.14, L12 0.10, L16 0.10, L20 0.18, L24 0.46, L28 0.79, L32 0.91 \\
+ & rank, L8 ($n=135$) & $k{=}4$ 0.07, $k{=}16$ 0.05, $k{=}32$ 0.12, $k{=}64$ 0.63, $k{=}128$ 0.77, full 0.89, bottom-16 0.04, bottom-64 0.03, $k^{*}$ 47 \\
+\midrule
+TheoremQA / Qwen3-8B & battery, L8 ($n=99$, 75 groups) & transplant 0.84, own $d$ on shared prefix 0.86, $\alpha{=}0.5$ 0.19, another skill 0.25, permuted 0.24, noise 0.22, null 0.00 \\
+ & sufficiency ($n=99$) & L0 1.00, L4 0.94, L8 0.84, L12 0.61, L14 0.37, L16 0.19, L20 0.14 \\
+ & necessity ($n=106$ rescued) & L0 0.31, L4 0.32, L8 0.38, L12 0.35, L16 0.38, L20 0.53, L24 0.70, L28 0.83, L32 0.90 \\
+ & rank, L8 ($n=99$) & $k{=}4$ 0.17, $k{=}16$ 0.24, $k{=}32$ 0.30, $k{=}64$ 0.54, $k{=}128$ 0.67, full 0.84, bottom-16 0.10, bottom-64 0.13, $k^{*}$ 50 \\
+\midrule
+MedCalc / Qwen3-0.6B & battery, L6 ($n=204$, 35 groups) & transplant 0.89, null 0.00 \\
+ & rank, L6 ($n=204$) & $k{=}4$ 0.00, $k{=}16$ 0.02, $k{=}32$ 0.21, $k{=}64$ 0.74, $k{=}128$ 0.72, full 0.89, bottom-16 0.02, bottom-64 0.02, $k^{*}$ 40 \\
+\midrule
+TheoremQA / Qwen3-0.6B & battery, L6 ($n=132$, 97 groups) & transplant 0.74, null 0.00 \\
+ & sufficiency ($n=132$) & L0 0.97, L3 0.88, L6 0.74, L8 0.69, L9 0.65, L10 0.64, L12 0.33, L16 0.28 \\
+ & rank, L6 ($n=132$) & $k{=}4$ 0.06, $k{=}16$ 0.09, $k{=}32$ 0.14, $k{=}64$ 0.43, $k{=}128$ 0.61, full 0.74, bottom-16 0.06, bottom-64 0.08, $k^{*}$ 52 \\
+\midrule
+MedCalc / Mistral-7B & battery, L4 ($n=92$, 20 groups) & transplant 0.84, own $d$ on shared prefix 0.53, $\alpha{=}0.5$ 0.19, another skill 0.16, another family 0.28, same family 0.35 ($n=31$), permuted 0.16, noise 0.14, null 0.00 \\
+ & sufficiency ($n=79$) & L0 1.00, L1 0.98, L2 1.00, L3 1.02, L4 0.98, L5 0.90, L6 0.76, L7 0.49, L10 0.35, L12 0.22, L14 0.24, L16 0.22, L20 0.10, L24 0.06 \\
+ & necessity ($n=72$ rescued) & L0 0.11, L4 0.17, L8 0.12, L12 0.24, L16 0.24, L20 0.26, L24 0.42, L28 0.58 \\
+ & rank, L4 ($n=92$) & $k{=}4$ 0.17, $k{=}16$ 0.20, $k{=}32$ 0.14, $k{=}64$ 0.29, $k{=}128$ 0.71, full 0.92, bottom-16 0.08, bottom-64 0.17, $k^{*}$ 84 \\
+\midrule
+TheoremQA / Mistral-7B & battery, L4 ($n=115$, 94 groups) & transplant 0.94, own $d$ on shared prefix 0.80, $\alpha{=}0.5$ 0.27, another skill 0.20, permuted 0.17, noise 0.13, null 0.00 \\
+ & sufficiency ($n=115$) & L0 1.01, L2 0.96, L4 0.94, L5 1.00, L6 0.82, L7 0.49, L10 0.30, L14 0.11, L20 0.05 \\
+ & necessity ($n=82$ rescued) & L0 0.09, L4 0.10, L8 0.10, L12 0.26, L16 0.48, L20 0.72, L24 0.85, L28 0.89 \\
+ & rank, L4 ($n=115$) & $k{=}4$ 0.17, $k{=}16$ 0.20, $k{=}32$ 0.23, $k{=}64$ 0.48, $k{=}128$ 0.76, full 0.94, bottom-16 0.14, bottom-64 0.13, $k^{*}$ 64 \\
+\bottomrule
+\end{tabular}

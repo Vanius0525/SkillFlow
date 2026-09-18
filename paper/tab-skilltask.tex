@@ -1,0 +1,18 @@
+\begin{tabular}{@{}lccc@{}}
+\toprule
+donor written over the document's span & accuracy & CI$_{95}$ & fraction \\
+\midrule
+\emph{the filler document, unpatched} & $0.275$ & & $0.00$ \\
+\emph{the gold document in context} & $0.925$ & & $1.00$ \\
+\midrule
+$\dvec_i$, this instance's own & $0.925$ & $[0.843,\,1.000]$ & $+1.00$ \\
+$\bar{\dvec}_{\neg i}$, the mean over the skill's other instances & $0.900$ & $[0.807,\,0.993]$ & $+0.96$ \\
+$\dvec_j$, one other instance & $0.950$ & $[0.882,\,1.000]$ & $+1.04$ \\
+$\dvec_i^{\parallel}$, the half along that mean & $0.925$ & $[0.843,\,1.000]$ & $+1.00$ \\
+$\dvec_i^{\perp}$, the rest & $0.250$ & $[0.116,\,0.384]$ & $-0.04$ \\
+$\bar{\dvec}$, another skill & $0.275$ & $[0.137,\,0.413]$ & $+0.00$ \\
+$\bar{\dvec}$, averaged over every skill & $0.300$ & $[0.158,\,0.442]$ & $+0.04$ \\
+the same $\dvec_i$, span positions permuted & $0.275$ & $[0.137,\,0.413]$ & $+0.00$ \\
+noise, norm matched per position & $0.200$ & $[0.076,\,0.324]$ & $-0.12$ \\
+\bottomrule
+\end{tabular}

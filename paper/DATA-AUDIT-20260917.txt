@@ -1,0 +1,430 @@
+=== Table 3: decomposition, Tier A MC 1.7B fp32, n=200, rescued cell ===
+  OK  L26 replace_real (R)                             paper   1.000   recomputed 1.0
+  OK  L26 add_d alpha=1 (R)                            paper   0.812   recomputed 0.812
+  OK  L26 add_g (R)                                    paper   0.062   recomputed 0.062
+  OK  L26 add_d alpha=0.5 (R)                          paper   0.312   recomputed 0.312
+  OK  L26 add_d alpha=2 (R)                            paper   0.979   recomputed 0.979
+  OK  L26 add_dbar (R)                                 paper   0.062   recomputed 0.062
+  four-cell fidelity of replace_real (paper: 1.000/0.000/1.000/0.000)
+  OK      cell R                                       paper   1.000   recomputed 1.0
+  OK      cell F                                       paper   0.000   recomputed 0.0
+  OK      cell K                                       paper   1.000   recomputed 1.0
+  OK      cell B                                       paper   0.000   recomputed 0.0
+  four-cell fidelity of add_d (paper: 0.812/0.112/1.000/0.125)
+  OK      cell R                                       paper   0.812   recomputed 0.812
+  OK      cell F                                       paper   0.112   recomputed 0.112
+  OK      cell K                                       paper   1.000   recomputed 1.0
+  OK      cell B                                       paper   0.125   recomputed 0.125
+  cell sizes recomputed: {'K': 12, 'B': 24, 'R': 48, 'F': 116}  (paper: R=48 F=116 K=12 B=24)
+
+=== Table 7: aggregate logprob by cell, Tier A E2, n=39, layer 21 ===
+  OK  aggregate mean - real (nats)                     paper   2.747   recomputed 2.747
+  OK    cell R gap                                     paper  -2.506   recomputed -2.506
+  OK    cell R contribution                            paper  -0.835   recomputed -0.835
+  OK    cell F gap                                     paper   5.907   recomputed 5.907
+  OK    cell F contribution                            paper   2.575   recomputed 2.575
+  OK    cell B gap                                     paper   8.455   recomputed 8.455
+  OK    cell B contribution                            paper   1.084   recomputed 1.084
+
+=== real-skill knockout, n=40 ===
+  OK  with skill                                       paper   0.550   recomputed 0.55
+  OK  without skill                                    paper   0.025   recomputed 0.025
+  OK  skill span masked                                paper   0.075   recomputed 0.075
+  OK  length-matched task span masked                  paper   0.150   recomputed 0.15
+
+=== real-skill question-span transplant (matched receiver) ===
+  OK  receiver baseline                                paper   0.170   recomputed 0.18
+  OK  no document                                      paper   0.030   recomputed 0.027
+  -- L10: real 0.225  self 0.2  (paper: they coincide)
+  -- L16: real 0.150  self 0.175  (paper: they coincide)
+  -- L22: real 0.200  self 0.125  (paper: they coincide)
+
+=== document-span transplant, merged shards ===
+  40 instances over 4 shards
+  OK  gold in context                                  paper   0.950   recomputed 0.95
+  OK  no document                                      paper   0.025   recomputed 0.025
+  OK  receiver (filler document)                       paper   0.175   recomputed 0.175
+  OK  real, layer 0                                    paper   0.950   recomputed 0.95
+  OK  real, layer 8                                    paper   1.000   recomputed 1.0
+  OK  real, layer 12                                   paper   0.875   recomputed 0.875
+  OK  real, layer 16                                   paper   0.400   recomputed 0.4
+  OK  real, layer 24                                   paper   0.175   recomputed 0.175
+  OK  real, layer 30                                   paper   0.150   recomputed 0.15
+  OK  every layer at once                              paper   0.950   recomputed 0.95
+
+=== span-vector battery, layer 8, the receiver these were run with ===
+  80 instances, formats ['doc_first'], arms present: a0.25_L8, a0.5_L8, a0.5r_L8, a0.6_L8, a0.75_L8, a1.5_L8, a2_L8, a2r_L8, a3_L8, dall_L8, dcross_L8, dfar_L0, dfar_L12, dfar_L16, dfar_L8, dnear_L0, dnear_L12, dnear_L16, dnear_L8, drand_L8, dshuf_L8, gold_in_context, head_L0, head_L12, head_L16, head_L8, none, normrecv_L8, q0_L8, q1_L0, q1_L12, q1_L16, q1_L8, q2_L8, q3_L0, q3_L12, q3_L16, q3_L8, real_L0, real_L12, real_L16, real_L20, real_L4, real_L8, realm_L8, receiver, recv_neutralprose, recv_pairedneutral, recv_wrongskill, self_L0, self_L16, self_L20, self_L8, tail_L8
+    self       0.138
+    real       0.537
+    a0.5       0.100
+    a2         0.850
+    realm      0.950
+    dcross     0.263
+    dshuf      0.300
+    drand      0.200
+    dall       0.150
+    head       0.875
+    tail       0.300
+    normrecv   0.975
+    dnear      0.400
+    dfar       0.325
+  OK  the no-op arm equals the receiver                paper   0.125   recomputed 0.138
+
+  restricted to ['3', '9', '15', '17', '18', '19', '20', '27', '33', '38', '58', '64'] -- n=48, receiver 0.000, gold 0.396
+    real       acc 0.479   rho +1.21
+    realm      acc 0.900   rho +2.27
+    a0.5       acc 0.125   rho +0.32
+    a2         acc 0.800   rho +2.02
+    dnear      acc 0.000   rho +0.00
+    dfar       acc 0.050   rho +0.13
+    dcross     acc 0.083   rho +0.21
+    dall       acc 0.100   rho +0.25
+    dshuf      acc 0.100   rho +0.25
+    drand      acc 0.000   rho +0.00
+    head       acc 0.950   rho +2.40
+    tail       acc 0.250   rho +0.63
+    normrecv   acc 0.950   rho +2.40
+    q1         acc 0.750   rho +1.89
+    self       acc 0.083   rho +0.21
+  OK  the restricted receiver is zero                  paper   0.000   recomputed 0.0
+  OK  norm-matched noise recovers nothing              paper   0.000   recomputed 0.0
+
+=== the same three arms on twice as many calculators ===
+  80 instances, 10 calculators kept, n=40, receiver 0.000, gold 0.925
+    real     acc 0.875   rho +0.95
+    realm    acc 0.850   rho +0.92
+    dcross   acc 0.125   rho +0.14
+    drand    acc 0.075   rho +0.08
+    self     acc 0.050   rho +0.05
+  OK  the no-op arm stays within the instrument's noise paper   0.000   recomputed 0.05
+  OK  noise stays within the instrument's noise        paper   0.000   recomputed 0.075
+
+=== Tier A windows on Qwen3-8B (Table: windows) ===
+  OK  e10-tierA-mc-8B: receiver                        paper   0.233   recomputed 0.233
+  OK  e10-tierA-mc-8B: peak                            paper   0.575   recomputed 0.575
+  OK  e10-tierA-mc-8B: donor                           paper   0.550   recomputed 0.55
+  OK  e10-tierA-num-8B: receiver                       paper   0.008   recomputed 0.008
+  OK  e10-tierA-num-8B: peak                           paper   0.408   recomputed 0.408
+  OK  e10-tierA-num-8B: donor                          paper   0.467   recomputed 0.467
+  OK  e12-tierA-mc-8B: receiver                        paper   0.233   recomputed 0.233
+  OK  e12-tierA-mc-8B: peak                            paper   0.517   recomputed 0.517
+  OK  e12-tierA-mc-8B: donor                           paper   0.550   recomputed 0.55
+  OK  e12-tierA-num-8B: receiver                       paper   0.008   recomputed 0.008
+  OK  e12-tierA-num-8B: peak                           paper   0.025   recomputed 0.025
+  OK  e12-tierA-num-8B: donor                          paper   0.467   recomputed 0.467
+
+=== the instrument's own noise floor (Setup) ===
+  OK  null arm agrees with the receiver (pre-fix runs) paper   0.973   recomputed 0.973
+  OK  pre-fix null arm agreement, Qwen3-8B             paper   0.939   recomputed 0.939
+  OK  pre-fix null-arm flips, Qwen3-8B (count)         paper 108.000   recomputed 108
+  OK  pre-fix null-arm observations, Qwen3-8B          paper 1766.000   recomputed 1766
+  OK  pre-fix null-arm flip rate, 0.6B and 1.7B        paper   0.007   recomputed 0.007
+  OK  pre-fix null-arm flip rate, Qwen3-0.6B           paper   0.006   recomputed 0.006
+  OK  pre-fix null-arm flip rate, Qwen3-1.7B           paper   0.008   recomputed 0.008
+  OK  pre-fix null-arm observations, Qwen3-0.6B        paper 1696.000   recomputed 1696
+    by model: Qwen3-0.6B 10/1696, Qwen3-1.7B 11/1338, Qwen3-8B 108/1766
+  OK  post-fix null arm exact, items (of 80)           paper  80.000   recomputed 80
+  OK  post-fix null arm, items in the two reruns       paper  80.000   recomputed 80
+  OK  null arm agrees with the receiver (post-fix)     paper   1.000   recomputed 1.0
+    post-fix: 1346/1346
+  OK  the disagreement is symmetric (share upward)     paper   0.430   recomputed 0.434
+  OK  pre-fix noise floor on the persistent-failure cell paper   0.160   recomputed 0.161
+    4800 paired observations, 56 up, 73 down, cell F 10/62
+
+=== rank truncation at depth, and the cross-layer converse ===
+    rank-l12-df: n=16 over 4 calculators
+    rank-l16-df: n=16 over 4 calculators
+    rank-l16-dl: n=28 over 7 calculators
+    xfer-8to16: n=16 over 4 calculators
+  OK  layer 12: full-rank transplant                   paper   1.000   recomputed 1.0
+  OK  layer 12: k=16                                   paper   0.000   recomputed 0.0
+  OK  layer 12: k=128                                  paper   0.625   recomputed 0.625
+  OK  layer 16 doc-last: full-rank                     paper   0.786   recomputed 0.786
+  OK  layer 16 doc-last: k=16                          paper   0.250   recomputed 0.25
+  OK  layer 16 doc-last: k=128                         paper   0.714   recomputed 0.714
+  OK  layer 16 doc-first: full-rank is already the floor paper   0.062   recomputed 0.062
+  OK  cross-layer donor into layer 16                  paper   0.000   recomputed 0.0
+  OK  same-layer donor at layer 16                     paper   0.062   recomputed 0.062
+
+=== the battery on forty calculators, pre-fix shards (sec:battery) ===
+    15 of 40 calculators depend on the document; 60 items
+  OK  forty calculators: dependent calculators         paper  15.000   recomputed 15.0
+  OK  forty calculators: items                         paper  60.000   recomputed 60.0
+
+=== massive activations own the spectrum at layer 16 (sec:depth) ===
+    40 instances
+  OK  layer 14: PR as usually computed                 paper  55.400   recomputed 55.449
+  OK  layer 16: PR as usually computed                 paper   1.000   recomputed 1.042
+  OK  layer 16: PR, four loud positions dropped        paper  65.900   recomputed 65.939
+  OK  layer 16: max/median position norm               paper 149.600   recomputed 150.788
+  OK  layer 14: max/median position norm               paper   1.600   recomputed 1.614
+  OK  layer 16: documents with a massive activation    paper  34.000   recomputed 34
+  OK  layer 16: smallest loud ratio                    paper  99.400   recomputed 99.358
+  OK  layer 16: largest loud ratio                     paper 179.800   recomputed 179.782
+  OK  layer 16: loud documents on dims {676, 2276}     paper  34.000   recomputed 34
+  OK  layer 16: top-8 variance share (median)          paper   0.977   recomputed 0.977
+  OK  layer 14: top-8 variance share (median)          paper   0.054   recomputed 0.054
+  OK  layer 16: PR, unit-normalised                    paper  67.600   recomputed 67.612
+  OK  layer 16: PR, top eight dims dropped             paper  26.900   recomputed 26.867
+
+=== doc-first span states across a skill's instances (sec:whose) ===
+  OK  doc-first: minimum cosine between instances      paper   0.997   recomputed 0.997
+  OK  doc-first: equal-length pairs exactly identical  paper   1.000   recomputed 1.0
+
+=== the behavioural table is three arms on ONE item set ===
+  (the behavioural runs live on the shared disk, not checked here)
+
+=== the span stops being a channel at layer 16 (sec:depth) ===
+    n=27 restricted over 7 calculators
+  OK  window 12-15 (four layers)                       paper   0.960   recomputed 0.963
+  OK  window 16-35 (twenty layers)                     paper   0.040   recomputed 0.037
+  OK  window 14-19 straddles the boundary              paper   0.440   recomputed 0.444
+  OK  single layer 16                                  paper   0.070   recomputed 0.074
+  OK  null arm, restricted                             paper   0.000   recomputed 0.0
+
+=== the dose threshold, undoctored arms only (sec:battery) ===
+    n=30 restricted
+  OK  alpha=0.4                                        paper   0.167   recomputed 0.167
+  OK  alpha=0.5                                        paper   0.033   recomputed 0.033
+  OK  alpha=0.55                                       paper   0.167   recomputed 0.167
+  OK  alpha=0.7                                        paper   0.967   recomputed 0.967
+  OK  alpha=1 (real)                                   paper   1.000   recomputed 1.0
+
+=== the rank knee on Qwen3-0.6B, dense grid (sec:ladder) ===
+    n=363 restricted, gold 0.273
+  OK  0.6B rank24                                      paper   0.040   recomputed 0.04
+  OK  0.6B rank32                                      paper   0.220   recomputed 0.222
+  OK  0.6B rank40                                      paper   0.210   recomputed 0.212
+  OK  0.6B rank48                                      paper   0.640   recomputed 0.636
+  OK  0.6B rank56                                      paper   0.460   recomputed 0.465
+  OK  0.6B rank64                                      paper   0.850   recomputed 0.848
+  OK  0.6B full transplant                             paper   0.930   recomputed 0.929
+
+=== the with-document baseline must agree across scripts ===
+    knockout with-document, n=45: 1.000
+  OK  knockout with-document matches the span runs' gold paper   0.950   recomputed 1.0
+
+=== the layer-8 rank curve, the paper's headline (sec:rank) ===
+    n=40 over 5 calculators, gold 0.900, receiver 0.000
+  OK  layer 8: k=1                                     paper   0.110   recomputed 0.111
+  OK  layer 8: k=2                                     paper   0.060   recomputed 0.056
+  OK  layer 8: k=4                                     paper   0.060   recomputed 0.056
+  OK  layer 8: k=8                                     paper   0.110   recomputed 0.111
+  OK  layer 8: k=16                                    paper   0.110   recomputed 0.111
+  OK  layer 8: k=32                                    paper   0.330   recomputed 0.333
+  OK  layer 8: k=64                                    paper   0.720   recomputed 0.722
+  OK  layer 8: k=128                                   paper   0.940   recomputed 0.944
+  OK  layer 8: bottom 16                               paper   0.000   recomputed 0.0
+  OK  layer 8: bottom 64                               paper   0.060   recomputed 0.056
+
+=== where inside the document the effect sits (sec:whose) ===
+    n=20 over 5 calculators
+  OK  quarter q0                                       paper   0.280   recomputed 0.278
+  OK  quarter q1                                       paper   0.830   recomputed 0.833
+  OK  quarter q2                                       paper   0.110   recomputed 0.111
+  OK  quarter q3                                       paper   0.440   recomputed 0.444
+
+=== the results that arrived after the instrument fix ===
+    fixmask-big40: n=60 over 15 calculators
+  OK  fixmask-big40 real_L8                            paper   0.870   recomputed 0.865
+  OK  fixmask-big40 realm_L8                           paper   0.730   recomputed 0.731
+  OK  fixmask-big40 a0.5_L8                            paper   0.060   recomputed 0.058
+  OK  fixmask-big40 dfar_L8                            paper   0.060   recomputed 0.058
+  OK  fixmask-big40 dshuf_L8                           paper   0.080   recomputed 0.077
+  OK  fixmask-big40 drand_L8                           paper   0.100   recomputed 0.096
+  OK  fixmask-big40 self_L8                            paper   0.000   recomputed 0.0
+    rank40-l8: n=60 over 15 calculators
+  OK  rank40-l8 real_L8                                paper   0.870   recomputed 0.865
+  OK  rank40-l8 rank4_L8                               paper   0.130   recomputed 0.135
+  OK  rank40-l8 rank16_L8                              paper   0.060   recomputed 0.058
+  OK  rank40-l8 rank32_L8                              paper   0.130   recomputed 0.135
+  OK  rank40-l8 rank64_L8                              paper   0.540   recomputed 0.538
+  OK  rank40-l8 rank128_L8                             paper   0.770   recomputed 0.769
+  OK  rank40-l8 rank16lo_L8                            paper   0.060   recomputed 0.058
+  OK  rank40-l8 rank64lo_L8                            paper   0.000   recomputed 0.0
+  OK  rank40-l8 self_L8                                paper   0.000   recomputed 0.0
+    fixmask-rank: n=16 over 4 calculators
+  OK  fixmask-rank real_L8                             paper   1.000   recomputed 1.0
+  OK  fixmask-rank rank16_L8                           paper   0.000   recomputed 0.0
+  OK  fixmask-rank rank32_L8                           paper   0.125   recomputed 0.125
+  OK  fixmask-rank rank64_L8                           paper   0.750   recomputed 0.75
+  OK  fixmask-rank rank128_L8                          paper   0.875   recomputed 0.875
+  OK  fixmask-rank rank64lo_L8                         paper   0.000   recomputed 0.0
+  OK  fixmask-rank self_L8                             paper   0.000   recomputed 0.0
+    fixmask-dnear: n=60 over 15 calculators
+  OK  fixmask-dnear dnear_L8                           paper   0.060   recomputed 0.058
+    fixmask-window: n=48 over 12 calculators
+  OK  fixmask-window real_w8_11                        paper   1.000   recomputed 1.0
+  OK  fixmask-window real_w12_15                       paper   0.960   recomputed 0.956
+  OK  fixmask-window real_w14_19                       paper   0.380   recomputed 0.378
+  OK  fixmask-window real_w16_35                       paper   0.110   recomputed 0.111
+  OK  fixmask-window self_L16                          paper   0.000   recomputed 0.0
+
+=== Table 1 (tab:ladder2): one probe, three answer formats, Qwen3-8B ===
+  OK  ladder: multiple choice n_R                      paper  44.000   recomputed 44
+  OK  ladder: multiple choice, best layer              paper   1.000   recomputed 1.0
+  OK  ladder: free-form n_R                            paper  56.000   recomputed 56
+  OK  ladder: free-form, best layer                    paper   0.304   recomputed 0.304
+  OK  ladder: chain of thought n_R                     paper  80.000   recomputed 80
+  OK  ladder: chain of thought, best layer             paper   0.000   recomputed 0.0
+  OK  ladder: CoT items are a subset of the other two  paper   1.000   recomputed 1
+
+=== k* by the pre-registered definition (tables.py) ===
+  OK  k* on ten calculators (paper 45)                 paper  45.000   recomputed 45.255
+  OK  k* on forty calculators (paper 52)               paper  52.000   recomputed 51.642
+
+=== the depth curves, recomputed at the span runs' budget ===
+    big40-depth: n=60 over 20 calculators
+  OK  sufficiency, layer 0                             paper   1.040   recomputed 1.038
+  OK  sufficiency, layer 4                             paper   0.940   recomputed 0.943
+  OK  sufficiency, layer 8                             paper   0.850   recomputed 0.849
+  OK  sufficiency, layer 12                            paper   0.770   recomputed 0.774
+  OK  sufficiency, layer 14                            paper   0.280   recomputed 0.283
+  OK  sufficiency, layer 15                            paper   0.190   recomputed 0.189
+  OK  sufficiency, layer 16                            paper   0.190   recomputed 0.189
+  OK  sufficiency, layer 20                            paper   0.150   recomputed 0.151
+    ko-8b-fast: 40 rescued over 20 calculators
+  OK  necessity, blocked from layer 20                 paper   0.075   recomputed 0.075
+  OK  necessity, blocked from layer 24                 paper   0.375   recomputed 0.375
+  OK  necessity, blocked from layer 28                 paper   0.750   recomputed 0.75
+  OK  necessity, blocked from layer 32                 paper   0.950   recomputed 0.95
+  OK  necessity: layer 4, the exception                paper   0.325   recomputed 0.325
+  OK  necessity: max over L<=20 other than 4           paper   0.150   recomputed 0.15
+  OK  necessity: min over L<=20                        paper   0.075   recomputed 0.075
+
+=== numbers written into the main text on 2026-09-14 15:00-16:20 ===
+  OK  quarters, forty calculators: q0                  paper   0.120   recomputed 0.115
+  OK  quarters, forty calculators: q1                  paper   0.560   recomputed 0.558
+  OK  quarters, forty calculators: q2                  paper   0.120   recomputed 0.115
+  OK  quarters, forty calculators: q3                  paper   0.120   recomputed 0.115
+  OK  doc-last n                                       paper  28.000   recomputed 28
+  OK  doc-last real_L8                                 paper   1.000   recomputed 1.0
+  OK  doc-last real_L16                                paper   0.850   recomputed 0.852
+  OK  doc-last dother_L8                               paper   0.960   recomputed 0.963
+  OK  doc-last dother_L16                              paper   0.480   recomputed 0.481
+  OK  doc-last dperp_L8                                paper   0.040   recomputed 0.037
+  OK  doc-last dperp_L16                               paper   0.040   recomputed 0.037
+  OK  dose sweep n (restricted)                        paper  16.000   recomputed 16
+  OK  dose alpha=0.4, after the fix                    paper   0.060   recomputed 0.062
+  OK  dose alpha=0.5, after the fix                    paper   0.000   recomputed 0.0
+  OK  dose alpha=0.55, after the fix                   paper   0.060   recomputed 0.062
+  OK  dose alpha=0.6, after the fix                    paper   0.620   recomputed 0.625
+  OK  dose alpha=0.7, after the fix                    paper   0.940   recomputed 0.938
+  OK  dose alpha=1, after the fix                      paper   1.000   recomputed 1.0
+  OK  another skill, restricted                        paper   0.190   recomputed 0.188
+  OK  released split n                                 paper  24.000   recomputed 24
+  OK  another skill, released split                    paper   0.470   recomputed 0.467
+  OK  TheoremQA window w8_11                           paper   0.900   recomputed 0.902
+  OK  TheoremQA window w12_15                          paper   0.730   recomputed 0.732
+  OK  TheoremQA window w14_19                          paper   0.450   recomputed 0.451
+  OK  TheoremQA window w16_35                          paper   0.210   recomputed 0.207
+  OK  TheoremQA window L16                             paper   0.210   recomputed 0.207
+  OK  0.6B rank16, after the fix                       paper   0.020   recomputed 0.019
+  OK  0.6B rank32, after the fix                       paper   0.210   recomputed 0.208
+  OK  0.6B rank64, after the fix                       paper   0.740   recomputed 0.736
+  OK  0.6B rank128, after the fix                      paper   0.720   recomputed 0.717
+  OK  replication MedCalc/Qwen3-8B: rho                paper   0.870   recomputed 0.865
+  OK  replication MedCalc/Qwen3-8B: max control        paper   0.100   recomputed 0.096
+  OK  replication MedCalc/Qwen3-8B: handover L12>=.5>L14 paper   1.000   recomputed 1
+  OK  replication MedCalc/Qwen3-8B: reading (rel. depth) paper   0.780   recomputed 0.778
+  OK  replication MedCalc/Qwen3-8B: k*                 paper  52.000   recomputed 51.642
+  OK  replication MedCalc/Qwen3-8B: k* CI low          paper  43.000   recomputed 43.336
+  OK  replication MedCalc/Qwen3-8B: k* CI high         paper  72.000   recomputed 72.199
+  OK  replication TheoremQA/Qwen3-8B: rho              paper   0.840   recomputed 0.839
+  OK  replication TheoremQA/Qwen3-8B: max control      paper   0.250   recomputed 0.247
+  OK  replication TheoremQA/Qwen3-8B: handover L12>=.5>L14 paper   1.000   recomputed 1
+  OK  replication TheoremQA/Qwen3-8B: reading (rel. depth) paper   0.560   recomputed 0.556
+  OK  replication TheoremQA/Qwen3-8B: k*               paper  50.000   recomputed 49.741
+  OK  replication MedCalc/Qwen3-0.6B: rho              paper   0.890   recomputed 0.887
+  OK  replication MedCalc/Qwen3-0.6B: k*               paper  40.000   recomputed 39.986
+  OK  replication MedCalc/Qwen3-0.6B: k* CI low        paper  32.000   recomputed 32.0
+  OK  replication MedCalc/Qwen3-0.6B: k* CI high       paper  50.000   recomputed 49.576
+  OK  replication TheoremQA/Qwen3-0.6B: rho            paper   0.740   recomputed 0.74
+  OK  replication TheoremQA/Qwen3-0.6B: handover L10>=.5>L12 paper   1.000   recomputed 1
+  OK  replication TheoremQA/Qwen3-0.6B: k*             paper  52.000   recomputed 52.082
+  OK  replication MedCalc/Mistral-7B: rho              paper   0.920   recomputed 0.915
+  OK  replication MedCalc/Mistral-7B: max control      paper   0.270   recomputed 0.271
+  OK  replication MedCalc/Mistral-7B: handover L6>=.5>L7 paper   1.000   recomputed 1
+  OK  replication MedCalc/Mistral-7B: reading (rel. depth) paper   0.875   recomputed 0.875
+  OK  replication MedCalc/Mistral-7B: k*               paper  84.000   recomputed 84.449
+  OK  replication MedCalc/Mistral-7B: k* CI low        paper  59.000   recomputed 59.419
+  OK  replication MedCalc/Mistral-7B: k* CI high       paper  97.000   recomputed 96.686
+  OK  replication TheoremQA/Mistral-7B: rho            paper   0.940   recomputed 0.94
+  OK  replication TheoremQA/Mistral-7B: max control    paper   0.270   recomputed 0.265
+  OK  replication TheoremQA/Mistral-7B: handover L6>=.5>L7 paper   1.000   recomputed 1
+  OK  replication TheoremQA/Mistral-7B: reading (rel. depth) paper   0.625   recomputed 0.625
+  OK  replication TheoremQA/Mistral-7B: k*             paper  64.000   recomputed 64.0
+  OK  replication TheoremQA/Mistral-7B: k* CI low      paper  50.000   recomputed 49.795
+  OK  replication TheoremQA/Mistral-7B: k* CI high     paper  79.000   recomputed 78.646
+  OK  quarters, ten calculators after the fix: n       paper  16.000   recomputed 16
+  OK  quarters, ten calculators after the fix: q0      paper   0.120   recomputed 0.125
+  OK  quarters, ten calculators after the fix: q1      paper   0.810   recomputed 0.812
+  OK  quarters, ten calculators after the fix: q2      paper   0.060   recomputed 0.062
+  OK  quarters, ten calculators after the fix: q3      paper   0.060   recomputed 0.062
+  OK  all-skill mean (pre-fix), doc first              paper   0.110   recomputed 0.111
+  OK  all-skill mean (pre-fix), doc last               paper   0.060   recomputed 0.059
+  OK  LogicBench per-item n                            paper  57.000   recomputed 57
+  OK  LogicBench real                                  paper   0.750   recomputed 0.745
+  OK  LogicBench realm                                 paper   0.800   recomputed 0.8
+  OK  LogicBench a0.5                                  paper   0.440   recomputed 0.436
+  OK  LogicBench dcross                                paper   0.380   recomputed 0.382
+  OK  LogicBench dshuf                                 paper   0.250   recomputed 0.255
+  OK  LogicBench drand                                 paper   0.150   recomputed 0.145
+  OK  LogicBench depth L0                              paper   0.930   recomputed 0.933
+  OK  LogicBench depth L16                             paper   0.490   recomputed 0.489
+  OK  LogicBench depth L20                             paper   0.330   recomputed 0.333
+
+=== data check of 2026-09-14 16:30: numbers that had no check ===
+  OK  behaviour: n per arm                             paper 1100.000   recomputed 1100
+  OK  behaviour: gold %                                paper  74.200   recomputed 74.182
+  OK  behaviour: no skill %                            paper  34.500   recomputed 34.455
+  OK  behaviour: wrong skill %                         paper  31.500   recomputed 31.545
+  OK  behaviour: gold - none (pp)                      paper  39.700   recomputed 39.727
+  OK  behaviour: wrong - none (pp)                     paper  -2.900   recomputed -2.909
+  OK  e14-tierA-mc-1.7B-shuffled: d min over 21-27     paper   0.188   recomputed 0.188
+  OK  e14-tierA-mc-1.7B-shuffled: d max over 21-27     paper   0.292   recomputed 0.292
+  OK  e14-tierA-mc-1.7B-shuffled: g min over 21-27     paper   0.604   recomputed 0.604
+  OK  e14-tierA-mc-1.7B-shuffled: g max over 21-27     paper   0.625   recomputed 0.625
+  OK  e14-tierA-mc-1.7B-corrupted: d min over 21-27    paper   0.229   recomputed 0.229
+  OK  e14-tierA-mc-1.7B-corrupted: d max over 21-27    paper   0.312   recomputed 0.312
+  OK  e14-tierA-mc-1.7B-corrupted: g min over 21-27    paper   0.708   recomputed 0.708
+  OK  e14-tierA-mc-1.7B-corrupted: g max over 21-27    paper   0.750   recomputed 0.75
+  OK  log-prob ordering, layer 27: lp_mean             paper  -2.850   recomputed -2.852
+  OK  log-prob ordering, layer 27: lp_filler           paper  -5.200   recomputed -5.196
+  OK  log-prob ordering, layer 27: lp_real             paper  -6.600   recomputed -6.602
+  OK  log-prob ordering, layer 27: lp_no               paper  -7.300   recomputed -7.295
+  OK  log-prob ordering, layer 27: lp_mismatched       paper -10.290   recomputed -10.29
+  OK  mean - real at layer 27 (nats)                   paper   3.750   recomputed 3.75
+  OK  accuracy, mean vector, layer 27                  paper   0.256   recomputed 0.256
+  OK  accuracy, real state, layer 27                   paper   0.436   recomputed 0.436
+  OK  F+B share of the layer-21 gap (%)                paper 133.000   recomputed 133.2
+  OK  PR of d, layer 12, mean                          paper  64.000   recomputed 64.18
+  OK  PR of d, layer 16, mean                          paper  17.000   recomputed 17.14
+  OK  PR of d, layer 16, items below 5                 paper  32.000   recomputed 32
+  OK  PR of d, layer 16, the other eight (min)         paper  81.000   recomputed 81.379
+  OK  PR of states, layer 14, min                      paper  47.000   recomputed 46.463
+  OK  PR of states, layer 14, max                      paper  75.000   recomputed 75.237
+  OK  PR of states, layer 16, items below 5            paper  34.000   recomputed 34
+  OK  prdiag-06-df: content-matrix PR over layers 0-20, min paper  66.000   recomputed 65.892
+  OK  prdiag-06-df: content-matrix PR over layers 0-20, max paper  77.000   recomputed 77.087
+  OK  prdiag-8b-df: content-matrix PR over layers 0-20, min paper  70.000   recomputed 69.747
+  OK  prdiag-8b-df: content-matrix PR over layers 0-20, max paper  99.000   recomputed 98.87
+  OK  own d on the shared prefix (realm), ten calculators paper   0.940   recomputed 0.938
+  OK  development set: calculators that need the document paper   4.000   recomputed 4
+  OK  released: receiver accuracy                      paper   0.375   recomputed 0.375
+  OK  released: another skill accuracy                 paper   0.667   recomputed 0.667
+  OK  released: noise accuracy                         paper   0.375   recomputed 0.375
+  OK  pooled transfer rho                              paper   0.320   recomputed 0.323
+  OK  own d on the shared prefix (realm), forty calculators paper   0.730   recomputed 0.731
+  OK  normrecv equals real (pre-fix), doc first        paper   0.000   recomputed 0.0
+  OK  normrecv equals real (pre-fix), doc last         paper   0.000   recomputed 0.0
+  OK  pre-fix normrecv, doc first                      paper   1.060   recomputed 1.056
+  OK  span width, forty calculators, min               paper 415.000   recomputed 415
+  OK  span width, forty calculators, max               paper 1630.000   recomputed 1630
+  OK  final position: rescued items                    paper  18.000   recomputed 18
+  OK  final position: replace repairs at layer 10      paper   3.000   recomputed 3
+  OK  final position: max repairs from layer 14 on     paper   1.000   recomputed 1
+  OK  Mistral MedCalc rank128                          paper   0.710   recomputed 0.712
+  OK  Mistral MedCalc untruncated                      paper   0.920   recomputed 0.915
+
+ALL CHECKS PASSED

@@ -1,0 +1,27 @@
+\begin{tabular}{@{}lcc@{}}
+\toprule
+& accuracy & CI$_{95}$ \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{the gold document in the prompt, and no document at all}}\\
+\quad gold document in context & $0.950$ & $[0.854,\,1.000]$ \\
+\quad no document & $0.050$ & $[0.000,\,0.146]$ \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{written into the last prompt position} (best layer of 10, 14, 20, 30 for each arm)}\\
+\quad replace the state with $h_{\text{skill}}$ & $0.150$ & $[0.000,\,0.306]$ \\
+\quad $h+\dvec$ & $0.150$ & $[0.000,\,0.306]$ \\
+\quad $h+\gvec$ & $0.050$ & $[0.000,\,0.146]$ \\
+\quad $h+\dvec_j$, another instance of this skill & $0.150$ & $[0.000,\,0.306]$ \\
+\quad $h+\dvec_j$, another skill & $0.100$ & $[0.000,\,0.231]$ \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{written over the document's own span}, layer 8}\\
+\quad the filler document, unpatched (the floor here) & $0.000$ & $[0.000,\,0.000]$ \\
+\quad $h_{\text{recv}}+\dvec$ \ (= $h_{\text{skill}}$, $\alpha=1$) & $0.950$ & $[0.854,\,1.000]$ \\
+\quad $h_{\text{recv}}+2\dvec$ & $0.800$ & $[0.625,\,0.975]$ \\
+\quad $h_{\text{recv}}+\tfrac12\dvec$ & $0.050$ & $[0.000,\,0.146]$ \\
+\quad $h_{\text{recv}}+\dvec$, shared prefix only & $0.900$ & $[0.769,\,1.000]$ \\
+\quad $h_{\text{recv}}+\bar{\dvec}_{j}$, another skill, same prefix & $0.050$ & $[0.000,\,0.146]$ \\
+\quad $h_{\text{recv}}+\dvec$, span positions permuted & $0.100$ & $[0.000,\,0.231]$ \\
+\quad $h_{\text{recv}}+$ noise, $\|\cdot\|$ matched per position & $0.000$ & $[0.000,\,0.000]$ \\
+\quad $h_{\text{recv}}$ itself (must be a no-op) & $0.000$ & $[0.000,\,0.000]$ \\
+\bottomrule
+\end{tabular}

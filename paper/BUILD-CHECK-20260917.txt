@@ -1,0 +1,56 @@
+--- structure ---
+  59  Introduction
+  133  Related Work
+  182  Problem Formulation
+  257  Experiment
+  260    Experimental setup
+  299    Resolving the paradox: content and answer format
+  343    The skill span supports content injection
+  401    Skill identity and content within the span
+  433    Rank required to recover the skill's effect
+  467    Transfer depth and continued use of the skill
+  523    Replication across models and task domains
+  582  Conclusion
+  611  Control documents in full
+  690  The geometry at the final position, in full
+  731  Supplementary analyses
+  752    Rank truncation and the model ladder, in more detail
+  824    Replication across tasks and model families, in full
+  860    Evaluation scope and intervention provenance
+  955    Where in the network the content is readable, in full
+  996    The decomposition and the answer-length ladder, in full
+  1034    What a single position can carry is the answer, not the content
+  1117    Setup, in full
+  1202    Three measurement traps, in full
+  1205    The aggregate gold-answer log-probability ranks the controls first
+  1233    A band where the forward pass is damaged
+  1242    What the wrong-document control is actually worth
+  1277    Depth, sufficiency and necessity, in full
+  1406    What the content component belongs to, in full
+  1495    The span battery, in full
+  1768    What the carrying vector is made of, in full
+  1960    Related work, at length
+  2104    Multiple choice manufactures a floor and merges retrieval with
+  2141    The decomposition on the synthetic tier, in full
+  2393  Additional tables
+  2610  Experimental detail
+  paragraphs: 74
+  floats: 10 figures,  25 tables
+--- placeholders that must not survive submission ---
+  \PEND markers: 1
+  bib entries with unknown authors: 0
+--- duplicate labels / stray floats ---
+  duplicate labels: none
+  float begin/end: 35/35  ok
+  main-text floats referenced but defined in the appendix: tab:laddermodels, tab:prdiag
+--- errors ---
+none
+--- undefined references / citations ---
+  0
+--- overfull ---
+0
+--- main text pages (ICLR limit 9) ---
+9
+--- pages ---
+(41 pages
+pdf -> /home/vanius/proj/agent-harness/paper/skillvector.pdf

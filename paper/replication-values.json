@@ -1,0 +1,302 @@
+[
+  {
+    "task": "MedCalc",
+    "model": "Qwen3-8B",
+    "sources": {
+      "battery": [
+        "full-battery-a",
+        "full-battery-b"
+      ],
+      "depth": [
+        "full-depth-a",
+        "full-depth-b",
+        "full-depth-c13",
+        "full-depth-d",
+        "full-battery-a"
+      ],
+      "rank": [
+        "full-rank-a",
+        "full-rank-b",
+        "full-battery-a"
+      ],
+      "knockout": [
+        "full-ko"
+      ]
+    },
+    "n": 135,
+    "g": 14,
+    "rho": 0.8870967741935484,
+    "lo": 0.7627118644067796,
+    "hi": 0.9714285714285714,
+    "ctrl": 0.12195121951219512,
+    "controls": {
+      "drand": {
+        "rho": 0.024193548387096777,
+        "n": 135
+      },
+      "dshuf": {
+        "rho": 0.048387096774193554,
+        "n": 135
+      },
+      "a0.5": {
+        "rho": 0.04032258064516129,
+        "n": 135
+      },
+      "dcross": {
+        "rho": 0.048387096774193554,
+        "n": 135
+      },
+      "dfar": {
+        "rho": 0.048387096774193554,
+        "n": 135
+      },
+      "dnear": {
+        "rho": 0.12195121951219512,
+        "n": 41
+      }
+    },
+    "handover": [
+      0.3333333333333333,
+      0.3611111111111111
+    ],
+    "kstar": 47.29094492139898,
+    "rank_n": 135,
+    "rank_groups": 14,
+    "depth_n": 135,
+    "reading": [
+      0.7777777777777778,
+      466
+    ]
+  },
+  {
+    "task": "TheoremQA",
+    "model": "Qwen3-8B",
+    "sources": {
+      "battery": [
+        "tqa-span"
+      ],
+      "depth": [
+        "tqa-depth"
+      ],
+      "rank": [
+        "tqa-rank"
+      ],
+      "knockout": [
+        "tqa-ko"
+      ]
+    },
+    "n": 99,
+    "g": 75,
+    "rho": 0.8387096774193548,
+    "lo": 0.7524752475247525,
+    "hi": 0.9199999999999999,
+    "ctrl": 0.24731182795698922,
+    "controls": {
+      "drand": {
+        "rho": 0.2150537634408602,
+        "n": 99
+      },
+      "dshuf": {
+        "rho": 0.23655913978494622,
+        "n": 99
+      },
+      "a0.5": {
+        "rho": 0.1935483870967742,
+        "n": 99
+      },
+      "dcross": {
+        "rho": 0.24731182795698922,
+        "n": 99
+      }
+    },
+    "handover": [
+      0.3333333333333333,
+      0.3888888888888889
+    ],
+    "kstar": 49.741001016669415,
+    "rank_n": 99,
+    "rank_groups": 75,
+    "depth_n": 99,
+    "reading": [
+      0.5555555555555556,
+      106
+    ]
+  },
+  {
+    "task": "MedCalc",
+    "model": "Qwen3-0.6B",
+    "sources": {
+      "battery": [
+        "fixmask-lad06-rank"
+      ],
+      "depth": [],
+      "rank": [
+        "fixmask-lad06-rank"
+      ],
+      "knockout": null
+    },
+    "n": 204,
+    "g": 35,
+    "rho": 0.8867924528301886,
+    "lo": 0.696969696969697,
+    "hi": 1.088888888888889,
+    "ctrl": null,
+    "controls": {},
+    "handover": null,
+    "kstar": 39.98615266632805,
+    "rank_n": 204,
+    "rank_groups": 35,
+    "depth_n": 0,
+    "reading": null
+  },
+  {
+    "task": "TheoremQA",
+    "model": "Qwen3-0.6B",
+    "sources": {
+      "battery": [
+        "tqa06-rank"
+      ],
+      "depth": [
+        "tqa06-depth"
+      ],
+      "rank": [
+        "tqa06-rank"
+      ],
+      "knockout": null
+    },
+    "n": 132,
+    "g": 97,
+    "rho": 0.7401574803149606,
+    "lo": 0.6583333333333333,
+    "hi": 0.8230088495575221,
+    "ctrl": null,
+    "controls": {},
+    "handover": [
+      0.35714285714285715,
+      0.42857142857142855
+    ],
+    "kstar": 52.081630236260224,
+    "rank_n": 132,
+    "rank_groups": 97,
+    "depth_n": 132,
+    "reading": null
+  },
+  {
+    "task": "MedCalc",
+    "model": "Mistral-7B",
+    "sources": {
+      "battery": [
+        "mis-bat-a",
+        "mis-bat-b"
+      ],
+      "depth": [
+        "mis2-depth",
+        "mis2-depth-fine"
+      ],
+      "rank": [
+        "mis3-rank-L4"
+      ],
+      "knockout": [
+        "mis2-ko-b"
+      ]
+    },
+    "n": 92,
+    "g": 20,
+    "rho": 0.8421052631578948,
+    "lo": 0.6857142857142857,
+    "hi": 1.0851063829787233,
+    "ctrl": 0.35294117647058826,
+    "controls": {
+      "drand": {
+        "rho": 0.14035087719298245,
+        "n": 92
+      },
+      "dshuf": {
+        "rho": 0.15789473684210528,
+        "n": 92
+      },
+      "a0.5": {
+        "rho": 0.1929824561403509,
+        "n": 92
+      },
+      "dcross": {
+        "rho": 0.15789473684210528,
+        "n": 92
+      },
+      "dfar": {
+        "rho": 0.2807017543859649,
+        "n": 92
+      },
+      "dnear": {
+        "rho": 0.35294117647058826,
+        "n": 31
+      }
+    },
+    "handover": [
+      0.1875,
+      0.21875
+    ],
+    "kstar": 84.44850628946523,
+    "rank_n": 92,
+    "rank_groups": 26,
+    "depth_n": 79,
+    "reading": [
+      0.875,
+      72
+    ]
+  },
+  {
+    "task": "TheoremQA",
+    "model": "Mistral-7B",
+    "sources": {
+      "battery": [
+        "tqamis-span"
+      ],
+      "depth": [
+        "tqamis-depth"
+      ],
+      "rank": [
+        "tqamis-rank"
+      ],
+      "knockout": [
+        "tqamis-ko"
+      ]
+    },
+    "n": 115,
+    "g": 94,
+    "rho": 0.9397590361445782,
+    "lo": 0.8350515463917526,
+    "hi": 1.048780487804878,
+    "ctrl": 0.2650602409638554,
+    "controls": {
+      "drand": {
+        "rho": 0.1325301204819277,
+        "n": 115
+      },
+      "dshuf": {
+        "rho": 0.1686746987951807,
+        "n": 115
+      },
+      "a0.5": {
+        "rho": 0.2650602409638554,
+        "n": 115
+      },
+      "dcross": {
+        "rho": 0.20481927710843373,
+        "n": 115
+      }
+    },
+    "handover": [
+      0.1875,
+      0.21875
+    ],
+    "kstar": 64.0,
+    "rank_n": 115,
+    "rank_groups": 94,
+    "depth_n": 115,
+    "reading": [
+      0.625,
+      82
+    ]
+  }
+]

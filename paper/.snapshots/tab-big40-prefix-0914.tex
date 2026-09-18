@@ -1,0 +1,16 @@
+\begin{tabular}{@{}lccc@{}}
+\toprule
+donor written over the document's span & accuracy & CI$_{95}$ & fraction \\
+\midrule
+\emph{the gold document in context} & $0.867$ & $[0.781,\,0.953]$ & $+1.00$ \\
+$h_{\text{recv}}+\dvec$ \ (=$h_{\text{skill}}$, $\alpha=1$) & $0.750$ & $[0.640,\,0.860]$ & $+0.87$ \\
+the same, rescaled to the receiver's norm & $0.667$ & $[0.547,\,0.786]$ & $+0.77$ \\
+$h_{\text{recv}}+\tfrac12\dvec$ & $0.117$ & $[0.035,\,0.198]$ & $+0.13$ \\
+$\bar{\dvec}$, a skill in another family & $0.033$ & $[0.000,\,0.079]$ & $+0.04$ \\
+$\bar{\dvec}$, a skill in the same family & $0.100$ & $[0.000,\,0.231]$ & $+0.12$ \\
+the same $\dvec$, span positions permuted & $0.100$ & $[0.024,\,0.176]$ & $+0.12$ \\
+noise, $\|\cdot\|$ matched per position & $0.117$ & $[0.035,\,0.198]$ & $+0.13$ \\
+\emph{$h_{\text{recv}}$ itself} (the null arm) & $0.033$ & $[0.000,\,0.079]$ & $+0.04$ \\
+\emph{the filler document, unpatched} & $0.000$ & $[0.000,\,0.000]$ & $+0.00$ \\
+\bottomrule
+\end{tabular}

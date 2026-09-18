@@ -1,0 +1,23 @@
+{
+  "status": "pre-fix, latest complete local comparison",
+  "formats": {
+    "Multiple choice": {
+      "n": 120,
+      "rescued": 44,
+      "best": 1.0,
+      "source": "/home/vanius/proj/agent-harness/whitebox/results/fetched/agent-harness-hsw2/whitebox/results/20260910-e14/e14-tierA-mc-8B"
+    },
+    "Numeric answer": {
+      "n": 120,
+      "rescued": 56,
+      "best": 0.30357142857142855,
+      "source": "/home/vanius/proj/agent-harness/whitebox/results/fetched/agent-harness-hsw2/whitebox/results/20260910-e14/e14-tierA-num-8B"
+    },
+    "Chain of thought": {
+      "n": 80,
+      "rescued": 80,
+      "best": 0.0,
+      "source": "/home/vanius/proj/agent-harness/whitebox/results/fetched/agent-harness-hsw2/whitebox/results/20260911-cot/e14-tierA-cot-8B-k1"
+    }
+  }
+}

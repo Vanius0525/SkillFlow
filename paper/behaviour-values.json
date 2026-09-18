@@ -1,0 +1,19 @@
+{
+  "accuracy": {
+    "gold_no_tool": 0.7418181818181818,
+    "no_skill": 0.34454545454545454,
+    "ctrl_neutral_no_tool": 0.31545454545454543
+  },
+  "n": 1100,
+  "groups": 55,
+  "wrong_minus_none_ci_pp": [
+    -8.636363636363637,
+    2.909090909090909
+  ],
+  "bootstrap": {
+    "unit": "calculator",
+    "draws": 10000,
+    "seed": 0,
+    "paired": true
+  }
+}

@@ -1,0 +1,1354 @@
+%File: skillvector.tex
+% ICLR 2027 conference submission (double-blind).
+% Mechanism paper: what a skill document actually injects into the residual stream.
+% ============================================================
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[hyphens]{url}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{hyperref}
+
+% A visible marker for numbers that are not in yet. Must be empty at submission.
+\newcommand{\PEND}[1]{\textcolor{red}{[pending: #1]}}
+\newcommand{\dvec}{\ensuremath{d}}
+\newcommand{\gvec}{\ensuremath{g}}
+\newcommand{\tvec}{\ensuremath{t}}
+
+\title{Presence or Content?\\ Decomposing What a Skill Document\\ Injects into a Language Model}
+
+\author{Anonymous authors \\
+Paper under double-blind review}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Giving a language model a short skill document---a procedure, a lookup table, a
+worked example---reliably improves accuracy, and a growing literature measures
+by how much. What the document does inside the model is not known. We study this
+directly, and find that the obvious internal measurements point the wrong way.
+Over the layers in which a skill document is actually being read, the
+displacement it causes in the residual stream is nearly parallel to the one
+caused by an unrelated document of the same length (cosine $0.92$--$0.95$), so
+displacement norms, cross-condition cosines and participation ratios are
+dominated by the mere presence of a document. We therefore isolate the content
+by subtraction, $\dvec = h_{\text{skill}} - h_{\text{wrong-skill}}$, against the
+presence component $\gvec = h_{\text{wrong-skill}} - h_{\text{no-doc}}$, and
+test both causally. The result inverts the geometry: $\gvec$, the larger of the
+two over most of the network, repairs zero items at every layer---and faithfully
+reproduces the behaviour of having the wrong document in the prompt---while
+$\dvec$ repairs $0.81$ of the items the document repairs. The content component
+is low-dimensional (effective rank 3--8 out of 2048 once its shared direction is
+removed), it partly cancels the presence displacement---through layer 16 the
+\emph{wrong} document moves the state further than the right one---and its
+direction identifies the skill: on 55 third-party clinical-calculator skills it
+supports leave-one-out identification of \emph{which} of 41 skills is in the prompt at
+$0.93$--$1.00$ against a chance rate of $0.024$, while the presence component
+scores below the no-document baseline. It does so at layers where injecting it
+repairs nothing, so on that material the content is demonstrably present and
+demonstrably not transportable. Three of our results
+are cautionary and quantitative. First, how much of a document an activation
+patch can carry is set by how long the answer is. Holding the model, the
+document and the items fixed and changing only the answer format, a
+single-position patch recovers $1.000$ of the rescued items when the answer is
+one option letter, $0.304$ when it is a two- to four-token number, and
+$\mathbf{0.000}$ when the same items are answered by reasoning step by
+step---a format in which the document itself is worth $0 \to 1$. The clinical
+results follow the same rule rather than forming an exception to it. Second, in multiple choice a
+document with every number replaced retains two thirds of the skill effect,
+while in free-form it retains none. Third, an aggregate gold-answer
+log-probability ranks a content-free control above the true state, and the
+entire gap comes from items where the skill does not work.
+\end{abstract}
+
+\section{Introduction}
+
+A ``skill'' is a short document---a procedure, a formula, a lookup table, a
+worked example---placed in a model's context so it can do a task it otherwise
+cannot. The practice is now standard, and there is a benchmark literature that
+measures its effect: how much accuracy a skill buys, which module of the
+document matters, how the gain scales. Every one of those measurements is
+behavioural. None of them says what the document does inside the model.
+
+The natural way to look is to compare the model's internal state with and
+without the document. We did, and the first thing we found was that this
+comparison does not work in its obvious form. At the last prompt position, the
+residual stream moves a long way when a skill document is added---and through
+the layers in which the document is actually being read it moves almost exactly
+as far, in almost the same direction, when the document is replaced by an
+unrelated one of the same length. On our synthetic control the cosine between
+the two displacements is $0.92$--$0.95$ from layer 0 to layer 10, peaking at
+$0.9475$ (CI$_{95}$ $[0.9469, 0.9479]$) at layer 4. On a second task family, at
+layer 10, two skills with mutually exclusive content sit at $0.9716$ while an
+\emph{irrelevant} document sits at $0.9445$ and $0.9555$ from them---a
+difference of $0.016$--$0.027$, tightly estimated and almost nothing. Read
+naively, that says the injection carries little information about what the
+document says. Read against behaviour, it cannot: on 1{,}100
+clinical-calculator instances with third-party skills, the gold skill is worth
+$+40.5$pp over no document, and a length-matched \emph{wrong} skill is worth
+$-1.3$pp $[-7.6, +5.7]$---a clean zero. Behaviour is all content. Geometry, over
+the layers that do the reading, is almost all presence.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth, every node/.style={font=\small}]
+  \coordinate (no)  at (0,0);
+  \coordinate (fil) at (6.24,0);
+  \coordinate (yes) at (24.7:5.76);
+  \draw[->, very thick, black!50] (no) -- (fil);
+  \node[black!50, below=3pt] at ($ (no)!0.5!(fil) $) {$\gvec$\, presence};
+  \draw[->, very thick, blue!65!black] (fil) -- (yes);
+  \node[blue!65!black, left=3pt] at ($ (fil)!0.5!(yes) $) {$\dvec$\, content};
+  \draw[->, thick, dashed, black!35] (no) -- (yes);
+  \node[black!40, above left=-1pt and 6pt] at ($ (no)!0.55!(yes) $)
+       {$\tvec$\, total};
+  \fill (no) circle (2pt) node[left=2pt] {$h_{\text{no}}$};
+  \fill (fil) circle (2pt) node[below=4pt] {$h_{\text{wrong}}$};
+  \fill (yes) circle (2pt) node[above=3pt] {$h_{\text{skill}}$};
+  \node[align=left, font=\footnotesize, black!55, anchor=west] at (7.4,-0.45)
+    {larger than $\tvec$ through layer 16;\\
+     repairs \textbf{0} items at every layer};
+  \node[align=left, font=\footnotesize, blue!65!black, anchor=west] at (7.4,1.55)
+    {effective rank 3--8 of 2048;\\
+     repairs \textbf{0.77} of the rescued items};
+\end{tikzpicture}
+\caption{The decomposition, drawn to scale at layer 10 of the synthetic control
+($\|\gvec\|=39.0$, $\|\dvec\|=16.3$, $\|\tvec\|=36.0$). A document of the right
+length and the wrong content already moves the final prompt position most of the
+way---in fact slightly further than the real skill does, which is why the
+content arrow points partly back. Everything this paper is about is the short
+blue arrow.}
+\label{fig:schematic}
+\end{figure}
+
+This paper takes that contradiction as its subject. Our approach is a
+subtraction with a matched control. Writing $h_{\text{no}}$, $h_{\text{wrong}}$
+and $h_{\text{skill}}$ for the residual state at the last prompt position under
+no document, a length-matched wrong skill, and the gold skill,
+\begin{equation}
+\underbrace{h_{\text{skill}} - h_{\text{no}}}_{\tvec\ \text{(total)}}
+\;=\;
+\underbrace{h_{\text{wrong}} - h_{\text{no}}}_{\gvec\ \text{(presence)}}
+\;+\;
+\underbrace{h_{\text{skill}} - h_{\text{wrong}}}_{\dvec\ \text{(content)}} ,
+\label{eq:decomp}
+\end{equation}
+an identity, not an approximation. The question is which side of it does the
+work. We answer it by adding each component back to the no-document state and
+measuring what the model then does.
+
+\paragraph{What the decomposition is a decomposition of.} One result shapes how
+everything below should be read, so we state it first. A patch applied anywhere
+\emph{other than the document's own tokens} transports the model's
+\emph{decision}, not the document's content. On third-party clinical skills,
+transplanting the document's own several-hundred token states reproduces its
+entire effect ($1.000$ of the rescued cell against a receiver at $0.000$), while
+transplanting an equally long span of the question reproduces nothing beyond the
+receiver's own baseline, and the final prompt position reproduces nothing at
+all. How much of the decision a small position group can carry is in turn set by
+how many tokens the answer occupies---$1.000$, $0.304$ and $0.000$ for a
+one-token, a three-token and a chain-of-thought answer on the same items and
+model. Eq.~\ref{eq:decomp} is therefore a decomposition of the state that
+carries a decision. That is the state every activation-patching result about
+in-context documents is about, and its content component turns out to be small,
+inert-when-removed, and an almost perfect identifier of which document produced
+it.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item \textbf{A subtraction protocol with a matched negative control}
+(\S\ref{sec:decomp}), on a synthetic control whose floor is exactly zero and on
+55 skills and 1{,}100 instances written by other people.
+\item \textbf{Presence dominates geometry; content dominates behaviour.} The
+presence component is the larger of the two over most of the network and repairs
+$0.062$ of the rescued cell at every one of 28 layers---exactly what putting the
+wrong document in the prompt achieves---while the content component repairs
+$0.812$. Conclusions about content drawn from displacement norms or
+cross-condition cosines are therefore unsafe.
+\item \textbf{Which control you subtract chooses what you measure}
+(\S\ref{sec:controls}). Against an unrelated document the content component
+repairs $0.81$; against the same document with every number replaced, $0.31$.
+\item \textbf{Injection capacity is set by answer length}
+(\S\ref{sec:onepos}). On one model and one item set, the final-position patch
+that reproduces $1.000$ of the rescued cell in multiple choice reproduces
+$0.304$ in free-form; on third-party skills answered through a chain of thought,
+neither the final position nor a 128-position span transplant reproduces
+anything the \emph{wrong} skill's span does not also reproduce. The range over
+which ``a skill's effect is carried by a vector'' is the range over which the
+answer is short.
+\item \textbf{A layer-resolved account of where the content is readable}
+(\S\ref{sec:where}), and knockouts showing that no single pathway is necessary
+and that the model stops reading the document at a specific layer.
+\item \textbf{What the content component is a property of} (\S\ref{sec:whose}):
+its direction identifies the skill, its effect does not transfer at all.
+\item \textbf{Two measurement traps} (\S\ref{sec:traps}), each with a
+quantitative decomposition: an aggregate log-probability that ranks a
+content-free control \emph{above} the true state, and a multiple-choice framing
+under which a document with every number wrong retains two thirds of the effect.
+\end{enumerate}
+
+\section{Setup}
+\label{sec:setup}
+
+\subsection{Two task families}
+
+\paragraph{Real skills (main).} MedCalc-Bench instances with the 55 gold
+calculator skills released with SRA-Bench: $55$ calculators $\times$ $20$
+instances $=1{,}100$ items, graded deterministically against a numeric
+tolerance with no model in the loop. Both the skills and the tasks are other
+people's, which is what makes the effect size credible. Model: Qwen3-8B, single
+turn, no tools, greedy. Confidence intervals are bootstrapped over
+\emph{calculators}, not instances, because the 20 items sharing a calculator are
+not independent.
+
+\paragraph{Synthetic positive control.} A fictional unit system (three families
+of units, an invented conversion table) with a one-page skill document giving
+the table. Because the units are invented, the no-document floor is guaranteed
+and contamination is impossible; because the document is ours, we know exactly
+what content means. The item set is generated from the table
+($n=358$); every item whose answer also appears in a worked example of the
+document is dropped, so no item can be solved by copying.
+
+\subsection{Two dependent variables, and why both}
+
+We report (i) \textbf{accuracy}, from a greedily decoded free-form answer graded
+by the task's own scorer, and (ii) the \textbf{teacher-forced log-probability}
+of the gold answer. They fail differently and disagree often enough that
+reporting one alone is not safe (\S\ref{sec:traps}); accuracy is read first
+throughout. Notably, none of our items was rewritten into multiple choice to
+obtain an accuracy channel---\S\ref{sec:format} shows why that rewrite is not
+harmless.
+
+\subsection{Four cells}
+\label{sec:cells}
+
+Every item is labelled by what the document did to it:
+\textbf{R} (rescued: wrong without, right with),
+\textbf{F} (persistent: wrong both ways),
+\textbf{K} (kept: right both ways),
+\textbf{B} (broken: right without, wrong with).
+\textbf{R is the only cell in which the document demonstrably works}, and every
+table in this paper is read by cell. \S\ref{sec:traps} shows that the
+aggregate---over all four---can be not merely noisy but sign-inverted relative
+to R.
+
+\begin{table}[t]
+\caption{Behaviour. Left: real skills, Qwen3-8B, CIs bootstrapped over the 55
+calculators. The presence effect (wrong skill minus no skill) is a clean zero,
+so the $+40.5$pp is content. Right: the synthetic control in free-form answer
+format, where the floor and the presence control are both exactly zero.}
+\label{tab:behaviour}
+\centering
+\small
+\begin{tabular}{lrcc}
+\toprule
+& $n$ & accuracy & 95\% CI \\
+\midrule
+\multicolumn{4}{l}{\textit{Real skills (MedCalc-Bench $\times$ SRA-Bench), Qwen3-8B}}\\
+gold skill                & 1100 & 74.2\% & [66.0, 81.7] \\
+no skill                  &  839 & 38.3\% & [29.6, 47.3] \\
+wrong skill (length-matched) & 1100 & 31.5\% & [24.1, 39.3] \\
+\midrule
+gold $-$ no skill         &  839 & $+40.5$pp & [$+32.2$, $+49.2$] \\
+gold $-$ wrong skill      & 1100 & $+42.6$pp & [$+34.7$, $+50.9$] \\
+\textbf{presence: wrong $-$ no skill} & 839 & $\mathbf{-1.3}$\textbf{pp} & [$-7.6$, $+5.7$] \\
+\midrule
+\multicolumn{4}{l}{\textit{Synthetic control, free-form answers, Qwen3-8B, $n=120$}}\\
+gold skill  & 120 & 46.7\% & --- \\
+no document & 120 & \phantom{0}0.0\% & --- \\
+wrong document (length-matched) & 120 & \phantom{0}0.0\% & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{The geometry says the opposite of the behaviour}
+\label{sec:geometry}
+
+Table~\ref{tab:behaviour} says the effect is content: a document that is present
+but wrong is worth nothing. The internal picture at the last prompt position
+says the opposite, and it says so exactly where the document is being read.
+The cosine between the displacement caused by the skill and the displacement
+caused by an unrelated document of similar length is $0.93$ at layer 0, $0.9475$
+at layer 4 and $0.91$ at layer 10 on the synthetic control; it falls to
+$0.35$--$0.41$ from layer 18 on, i.e.\ only after the model has stopped reading
+(\S\ref{sec:where}). On a second family the same comparison at layer 10 gives
+$0.9716$ between two mutually exclusive skills and $0.9445$/$0.9555$ between
+each of them and an unrelated document---a gap of $0.016$--$0.027$ with
+bootstrap CIs of width $0.001$, so it is real and it is negligible.
+
+If one stops there, the conclusion is that the injection is not
+content-specific. Table~\ref{tab:geometry} shows the same data under
+Eq.~\ref{eq:decomp} and makes clear why that conclusion is wrong: over the first
+half of the network $\|\dvec\|$ is only $0.38$--$0.45$ of $\|\tvec\|$, so most
+of what a cosine between $h_{\text{skill}}$ and $h_{\text{wrong}}$ measures is
+shared. The interesting quantity is the part that is not.
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-decomp-tierA.pdf}
+\caption{The decomposition across depth, synthetic control, Qwen3-1.7B, fp32,
+$n=200$. Left: the three norms. Middle: each component as a share of the total
+displacement; above $1$ the wrong document moves the state further than the
+skill does, which is the case until layer 17. Right: how aligned two items'
+content vectors are, split by whether they use the same row of the conversion
+table.}
+\label{fig:decomp}
+\end{figure}
+
+Three facts in Figure~\ref{fig:decomp} are worth stating separately; the
+numbers are in Table~\ref{tab:geometry}, Appendix~\ref{app:tables}.
+
+\textbf{(i) The content component is a minority of the displacement where the
+document is being read.} Through layer 14 it is under half of $\|\tvec\|$. The
+ratio reaches $1.0$ deeper, but not because $\gvec$ shrinks---it is because
+$\dvec$ and $\gvec$ partly cancel.
+
+\textbf{(ii) The wrong document moves the state further than the right one, and
+the two components partly cancel.} Through layer 16, $\|\gvec\| > \|\tvec\|$: an
+irrelevant document of matched length displaces the final prompt position
+\emph{more} than the skill does. The reported $\cos(\dvec,\gvec) \in
+[-0.60,-0.32]$ at every layer is the law-of-cosines restatement of that fact and
+not independent evidence for it---given the three norms it is determined, and we
+verify that it agrees with $(\|\tvec\|^2 - \|\gvec\|^2 -
+\|\dvec\|^2)/(2\|\gvec\|\|\dvec\|)$ to within $0.002$ at all 28 layers. What is
+substantive is the cancellation itself: the content component's contribution is
+partly to undo a displacement that any document produces. The causal test in
+\S\ref{sec:decomp} agrees---injecting $\gvec$ alone drives accuracy below the
+no-document baseline, to the level of actually inserting the wrong document. The
+two norms cross at layer 17, which is also the first layer at which injecting
+$\dvec$ alone repairs anything (Table~\ref{tab:causal}).
+
+\textbf{(iii) The content component is low-dimensional.} After removing the
+shared mean direction, the item-to-item variation of $\{\dvec_i\}$ occupies an
+effective 3--8 dimensions out of 2048, and 87--99.7\% of each item's $\dvec_i$
+lies along the shared direction. The content component is therefore well
+described as one direction plus a small, low-dimensional per-item correction---a
+description that \S\ref{sec:whose} turns into a testable claim about what the
+direction belongs to.
+
+\section{Which component does the work}
+\label{sec:decomp}
+
+We add each component back to the no-document state at the last prompt position
+and let the forward pass continue: $h' = h_{\text{no}} + \alpha v$ for
+$v \in \{\dvec_i, \gvec_i, \tvec_i, \bar{\dvec}, \dvec_j\}$. The upper reference
+is replacing the state outright with $h_{\text{skill}}$; the lower reference is
+no intervention.
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{fig-causal-tierA.pdf}
+\caption{What each injected component repairs, on the cell the document
+rescues. Shaded bands are bootstrap 95\% CIs for the two conditions the argument
+rests on. $h_{\text{no}}+\tvec$ is omitted because it equals $h_{\text{skill}}$
+identically and its curve lies under the black one---we run it, and it agrees
+item by item. Synthetic control, multiple choice, Qwen3-1.7B, fp32, $n_R=48$.}
+\label{fig:causal}
+\end{figure}
+
+Figure~\ref{fig:causal} is the central causal result (numbers in
+Table~\ref{tab:causal}, Appendix~\ref{app:tables}). Five of its curves are worth
+reading separately.
+
+\textbf{The presence component repairs nothing}---$0.062$, three items of 48, at
+every layer past 20, and $0.00$--$0.02$ before. It is not inert noise: injected
+on its own it takes whole-set accuracy from the no-document baseline of $0.180$
+to $0.145$, which is the accuracy of actually putting the wrong document in the
+prompt. On the rescued cell it gives $0.062$, and the wrong document in context
+also gives $0.062$. It faithfully reproduces the behaviour of having a document
+present, and that behaviour is worse than having none.
+
+\textbf{The content component repairs most of the cell}---$0.812$ at layer 26
+against an upper reference of $1.000$, having been dismissed by every geometric
+measurement in \S\ref{sec:geometry} as a small residual.
+
+\textbf{At one patched position it is under-scaled, not incomplete.} The
+dose-response is monotone and steep: $\alpha=0.5$ gives $0.31$, $\alpha=1$
+$0.81$, $\alpha=2$ $0.98$---indistinguishable from replacing the state outright.
+Since $h_{\text{wrong}} + \dvec_i = h_{\text{skill}}$ exactly, adding $\dvec_i$
+to $h_{\text{no}}$ instead lands somewhere else, and the missing $0.19$ at
+$\alpha=1$ is a magnitude deficit along a correct direction. This does not
+generalise to more positions. At $k=16$ in the free-form format the
+dose-response is flat between $\alpha=1$ and $\alpha=2$ ($0.232$ and $0.268$ at
+layer 30) and never approaches the full replacement's $0.554$; the content
+component there reproduces under half of what replacing the same sixteen
+positions does, against $88\%$ at $k=1$. The two components are additive by
+construction and \emph{not} additive in effect. What survives every
+configuration we tried is the asymmetry: $\gvec$ injected alone is inert at
+every $k$, every layer and every $\alpha$ ($0.000$ at all four layers and all
+four $\alpha$ at $k=16$).
+
+\textbf{The receiver does not matter.} Injecting $h_{\text{skill}}$ into the
+prompt that already contains the \emph{wrong} document gives $0.979$--$1.000$,
+the same as injecting it into a prompt with no document at all. Whatever the
+surrounding 700 tokens contribute, the final position does not need them.
+
+\textbf{A single shared vector is not enough, and the split is measurable.}
+$\bar{\dvec}$---one vector for the whole item set, which is what ``a reusable
+skill vector'' would mean---recovers $0.042$--$0.146$ from layer 21 on, against
+$0.479$--$0.812$ for the item's own $\dvec_i$. Splitting each $\dvec_i$ along
+the shared unit direction $u = \bar{\dvec}/\|\bar{\dvec}\|$ and orthogonal to it,
+$\dvec_i = (\dvec_i\!\cdot\!u)\,u + \dvec_i^{\perp}$, and injecting each half on
+its own (Table~\ref{tab:parperp}) separates them cleanly, and reverses the
+answer at layer 21. Past that layer the parallel half carries $\approx0.9$ of
+the norm and $0.05$ of the effect, while the orthogonal half carries $0.44$ of
+the norm and $0.60$ of the $0.81$. Before it, in the band \S\ref{sec:traps}
+identifies as one where the forward pass is disturbed, the two swap: the shared
+direction does the work and the item-specific remainder does nothing---which is
+what a band whose ``recovery'' is a generic perturbation should look like, and is
+an independent confirmation of that diagnosis.
+
+
+\paragraph{The patch reproduces the document's whole behavioural signature, not
+just its successes.} Across all four cells, replacing the final position with
+$h_{\text{skill}}$ gives $1.000 / 0.000 / 1.000 / 0.000$ on
+rescued / persistent / kept / broken at layer 26 on the 1.7B, and
+$1.000 / 0.024 / 1.000 / 0.000$ at layer 30 on the 8B---cell by cell, what the
+document itself does by the definition of the cells. It reproduces the skill's
+failures and its damage as faithfully as its repairs. Adding $\dvec_i$ gives
+$0.812 / 0.112 / 1.000 / 0.125$ and $0.864 / 0.024 / 1.000 / 0.077$: the same
+signature, attenuated. A patch that only ever helped would be consistent with a
+generic ``try harder'' effect; one that also breaks exactly the items the
+document breaks is carrying the document's decision. The presence component
+passes the matching test against \emph{its} document: $h_{\text{no}}+\gvec$
+scores $0.062$ on the rescued cell where the wrong document in context scores
+$0.062$ (1.7B), and $0.250$ where it scores $0.250$ (8B), across four different
+control documents (\S\ref{sec:controls}).
+
+\subsection{Which control you subtract chooses which part of the document you measure}
+\label{sec:controls}
+
+$\dvec$ is defined by the document it is subtracted against, so ``content'' is
+whatever separates the skill from that control. Our default control holds only
+length fixed. Two tighter ones, generated from the skill document itself, hold
+more: \textbf{shuffled} keeps every word and every number and destroys the line
+order; \textbf{corrupted} keeps the wording, the procedure, the table layout and
+the ordering of the units, and replaces \emph{every conversion factor}. All
+three are injected under the same name and header, so the prompt never announces
+which it is.
+
+Both tighter controls move the accounting a long way
+(Table~\ref{tab:controls}). A table whose numbers are all wrong solves $0.729$
+of the rescued cell; a table with the right numbers in scrambled order solves
+$0.625$; the unrelated text solves $0.062$. Against no document the cell is
+$0.000$ by construction and with the gold document it is $1.000$. So when either
+tight control is used, $\gvec$ is no longer inert---it repairs $0.60$--$0.75$---
+and the residual $\dvec$ repairs only $0.19$--$0.31$.
+
+\begin{table}[t]
+\caption{The same decomposition against three control documents. Synthetic
+control, multiple choice, Qwen3-1.7B, $n=200$, rescued cell $n_R=48$, layers
+21--27. ``in context'' is the control document actually placed in the prompt;
+``$+\gvec$'' is its state injected at the final position of the no-document
+prompt. That the two agree to within $0.02$ for three very different documents
+is the strongest validity check we have on the patch itself. $\dvec$ is the
+same measurement in all three rows; only what it is subtracted against changes.}
+\label{tab:controls}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+control document & \multicolumn{3}{c}{fraction of the rescued cell correct}\\
+\cmidrule(lr){2-4}
+ & control in context & $h_{\text{no}}+\gvec$ & $h_{\text{no}}+\dvec$ \\
+\midrule
+unrelated text, matched length      & 0.062 & \textbf{0.062} & \textbf{0.812} \\
+same document, lines scrambled      & 0.625 & 0.604--0.625   & 0.188--0.292 \\
+same document, factors replaced     & 0.729 & 0.708--0.750   & 0.229--0.312 \\
+\midrule
+gold skill in context & 1.000 & --- & --- \\
+no document           & 0.000 & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The same control on third-party skills.} We repeated the corrupted
+control on the clinical calculators, where the arm already exists in the
+released harness (numeric constants in the prose perturbed, wording, structure
+and executable tools untouched). That material is free-form and answered through
+a chain of thought, and there the corrupted skill is worth \emph{nothing}: on 20
+rescued items it scores $0.050$, which is what no skill at all scores, against
+$0.950$ for the gold skill. The synthetic and the real material therefore agree,
+and they agree on the thing that matters---whether corrupting a document costs
+you anything is a property of the answer format, not of the document.
+
+Read as an attribution rather than as three competing estimates, this says
+something uncomfortable about the multiple-choice form of the task. On the full
+200 items the gold document is worth $0.180 \to 0.300$; a scrambled version of
+it is worth $0.180 \to 0.270$ and a version with every factor wrong is worth
+$0.180 \to 0.260$. Three quarters of the measured skill effect survives
+destroying either the order of the document or the correctness of every number
+in it. What the model needs, in this format, is mostly a document containing the
+right vocabulary and the right kinds of number---not a correct table. The
+correct table is worth the remaining $0.03$--$0.04$ absolute, or $0.19$--$0.31$
+of the rescued cell.
+
+That is a statement about the answer format as much as about the model. We
+registered the test before running it: in the free-form format the number has to
+be produced, so a corrupted table should be worth nothing. It is
+(Table~\ref{tab:format}). Corrupting every factor costs $0.000$ of the
+multiple-choice effect's $0.08$ and \emph{all} of the free-form effect's
+$0.467$. Scrambling the line order costs little in either, which is what it
+should: our shuffle permutes lines, and each row of the conversion table is one
+line, so every factor is still there to be retrieved---just not in a readable
+order.
+
+
+\subsection{What a single position can carry is the answer, not the content}
+\label{sec:onepos}
+
+Table~\ref{tab:causal} is a multiple-choice result, and single-position patching
+is the standard move in this literature, so it is worth asking what exactly that
+one position is carrying. The same items exist in a free-form numeric form, and
+there the answer is a number the model must compute rather than an option it
+must select. We ran the identical sweep on Qwen3-8B in that form, where the
+skill is worth $0\to 0.467$ (Table~\ref{tab:behaviour}) and the rescued cell has
+56 items.
+
+Two things change and one does not (Table~\ref{tab:onepos}). The ceiling
+collapses: through layer 22 every condition reads zero, including replacing the
+position outright with the true skill state, and the best any single-position
+intervention achieves is $0.304$ at layer 32. What does not change is the
+ordering: the content component recovers $0.268$ of the full replacement's
+$0.304$, and the presence component $0.018$.
+
+\paragraph{This is the format, not the model.} We ran the identical sweep on the
+\emph{same model and the same items} in multiple-choice form (Qwen3-8B, $n=120$,
+rescued cell $n_R=44$). There, replacing the final position recovers $0.977$ at
+layer 26 and $1.000$ at layers 30 and 35, and the content component recovers
+$0.864$--$0.909$. Same model, same items, same intervention, same layers:
+$1.000$ when the answer is one option letter and $0.304$ when it is a number the
+model has to produce. The presence component in that format sits at $0.250$ at
+every deep layer, which is chance on four options---the multiple-choice floor is
+why the free-form measurement, with a floor of exactly zero, is the cleaner
+evidence for $\gvec$ being inert.
+
+\begin{table}[t]
+\caption{The same single-position sweep, free-form answers, Qwen3-8B, rescued
+cell ($n_R=56$; the cells are $R=56$, $F=64$, with $K=B=0$ because the
+no-document floor is exactly zero). The ceiling is far below the
+multiple-choice one, but the \emph{ordering} is the same: the content component
+does most of what the full replacement does, the presence component nothing, and
+neither the shared direction nor another item's content vector anything at all
+($0.000$ at every layer past 20; full table in Appendix~\ref{app:tables}).}
+\label{tab:onepos}
+\centering
+\small
+\begin{tabular}{lcccccc}
+\toprule
+injected at the last prompt position & L$\le$20 & L24 & L28 & L30 & \textbf{L32} & L35 \\
+\midrule
+$h_{\text{skill}}$ (replace outright)      & 0.000 & 0.125 & 0.214 & 0.286 & \textbf{0.304} & 0.196 \\
+$h_{\text{no}} + \dvec_i$ (content)        & $\le$0.036 & 0.036 & 0.054 & 0.161 & \textbf{0.268} & 0.196 \\
+$h_{\text{no}} + \gvec_i$ (presence)       & 0.000 & 0.000 & 0.018 & 0.018 & \textbf{0.018} & 0.000 \\
+$h_{\text{no}} + \bar{\dvec}$ or $\dvec_j$ & $\le$0.036 & 0.000 & 0.000 & 0.000 & \textbf{0.000} & $\le$0.018 \\
+\bottomrule
+\end{tabular}
+\end{table}
+The reason is mechanical and can be counted. Of the 120 items, \emph{none} has a
+gold answer that is a single token under this tokenizer: 36 are two tokens, 55
+three, 29 four. A patch at one prompt position can fix at most the first
+generated token; the remaining one to three are produced in a context that still
+does not contain the conversion table. Multiple choice compresses the answer to
+exactly one token---which is exactly the unit a single-position patch
+transports.
+
+\paragraph{On third-party skills, only the document's own tokens carry it.}
+The clinical calculators are answered through several hundred tokens of
+arithmetic. There, replacing the final prompt position with the with-skill state
+repairs 1 of 20 rescued items, and transplanting the question span---50 to 1697
+positions, into a receiver built to be token-for-token the same length, so the
+transplanted states keep their positional phase---repairs nothing beyond the
+receiver's own baseline at any of seven layers (Table~\ref{tab:realspan}). The
+self-transplant arm sits on that same baseline to the item, so the instrument is
+live and the null is real. Transplanting the \emph{document's own} states over
+the same construction repairs $1.000$ of the rescued cell at layers 0 through
+12, against a receiver at $0.000$. Layer 0 is close to tautological---a layer's
+output over the document's tokens is not far from putting those tokens
+back---so the load-bearing entry is layer 12, a third of the way into the
+network, where the receiver has already processed twelve blocks' worth of filler
+in those positions and the transplant still recovers everything. \PEND{the decay profile past layer 12; at
+$n=12$ it is $0.42$, $0.58$, $0.33$, $0.08$ at layers 16, 20, 24, 30, which is
+not yet a shape}
+
+Two cautions this section pays for. An earlier version of the same experiment
+used the no-skill prompt as the receiver, which is $\sim$900 tokens shorter; the
+transplanted states then landed at positions 900 earlier than they were computed
+at, and both the gold donor and a wrong-skill donor read $0.200$---two arms
+broken the same way, which is what a matched control is for. And the surviving
+window is a window in \emph{relative} depth: layers 0--12 of 36 here, 0--10 of
+28 on the synthetic tier, both about a third of the way in.
+
+\begin{table}[t]
+\caption{Span transplants on 55 third-party clinical-calculator skills,
+Qwen3-8B, rescued cell, the full chain of thought decoded and graded by the
+task's own scorer. The receiver is the with-skill prompt with the document's
+tokens replaced by filler, so it is the same length and the transplanted
+positions keep their RoPE phase. \emph{Which} positions are transplanted is the
+whole difference between the two blocks.}
+\label{tab:realspan}
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+transplanted positions & donor & L0--12 & L16 & L22 & L30 \\
+\midrule
+\multirow{2}{*}{question span (50--1697 pos., $n=40$)}
+ & the gold skill   & 0.10--0.23 & 0.150 & 0.200 & 0.154 \\
+ & the receiver itself (no-op) & 0.13--0.20 & 0.175 & 0.125 & 0.154 \\
+\midrule
+\multirow{2}{*}{\textbf{the document's own span} ($n=12$)}
+ & \textbf{the gold skill} & \textbf{1.000} & 0.42 & --- & 0.08 \\
+ & the receiver itself (no-op) & 0.000 & --- & --- & --- \\
+\midrule
+\multicolumn{2}{l}{no document / the gold skill in context}
+ & \multicolumn{4}{c}{0.025 \quad / \quad 0.950} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Answer length is the cause, and that is a controlled comparison.}
+The step from the synthetic tier to the clinical one changes the skill, the
+task, the prompt length and the fraction of it a patch covers, so it cannot on
+its own identify what makes the injection fail. We therefore made answer length
+the only thing that moves: the \emph{same} 80 synthetic items, the same model,
+the same document, prompted to reason step by step and give the answer on a
+final \texttt{ANSWER:} line. In that format the skill is worth $0.000 \to
+1.000$---every item is rescued, $F=K=B=0$---so there is more effect to recover
+than in either other format, and the rescued cell is the whole item set.
+
+The single-position patch recovers $\mathbf{0.000}$ of it
+(Table~\ref{tab:ladder2}), as do $\dvec$ and $\gvec$. The last-layer
+instrument check passes on 10 of 10 items in the same run.
+
+\begin{table}[t]
+\caption{One model, one document, one item set, three answer formats. Only the
+number of tokens the answer occupies changes. ``$n_R$'' is the size of the
+rescued cell, which is what the fraction is taken over.}
+\label{tab:ladder2}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+answer format & tokens in the answer & $n_R$ & $h_{\text{no}} \leftarrow h_{\text{skill}}$ \\
+\midrule
+multiple choice        & 1            & 44 & \textbf{1.000} \\
+free-form number       & 2--4         & 56 & 0.304 \\
+step-by-step reasoning & a few hundred & 80 & \textbf{0.000} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{fig-ladder.pdf}
+\caption{What each transplant channel recovers, against how many tokens the
+answer occupies. Filled markers joined by lines are one model and one item set
+with only the answer format changed. The clinical-skill results are drawn
+separately and deliberately not joined: that material changes the skill, the
+task and the prompt length at once, so a line through it would assert a
+comparison we did not run. \PEND{the two open positions in the third column---
+the span channels on the synthetic items in step-by-step format---are running}}
+\label{fig:ladder}
+\end{figure}
+
+\textbf{The range over which ``a skill's effect is carried by a vector'' is true
+is the range over which the answer is short}---and the clinical result is then
+not a property of that material but an instance of this.
+
+\paragraph{It is a capacity limit, and it can be measured.} Patching one
+position is a choice, not a measurement, so we repeated the sweep patching the
+last $k$ prompt positions for $k \in \{1,4,16\}$. Replacing them with the skill
+state recovers $0.286$, $0.286$ and $\mathbf{0.554}$ of the rescued cell at
+layer 30. Four positions buy nothing---the last four tokens are the chat
+suffix---and sixteen, which reach back into the question, roughly double the
+recovery. Against the document itself at $1.000$, even sixteen positions carry
+about half. The content does not compress into a small set of positions; how
+much of it a patch transports is a function of how many positions it is given.
+
+We therefore read the low ceiling as a scope condition on single-position
+patching rather than as a negative result about $\dvec$. In a multiple-choice
+item the answer \emph{is} one token at one position, so a patch that transports
+the model's decision transports the whole task and looks like it transported the
+document. What the final prompt position holds by layer 21 is the model's
+\emph{answer}, not the document's content---consistent with the knockout result
+that reading the document is finished by that layer (\S\ref{sec:where}).
+
+\section{Where in the network the content is readable}
+\label{sec:where}
+
+Transplanting the state at one group of positions from the with-document forward
+into the without-document forward asks where the content can be \emph{read
+from}. In the multiple-choice format, three position groups give three windows
+that hand off cleanly (Figure~\ref{fig:windows}, left; the table is
+Appendix~\ref{app:tables}): the document's own 688 tokens work at layers 0--10
+and fall off a cliff at 11; the question's 42--47 tokens work at 11--16; the
+final prompt position works at 21--27. The handoff is not an artefact of a
+shared analysis---the two experiments were run independently---and at layer 11
+the document-span channel drops from $0.308$ to $0.128$ while the question-span
+channel rises from $0.231$ to $0.308$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-windows-tierA.pdf}
+\caption{Left: what each position group is sufficient for, as a function of the
+layer at which its states are transplanted; dotted lines are each channel's own
+receiver baseline. Right: what is necessary---accuracy when attention to the
+document is masked from the given layer to the end, cumulatively; the dotted
+line is the unmasked baseline. Synthetic control, multiple choice, Qwen3-1.7B,
+$n=39$.}
+\label{fig:windows}
+\end{figure}
+
+\paragraph{The windows survive the change of model and not the change of
+format.} We repeated both span transplants on Qwen3-8B in both formats
+(Table~\ref{tab:windows2}). In multiple choice the picture holds with the layers
+shifted: the document span recovers the donor's accuracy outright at layers
+0--6, the question span recovers $0.517$ of the donor's $0.550$ at layer 21. In
+free-form, on the same model and the same items, the question span recovers
+$0.000$--$0.025$ at \emph{every} one of 12 layers, and $0.042$ with all 36
+layers replaced at once; the document span recovers $0.408$ at layer 0---close
+to putting the document's tokens back---and then $0.14$, $0.17$, $0.09$, $0.07$,
+$0.000$ at layers 3, 6, 9, 12 and 15.
+
+\begin{table}[t]
+\caption{Peak accuracy of each transplant channel, by model and answer format.
+``Donor'' is the with-skill forward and ``receiver'' the prompt being patched
+into; the two span channels patch into a length-matched filler-substituted
+prompt, the final-position channel into the no-document prompt, which is why
+their baselines differ. Peaks in \textbf{bold} where the channel recovers most
+of the donor.}
+\label{tab:windows2}
+\centering
+\small
+\begin{tabular}{llccc}
+\toprule
+channel & configuration & recv. & peak (layers) & donor \\
+\midrule
+\multirow{3}{*}{document span (688 tok)}
+ & 1.7B, multiple choice & 0.154 & \textbf{0.436} (3--4) & 0.436 \\
+ & 8B, multiple choice   & 0.233 & \textbf{0.575} (0--6) & 0.550 \\
+ & 8B, free-form         & 0.008 & 0.408 (0 only)        & 0.467 \\
+\midrule
+\multirow{3}{*}{question span (26--50 tok)\hspace{-2mm}}
+ & 1.7B, multiple choice & 0.154 & 0.333 (12--14)        & 0.436 \\
+ & 8B, multiple choice   & 0.233 & \textbf{0.517} (21)   & 0.550 \\
+ & 8B, free-form         & 0.008 & 0.025 (any, i.e.\ none) & 0.467 \\
+\midrule
+\multirow{3}{*}{final position(s)}
+ & 1.7B, MC, rescued cell & 0.000 & \textbf{1.000} (24--27) & 1.000 \\
+ & 8B, MC, rescued cell   & 0.000 & \textbf{1.000} (30--35) & 1.000 \\
+ & 8B, free-form, rescued cell & 0.000 & 0.304 ($k$=1), 0.554 ($k$=16) & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+So the three-window picture is a multiple-choice phenomenon. When the answer has
+to be produced rather than selected, the content is not relocated into any
+compact carrier: it stays where it was written and is consumed from there. Each
+window transports the model's \emph{decision} as soon as the decision has been
+made, and a decision is one token only in multiple choice.
+
+\paragraph{Transplants prove sufficiency; only knockouts prove necessity.}
+Masking attention from every position to the document from layer 0 onward costs
+the entire benefit ($0.436 \to 0.205$, against a no-document baseline of
+$0.231$). But masking only the final position's attention to the document costs
+\emph{nothing} ($0.436$), and masking only the question span's leaves $0.282$.
+No single pathway is necessary: the read is redundantly distributed---which is
+what \citet{jit2025taskrepr} report for task representations generally.
+Separately, masking from layer 22 onward is free on all five knockout arms,
+placing the last layer at which the model still needs to read the document at
+21---the layer at which the final-position transplant becomes item-specific
+(\S\ref{sec:whose}), at which another item's content vector stops working, and
+at which the parallel and orthogonal halves of $\dvec$ swap roles
+(Table~\ref{tab:parperp}). \citet{onset2025instruction} find an analogous
+``onset'' layer from patching rather than knockout.
+
+\paragraph{The same knockout on third-party skills.} Making the document's
+tokens unattendable for the whole forward, and decoding the full chain of
+thought, takes accuracy from $0.550$ $[0.400, 0.700]$ to $0.075$
+$[0.000, 0.175]$ on 40 clinical-calculator instances---against $0.025$
+$[0.000, 0.075]$ with no document in the prompt at all. Ninety per cent of the
+benefit is gone, and the remainder is inside the no-document interval. Masking an
+equal-length span of the patient note instead (median 893 tokens against the
+skill's 919) costs less: $0.150$ $[0.050, 0.275]$. A length-matched control that
+is genuinely inert cannot be built on this material---the only other long span
+is the data the task needs---so this bounds ``removing 900 tokens'' loosely, but
+it bounds it in the right direction.
+
+\paragraph{And it keeps reading much longer.} Blocking attention to the document
+cumulatively from layer $L$ to the end costs the entire benefit for every $L$ up
+to 18, and still costs $0.500 \to 0.300$ from layer 30 of 36
+($n=20$; $0.050$ from layers 0, 6, 12 and 18, $0.100$ from 24). On the synthetic
+multiple-choice task the same intervention is \emph{free} from layer 22 of 28 on
+all five knockout arms. The document stops being needed early when the answer is
+one token and is still being read at $83\%$ depth when the answer is several
+hundred---the same principle as \S\ref{sec:onepos}, seen from the necessity
+side.
+
+We therefore state the windows as \emph{where the content has accumulated}, not
+as a route. Single-layer knockouts measure nothing on a 688-token span, because
+a layer denied the read recovers it one layer later; cumulative knockouts are
+required, and are what we report.
+
+\section{What the content component belongs to}
+\label{sec:whose}
+
+If $\dvec$ were a ``skill vector'' it would be reusable: extracted from one task
+it would work on another. Its \emph{direction} is reusable. Its \emph{effect}
+is not, and the gap between those two statements is the finding.
+
+\paragraph{The direction identifies the skill.} On the clinical-calculator
+material each skill has 20 instances, so ``same skill, different task'' is
+directly measurable. Content vectors from different patient notes under the
+same calculator have cosine $0.789$ at layer 20 and $0.876$ at layer 30;
+vectors from different calculators have $0.320$ and $0.653$ ($n=40$, 20 rescued
+and 20 persistent, Qwen3-8B). The same measurement taken at the end of a prompt
+that forces an immediate answer gives $0.793$ against $0.209$, so the gap is
+robust to where the state is read but its size is not. On the synthetic tier,
+which has a single document, the analogous split is by conversion family:
+$0.859$ within against $0.699$ across at the last layer, rising to $0.99$ for
+both in early layers. So the direction of $\dvec$ carries the identity of the
+document, and increasingly so with depth.
+
+\paragraph{The effect does not transfer at all.} Injecting the mean content
+direction $\bar{\dvec}$, or another item's $\dvec_j$, repairs
+\emph{nothing} in the free-form format---$0.000$ at every one of 16 layers for
+both, against $0.268$ for the item's own $\dvec_i$ (Table~\ref{tab:onepos}). In
+multiple choice the picture is graded rather than flat but still far from the
+item's own vector: at layer 27, $\bar{\dvec}$ reaches $0.062$, a same-family
+donor $0.292$ and a different-family donor $0.167$, against $0.792$ for
+$\dvec_i$ (Table~\ref{tab:causal}). The one band where a donor vector looks
+genuinely transferable---$0.33$ at layers 18--20, close to $\dvec_i$'s
+$0.40$---is the band we identify independently in \S\ref{sec:traps} as one where
+the forward pass is damaged and every condition rises together.
+
+\paragraph{And nothing about it distinguishes rescued items from persistent
+failures.} It is natural to hope that the items a skill rescues differ, at the
+final position, from the ones it does not. Two independent measurements say
+they do not. The norms and angles of $\dvec$ and $\gvec$ are the same in both
+cells to three digits (at layer 30 of the 8B on real skills: $\|\dvec\|$ $189.4$
+versus $185.4$, $\|\gvec\|$ $213.1$ versus $205.2$, $\cos(\dvec,\gvec)$ $-0.469$
+versus $-0.468$). And a representational-similarity measure over the question
+span, which does separate the two cells under the gold skill at layers 10--16
+($-0.0037$ to $-0.0070$, non-overlapping bootstrap CIs, $n=150+150$), separates
+them just as much under a length-matched \emph{wrong} skill ($-0.0035$ to
+$-0.0056$): zero layers pass a control the design required in advance. What
+looked like a signature of ``the skill worked here'' is a signature of ``a
+document is present''---the same trap as \S\ref{sec:geometry}, one register
+down, and the reason we report the causal channel rather than a similarity
+score.
+
+\paragraph{Decodable is not usable.} The clinical material has 55 skills with
+20 instances each, which makes ``does this vector encode which skill is
+present'' an estimable question rather than a description. We answer it with
+leave-one-out nearest-class-mean classification of the calculator id on cosine
+similarity---no training, no hyperparameter---over 287 instances and 41
+calculators, chance $0.024$ (Table~\ref{tab:decode} and
+Figure~\ref{fig:decode}).
+
+\begin{table}[t]
+\caption{Leave-one-out nearest-class-mean identification of \emph{which of 42
+skills} is in the prompt, from each vector, Qwen3-8B, $n=287$, chance $0.024$.
+The no-document state is the baseline that matters: a patient note identifies
+its own calculator, increasingly so with depth, so only the gap
+$\text{ncm}(\dvec)-\text{ncm}(h_{\text{no}})$ is about the document. The
+control document is a single fixed one shared by every instance: with the
+released pairing, each gold skill has its own neutral partner, so $\gvec$ scores
+$0.72$--$0.82$ purely by encoding which partner was used. Under a shared
+control it scores $0.30$--$0.40$ at layers 6--14---\emph{below} the
+no-document baseline, which is what a displacement that is the same for every
+skill should do. The last two columns are participation ratios of the
+per-skill means of $\dvec$ (after centring, so they measure how the skills
+\emph{differ} rather than what they share) and of the within-skill residuals.}
+\label{tab:decode}
+\centering
+\small
+\begin{tabular}{rccccrr}
+\toprule
+layer & ncm($\dvec$) & ncm($\gvec$) & ncm($h_{\text{no}}$) &
+$\dvec - h_{\text{no}}$ & PR(between skills) & PR(within) \\
+\midrule
+ 6 & \textbf{0.969} & 0.303 & 0.429 & \textbf{+0.54} & 6.2 & 37.3 \\
+10 & 0.930 & 0.341 & 0.474 & \textbf{+0.46} & 6.0 & 31.9 \\
+14 & 0.934 & 0.383 & 0.526 & +0.41 & 5.8 & 32.0 \\
+18 & 0.965 & 0.544 & 0.666 & +0.30 & 6.7 & 37.6 \\
+22 & \textbf{1.000} & 0.833 & 0.892 & +0.11 & 6.3 & 38.6 \\
+26 & 0.986 & 0.892 & 0.955 & +0.03 & 6.9 & 23.8 \\
+30 & 0.979 & 0.909 & 0.969 & +0.01 & 7.2 & 23.0 \\
+35 & 0.944 & 0.864 & 0.962 & $-0.02$ & 4.2 & 12.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-decode-medcalc.pdf}
+\caption{Left: how well each vector identifies which of 41 skills is in the
+prompt (leave-one-out nearest class mean, cosine). The no-document state is the
+baseline that matters---a patient note identifies its own calculator, and
+increasingly so with depth---so the document's contribution is the gap between
+the solid and the dotted line, largest at layers 6--18. The presence component
+stays below that baseline throughout. Right: effective dimensions of the content
+vector, split into how the skills differ from each other and how the tasks
+differ within a skill. Qwen3-8B, $n=287$, 41 calculators, chance $0.024$.}
+\label{fig:decode}
+\end{figure}
+
+Three things follow. First, the content vector identifies the skill almost
+perfectly---$0.92$--$0.99$ at every layer, against $0.024$ chance---while
+injecting the same vector back repairs essentially none of the rescued items on
+this material (\S\ref{sec:onepos}). The information is unambiguously present and
+unambiguously not transportable: \textbf{decodable is not usable}, and a study
+that reported only the decoding would have claimed a mechanism it had not
+demonstrated. Second, the document's contribution over what the task text
+already reveals is an early-to-middle-layer phenomenon: the gap over
+$h_{\text{no}}$ is $+0.52$ at layer 6 and $+0.02$ by layer 26, and the layers
+where it is largest (6--18) are the layers where the span transplants show
+anything at all. Third, the presence component is not merely uninformative about which skill is
+present---at layers 6--14 it is \emph{less} informative than doing nothing
+($0.30$--$0.38$ against $0.43$--$0.53$), which is the strongest form the
+negative control can take. Fourth, the shape: ``which of 42 skills'' occupies
+about six effective dimensions at every depth, ``which task, given the skill''
+occupies 32--38 through layer 22 and falls to 12 by the last layer. Skill
+identity is five to six times smaller than task conditioning, and it is the
+task half that is discarded as the answer forms.
+
+\paragraph{Reconciling the two.} Between $73\%$ and $99.7\%$ of each item's
+$\dvec_i$ lies along the shared mean direction, depending on layer
+(Table~\ref{tab:geometry}); the remainder occupies an effective 3--18 dimensions
+out of 2048--4096. The reusable part is almost all of the norm and, in free-form
+answering, none of the effect; in multiple choice it is worth $0.06$ of the
+$0.79$ the item's own vector achieves. A single vector per skill is therefore a fair description of
+what the injection \emph{looks like} and a wrong description of what it
+\emph{does}, which is the same inversion as \S\ref{sec:geometry} one level
+down.
+
+
+\section{Two ways this measurement misleads}
+\label{sec:traps}
+
+\subsection{The aggregate gold-answer log-probability ranks the controls first}
+
+Averaged over all items, the log-probability of the gold answer under each
+patched condition at layers 21--27 orders as
+\begin{center}
+mean vector $-2.85$ \; $>$ \; filler state $-5.20$ \; $>$ \; \textbf{true skill
+state} $-6.60$ \; $>$ \; no document $-7.30$ \; $>$ \; wrong skill $-10.29$,
+\end{center}
+i.e.\ a content-free average vector scores $3.75$ nats \emph{better} than the
+state the model actually builds while reading the document. Its accuracy is
+$0.256$ against the true state's $0.436$.
+
+Splitting by the cells of \S\ref{sec:cells} explains the whole gap arithmetically
+(Table~\ref{tab:cells}). A cell's contribution to a mean is its size share times
+its own gap, so the columns add up exactly.
+
+\begin{table}[t]
+\caption{Where the aggregate gap comes from, synthetic control, layer 21,
+$n=39$. The mean vector beats the true state overall because F and B---the
+cells where the document does not work---contribute 133\% of the gap. On R,
+where the document does work, the true state wins by $2.5$ nats and by $0.69$
+in accuracy.}
+\label{tab:cells}
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+cell & $n$ & mean $-$ real (nats) & contribution to $+2.747$ & acc.\ real & acc.\ mean \\
+\midrule
+\textbf{R} rescued   & 13 & $-2.506$ & $-0.835$ \ ($-30\%$) & \textbf{0.923} & 0.231 \\
+\textbf{F} persistent& 17 & $+5.907$ & $+2.575$ \ ($+94\%$) & 0.059 & 0.294 \\
+K kept               &  4 & $-0.740$ & $-0.076$ \ ($-3\%$)  & 1.000 & 0.500 \\
+\textbf{B} broken    &  5 & $+8.455$ & $+1.084$ \ ($+40\%$) & 0.000 & 0.200 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The mechanism is visible in the option distribution: the mean vector raises the
+entropy over the four answer tokens from $0.187$ to $0.972$ nats (maximum
+$\ln 4 = 1.386$). A flattened distribution cannot assign any token $-19$ nats,
+so it looks excellent on the items where the true state is confidently wrong;
+flattening also never promotes a token to the argmax, so accuracy does not move.
+The one place the two channels agree is that the \emph{wrong skill} is worst on
+both---which is positive evidence for content specificity, since injecting the
+wrong content actively misleads.
+
+\paragraph{The same inversion on real skills, for a different reason.}
+On the clinical-calculator material the effect lives in a chain of thought, and
+two ways of scoring the answer disagree completely. Decoding the full reasoning
+and grading it reproduces the behavioural cells almost exactly---on 20 rescued
+items, $0.05$ without the skill, $0.05$ with a wrong skill, $0.95$ with the
+gold skill. Teacher-forcing the bare answer immediately after the prompt, with
+no reasoning in between, gives $-16.27$, $\mathbf{-13.21}$ and $-14.65$ nats
+respectively: \emph{the wrong skill scores best}. The likely reason is
+mechanical---a correct skill in context makes the model want to start
+calculating, so the very next token is less likely to be a digit---but the
+consequence is what matters here. Forcing the answer format also destroys the
+effect outright: under a \texttt{ANSWER:} cue, accuracy is $0.175$ for
+no skill, wrong skill and gold skill alike (40 instances), while the
+log-probability still moves by $+0.60$ nats. Any recovery ratio built on that
+denominator is a ratio of a channel with no behavioural referent.
+
+We draw a methodological conclusion rather than a correction: on an item set
+where the document helps some items and hurts others, an aggregate
+log-probability is not a measure of the intervention's fidelity, and neither is
+a log-probability measured under an answer format the effect does not survive.
+The primary readout must be a count on the rescued cell, decoded the way the
+task is actually performed.
+
+\subsection{A band where the forward pass is damaged}
+
+Between layers 17 and 20 every patched condition improves together and the
+conditions become indistinguishable. Reading by cell isolates the cause: on the
+K cell---items the model already answers correctly---the true-state patch drops
+the gold log-probability from $-1.6$ at layer 16 to $-7.1$ at layer 18, while
+the filler-state patch, built over an equally long prompt, stays at $-1.5$. Any
+transfer or recovery number falling in 17--20 is reported with that band marked.
+
+\subsection{Multiple choice manufactures a floor and merges retrieval with execution}
+\label{sec:format}
+
+Our synthetic items exist in two forms with identical content: four-option
+multiple choice, and free-form (``give the number only''). The forms do not
+measure the same thing.
+
+\begin{table}[t]
+\caption{The same items under two answer formats. Top: the effect itself. In
+multiple choice the small model shows a $+12$pp skill effect over an $0.18$
+floor; in free-form it shows nothing at all, over a floor of exactly zero, and
+the effect appears only at 8B. Bottom: the same four documents under both
+formats, where ``share'' is
+$(\text{acc}-\text{none})/(\text{gold}-\text{none})$. Destroying every number in
+the document costs two thirds of nothing in multiple choice and everything in
+free-form.}
+\label{tab:format}
+\centering
+\small
+\begin{tabular}{llcccc}
+\toprule
+model & format & no document & wrong document & gold skill & effect \\
+\midrule
+Qwen3-1.7B & multiple choice & 0.180 & 0.145 & 0.300 & $+12.0$pp \\
+Qwen3-1.7B & free-form       & \textbf{0.000} & --- & \textbf{0.000} & $\mathbf{0}$ \\
+Qwen3-8B   & multiple choice & 0.292 & 0.242 & 0.550 & $+25.8$pp \\
+Qwen3-8B   & free-form       & \textbf{0.000} & \textbf{0.000} & \textbf{0.467} & $\mathbf{+46.7}$\textbf{pp} \\
+\midrule
+\multicolumn{2}{l}{document in context} & \multicolumn{2}{c}{multiple choice (1.7B)} & \multicolumn{2}{c}{free-form (8B)} \\
+\multicolumn{2}{l}{} & acc & share & acc & share \\
+\midrule
+\multicolumn{2}{l}{none}                        & 0.180 & --- & 0.000 & --- \\
+\multicolumn{2}{l}{same document, \emph{factors} replaced} & 0.260 & 0.67 & \textbf{0.000} & \textbf{0.00} \\
+\multicolumn{2}{l}{same document, \emph{lines} scrambled}  & 0.270 & 0.75 & 0.325 & 0.70 \\
+\multicolumn{2}{l}{gold skill}                  & 0.300 & 1.00 & 0.467 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Inspecting what the small model writes explains the top half. Without the
+document it echoes the quantity from the question (``2''); with the document it
+writes a \emph{conversion factor from the table} (``21'', ``180'', ``60''). It
+retrieves and does not execute. Multiple choice scores retrieval as success
+whenever the retrieved number can be matched against an option, and the
+positional prior supplies a floor of $0.18$--$0.29$ on top.
+
+The bottom half is the sharper version, and it is a prediction we registered
+before running: if the multiple-choice form is solvable from a document's
+structure rather than its numbers, a table with every factor replaced must score
+near zero in free-form. It scores exactly zero. Scrambling the line order costs
+little in either format, which is what it should---our shuffle permutes lines and
+each row of the table is one line, so every factor is still there to retrieve,
+just not in a readable order.
+
+Two consequences. A benchmark comparing skill effects across model scales in
+multiple-choice format is measuring a mixture whose composition changes with
+scale. And an ablation that perturbs a document and reports the accuracy drop is
+measuring, in multiple choice, mostly whether the document is still recognisably
+a document.
+
+\section{Related work}
+
+\paragraph{Skill benchmarks measure the effect, not the mechanism.}
+A 2026 literature evaluates skill documents behaviourally: across domains
+\citep{skillsbench2026}, on executable software-engineering tasks
+\citep{sweskills2026}, and under different delivery protocols
+\citep{skillsinjector2026}; a parallel line studies which skill to retrieve.
+Closest in motivation is distilling a skill into weights
+\citep{skilltolora2026}, which asks what a skill \emph{could} become rather
+than what it already is at inference time. None of this work looks inside the
+forward pass, and the effect sizes it reports are exactly what our
+\S\ref{sec:traps} shows can be format-dependent.
+
+\paragraph{Task and function vectors.}
+That a context can be compressed into a single activation-space direction is
+established for in-context demonstrations \citep{hendel2023taskvectors,
+todd2024functionvectors} and, in weight space, for fine-tuning
+\citep{ilharco2023taskarithmetic}. Methodologically we are in this line: our
+$\dvec$ is extracted and re-injected the same way. The difference is the
+control. Those extractions are ``with demonstrations'' minus ``without'', so
+whatever a context does merely by being long and structured is inside the
+vector. With a skill document that confound is not small: it is the majority of
+the displacement (Table~\ref{tab:geometry}) and it is behaviourally inert
+(Table~\ref{tab:causal}). The control is also only available in our setting---a
+``fake demonstration'' is itself an intervention on the task, whereas an
+unrelated document of matched length is not.
+
+\paragraph{Activation patching.}
+We follow the methodology literature on what patching licenses
+\citep{zhang2023bestpractices, heimersheim2024patching}: transplants establish
+sufficiency, knockouts necessity, and neither alone establishes a route. Two
+recent results are close to ours and we read them as convergent evidence rather
+than as competition. \citet{onset2025instruction} patch between minimal-contrast
+prompts differing only in an instruction span and find an ``onset'' layer past
+which interventions stop mattering; our layer-21 result---beyond which masking
+the document is free---is the same shape of finding from the opposite direction
+(knockout rather than patch) with a document rather than an instruction.
+\citet{jit2025taskrepr} argue that transferable task representations are
+temporally local and assembled just in time; our knockouts say the same thing
+about reading a document, in that no single position group is necessary.
+\citet{semanticconflicts2026} likewise localise recoverable causal signal to a
+changed cue region plus a few intermediate tokens before aggregation near the
+output. Mechanistic work on retrieval-augmented generation
+\citep{ragcite2026} patches the residual stream to localise attribution but
+does not separate presence from content.
+
+\section{Limitations}
+
+The causal results at the final position are a capacity limit we measured rather
+than assumed (\S\ref{sec:onepos}), but sixteen positions is still not the whole
+prompt, and we do not know where between 16 and 688 the recovery saturates. The
+synthetic control uses one document, so ``transfer between tasks'' there means
+transfer between rows of one table; the cross-skill geometry comes from the
+clinical material, where the behavioural transfer arms are measured on 20
+rescued items and are not conclusive. Log-probability quantities on the
+synthetic control are fp32 because bf16 costs $0.5$--$2.5$ nats on a token deep
+in the tail; the 8B numbers are bf16, which shows up as self-transplant
+deviations of $0.1$--$1.1$ nats while the accuracy channel remains an exact
+no-op, and we therefore read accuracy first throughout.
+
+Two negative results deserve to be stated as limitations rather than findings.
+We could not find any representational quantity at the final position that
+distinguishes the items a skill rescues from the ones it does not: the norms and
+angles are equal to three digits, and the one similarity measure that does
+separate them under the gold skill separates them equally under a wrong one.
+And on the clinical material the document acts through a chain of thought, so
+every causal measurement there decodes several hundred tokens; scoring the
+answer under a forced \texttt{ANSWER:} cue instead removes the behavioural
+effect entirely ($0.175$ for all three arms) while leaving a $+0.60$ nat
+log-probability difference, which is a trap we fell into before measuring it.
+
+\section{Conclusion}
+
+Most of what a skill document does to the residual stream has nothing to do with
+what the document says. The part that does is small, low-dimensional, aligned
+with a shared direction that carries none of the effect, and specific to the
+individual task. Measuring it requires subtracting a matched wrong document
+rather than comparing against no document; deciding \emph{which} wrong document
+is itself the measurement decision; and the result has to be read on the items
+the skill actually rescues, in an answer format the effect survives. On the
+synthetic control, three quarters of the multiple-choice skill effect survives
+replacing every number in the document---and none of the free-form effect
+does.
+
+\appendix
+
+\section{Additional tables}
+\label{app:tables}
+
+\begin{table}[t]
+\caption{Three transplant channels, synthetic control, Qwen3-1.7B, $n=39$.
+Each row is a separate experiment; the receiver baseline differs because the
+document-span and question-span transplants run inside a prompt that still
+contains a filler document.}
+\label{tab:windows}
+\centering
+\small
+\begin{tabular}{llccc}
+\toprule
+channel & positions transplanted & effective layers & peak acc. & receiver baseline \\
+\midrule
+document span & the document's own 688 tokens & 0--10 & 0.436 (L3--4) & 0.154 \\
+question span & the question's 42--47 tokens  & 11--16 & 0.333 (L12/14) & 0.154 \\
+final position & the last prompt token        & 21--27 & 0.436--0.487 & 0.231 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+\caption{The same measurements at two model sizes. The multiple-choice presence
+row is the reason we take the free-form format as the primary evidence: on the
+8B, chance on four options is $0.250$, and that is exactly where $\gvec$ sits.}
+\label{tab:ladder}
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+ & Qwen3-1.7B & Qwen3-8B \\
+\midrule
+multiple choice: none / wrong doc / skill & 0.180 / 0.145 / 0.300 & 0.292 / 0.242 / 0.550 \\
+free-form: none / wrong doc / skill       & 0.000 / --- / 0.000   & 0.000 / 0.000 / 0.467 \\
+\midrule
+MC, rescued cell: replace outright        & 1.000 & 1.000 \\
+MC, rescued cell: $+\dvec$                & 0.812 & 0.864 \\
+MC, rescued cell: $+\gvec$                & 0.062 & 0.250 (= chance) \\
+free-form, rescued cell: replace outright & ---   & 0.304 \\
+free-form, rescued cell: $+\dvec$         & ---   & 0.268 \\
+free-form, rescued cell: $+\gvec$         & ---   & 0.018 \\
+\midrule
+layers where $\|\gvec\| > \|\tvec\|$      & 0--16 & 0--12 \\
+$\mathrm{PR}(\dvec)$ centred, deepest layer & 5.6 & 18.1 \\
+$\cos(\dvec_i,\dvec_j)$ same / other family, deepest & 0.859 / 0.699 & 0.584 / 0.530 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{The content component split along its own shared direction and
+orthogonal to it, rescued cell, $n_R=48$. The crossover at layer 21 is the same
+layer at which cumulative attention knockout on the document becomes free
+(\S\ref{sec:where}) and at which another item's content vector stops working
+(\S\ref{sec:whose}).}
+\label{tab:parperp}
+\centering
+\small
+\begin{tabular}{lcccccc}
+\toprule
+injected & L16 & L18 & L20 & L21 & L24 & L26 \\
+\midrule
+$h_{\text{no}} + \dvec_i$ (whole)          & 0.146 & 0.396 & 0.438 & 0.479 & 0.708 & \textbf{0.812} \\
+$h_{\text{no}} + (\dvec_i\!\cdot\!u)u$ (shared dir.) & 0.146 & 0.354 & 0.292 & 0.125 & 0.042 & 0.062 \\
+$h_{\text{no}} + \dvec_i^{\perp}$ (item-specific)    & 0.000 & 0.083 & 0.146 & \textbf{0.521} & \textbf{0.583} & \textbf{0.604} \\
+$h_{\text{no}} + \bar{\dvec}$ (shared dir., fixed norm) & 0.146 & 0.333 & 0.312 & 0.146 & 0.042 & 0.062 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{The decomposition of Eq.~\ref{eq:decomp}, synthetic control,
+Qwen3-1.7B, fp32, $n=200$, at the last prompt position. $\mathrm{PR}$ is the
+participation ratio of $\{\dvec_i\}$ after removing their shared mean direction:
+the effective number of dimensions the item-to-item variation occupies, out of
+2048. The last column is the fraction of a single item's $\dvec_i$ that lies
+along that shared direction.}
+\label{tab:geometry}
+\centering
+\small
+\begin{tabular}{rrrrrrrrr}
+\toprule
+layer & $\|\dvec\|$ & $\|\gvec\|$ & $\|\dvec\|/\|\tvec\|$ & $\cos(\dvec,\gvec)$
+& \multicolumn{2}{c}{$\cos(\dvec_i,\dvec_j)$} & $\mathrm{PR}(\dvec)$ & on mean \\
+\cmidrule(lr){6-7}
+& & & & & same fam. & cross fam. & & \\
+\midrule
+ 0 &   1.00 &   2.67 & 0.43 & $-0.50$ & 0.995 & 0.995 & 2.6 & 0.997 \\
+10 &  16.31 &  39.02 & 0.45 & $-0.39$ & 0.988 & 0.986 & 4.0 & 0.994 \\
+14 &  33.49 &  68.67 & 0.52 & $-0.38$ & 0.978 & 0.970 & 8.3 & 0.987 \\
+21 & 462.22 & 355.62 & 1.05 & $-0.44$ & 0.915 & 0.789 & 5.6 & 0.916 \\
+27 & 926.57 & 712.91 & 1.00 & $-0.38$ & 0.859 & 0.699 & 5.6 & 0.874 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{table}[h]
+\caption{Fraction of the rescued cell answered correctly under each injected
+component. Synthetic control, multiple choice, Qwen3-1.7B, fp32, $n=200$,
+rescued cell $n_R=48$. Bootstrap 95\% CIs over items are $\pm0.12$ to $\pm0.15$
+at these magnitudes and are given in the appendix. $\bar{\dvec}$ is the mean
+content direction over items, restored to the typical per-item norm; $\dvec_j$
+is another item's content vector, drawn from the same or a different conversion
+family. The row that licenses the name ``content component'' is $\gvec$.}
+\label{tab:causal}
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+injected at the last prompt position & L17--20 & L21 & L24 & L26 & L27\\
+\midrule
+$h_{\text{skill}}$ (replace outright; upper ref.)
+  & 0.27--0.44 & 0.979 & 0.979 & 1.000 & 1.000 \\
+$h_{\text{skill}}$ into the wrong-document prompt
+  & 0.29--0.75 & 0.979 & 0.979 & 1.000 & 1.000 \\
+\midrule
+$h_{\text{no}} + 0.5\,\dvec_i$
+  & 0.21--0.31 & 0.250 & 0.292 & 0.312 & 0.292 \\
+$h_{\text{no}} + \dvec_i$ \quad (content)
+  & 0.29--0.44 & 0.479 & 0.708 & \textbf{0.812} & 0.792 \\
+$h_{\text{no}} + 2\,\dvec_i$
+  & 0.29--0.63 & 0.875 & \textbf{0.979} & 0.979 & 0.958 \\
+\midrule
+$h_{\text{no}} + \gvec_i$ \quad (presence)
+  & 0.00--0.02 & \textbf{0.062} & \textbf{0.062} & \textbf{0.062} & \textbf{0.062} \\
+$h_{\text{no}} + \bar{\dvec}$ \ (one shared direction)
+  & 0.27--0.35 & 0.146 & 0.042 & 0.062 & 0.062 \\
+$h_{\text{no}} + \dvec_j$ \ (same family)
+  & 0.29--0.33 & 0.271 & 0.250 & 0.333 & 0.292 \\
+$h_{\text{no}} + \dvec_j$ \ (other family)
+  & 0.21--0.25 & 0.250 & 0.146 & 0.167 & 0.167 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Experimental detail}
+\label{app:detail}
+
+\paragraph{Models and numerics.} Qwen3-1.7B (28 layers, $d=2048$) and Qwen3-8B
+(36 layers, $d=4096$), greedy decoding throughout, \texttt{enable\_thinking}
+disabled and verified by a self-test on the rendered template. Eager attention
+wherever an attention mask is manipulated, because sdpa and flash silently
+ignore a 4D mask; layer-output hooks are implementation-independent, so the
+decode-heavy runs use sdpa, which is about $2.5\times$ faster on a 2k-token
+prompt. The 1.7B synthetic runs are fp32: bf16 costs $0.5$--$2.5$ nats on the
+log-probability of a token deep in the tail, and every log-probability quantity
+here is a difference of such numbers. The 8B runs are bf16 and the gaps we
+report from them are $5$--$8$ nats, well outside that error; the accuracy
+channel is immune to it either way.
+
+\paragraph{Self-tests, and one that failed.} Three checks run with the
+experiments. (i) \emph{Self-transplant}: donor and receiver are the same
+forward, so the patch must be an exact no-op. On the fp32 synthetic runs the
+deviation is $0.0$ nats at every layer. On the bf16 8B runs it is up to $0.38$
+nats---bf16 arithmetic over two sequence lengths---while the accuracy channel
+remains an exact no-op at every layer, which is how we tell the two apart.
+(ii) \emph{Last-layer patch}: replacing the final layer's output at the patched
+position makes that position's logits the donor's by construction, so the next
+token must match exactly. (iii) \emph{Query-side control} for the knockouts.
+
+\paragraph{An error worth recording.} The first version of the real-skill
+scoring code patched at index $-1$ of a forward run over prompt \emph{and}
+answer, which is the last token of the answer---after every position whose
+logits are scored. Every arm returned the untouched baseline to six decimals,
+which is what made it visible. Relative indices are the wrong default whenever
+the forward length varies between the capture and the patch.
+
+\paragraph{Control documents.} The synthetic controls are generated from the
+skill document by \texttt{make\_controls.py}, which checks two things: the
+corrupted document's numbers must not coincide with the task set's gold answers
+(7 of 249 do, $2.8\%$), and the shuffle must not be the identity. All three
+controls are stored under the same filename in separate directories, because the
+injector derives the ``\# Skill: \emph{name}'' header from the file stem---a file
+called \texttt{SKILL.zorb-units.corrupted.md} would announce the manipulation in
+the prompt, and the control would then differ from the treatment in two ways.
+
+\paragraph{Item set.} The synthetic set is generated from the conversion table
+with the value range $2$--$40$, dropping any item whose answer also appears in a
+worked example of the document ($n=358$; the sweeps use the first 120 or 200).
+Distractors are values reachable by misreading the table---the neighbouring row,
+the wrong family, the inverted direction---never random numbers, and the key is
+rotated across A/B/C/D so a position-biased model still scores at chance.
+
+\bibliography{skillvector}
+\bibliographystyle{iclr2027_conference}
+
+\end{document}

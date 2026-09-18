@@ -1,0 +1,23 @@
+\begin{tabular}{@{}rccc@{}}
+\toprule
+layer & accuracy & CI$_{95}$ & fraction of the document's own effect \\
+\midrule
+0 & $0.875$ & $[0.713,\,1.000]$ & $+1.00$ \quad\tiny(no-op arm 0.000) \\
+4 & $0.938$ & $[0.819,\,1.000]$ & $+1.07$ \\
+8 & $1.000$ & $[1.000,\,1.000]$ & $+1.14$ \\
+12 & $0.875$ & $[0.713,\,1.000]$ & $+1.00$ \quad\tiny(no-op arm 0.000) \\
+13 & $0.625$ & $[0.388,\,0.862]$ & $+0.71$ \quad\tiny(no-op arm 0.000) \\
+14 & $0.688$ & $[0.460,\,0.915]$ & $+0.79$ \quad\tiny(no-op arm 0.000) \\
+15 & $0.125$ & $[0.000,\,0.287]$ & $+0.14$ \quad\tiny(no-op arm 0.000) \\
+16 & $0.125$ & $[0.000,\,0.287]$ & $+0.14$ \quad\tiny(no-op arm 0.000) \\
+18 & $0.062$ & $[0.000,\,0.181]$ & $+0.07$ \quad\tiny(no-op arm 0.000) \\
+20 & $0.250$ & $[0.038,\,0.462]$ & $+0.29$ \\
+24 & $0.000$ & $[0.000,\,0.000]$ & $+0.00$ \\
+30 & $0.000$ & $[0.000,\,0.000]$ & $+0.00$ \quad\tiny(no-op arm 0.000) \\
+\midrule
+every layer & $0.875$ & $[0.713,\,1.000]$ & $+1.00$ \\
+\midrule
+\emph{the filler document, unpatched} & $0.000$ & & $0.00$ \\
+\emph{the gold document in context} & $0.875$ & & $1.00$ \\
+\bottomrule
+\end{tabular}
