@@ -50,6 +50,16 @@ def build_prompt(instance: dict, skills: list[dict] | None = None,
 
     Multiple skills are joined with a horizontal rule, as upstream.
     """
+    ds = instance.get("dataset", "medcalcbench")
+    if ds != "medcalcbench":
+        # the other SRA-Bench families use SR-Agents' own builders, verbatim
+        from howskill.sra import BUILDERS
+        system, user = BUILDERS[ds](instance)
+        contents = [s["content"] for s in (skills or []) if s.get("content")]
+        if contents:
+            user = f"{SKILL_HEAD}" + "\n---\n".join(contents) + f"\n\n{user}"
+        return system, user
+
     system = MEDCALC_SYSTEM
     user = f"{instance['question']}\n\n{MEDCALC_USER_SUFFIX}"
 
@@ -87,14 +97,37 @@ def build_prompt_spans(instance: dict, skills: list[dict] | None = None,
     system, user = build_prompt(instance, skills, tool_protocol)
 
     task_text = instance["question"]
-    t0 = user.index(task_text)
-    s0 = user.index(MEDCALC_USER_SUFFIX, t0 + len(task_text))
+    head = len(SKILL_HEAD) if user.startswith(SKILL_HEAD) else 0
+    if instance.get("dataset", "medcalcbench") == "medcalcbench":
+        t0 = user.index(task_text)
+        s0 = user.index(MEDCALC_USER_SUFFIX, t0 + len(task_text))
+        suffix = [s0, s0 + len(MEDCALC_USER_SUFFIX)]
+    else:
+        # search after the skill block: a skill may quote text from a question.
+        # "task" is the question itself; "suffix" is whatever the builder puts
+        # after it (empty for LogicBench)
+        skill_end = user.index("\n\n", head) if head else 0
+        if head:
+            # the skill block ends at the LAST "\n\n" before the builder's user
+            # text, which is known exactly: it is the no-skill user prompt
+            from howskill.sra import BUILDERS
+            bare = BUILDERS[instance["dataset"]](instance)[1]
+            skill_end = len(user) - len(bare) - 2
+            assert user[skill_end:skill_end + 2] == "\n\n" and \
+                user.endswith(bare), "skill block boundary"
+        t0 = user.index(task_text, skill_end)
+        suffix = [t0 + len(task_text), len(user)]
     spans = {
         "skill": None,
         "task": [t0, t0 + len(task_text)],
-        "suffix": [s0, s0 + len(MEDCALC_USER_SUFFIX)],
+        "suffix": suffix,
     }
     if user.startswith(SKILL_HEAD):
-        # the block ends two characters before the task: the "\n\n" separator
-        spans["skill"] = [len(SKILL_HEAD), t0 - 2]
+        if instance.get("dataset", "medcalcbench") == "medcalcbench":
+            # the block ends two characters before the task: the "\n\n" separator
+            spans["skill"] = [len(SKILL_HEAD), t0 - 2]
+        else:
+            # TheoremQA puts "Problem:" and CHAMP a preamble before the question,
+            # so the block ends at the separator before the builder's text
+            spans["skill"] = [len(SKILL_HEAD), skill_end]
     return system, user, spans

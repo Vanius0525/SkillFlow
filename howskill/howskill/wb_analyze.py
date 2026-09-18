@@ -22,6 +22,29 @@ import json
 import math
 import random
 
+from howskill.wb_replay import ARGMAX_FLOOR, MAD_MAX
+
+
+def regate(g: dict | None) -> bool | None:
+    """Re-apply the CURRENT gate to a stored record instead of trusting `ok`.
+
+    `ok` is frozen at write time, so a file written before a threshold was
+    corrected reports the old verdict forever. Both corrections so far went the
+    same way -- a criterion that scaled with completion length, rejecting
+    forwards whose absolute error matched the accepted ones -- and both were
+    found only because someone read the raw fields. Recomputing here means a
+    stale file and a fresh one are judged by the same rule, and no rerun is
+    needed to change a verdict that was never about the arithmetic.
+    """
+    if not g:
+        return None
+    if not isinstance(g.get("mad"), float):
+        return g.get("ok")
+    ok = g["mad"] <= MAD_MAX
+    if isinstance(g.get("argmax_match"), float):
+        ok = ok and g["argmax_match"] >= ARGMAX_FLOOR
+    return bool(ok)
+
 
 def load(path: str) -> list[dict]:
     out = []
@@ -65,12 +88,32 @@ def layer_curve(rows: list[dict], field: str, cell: str) -> list[list[float]]:
     return [[c[i] for c in cur] for i in range(n)]
 
 
-def print_profiles(rows: list[dict]):
-    gates = [(r.get("gate_w0_with") or {}).get("ok") for r in rows]
+def print_profiles(rows: list[dict], label: str = ""):
+    gates = []
+    for r in rows:
+        for k in ("gate_w0_with", "gate_w0_without"):
+            v = regate(r.get(k))
+            if v is not None:
+                gates.append(v)
     n_ok = sum(1 for g in gates if g)
-    print(f"GATE-W0: {n_ok}/{len(gates)} forwards reproduce generation"
+    stale = sum(1 for r in rows for k in ("gate_w0_with", "gate_w0_without")
+                if (r.get(k) or {}).get("ok") is not None
+                and regate(r.get(k)) != (r.get(k) or {}).get("ok"))
+    head = f"GATE-W0{(' [' + label + ']') if label else ''}"
+    print(f"{head}: {n_ok}/{len(gates)} forwards reproduce generation"
+          f"   (thresholds: mad<={MAD_MAX}, argmax>={ARGMAX_FLOOR})"
           + ("" if n_ok == len(gates) else
-             "   [FAIL — internal numbers below are not trustworthy]"))
+             "   [FAIL - internal numbers below are not trustworthy]"))
+    if stale:
+        print(f"  ({stale} verdicts differ from the `ok` stored in the file; "
+              f"the file predates a threshold correction -- see "
+              f"wb_replay.ARGMAX_FLOOR)")
+    mads = [g["mad"] for r in rows for k in ("gate_w0_with", "gate_w0_without")
+            if isinstance((r.get(k) or {}).get("mad"), float)
+            for g in [r[k]]]
+    if mads:
+        mads.sort()
+        print(f"  mad: median {mads[len(mads)//2]:.5f}  max {mads[-1]:.5f}")
     counts = {c: sum(1 for r in rows if r["cell"] == c) for c in ("R", "F", "K", "B")}
     print(f"cells: {counts}")
     short = [c for c in ("R", "F") if counts.get(c, 0) < 100]
@@ -141,15 +184,59 @@ def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("path")
     p.add_argument("--kind", default="profiles", choices=["profiles", "patch"])
+    p.add_argument("--compare", default=None,
+                   help="a ctrl_neutral profiles file. With it, GATE-W2 is "
+                        "decided here instead of by eye across two runs.")
     a = p.parse_args(argv)
     rows = load(a.path)
     if not rows:
         print(f"no usable rows in {a.path}")
         return 1
-    (print_profiles if a.kind == "profiles" else print_patch)(rows)
-    print("\nGATE-W2 reminder: rerun the same command on the ctrl_neutral "
-          "outputs. A separation that also appears there is about a document "
-          "being present, not about its content.")
+    if a.kind == "patch":
+        print_patch(rows)
+        return 0
+    print_profiles(rows, label="gold" if a.compare else "")
+    if not a.compare:
+        print("\nGATE-W2 reminder: rerun the same command on the ctrl_neutral "
+              "outputs, or pass --compare <neutral.jsonl>. A separation that "
+              "also appears there is about a document being present, not "
+              "about its content.")
+        return 0
+
+    ctrl = load(a.compare)
+    print("\n" + "=" * 74)
+    print_profiles(ctrl, label="neutral")
+    print("\n" + "=" * 74)
+    print("GATE-W2: R-F on cka_task, gold vs mismatched skill")
+    print("=" * 74)
+    print("  A layer counts only if R and F separate under GOLD and do NOT")
+    print("  separate under NEUTRAL. Separation = non-overlapping bootstrap CIs.")
+    print("\n  layer      gold R-F           neutral R-F        verdict")
+    gr, gf = layer_curve(rows, "cka_task", "R"), layer_curve(rows, "cka_task", "F")
+    nr, nf = layer_curve(ctrl, "cka_task", "R"), layer_curve(ctrl, "cka_task", "F")
+    if not (gr and gf and nr and nf):
+        print("  [!] one of the four cell curves is empty -- nothing to compare.")
+        return 1
+    layers = rows[0].get("layers") or list(range(len(gr)))
+    n = min(len(gr), len(gf), len(nr), len(nf))
+    passed = []
+    for i in range(n):
+        mr, (lr, hr) = boot_mean(gr[i]); mf, (lf, hf) = boot_mean(gf[i])
+        Mr, (Lr, Hr) = boot_mean(nr[i]); Mf, (Lf, Hf) = boot_mean(nf[i])
+        gsep = lr > hf or lf > hr
+        nsep = Lr > Hf or Lf > Hr
+        verd = ("CONTENT" if gsep and not nsep else
+                "presence" if gsep and nsep else
+                "no separation" if not gsep else "")
+        if gsep and not nsep:
+            passed.append(layers[i])
+        print(f"  {layers[i]:>5}  {mr-mf:+7.4f}            {Mr-Mf:+7.4f}"
+              f"            {verd}")
+    print(f"\n  layers where the separation is content-specific: "
+          f"{passed if passed else 'NONE'}")
+    if not passed:
+        print("  -> the R vs F separation reported under gold does not survive "
+              "the control. It is about a document being present.")
     return 0
 
 

@@ -177,6 +177,36 @@ MAD_MAX = 0.05
 #: MAD is what a true token misalignment looks like.
 CORR_FLOOR_INFO = 0.95
 
+#: Floor on `argmax_match`. 0.95, not the 0.99 this gate shipped with.
+#:
+#: The 0.99 version was wrong in the same structural way the correlation gate
+#: was, and for the same reason: it is a RATE threshold on a quantity whose
+#: expected number of violations grows with the completion. Measured on 200
+#: forwards of the neutral arm (Qwen3-8B bf16, generation and replay both
+#: through HF with the same tokenizer, template and eager attention):
+#:
+#:     completion length   median argmax_match   median mismatching positions
+#:     <200                1.0000                0
+#:     200-400             0.9953                1
+#:     400-600             0.9942                3
+#:     600-900             0.9929                5
+#:     >900                0.9941                6
+#:
+#: The RATE is flat at ~0.994 while the COUNT rises, so a fixed rate floor at
+#: 0.99 rejects long completions for having the same per-token behaviour as the
+#: short ones it accepts. Over those 200 forwards it failed 27 while the worst
+#: MAD in the whole set was 0.0218 -- less than half the MAD gate, i.e. every
+#: rejected forward was arithmetically indistinguishable from the accepted
+#: ones. The flips are near-ties: two tokens within bf16 noise of each other.
+#:
+#: What the check is actually for is token MISALIGNMENT, and that does not look
+#: like this. A one-position shift makes the replay predict the previous
+#: token's successor everywhere, which sends argmax_match to roughly the
+#: model's own next-token accuracy on unconditioned text -- tens of percent at
+#: best, not 97.6%. 0.95 is well below anything observed here and still an
+#: order of magnitude above what a real shift produces.
+ARGMAX_FLOOR = 0.95
+
 
 def gate_w0(ours: np.ndarray, theirs: list[float],
             argmax_match: float | None = None) -> dict:
@@ -201,9 +231,8 @@ def gate_w0(ours: np.ndarray, theirs: list[float],
     g = {"n": n, "corr": corr, "mad": mad, "ok": bool(mad <= MAD_MAX)}
     if argmax_match is not None:
         g["argmax_match"] = float(argmax_match)
-        # Greedy decoding: a replay that disagrees with the generator about
-        # which token won is misaligned regardless of what MAD says.
-        g["ok"] = bool(g["ok"] and argmax_match >= 0.99)
+        g["n_argmax_mismatch"] = int(round(n * (1.0 - argmax_match)))
+        g["ok"] = bool(g["ok"] and argmax_match >= ARGMAX_FLOOR)
     return g
 
 

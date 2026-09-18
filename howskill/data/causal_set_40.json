@@ -1,0 +1,67 @@
+{
+ "note": "The causal set every span arm is run on. Pinned because it was drawn by pick_instances when the no_skill arm covered 839 of 1100 instances; completing that arm changes R's size and could change which calculators pick_instances ranks highest. Every id here is in cell R under either assignment, since an item's cell depends only on its own two outcomes.",
+ "selected_by": "pick_instances(cells, instances, ['R'], per_calc=4, max_calcs=10, seed=0)",
+ "n": 40,
+ "by_calculator": {
+  "11": [
+   "medcalcbench_00185",
+   "medcalcbench_00186",
+   "medcalcbench_00187",
+   "medcalcbench_00195"
+  ],
+  "15": [
+   "medcalcbench_00202",
+   "medcalcbench_00206",
+   "medcalcbench_00208",
+   "medcalcbench_00214"
+  ],
+  "19": [
+   "medcalcbench_00289",
+   "medcalcbench_00291",
+   "medcalcbench_00294",
+   "medcalcbench_00297"
+  ],
+  "22": [
+   "medcalcbench_00320",
+   "medcalcbench_00322",
+   "medcalcbench_00327",
+   "medcalcbench_00329"
+  ],
+  "38": [
+   "medcalcbench_00505",
+   "medcalcbench_00515",
+   "medcalcbench_00517",
+   "medcalcbench_00519"
+  ],
+  "56": [
+   "medcalcbench_00660",
+   "medcalcbench_00667",
+   "medcalcbench_00674",
+   "medcalcbench_00679"
+  ],
+  "58": [
+   "medcalcbench_00703",
+   "medcalcbench_00707",
+   "medcalcbench_00716",
+   "medcalcbench_00717"
+  ],
+  "59": [
+   "medcalcbench_00724",
+   "medcalcbench_00725",
+   "medcalcbench_00726",
+   "medcalcbench_00729"
+  ],
+  "63": [
+   "medcalcbench_00786",
+   "medcalcbench_00790",
+   "medcalcbench_00794",
+   "medcalcbench_00795"
+  ],
+  "64": [
+   "medcalcbench_00810",
+   "medcalcbench_00814",
+   "medcalcbench_00816",
+   "medcalcbench_00818"
+  ]
+ }
+}

@@ -61,6 +61,8 @@ import time
 
 import torch
 
+import genacc as GA
+from e10_span import SELF_NOTE
 import model as M
 import e10_span as E10
 
@@ -73,7 +75,7 @@ def main() -> None:
     ap.add_argument("--model", required=True)
     ap.add_argument("--tasks", required=True)
     ap.add_argument("--skill", required=True)
-    ap.add_argument("--mode", choices=["mc", "num"], required=True)
+    ap.add_argument("--mode", choices=["mc", "num", "num_cot"], required=True)
     ap.add_argument("--limit", type=int, default=40)
     ap.add_argument("--layer-step", type=int, default=1)
     ap.add_argument("--dtype", default=None,
@@ -85,6 +87,11 @@ def main() -> None:
                          "order (HANDOFF 12.3q). Left unset it follows "
                          "$WB_DTYPE and then bfloat16, which is how the first "
                          "run of this script tripped the self-arm warning.")
+    ap.add_argument("--gen-acc", action="store_true",
+                    help="decode under each patch and grade the free-form "
+                         "answer. Required for --mode num, where the "
+                         "option-letter argmax does not exist. See genacc.py.")
+    ap.add_argument("--gen-tokens", type=int, default=8)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
@@ -92,6 +99,11 @@ def main() -> None:
     if args.dtype:
         import os
         os.environ["WB_DTYPE"] = args.dtype
+
+    if args.mode.startswith("num") and not args.gen_acc:
+        raise SystemExit(
+            "[FAIL] --mode num has no option-letter argmax; pass --gen-acc or "
+            "the accuracy curves below are all None.")
 
     run_id = args.run_id or time.strftime("%Y%m%d-%H%M%S")
     out_dir = HERE / "results" / run_id
@@ -176,6 +188,11 @@ def main() -> None:
 
         lp_hi, ok_hi, _ = E10.score(r, ids_s, gold)
         lp_lo, ok_lo, _ = E10.score(r, ids_c, gold)
+        if args.gen_acc:
+            ok_hi, _ = GA.gen_ok(r, ids_s, gold, max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
+            ok_lo, _ = GA.gen_ok(r, ids_c, gold, max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
         hi_ok.append(bool(ok_hi)); lo_ok.append(bool(ok_lo))
         hi_lp.append(lp_hi); lo_lp.append(lp_lo)
 
@@ -186,6 +203,13 @@ def main() -> None:
         for L in layers:
             lp_r, ok_r, _ = E10.score(r, ids_c, gold, L, pos, v_donor[L])
             lp_s, ok_s, _ = E10.score(r, ids_c, gold, L, pos, v_recip[L])
+            if args.gen_acc:
+                ok_r, _ = GA.gen_ok(r, ids_c, gold, L, pos, v_donor[L],
+                                    max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
+                ok_s, _ = GA.gen_ok(r, ids_c, gold, L, pos, v_recip[L],
+                                    max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
             hit_real[L].append(bool(ok_r)); hit_self[L].append(bool(ok_s))
             lp_real[L].append(lp_r)
             self_dev = max(self_dev, abs(lp_s - lp_lo))
@@ -194,6 +218,11 @@ def main() -> None:
         # score_all_layers returns (logprob, ok) -- two values, unlike score()
         lp_c, ok_c = E10.score_all_layers(r, ids_c, gold, all_layers, pos,
                                           v_donor)
+        if args.gen_acc:
+            # the ceiling arm patches every layer at once; decoding it needs the
+            # same multi-layer hook, so it is left on the logprob channel and
+            # the accuracy ceiling is reported as the single-layer maximum.
+            ok_c = max(hit_real[L][-1] for L in layers)
         ceil_ok.append(bool(ok_c))
         rows.append({"id": it["id"], "gold": gold,
                      "q_span": list(q_span), "skill_span": list(s_span),
@@ -227,8 +256,12 @@ def main() -> None:
           f"donor (real skill) acc {acc_hi:.3f}")
     print(f"  ceiling (all {n_layers} layers at once) acc "
           f"{sum(ceil_ok)/n:.3f}")
-    print(f"  self-transplant max deviation: {self_dev:.6f} nats")
-    if self_dev > 1e-3:
+    acc_self_ok = all(abs(sum(hit_self[L]) / n - acc_lo) < 1e-9 for L in layers)
+    print(f"  self-transplant max deviation: {self_dev:.6f} nats; "
+          f"self accuracy == recipient baseline at every layer: {acc_self_ok}")
+    if self_dev > 1e-3 and acc_self_ok:
+        print(SELF_NOTE)
+    if self_dev > 1e-3 and not acc_self_ok:
         print("  [!] the self arm is NOT a no-op. The patch is not writing "
               "where the capture read -- every number below is suspect.")
     print()

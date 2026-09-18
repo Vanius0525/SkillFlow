@@ -42,6 +42,14 @@ ARMS = [
     # the mismatched skill's own executable tools -- which would make it a
     # control for content AND for tool availability at the same time.
     "gold_no_tool", "ctrl_neutral_no_tool",
+    # The tighter controls, tool-free, for the whitebox decomposition. Which
+    # document you subtract decides which layer of the skill ends up in the
+    # content component: against an unrelated one it is topic + procedure +
+    # numbers, against a corrupted one it is the numbers alone. On the
+    # synthetic tier those two readings differ by a factor of 2.5 in how much
+    # of the rescued cell they repair, so the choice is a measurement decision
+    # and both belong in the run.
+    "ctrl_shuffled_no_tool", "ctrl_corrupted_no_tool",
 ]
 
 # Arms that are pure controls (never used to claim a content effect).
@@ -80,10 +88,12 @@ def build(arm: str, gold: dict, neutral_for: dict | None = None,
         return [_mk(gold, gold["content"], tools=[])]
     if arm == "no_tool_no_M4":
         return [_mk(gold, render(mods, drop={"M4"}), tools=[])]
-    if arm == "ctrl_shuffled":
-        return [_mk(gold, shuffled(gold["content"], seed))]
-    if arm == "ctrl_corrupted":
-        return [_mk(gold, corrupted(gold["content"], seed))]
+    if arm in ("ctrl_shuffled", "ctrl_shuffled_no_tool"):
+        tools = [] if arm.endswith("_no_tool") else None
+        return [_mk(gold, shuffled(gold["content"], seed), tools=tools)]
+    if arm in ("ctrl_corrupted", "ctrl_corrupted_no_tool"):
+        tools = [] if arm.endswith("_no_tool") else None
+        return [_mk(gold, corrupted(gold["content"], seed), tools=tools)]
 
     raise ValueError(f"unknown arm: {arm}")
 

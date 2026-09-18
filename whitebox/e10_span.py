@@ -79,10 +79,23 @@ import time
 
 import torch
 
+import genacc as GA
 import model as M
 
 HERE = pathlib.Path(__file__).resolve().parent
 FILLER = HERE / "tasks" / "filler-neutral.md"
+
+SELF_NOTE = """
+  A `self` deviation in NATS is a dtype statement, not a wiring statement. The
+  capture runs a forward over the prompt; the score runs one over prompt+answer.
+  In fp32 those agree bit for bit and the deviation is 0.0. In bf16 they do not:
+  the same GEMM reduced at two sequence lengths differs by ~1e-3 relative, which
+  on a gold token deep in the tail is 0.1-0.4 nats. Measured on Qwen3-8B bf16:
+  0.13-0.35 nats, while the ACCURACY of the self arm equals the recipient
+  baseline at every single layer -- i.e. the patch is an exact no-op in the
+  channel that has no dtype sensitivity. Read the accuracy line first when the
+  run is bf16; the nats line is only decisive in fp32.
+"""
 
 OPTION_IDS: dict[str, int] = {}
 
@@ -195,12 +208,21 @@ def main() -> None:
     ap.add_argument("--model", required=True)
     ap.add_argument("--tasks", required=True)
     ap.add_argument("--skill", required=True)
-    ap.add_argument("--mode", choices=["mc", "num"], required=True)
+    ap.add_argument("--mode", choices=["mc", "num", "num_cot"], required=True)
     ap.add_argument("--limit", type=int, default=40)
     ap.add_argument("--layer-step", type=int, default=1)
+    ap.add_argument("--gen-acc", action="store_true",
+                    help="decode under each patch and grade the free-form "
+                         "answer; required for --mode num. See genacc.py.")
+    ap.add_argument("--gen-tokens", type=int, default=8)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
+
+    if args.mode.startswith("num") and not args.gen_acc:
+        raise SystemExit(
+            "[FAIL] --mode num has no option-letter argmax; pass --gen-acc or "
+            "every accuracy curve below is None.")
 
     run_id = args.run_id or time.strftime("%Y%m%d-%H%M%S")
     out_dir = HERE / "results" / run_id
@@ -284,6 +306,11 @@ def main() -> None:
 
         lp_hi, ok_hi, op_hi = score(r, ids_s, gold)
         lp_lo, ok_lo, op_lo = score(r, ids_c, gold)
+        if args.gen_acc:
+            ok_hi, _ = GA.gen_ok(r, ids_s, gold, max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
+            ok_lo, _ = GA.gen_ok(r, ids_c, gold, max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
 
         # The span states. Captured through the same hook the patch writes
         # into, exactly as E2 does, so the two agree by construction. Taken on
@@ -357,6 +384,13 @@ def main() -> None:
                                      donor[L])
             lp_s, ok_s, op_s = score(r, b["ids_c"], b["gold"], L, pos,
                                      recip[L])
+            if args.gen_acc:
+                ok_r, _ = GA.gen_ok(r, b["ids_c"], b["gold"], L, pos, donor[L],
+                                    max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
+                ok_s, _ = GA.gen_ok(r, b["ids_c"], b["gold"], L, pos, recip[L],
+                                    max_new=args.gen_tokens,
+                                cot=(args.mode == "num_cot"))
             rows.append({"id": b["id"], "gold": b["gold"],
                          "lp_real": lp_r, "lp_self": lp_s,
                          "lp_lo": b["lp_lo"], "lp_hi": b["lp_hi"],
@@ -459,8 +493,16 @@ def main() -> None:
         print("    The mechanism carries, so the single-layer curve below is "
               "measuring")
         print("    where one layer's worth of it is enough.")
-    print(f"\n  path self-proof: worst `self` deviation {worst_self:.3e} nats "
-          f"({'OK' if worst_self < 1e-4 else 'BROKEN -- read nothing above'})")
+    acc_self_ok = all(abs(per_layer[L]["acc"]["self"] - a_lo) < 1e-9
+                      for L in layers)
+    verdict = ("OK" if worst_self < 1e-4 else
+               ("OK in the accuracy channel (bf16 nats, see SELF_NOTE)"
+                if acc_self_ok else "BROKEN -- read nothing above"))
+    print(f"\n  path self-proof: worst `self` deviation {worst_self:.3e} nats, "
+          f"self accuracy == recipient baseline at every layer: {acc_self_ok}"
+          f"\n                   verdict: {verdict}")
+    if worst_self >= 1e-4 and acc_self_ok:
+        print(SELF_NOTE)
 
     print("\n  reading it (predictions were written before the run):")
     early = [c for L, c in zip(layers, curve) if L < r.n_layers // 3]

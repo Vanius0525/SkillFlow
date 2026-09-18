@@ -105,9 +105,24 @@ def load(model_id: str, device: str = "cuda", dtype=None,
 # prompt construction
 # ---------------------------------------------------------------------------
 
+#: The only difference between `num` and `num_cot` is how long the answer is.
+#:
+#: That is the point. How much of a document a single-position patch can carry
+#: turned out to depend on the number of tokens the answer occupies: 1.000 of
+#: the rescued cell when the answer is one option letter, 0.304 when it is a
+#: two-to-four-token number, and roughly nothing on a clinical-calculator task
+#: answered through several hundred tokens of arithmetic. The first two of
+#: those are the same model and the same items, so that comparison is
+#: controlled. The third is not -- it also changes the skill, the task, the
+#: prompt length and the fraction of the prompt a patch covers. `num_cot` is
+#: the missing control: identical items, identical skill, identical model, and
+#: the answer stretched to a reasoning chain.
 ANSWER_INSTRUCTION = {
     "mc": "Answer with the single letter of the correct option and nothing else.",
     "num": "Give only the final number, with no unit and no explanation.",
+    "num_cot": ("Work through the conversion step by step, then write the final "
+                "answer on its own last line in exactly this format:\n"
+                "ANSWER: <number>"),
 }
 
 
@@ -414,7 +429,12 @@ def capture_block_outputs(r: Runner, ids: torch.Tensor, layers, k: int = 1,
     try:
         for L in want:
             handles.append(r.layers[L].register_forward_hook(mk(L)))
-        r.model(ids, use_cache=False)
+        # Explicit all-ones mask, as `generate` passes one. Without it sdpa
+        # takes its is_causal fast path here and the explicit-mask kernel in
+        # the decode, and the two disagree by ~1% of the state at layer 8 --
+        # the fault that flipped 6.1% of identity-patch outcomes on MedCalc.
+        # Tier A captures predate the fix (HANDOFF-TAKEOVER-09-18 / CAMPAIGN).
+        r.model(ids, attention_mask=torch.ones_like(ids), use_cache=False)
     finally:
         for h in handles:
             h.remove()

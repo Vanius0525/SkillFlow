@@ -1,0 +1,35 @@
+{
+ "theoremqa": {
+  "n_instances": 747,
+  "n_skills": 320,
+  "single_skill_instances": 747,
+  "groups_with_2plus": 167,
+  "distractor_skill": "theoremqa_148",
+  "distractor_chars": 4622,
+  "distractor_is_gold_for": 1,
+  "source": "huggingface.co/datasets/WeihangSu/SRA-Bench @ main, fetched 2026-09-14",
+  "distractor_rule": "fewest instances using it as gold, then longest; tiled to the span width"
+ },
+ "logicbench": {
+  "n_instances": 760,
+  "n_skills": 19,
+  "single_skill_instances": 760,
+  "groups_with_2plus": 19,
+  "distractor_skill": "logicbench_006",
+  "distractor_chars": 6121,
+  "distractor_is_gold_for": 40,
+  "source": "huggingface.co/datasets/WeihangSu/SRA-Bench @ main, fetched 2026-09-14",
+  "distractor_rule": "fewest instances using it as gold, then longest; tiled to the span width"
+ },
+ "champ": {
+  "n_instances": 223,
+  "n_skills": 89,
+  "single_skill_instances": 114,
+  "groups_with_2plus": 25,
+  "distractor_skill": "champ_076",
+  "distractor_chars": 3710,
+  "distractor_is_gold_for": 1,
+  "source": "huggingface.co/datasets/WeihangSu/SRA-Bench @ main, fetched 2026-09-14",
+  "distractor_rule": "fewest instances using it as gold, then longest; tiled to the span width"
+ }
+}

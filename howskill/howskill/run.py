@@ -30,6 +30,39 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(HERE, "data")
 
 
+def done_ids(path: str) -> set:
+    """instance_ids already written to `path`, for --resume.
+
+    Every row is flushed as it is produced, so the file is always a valid
+    prefix; resuming means skipping those ids and appending. A half-written
+    final line is dropped rather than crashing the resume.
+    """
+    out = set()
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    r = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if r.get("instance_id"):
+                    out.add(r["instance_id"])
+    except FileNotFoundError:
+        pass
+    return out
+
+
+def count_rows(path: str) -> int:
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return sum(1 for line in fh if line.strip())
+    except FileNotFoundError:
+        return 0
+
+
 def load_data():
     skills = json.load(open(f"{DATA}/medcalc_skills.json", encoding="utf-8"))
     instances = json.load(open(f"{DATA}/medcalcbench.json", encoding="utf-8"))
@@ -151,6 +184,12 @@ def main(argv=None):
     p.add_argument("--workers", type=int, default=8)
     p.add_argument("--out", default="results")
     p.add_argument("--tag", default="")
+    p.add_argument("--resume", action="store_true",
+                   help="append to an existing output, skipping instance ids "
+                        "already in it. These runs take hours and the platform "
+                        "reclaims instances without notice; without this a "
+                        "reclaim at 839 of 1100 costs the whole run, which is "
+                        "exactly what happened to the no_skill arm.")
     p.add_argument("--prefixes", default="", help="JSON of graft prefixes (P7)")
     p.add_argument("--no-tool-protocol", action="store_true",
                    help="omit the explicit TOOL_CALL syntax note (upstream parity)")
@@ -192,6 +231,25 @@ def main(argv=None):
     os.makedirs(a.out, exist_ok=True)
     tag = a.tag or f"{a.arm}-{a.schedule}-T{a.temperature}-s{a.seed}"
     path = os.path.join(a.out, f"{tag}.jsonl")
+
+    done = set()
+    if a.resume:
+        done = done_ids(path)
+        if done:
+            before = len(insts)
+            insts = [x for x in insts if x["instance_id"] not in done]
+            print(f"  [resume] {len(done)} instances already in {path}; "
+                  f"{len(insts)} of {before} left")
+    elif os.path.exists(path) and os.path.getsize(path):
+        # The first no_skill run stopped at 839 of 1100 because the platform
+        # reclaimed the instance, and the truncation was invisible until the
+        # cell counts were added up months later. Overwriting a partial file
+        # silently is how that happens twice.
+        raise SystemExit(
+            f"[FAIL] {path} already exists and is not empty. Pass --resume to "
+            f"continue it, or --out/--tag something else. Refusing to "
+            f"overwrite: a partial run that looks complete is the failure "
+            f"mode this guard exists for.")
     meta = {
         "arm": a.arm, "schedule": a.schedule, "n_instances": len(insts),
         "client": client.config(), "git_commit": git_commit(),
@@ -203,7 +261,7 @@ def main(argv=None):
 
     t0 = time.time()
     n_ok = 0
-    with open(path, "w", encoding="utf-8") as fh, \
+    with open(path, "a" if a.resume else "w", encoding="utf-8") as fh, \
             ThreadPoolExecutor(max_workers=a.workers) as ex:
         futs = [ex.submit(run_one, x, a.arm, by_id, pairs, client,
                           a.schedule, prefixes, a.no_tool_protocol)
@@ -221,7 +279,13 @@ def main(argv=None):
                 print(f"  {i}/{len(futs)}  acc={n_ok/i:.3f}  "
                       f"{time.time()-t0:.0f}s", flush=True)
 
-    print(f"\n{tag}: {n_ok}/{len(insts)} = {100*n_ok/len(insts):.1f}%  -> {path}")
+    if insts:
+        print(f"\n{tag}: {n_ok}/{len(insts)} = {100*n_ok/len(insts):.1f}% "
+              f"on this pass  -> {path}")
+    total = count_rows(path)
+    print(f"{tag}: {total} rows in the file, {len(done) + len(insts)} expected")
+    if total != len(done) + len(insts):
+        print(f"  [WARN] row count does not match; the file may be truncated")
 
 
 if __name__ == "__main__":

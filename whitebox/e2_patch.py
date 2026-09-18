@@ -125,11 +125,13 @@ def score_with_patch(r, ids, answer, layer=None, position=None, vector=None):
                     add_special_tokens=False).input_ids.to(r.device)
     full = torch.cat([ids, ans_ids], dim=1)
 
+    # explicit mask: the same kernel as the capture and the decode paths
+    att = torch.ones_like(full)
     if vector is None:
-        logits = r.model(full, use_cache=False).logits.float()
+        logits = r.model(full, attention_mask=att, use_cache=False).logits.float()
     else:
         with M.patch_layer(r, layer, position, vector, prefill_only=False):
-            logits = r.model(full, use_cache=False).logits.float()
+            logits = r.model(full, attention_mask=att, use_cache=False).logits.float()
 
     lp = torch.log_softmax(logits[:, :-1], dim=-1)
     picked = lp.gather(-1, full[:, 1:].unsqueeze(-1)).squeeze(-1)
@@ -139,7 +141,20 @@ def score_with_patch(r, ids, answer, layer=None, position=None, vector=None):
     if OPTION_IDS:
         # The row that emits the first answer token -- the same cell the
         # logprob above is read from, and the one the patch overwrites.
-        row = logits[0, int(ids.shape[1]) - 1]
+        #
+        # Read from a forward over the PROMPT ONLY, the same length the donor
+        # was captured at. In bf16 the forward over prompt+answer reduces its
+        # GEMMs in a different order and moves these logits by ~0.1 nat, which
+        # made even the identity patch a noisy no-op; at equal length the
+        # identity is exact (checked 8/8 on Tier A, 2026-09-18).
+        with torch.no_grad():
+            att_p = torch.ones_like(ids)
+            if vector is None:
+                prow = r.model(ids, attention_mask=att_p, use_cache=False).logits
+            else:
+                with M.patch_layer(r, layer, position, vector, prefill_only=False):
+                    prow = r.model(ids, attention_mask=att_p, use_cache=False).logits
+        row = prow[0, -1].float()
         best = max(OPTION_IDS, key=lambda t: row[OPTION_IDS[t]].item())
         ok = best == answer
         # The whole option distribution, not just the gold entry.

@@ -1,0 +1,21 @@
+{
+"logicbench_000": "logicbench_007",
+"logicbench_001": "logicbench_016",
+"logicbench_002": "logicbench_007",
+"logicbench_003": "logicbench_004",
+"logicbench_004": "logicbench_017",
+"logicbench_005": "logicbench_008",
+"logicbench_006": "logicbench_012",
+"logicbench_007": "logicbench_002",
+"logicbench_008": "logicbench_005",
+"logicbench_009": "logicbench_017",
+"logicbench_010": "logicbench_012",
+"logicbench_011": "logicbench_005",
+"logicbench_012": "logicbench_010",
+"logicbench_013": "logicbench_014",
+"logicbench_014": "logicbench_013",
+"logicbench_015": "logicbench_000",
+"logicbench_016": "logicbench_002",
+"logicbench_017": "logicbench_004",
+"logicbench_018": "logicbench_003"
+}
