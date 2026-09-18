@@ -41,14 +41,14 @@ token length, then inject the difference between their hidden states. In
 synthetic tasks, the final prompt position carries a large change shared by
 both skills, yet the content-specific difference accounts for most of the
 behavioural gain. Recovery at this position depends on answer format: it falls
-from $1.000$ for a one-token answer to $0.304$ for a short number and $0.000$
+from $1.000$ for a one-token answer to $0.235$ for a short number and $0.003$
 for step-by-step reasoning. Injecting states across the skill's own token span
 instead recovers $0.89$ of its gain on a screened clinical-calculator subset
 of $135$ items. Recovery depends on both skill content and token order.
 Keeping only the leading $32$ directions of the centred state difference
 recovers $0.12$, compared with $0.77$ for $128$ directions. The rank needed to
 reach half of the measured recovery range does not scale proportionally with
-model width within Qwen and also varies across model families. Across two task
+model width within Qwen; Mistral's is higher, though with overlapping intervals. Across two task
 domains and two model families, paired interventions further show that span
 states stop transferring most of the skill's effect before the model stops
 depending on attention to them. These findings identify a transferable
@@ -83,8 +83,8 @@ We subtract hidden states and inject each difference back into the model. On
 the synthetic task, the change from no skill to a wrong skill recovers only
 $0.062$ of the correct skill's gain, whereas the correct-minus-wrong difference
 recovers $0.812$. Recovery also depends on answer format: the best state
-replacement recovers $1.000$ for one-token multiple choice, $0.304$ for a short
-number and $0.000$ for step-by-step reasoning. Success at the final prompt
+replacement recovers $1.000$ for one-token multiple choice, $0.235$ for a short
+number and $0.003$ for step-by-step reasoning. Success at the final prompt
 position can therefore reflect transfer of a compact answer decision, while
 failure need not imply that the skill lacks a transferable representation.
 
@@ -100,8 +100,9 @@ retained directions matter for this intervention.
 
 We compare models by the number of directions needed to reach half of the
 measured recovery range. Reducing hidden width fourfold within Qwen changes
-this value from $47$ to $40$, rather than the pre-registered proportional
-prediction of approximately $12$; Mistral at the larger width gives $64$--$84$.
+this value from $47$ to $43$, rather than the pre-registered proportional
+prediction of approximately $12$; Mistral at the larger width gives $64$--$72$,
+with intervals that overlap Qwen's.
 Across layers, skill states stop transferring most of the effect while
 attention to them still supports performance. This separation replicates
 wherever both interventions are available. A few unusually large activations
@@ -116,7 +117,7 @@ identifies a representation that recovers the skill's effect
 \item \textbf{Measuring the representation rank required for recovery.}
 Truncating the injected matrix shows that recovery depends on multiple leading
 directions. The measured rank curves depart from proportional width scaling
-within Qwen and vary across model families (\S\ref{sec:rank}, \S\ref{sec:ladder}).
+within Qwen (\S\ref{sec:rank}, \S\ref{sec:ladder}).
 \item \textbf{Separating skill transfer from continued reading.} Span
 replacement and blocking attention to skill tokens reveal distinct depth
 boundaries. Interventions over multiple layers and checks for unusually large
@@ -320,22 +321,24 @@ interpreted relative to the specified wrong skill.
 \paragraph{Single-position recovery depends on answer format.}
 \label{sec:onepos}
 Table~\ref{tab:answerformat} compares answer formats on the synthetic task.
-For short numeric answers, none of the final-position interventions recovers
-any gain through layer $22$. The best results across tested layers are $0.304$
-for state replacement, $0.268$ for content and $0.018$ for presence.
-These answers are only two to four tokens long ($36$, $55$ and $29$ of the
-$120$ answers, respectively). In a separate position-count comparison,
-patching $1$, $4$ and $16$ positions recovers $0.286$, $0.286$ and $0.554$.
-For step-by-step reasoning on an $80$-item subset, the skill raises accuracy
-from $0.000$ to $1.000$, yet a single-position patch recovers $0.000$.
+All three formats use the same $358$ items and all $36$ layers. For short
+numeric answers, no final-position intervention recovers more than one of the
+$119$ rescued items through layer $22$. The best results across layers are
+$0.235$ for state replacement, $0.21$ for content and $0.008$ for presence.
+These answers are one to five tokens long ($341$ of $358$ use two to four).
+Patching the last $1$, $4$ and $16$ positions recovers $0.235$, $0.261$ and
+$0.403$. For step-by-step reasoning, the skill raises accuracy from $0.000$ to
+$0.989$, yet single-position replacement recovers at most one of $354$ rescued
+items ($0.003$) at any layer.
 These results show that the probe's success depends on answer format; they do
 not establish a general limit on the information a hidden state can hold.
 
 \begin{table}[t]
-\caption{Final-position state replacement across answer formats, Qwen3-8B (pre-fix).
-Multiple choice and numeric answers use the same $120$ items; reasoning uses an
-$80$-item subset with the same skill. Recovery is the best state-replacement
-result over tested layers on each format's rescued items.}
+\caption{Final-position state replacement across answer formats, Qwen3-8B.
+All formats use the same $358$ items and the same skill, with every layer
+($0$--$35$) tested. Recovery is the best state-replacement result over layers
+on each format's rescued items. The identity intervention reproduces the
+unpatched output on every item and layer.}
 \label{tab:answerformat}
 \centering\small
 \input{tab-answer-format}
@@ -378,12 +381,10 @@ Recovery changes nonlinearly with injection strength. On the screened subset
 ($n=135$, $14$ calculators), $\alpha=0.4,0.5,0.55$ gives
 $0.04,0.04,0.14$ recovery, while $0.6,0.7,1.0$ gives $0.53,0.87,0.89$;
 doubling the injection to $\alpha=2$ reduces recovery to $0.77$. Most of the
-increase occurs between $0.55$ and $0.7$, consistent with the development
-sweep ($n=16$). To test content specificity, we compare correct and other-skill
-injections over a common prefix length. In the development comparison, these
-recover $0.94$ and $0.19$, respectively. In the larger rerun, the correct
-prefix recovers $0.65$, whereas content from an unrelated skill recovers
-$0.05$. A same-family mean control recovers $0.12$ on its $41$ eligible items.
+increase occurs between $0.55$ and $0.7$. To test content specificity, we
+compare correct and other-skill injections over a common prefix length: the
+correct prefix recovers $0.65$, whereas content from an unrelated skill
+recovers $0.05$. A same-family mean control recovers $0.12$ on its $41$ eligible items.
 Permuting positions also gives $0.05$, norm-matched Gaussian noise
 gives $0.02$, and the identity control gives $0.00$. These controls show that
 recovery depends on the injected content and its arrangement across positions,
@@ -408,10 +409,8 @@ Other-skill content recovers $0.17$ on these groups ($n=332$), compared with
 $0.05$ on the retained groups ($n=135$); noise recovers $0.10$ versus $0.02$.
 This pattern is consistent with perturbations enabling knowledge already
 available to the model, although it does not establish that mechanism.
-The development comparison shows the same pattern for other-skill content
-($0.47$ versus $0.19$, $n=24$ and $16$). A separate caveat is intervention
-size: the earlier forty-calculator sample has skill spans of
-$415$--$1{,}630$ positions, far more than a single-position probe.
+A separate caveat is intervention size: skill spans in the screened subset
+contain $365$--$1{,}630$ positions, far more than a single-position probe.
 
 \subsection{Skill identity and content within the span}
 \label{sec:whose}
@@ -461,8 +460,8 @@ same skill-specific mean at every span position, so the comparison tests how
 much variation across positions is needed beyond that mean. At layer $8$ on
 the screened MedCalc subset ($135$ items, $14$ calculators), recovery is
 $0.07,0.05,0.12$ for $k=4,16,32$, rising to $0.63$ at $64$ and $0.77$ at
-$128$, compared with $0.89$ without truncation (Figure~\ref{fig:rank}).
-Keeping the bottom $16$ or $64$ directions recovers only $0.04$ or $0.03$.
+$128$, and reaching the untruncated $0.89$ at $256$ (Figure~\ref{fig:rank}).
+Keeping the bottom $4$ to $128$ directions recovers at most $0.04$.
 Recovery therefore depends on which directions are retained: the leading
 directions support most of the measured effect, but a small number is
 insufficient under this intervention.
@@ -484,11 +483,10 @@ states may activate pathways absent from an unpatched run
 \caption{Recovery after retaining $k$ leading centred directions and restoring
 the positional mean, on MedCalc after the fix. Each model is injected at an
 early layer. Despite a fourfold difference in hidden width, Qwen3-0.6B and
-Qwen3-8B have similar rank knees ($40$ and $47$); Mistral-7B, with the same
-width as Qwen3-8B, has $k^{*}=84$. Untruncated recovery is $0.89$, $0.89$
-and $0.92$, respectively, on each rank experiment's own subset. The Mistral
-rank subset ($92$ items, $26$ calculators) differs from its newer battery
-subset in Table~\ref{tab:replication}. Dashed curves retain bottom directions.
+Qwen3-8B have similar rank knees ($43$ and $47$); Mistral-7B, with the same
+width as Qwen3-8B, has $k^{*}=72$ [$46,94$]. Untruncated recovery is $0.89$,
+$0.91$ and $0.84$, respectively, on each model's screened subset ($135$, $362$
+and $92$ items). Dashed curves retain bottom directions.
 Error bars are calculator-bootstrap $95\%$ intervals. Only complete rank
 experiments are plotted.}
 \label{fig:rank}
@@ -529,10 +527,9 @@ largest drop, between layers $12$ and $13$. (b) Fraction of rescued items
 remaining correct when attention to the skill is blocked from layer $L$
 onward ($n=466$). The dotted lines mark $0.5$ in each panel's own metric.
 (c) Repeated injection at layers $16$--$35$ gives no gain over layer $16$
-alone, whereas layers $12$--$15$ recover $0.81$ ($n=222$). This completed
-window experiment uses a different wrong-content receiver and its own
-baselines; it is not directly paired with (a). Span interventions use the
-corrected implementation; attention knockout does not use state capture.}
+alone, whereas layers $12$--$15$ recover $0.74$ and every layer at once
+$0.98$; same receiver and items as (a). Span interventions use the corrected
+implementation; attention knockout does not use state capture.}
 \label{fig:transferreading}
 \end{figure}
 
@@ -541,12 +538,10 @@ corrected implementation; attention knockout does not use state capture.}
 $8$ for Qwen3-8B, $6$ for Qwen3-0.6B and $4$ for Mistral-7B. Recovery
 intervals resample skill groups. Max control includes half-dose, other-skill,
 permutation and noise comparisons, including same-family means available on
-$41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n$ describes the battery;
-Mistral's MedCalc rank/depth results retain their earlier completed subsets.
+$41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n$ describes the battery.
 Handover brackets the transfer boundary as a fraction of model depth; reading
 is the first tested attention-knockout depth retaining at least half of rescued
-items. $k^{*}$ is the rank knee on the fixed grid. ``--'' marks a measurement
-not run after the fix.}
+items. $k^{*}$ is the rank knee on the fixed grid.}
 \label{tab:replication}
 \centering
 \footnotesize
@@ -556,16 +551,16 @@ not run after the fix.}
 
 \paragraph{Adding late intervention layers does not restore transfer.}
 To test whether a single late injection is simply too weak, we replace span
-states repeatedly within consecutive layer windows. The latest complete
-MedCalc window run uses a different receiver from the span battery. Screening
-and normalising against its own baselines retains $222$ items from $21$
-calculators: windows $8$--$11$, $12$--$15$, $14$--$19$ and $16$--$35$
-recover $0.95$, $0.81$, $0.22$ and $0.10$, respectively. The last matches
-layer $16$ alone; the identity control gives $0.00$. On TheoremQA ($88$ items,
-$72$ groups, also with its own receiver), the same windows recover
-$0.90,0.73,0.45,0.21$, with the last again matching layer $16$ alone.
-Repeated late injection therefore does not restore early-layer recovery in
-these tests. One possible explanation is that later reading depends on
+states repeatedly within consecutive layer windows, using the battery's
+receiver and the same $135$ items as the depth sweep. Windows $8$--$11$,
+$12$--$15$, $14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and
+$0.06$; the last equals layer $16$ alone. Writing every layer at once
+recovers $0.98$ [$0.91,1.03$], so the transplant itself remains effective when
+it starts early enough; the identity control is exact on all $467$ items. On
+TheoremQA ($99$ items, $75$ groups, with its battery's receiver), the same
+windows recover $0.84,0.61,0.38,0.20$, the last again equal to layer $16$
+alone. Repeated late injection therefore does not restore early-layer
+recovery in these tests. One possible explanation is that later reading depends on
 associations between skill content and the question established earlier
 \citep{feng2024binding}, but these interventions do not identify the specific
 dependencies responsible.
@@ -573,13 +568,13 @@ dependencies responsible.
 \paragraph{A spectral drop is not evidence of compression.}
 Could the loss of transfer reflect compression into fewer dimensions? We
 examine the centred participation ratio, a summary of how broadly matrix energy
-is distributed across singular directions. It falls from $64$ at layer $12$
+is distributed across singular directions. It falls from $69$ at layer $12$
 to $17$ at layer $16$, but this drop is driven by unusually large activations
-\citep{sun2024massive, shi2026melayer}. In $34$ of $40$ skills, one token's
-state reaches $99$--$180$ times the median span norm, dominated by the same
-two hidden dimensions. Removing the four highest-norm positions from roughly
-four hundred restores the ratio to $66$ and makes it approximately flat over
-layers $0$--$28$. The drop is also absent in Qwen3-0.6B and Qwen3-1.7B.
+\citep{sun2024massive, shi2026melayer}. In $35$ of $48$ calculators, one
+token's state reaches $121$--$195$ times the median span norm, always on the
+same two hidden dimensions. Removing the four highest-norm positions restores
+the ratio to $85$ at layer $16$, and it stays between $62$ and $99$ over layers
+$0$--$28$. The drop is also absent in Qwen3-0.6B and Qwen3-1.7B.
 This diagnostic therefore does not support compression as the explanation
 for lost transfer: a few large activations distort the dimensionality summary
 (Appendix Table~\ref{tab:prdiag}).
@@ -596,29 +591,28 @@ Qwen3-1.7B, where skills rescue only $8$--$11\%$ of items, appear in Appendix
 Table~\ref{tab:laddermodels}.
 
 Span recovery ranges from $0.74$ to $0.94$ across the six model--task
-combinations. The largest available control is $0.35$, for a same-family
-mean on $31$ Mistral/MedCalc items; full-span recovery on that task is $0.84$
-over $92$ items, so these are not a paired comparison. Wherever both depth comparisons
-are available, the transfer boundary occurs before the reading boundary.
-The measured transfer boundaries lie at $0.33$--$0.43$ of model depth within
-Qwen and at $0.19$--$0.22$ in Mistral. Reading boundaries also vary by task:
-Qwen3-8B reaches the defined threshold at $0.56$ on TheoremQA and $0.78$ on
-MedCalc, while Mistral reaches it at $0.62$ and $0.88$, respectively.
+combinations. The largest control is $0.35$, for a same-family
+mean on $31$ Mistral/MedCalc items, where full-span recovery on the same items
+is $0.71$. In every model--task combination, the transfer boundary occurs
+before the reading boundary. The measured transfer boundaries lie at
+$0.33$--$0.43$ of model depth within Qwen and at $0.19$--$0.22$ in Mistral.
+Reading boundaries also vary by task: $0.56$--$0.71$ on TheoremQA and
+$0.78$--$0.88$ on MedCalc across the three models.
 
 The pre-registered width-proportional prediction places Qwen3-0.6B's rank
 knee near $12$. Its observed recovery at $k=16,32,64,128$ is
-$0.02,0.21,0.74,0.72$, giving $k^{*}=40$ [$32,50$], close to Qwen3-8B's
+$0.00,0.12,0.79,0.67$, giving $k^{*}=43$ [$39,52$], close to Qwen3-8B's
 $47$ [$43,55$] despite the fourfold width difference. On TheoremQA, the
-corresponding knees are $52$ and $50$, again inconsistent with proportional
-scaling. Their participation ratios are also similar in scale ($66$--$77$
-versus $70$--$99$ over layers $0$--$20$, excluding unusually large
-activations). Mistral, with the same width as Qwen3-8B, instead gives
-$k^{*}=84$ [$59,97$] on MedCalc and $64$ [$50,79$] on TheoremQA. The
-between-family difference is clearer on MedCalc. Because Mistral's recovery
-at $k=128$ remains below the untruncated result ($0.71$ versus $0.92$), its
-knee summarises only the tested range and may change on a wider grid.
-These comparisons show that the measured rank requirement is not determined
-by hidden width alone.
+corresponding knees are $52$ [$46,62$] and $50$ [$39,67$], again inconsistent
+with proportional scaling. Their participation ratios are also similar in
+scale ($65$--$75$ versus $70$--$99$ over layers $0$--$20$, excluding unusually
+large activations). Mistral, with the same width as Qwen3-8B, gives
+$k^{*}=72$ [$46,94$] on MedCalc and $64$ [$50,79$] on TheoremQA: higher than
+Qwen3-8B on both tasks, but with overlapping intervals. Its curve is also less
+sharply defined, since recovery keeps rising past $k=128$ ($0.54$; $0.72$ at
+$256$, against $0.84$ untruncated) and its bottom-$k$ controls reach
+$0.11$--$0.21$. The measured rank requirement is therefore not determined by
+hidden width alone, while a difference between families is not established.
 
 \paragraph{Readout checks.}
 \label{sec:traps}
@@ -639,8 +633,9 @@ In the evaluated tasks and screened subsets, states across a skill's own
 tokens transfer much of its effect. A final-position intervention is more
 sensitive to answer format, succeeding for compact answers while failing for
 extended reasoning. Span recovery depends on content, position and multiple
-leading directions. The rank knee varies across model families and does not
-scale proportionally with width within Qwen. Across layers, states stop
+leading directions. The rank knee does not scale proportionally with width
+within Qwen; a difference between model families is suggested but not
+established. Across layers, states stop
 transferring most of the effect before attention to them ceases to support
 performance; the spectral drop does not establish compression at this boundary.
 These findings distinguish what skill states can transfer from how subsequent

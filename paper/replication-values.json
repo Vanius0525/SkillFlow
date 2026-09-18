@@ -17,6 +17,8 @@
       "rank": [
         "full-rank-a",
         "full-rank-b",
+        "x8-rank-x",
+        "x8-rank-lo",
         "full-battery-a"
       ],
       "knockout": [
@@ -127,33 +129,75 @@
     "model": "Qwen3-0.6B",
     "sources": {
       "battery": [
-        "fixmask-lad06-rank"
+        "q06-bat-a",
+        "q06-bat-b"
       ],
-      "depth": [],
+      "depth": [
+        "q06-depth-a",
+        "q06-depth-b",
+        "q06-bat-a"
+      ],
       "rank": [
-        "fixmask-lad06-rank"
+        "q06-rank-a",
+        "q06-rank-b",
+        "q06-rank-lo",
+        "q06-bat-a"
       ],
-      "knockout": null
+      "knockout": [
+        "q06-ko"
+      ]
     },
-    "n": 204,
-    "g": 35,
-    "rho": 0.8867924528301886,
-    "lo": 0.696969696969697,
-    "hi": 1.088888888888889,
-    "ctrl": null,
-    "controls": {},
-    "handover": null,
-    "kstar": 39.98615266632805,
-    "rank_n": 204,
-    "rank_groups": 35,
-    "depth_n": 0,
-    "reading": null
+    "n": 362,
+    "g": 38,
+    "rho": 0.9130434782608695,
+    "lo": 0.75,
+    "hi": 1.0485436893203883,
+    "ctrl": 0.3043478260869565,
+    "controls": {
+      "drand": {
+        "rho": 0.03260869565217391,
+        "n": 362
+      },
+      "dshuf": {
+        "rho": 0.021739130434782605,
+        "n": 362
+      },
+      "a0.5": {
+        "rho": 0.06521739130434782,
+        "n": 362
+      },
+      "dcross": {
+        "rho": 0.3043478260869565,
+        "n": 362
+      },
+      "dfar": {
+        "rho": 0.04347826086956521,
+        "n": 362
+      },
+      "dnear": {
+        "rho": 0.1111111111111111,
+        "n": 204
+      }
+    },
+    "handover": [
+      0.35714285714285715,
+      0.39285714285714285
+    ],
+    "kstar": 42.55599040932437,
+    "rank_n": 362,
+    "rank_groups": 38,
+    "depth_n": 362,
+    "reading": [
+      0.8571428571428571,
+      115
+    ]
   },
   {
     "task": "TheoremQA",
     "model": "Qwen3-0.6B",
     "sources": {
       "battery": [
+        "t06-bat",
         "tqa06-rank"
       ],
       "depth": [
@@ -162,15 +206,34 @@
       "rank": [
         "tqa06-rank"
       ],
-      "knockout": null
+      "knockout": [
+        "t06-ko"
+      ]
     },
     "n": 132,
     "g": 97,
     "rho": 0.7401574803149606,
     "lo": 0.6583333333333333,
     "hi": 0.8230088495575221,
-    "ctrl": null,
-    "controls": {},
+    "ctrl": 0.13385826771653542,
+    "controls": {
+      "drand": {
+        "rho": 0.10236220472440945,
+        "n": 132
+      },
+      "dshuf": {
+        "rho": 0.09448818897637795,
+        "n": 132
+      },
+      "a0.5": {
+        "rho": 0.13385826771653542,
+        "n": 132
+      },
+      "dcross": {
+        "rho": 0.07874015748031496,
+        "n": 132
+      }
+    },
     "handover": [
       0.35714285714285715,
       0.42857142857142855
@@ -179,7 +242,10 @@
     "rank_n": 132,
     "rank_groups": 97,
     "depth_n": 132,
-    "reading": null
+    "reading": [
+      0.7142857142857143,
+      155
+    ]
   },
   {
     "task": "MedCalc",
@@ -190,11 +256,15 @@
         "mis-bat-b"
       ],
       "depth": [
-        "mis2-depth",
-        "mis2-depth-fine"
+        "mis-depth-a",
+        "mis-depth-b",
+        "mis-bat-a"
       ],
       "rank": [
-        "mis3-rank-L4"
+        "mis-rank-a",
+        "mis-rank-b",
+        "mis-rank-lo",
+        "mis-bat-a"
       ],
       "knockout": [
         "mis2-ko-b"
@@ -236,10 +306,10 @@
       0.1875,
       0.21875
     ],
-    "kstar": 84.44850628946523,
+    "kstar": 72.43280942552526,
     "rank_n": 92,
-    "rank_groups": 26,
-    "depth_n": 79,
+    "rank_groups": 20,
+    "depth_n": 92,
     "reading": [
       0.875,
       72

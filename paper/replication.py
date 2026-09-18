@@ -78,7 +78,7 @@ ROWS = [
      ["full-battery-a", "full-battery-b"],
      ["full-depth-a", "full-depth-b", "full-depth-c13", "full-depth-d",
       "full-battery-a"],
-     ["full-rank-a", "full-rank-b", "full-battery-a"],
+     ["full-rank-a", "full-rank-b", "x8-rank-x", "x8-rank-lo", "full-battery-a"],
      ["full-ko"]),
     ("TheoremQA", "Qwen3-8B", 36, 8, ["tqa-span"], ["tqa-depth"],
      ["tqa-rank"], ["tqa-ko"]),

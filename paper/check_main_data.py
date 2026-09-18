@@ -148,7 +148,7 @@ check('Figure 3 knockout n',len(ko)==466)
 for layer,value in depth['necessity']:
     close(f'Figure 3 knockout layer {layer}',sum(r['ok_block_from'][r['layers'].index(layer)] for r in ko)/len(ko),value)
 wr=screen(load(depth['window_sources']))
-check('Figure 3 window own receiver n',len(wr)==depth['window_n']==222)
+check('Figure 3 windows on the battery receiver and items',len(wr)==depth['window_n']==135)
 for window,value in depth['windows'].items():
     close(f'Figure 3 window {window}',rho(wr,f'ok_real_{window}'),value)
 
@@ -161,9 +161,16 @@ for label,arm in [('This instance','real'),('Other instances of the same skill',
     line=table_row('tab-skill-content.tex',label+' &')
     check('Table 3 '+arm, f'${rho(last,f"ok_{arm}_L8"):.2f}$ & ${rho(last,f"ok_{arm}_L16"):.2f}$' in line)
 
-for name, v in data('answer-format-values.json')['formats'].items():
+afv=data('answer-format-values.json')
+if 'identity' in afv:
+    check('Table 1 identity exact', afv['identity'][0]==afv['identity'][1] > 0)
+for name, v in afv['formats'].items():
     curves=[]
-    for path in sorted(Path(v['source']).glob('layer_*.jsonl')):
+    srcs=v['sources'] if 'sources' in v else [v['source']]
+    paths=sorted(p for s in srcs for p in Path(s).glob('layer_*.jsonl'))
+    if 'sources' in v:
+        check('Table 1 '+name+': 36 layers', len(paths)==36)
+    for path in paths:
         rr=read(path); rescued=[r for r in rr if r['cell']=='R']
         key='gok_replace_real' if 'gok_replace_real' in rescued[0] else 'ok_replace_real'
         curves.append(mean(rescued,key))
@@ -190,18 +197,21 @@ prose(f'$[{ci[0]:.1f},{ci[1]:+.1f}]$')
 
 for needle in ['accuracy from $0.000$ to $0.815$', '$0.03$, $0.06$ and $0.05$',
                'same-family mean control recovers $0.12$ on its $41$ eligible items',
-               '$222$ items from $21$', '$0.95$, $0.81$, $0.22$ and $0.10$',
-               'largest available control is $0.35$', '$0.84$ over $92$ items',
-               '($92$ items, $26$ calculators)',
+               '$0.89$, $0.74$, $0.16$ and $0.06$',
+               'recovers $0.98$ [$0.91,1.03$]', 'largest control is $0.35$',
+               'recovery on the same items is $0.71$', '$k^{*}=72$ [$46,94$] on MedCalc',
+               '$0.00,0.12,0.79,0.67$, giving $k^{*}=43$ [$39,52$]',
+               '$0.235$ for state replacement', '$365$--$1{,}630$ positions',
                'recovers only $0.03$ with the skill first ($n=135$) and $0.04$',
                'preserves $0.87$ recovery, compared with $0.89$']:
     prose(needle)
-for needle in ['item-bootstrap','n=137','at or below $0.27$','within $0.10$ accuracy']:
+for needle in ['item-bootstrap','n=137','at or below $0.27$','within $0.10$ accuracy',
+               '$0.304$','$415$--$1{,}630$','development comparison','$k^{*}=84$','(pre-fix)']:
     check('no stale main claim: '+needle,needle not in main)
 
 for filename, labels in [('fig-channels-medcalc.pdf',['135','0.81','0.03','0.06']),
-                         ('fig-rank-medcalc.pdf',['Mistral','84','135','204']),
-                         ('fig-transfer-reading.pdf',['222','0.81','0.22'])]:
+                         ('fig-rank-medcalc.pdf',['Mistral','72','135','362','256']),
+                         ('fig-transfer-reading.pdf',['135','0.74','0.98'])]:
     pdf=pymupdf.open(HERE/filename)
     text=' '.join(page.get_text() for page in pdf)
     for label in labels:check(filename+': rendered '+label,label in text)
@@ -215,7 +225,7 @@ except ValueError:
 else:
     check('incompatible receivers now rejected',False)
 for tags in [('q06-bat-a','q06-bat-b'),('mis-rank-a','mis-rank-b','mis-rank-lo')]:
-    check('partial rerun excluded: '+','.join(tags),not rep.complete(tags))
+    check('full rerun complete and used: '+','.join(tags),rep.complete(tags))
 
 manifest={'checks_passed':len(checks),'source_sha256':sources,
           'artifact_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest()

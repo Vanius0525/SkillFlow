@@ -104,7 +104,7 @@ def answer_format_full(root=ROOT/'whitebox/results/fetched/tA'):
     Returns False (and leaves the pre-fix table alone) until every shard is in.
     """
     specs=[('Multiple choice','1',['tA-mc']),
-           ('Numeric answer','2--4',['tA-num-a','tA-num-b']),
+           ('Numeric answer','1--5',['tA-num-a','tA-num-b']),
            ('Chain of thought','Hundreds',['tA-cot-1','tA-cot-2','tA-cot-3','tA-cot-4'])]
     def layers_of(tags):
         out={}
@@ -129,7 +129,8 @@ def answer_format_full(root=ROOT/'whitebox/results/fetched/tA'):
             rr=[r for r in rows if r['cell']=='R']
             curve[layer]=sum(bool(r['ok_replace_real']) for r in rr)/len(rr)
         best=max(curve,key=curve.get)
-        vals[name]={'n':len(ids),'rescued':len(rr),'best':curve[best],'best_layer':best,'curve':curve}
+        vals[name]={'n':len(ids),'rescued':len(rr),'best':curve[best],'best_layer':best,'curve':curve,
+                    'sources':[str(root/t) for t in tags]}
         rows_out.append(f'{name} & {tokens} & {len(ids)} & {len(rr)} & ${curve[best]:.3f}$ '+r'\\')
     # identity: every item, every layer that ran it
     ident=[]
@@ -141,7 +142,11 @@ def answer_format_full(root=ROOT/'whitebox/results/fetched/tA'):
     out=[r'\begin{tabular}{@{}lrrrr@{}}',r'\toprule',
          r'Answer format & Tokens & Evaluated & Rescued & Best recovery \\',r'\midrule']+rows_out+[r'\bottomrule',r'\end{tabular}']
     (HERE/'tab-answer-format.tex').write_text('\n'.join(out)+'\n')
-    (HERE/'answer-format-values.json').write_text(json.dumps(vals,indent=1)+'\n')
+    ident_n=vals.pop('identity')
+    (HERE/'answer-format-values.json').write_text(json.dumps(
+        {'status':'post-fix, 358 items, layers 0-35 for every format','identity':ident_n,
+         'formats':vals},indent=1)+'\n')
+    vals['identity']=ident_n
     print(json.dumps({k:(v if k=='identity' else {kk:vv for kk,vv in v.items() if kk!='curve'}) for k,v in vals.items()}))
     return True
 

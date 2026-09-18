@@ -120,15 +120,17 @@ def main():
     ax.axhline(1.0, color="#009E73", ls="--", lw=1.1, zorder=0)
     # rho is normalised by the correct skill in the prompt, not by the
     # untruncated transplant, so this line is the skill itself
-    ax.text(150, 1.02, "the correct skill in the prompt", fontsize=7,
+    ax.text(300, 1.02, "the correct skill in the prompt", fontsize=7,
             color="#009E73", ha="right")
     ax.axhline(0.0, color="#8c6d1f", ls="-", lw=1.0, zorder=0)
     ax.text(1.05, -0.10, "the wrong-skill receiver, unpatched", fontsize=7,
             color="#8c6d1f")
     ax.set_xscale("log", base=2)
-    ax.set_xticks([1, 2, 4, 8, 16, 32, 64, 128])
-    ax.set_xticklabels([1, 2, 4, 8, 16, 32, 64, 128], fontsize=8)
-    ax.set_xlim(0.85, 160)
+    # the grid now reaches k=256, where Qwen3-8B is back at its untruncated
+    # value; cutting the axis at 128 hid the end of every curve
+    ax.set_xticks([1, 2, 4, 8, 16, 32, 64, 128, 256])
+    ax.set_xticklabels([1, 2, 4, 8, 16, 32, 64, 128, 256], fontsize=8)
+    ax.set_xlim(0.85, 320)
     ax.set_xlabel("rank $k$ the content matrix is truncated to, before "
                   "injection", fontsize=9)
     ax.set_ylabel("recovery $\\rho$, as a fraction of\nthe skill's own effect",
