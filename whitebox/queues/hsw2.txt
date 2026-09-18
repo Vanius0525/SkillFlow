@@ -1,0 +1,2 @@
+x8-win-a|wb_spanpatch|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --per-calc 20 --max-calcs 55 --max-new 900 --matched --filler fixedskill --no-baselines --span skill --layers 16 --window 0:35 --window 8:11
+fp-c|wb_posbudget|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --per-calc 20 --max-calcs 55 --max-new 900 --calcs 13,18,23,24,29,32,33,36,43,49,60,64,67,7 --layers 4,8,24 --arms tq1,tq16,tqall

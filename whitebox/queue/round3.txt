@@ -1,0 +1,11 @@
+spanvec-fx-dl	--mode decode --layers 8 --doc-last --filler fixed --baselines --arms real,dbar,dother,dpar,dperp
+spanvec-fx-first	--mode decode --layers 8 --filler fixed --baselines --arms real,a0.5,a2,dcross,realm,dshuf,drand
+spanvec-fx-dlctrl	--mode decode --layers 8 --doc-last --filler fixed --arms dcross,dall,dshuf,drand
+spanvec-fx-parts	--mode decode --layers 8 --filler fixed --arms dall,head,tail,normrecv
+spanvec-fx-dldepth	--mode decode --layers 0,4,12,16 --doc-last --filler fixed --arms real,dbar
+spanvec-fx-geoml	--mode geometry --geom-step 4 --doc-last --filler fixed
+spanvec-fx-geomf	--mode geometry --geom-step 4 --filler fixed
+spanvec-fx-depth	--mode decode --layers 0,4,12,16,20 --filler fixed --arms real,dall
+spanvec-fx-quarters	--mode decode --layers 8 --filler fixed --arms q0,q1,q2,q3
+spanvec-fx-dlparts	--mode decode --layers 8 --doc-last --filler fixed --arms dall,head,tail,normrecv
+spanvec-fx-headdepth	--mode decode --layers 0,12,16 --filler fixed --arms head,tail,dall

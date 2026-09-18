@@ -1,0 +1,6 @@
+pb-ev|wb_posbudget|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --per-calc 20 --max-calcs 55 --max-new 900 --calcs 13,18,23,24,29,32,33,36,43,49,60,64,67,7 --layer 8 --arms self,real,ev1,ev4,ev16,ev64,ev256,evhalf
+q06-bat-a|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --per-calc 20 --max-calcs 55 --max-new 900 --mode decode --filler fixedskill --layers 6 --arms real,realm,a0.5,dnear,dfar --baselines
+q06-rank-a|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --per-calc 20 --max-calcs 55 --max-new 900 --mode decode --filler fixedskill --layers 6 --arms rank1,rank2,rank4,rank8,rank16,rank24
+q06-depth-a|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --per-calc 20 --max-calcs 55 --max-new 900 --mode decode --filler fixedskill --layers 0,2,4,8,9,10 --arms real
+q06-ko|wb_knockout|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --per-calc 20 --max-calcs 55 --max-new 900 --sweep layers --layer-stride 4 --cells-keep R
+t06-ko|wb_knockout|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --dataset theoremqa --cells data/cells/cells-tqa-qwen06b.json --min-group 1 --per-calc 4 --max-calcs 400 --max-new 900 --sweep layers --layer-stride 4 --cells-keep R

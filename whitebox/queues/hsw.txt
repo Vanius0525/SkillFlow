@@ -1,0 +1,6 @@
+x8-extra|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --per-calc 20 --max-calcs 55 --max-new 900 --mode decode --filler fixedskill --layers 8 --arms dall,normrecv
+x8-rank-x|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --per-calc 20 --max-calcs 55 --max-new 900 --mode decode --filler fixedskill --layers 8 --calcs 13,18,23,24,29,32,33,36,43,49,60,64,67,7 --arms rank1,rank2,rank8,rank24,rank48,rank96,rank256
+x8-rank-lo|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --per-calc 20 --max-calcs 55 --max-new 900 --mode decode --filler fixedskill --layers 8 --calcs 13,18,23,24,29,32,33,36,43,49,60,64,67,7 --arms rank4lo,rank32lo,rank128lo
+geom-8b|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --per-calc 2 --max-calcs 55 --mode geometry --filler fixedskill --geom-step 2
+geom-06|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --per-calc 2 --max-calcs 55 --mode geometry --filler fixedskill --geom-step 2
+geom-17|wb_spanvec|--model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-1.7B --per-calc 2 --max-calcs 55 --mode geometry --filler fixedskill --geom-step 2

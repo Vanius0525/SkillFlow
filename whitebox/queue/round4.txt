@@ -1,0 +1,19 @@
+spanvec-fs-base	--mode decode --layers 8 --filler fixedskill --baseline-sweep --arms real
+spanvec-fs-first	--mode decode --layers 8 --filler fixedskill --baselines --arms real,a0.5,a0.75,a2,dcross,realm,dshuf,drand
+spanvec-fs-dl	--mode decode --layers 8 --doc-last --filler fixedskill --baselines --arms real,dbar,dother,dpar,dperp
+spanvec-fs-parts	--mode decode --layers 8 --filler fixedskill --arms dall,head,tail,normrecv
+spanvec-fs-depth	--mode decode --layers 0,4,12,16,20 --filler fixedskill --arms real
+spanvec-fs-geomf	--mode geometry --geom-step 4 --filler fixedskill
+spanvec-fs-geoml	--mode geometry --geom-step 4 --doc-last --filler fixedskill
+spanvec-fs-dlctrl	--mode decode --layers 8 --doc-last --filler fixedskill --arms dcross,dall,dshuf,drand
+spanvec-fs-quarters	--mode decode --layers 8 --filler fixedskill --arms q0,q1,q2,q3
+spanvec-fs-dldepth	--mode decode --layers 0,4,12,16 --doc-last --filler fixedskill --arms real,dbar
+spanvec-fs-cellF	--mode decode --layers 8 --cells-keep F --filler fixedskill --baselines --arms real,a0.5,dcross
+spanvec-fs-nearfar	--mode decode --layers 8 --filler fixedskill --arms dnear,dfar,dall,realm
+spanvec-fs-nfdepth	--mode decode --layers 0,12,16 --filler fixedskill --arms dnear,dfar
+spanvec-fs-dlparts	--mode decode --layers 8 --doc-last --filler fixedskill --arms dall,head,tail,normrecv
+spanvec-fs-dlperp	--mode decode --layers 0,12,16,20 --doc-last --filler fixedskill --arms real,dbar,dperp
+spanvec-fs-dose	--mode decode --layers 8 --filler fixedskill --arms a0.25,a0.6,a1.5,a3,a0.5r,a2r
+spanvec-fs-big-a	--mode decode --layers 8 --filler fixedskill --baselines --max-calcs 20 --arms real,drand
+spanvec-fs-big-b	--mode decode --layers 8 --filler fixedskill --baselines --max-calcs 20 --arms dcross,realm
+spanvec-fs-qdepth	--mode decode --layers 0,12,16 --filler fixedskill --arms q1,q3,head
