@@ -109,6 +109,17 @@ def parse_arm(arm: str):
     m = re.match(r"^sh(.+)$", arm)
     if m and m.group(1) in BUDGETS:
         return "sh", m.group(1)
+    # The boundary controls for `sh`. A cyclic shift by one keeps every relative
+    # position inside the span, so its collapse can only come from what the
+    # wrap and the edges do: the last state lands on the first position, and
+    # the question's first token no longer follows the state it was computed
+    # after. snD / sbD shift forward / backward WITHOUT wrapping (the positions
+    # left over keep the receiver's state); xfD / xlD write the span in place
+    # except its first / last D positions. If sn1 and sb1 recover what `real`
+    # does, the sh1 collapse was the wrap, not the displacement.
+    m = re.match(r"^(sn|sb|xf|xl)(.+)$", arm)
+    if m and m.group(2) in BUDGETS:
+        return m.group(1), m.group(2)
     for s in STRATEGIES:
         if arm.startswith(s) and arm[len(s):] in BUDGETS:
             if arm[len(s):] == "all" and s != "tq":
@@ -185,6 +196,18 @@ def select(strategy, budget, m, iid, regions, dnorm2, seed):
     if strategy in ("wf", "wd", "we"):
         a, b = regions[{"wf": "F", "wd": "D", "we": "E"}[strategy]]
         dst = window((a + b) // 2, budget, m)
+        return dst, dst
+    if strategy == "sn":
+        src = list(range(0, m - budget))
+        return [p + budget for p in src], src
+    if strategy == "sb":
+        src = list(range(budget, m))
+        return [p - budget for p in src], src
+    if strategy == "xf":
+        dst = list(range(budget, m))
+        return dst, dst
+    if strategy == "xl":
+        dst = list(range(0, m - budget))
         return dst, dst
     if strategy == "sh":
         shift = budget % m

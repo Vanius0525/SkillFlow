@@ -30,7 +30,7 @@ BY = ROOT / "howskill/results/p8-wb/fetched/by-host"
 OUT = ROOT / "whitebox/analysis/out"
 
 PB_TAGS = ["pb-ev", "pb-rn", "pb-mx", "pb-wf", "pb-wd", "pb-we", "pb-wr",
-           "pb-td", "pb-tq"]
+           "pb-td", "pb-tq", "pb-c256", "pb-chalf", "pb-sh", "pb-wh"]
 FP_TAGS = ["fp-a", "fp-b", "fp-c"]
 BATTERY = ["full-battery-a", "full-battery-b", "full-quarters"]
 BUDGETS = ["1", "4", "16", "64", "256", "half", "full"]
@@ -46,7 +46,8 @@ STRAT = {
     "wd": ("window on description", "#CC79A7", "^"),
     "wr": ("window at random", "#999999", "s"),
 }
-CONTRASTS = [("rn", "mx", "own vs misplaced"), ("rn", "tq", "span vs outside"),
+CONTRASTS = [("c1x", "c32x", "one block vs 32 blocks"),
+             ("rn", "mx", "own vs misplaced"), ("rn", "tq", "span vs outside"),
              ("td", "rn", "top-energy vs random"), ("ev", "rn", "even vs random"),
              ("wf", "wd", "procedure vs description"), ("wf", "wr", "procedure vs random window"),
              ("we", "wr", "example vs random window")]
@@ -213,6 +214,24 @@ def main():
             report["arms"][f"{strat}{bud}"] = {
                 "key": key, "rho": v, "n": n, "ci_cluster": [clo, chi],
                 "ci_item": [ilo, ihi], "positions": nm, "energy": em}
+    # fragmentation, displacement and half-span windows (added 04:50, §1.5)
+    PB_TAGS_EXTRA = [f"c{n}x{b}" for b in ("256", "half") for n in (1, 2, 4, 8, 16, 32)] \
+        + [f"sh{d}" for d in ("1", "4", "16", "64", "256")] \
+        + [f"{w}half" for w in ("wf", "we", "wd", "wr")]
+    for arm in PB_TAGS_EXTRA:
+        key = f"ok_{arm}_L8"
+        v, n = rho_of(rows, key)
+        if v is None:
+            continue
+        clo, chi = boot(rows, key, True, a.B)
+        ilo, ihi = boot(rows, key, False, a.B)
+        sel = [r.get("sel", {}).get(arm) for r in rows if key in r]
+        sel = [x for x in sel if x]
+        mean = lambda k: (sum(x[k] for x in sel if k in x) / max(1, sum(1 for x in sel if k in x))
+                          if any(k in x for x in sel) else None)
+        report["arms"][arm] = {"key": key, "rho": v, "n": n, "ci_cluster": [clo, chi],
+                               "ci_item": [ilo, ihi], "positions": mean("n"),
+                               "energy": mean("e"), "frac_F": mean("F")}
     for extra in ("dshuf", "q0", "q1", "q2", "q3"):
         key = f"ok_{extra}_L8"
         v, n = rho_of(rows, key)
@@ -235,7 +254,7 @@ def main():
     # ---- paired contrasts ----------------------------------------------------
     fam = collections.defaultdict(list)
     for sa, sb, label in CONTRASTS:
-        for bud in BUDGETS:
+        for bud in (BUDGETS if not sa.startswith("c") else ["256", "half"]):
             ka, kb = arm_key(sa, bud), arm_key(sb, bud)
             if ka == kb:
                 continue
@@ -333,89 +352,131 @@ def main():
 
 
 def figure(rep):
+    """Four panels, one question each, all on the same 135 items.
+
+    (a) spread positions: count and energy do not buy recovery
+    (b) the same budget cut into more blocks: contiguity does
+    (c) where one contiguous block sits: the procedure section
+    (d) the whole span moved by D positions: placement must be exact
+    Okabe-Ito hues; every series also has its own marker and a direct label,
+    so identity never rests on colour alone.
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    plt.rcParams.update({"font.size": 8, "axes.titlesize": 8.5, "axes.labelsize": 8,
+    plt.rcParams.update({"font.size": 8, "axes.titlesize": 8.4, "axes.labelsize": 7.8,
                          "xtick.labelsize": 7, "ytick.labelsize": 7, "pdf.fonttype": 42,
                          "legend.fontsize": 6.6})
     A = rep["arms"]
-    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.55), layout="constrained",
-                             gridspec_kw={"width_ratios": [1.25, 1.0, 1.0]})
+    full = A["evfull"]["rho"]
+    m_med = rep.get("span_width", {}).get("median", 896)
+    fig, axes = plt.subplots(2, 2, figsize=(7.2, 4.9), layout="constrained")
+    (a_, b_), (c_, d_) = axes
 
-    def series(ax, strat, buds, offset=1.0, label=None, lw=1.6):
-        c, mk = STRAT[strat][1], STRAT[strat][2]
-        xs, ys, lo, hi = [], [], [], []
-        for b in buds:
-            v = A.get(f"{strat}{b}")
-            if not v or v.get("positions") is None:
-                continue
-            xs.append(v["positions"] * offset); ys.append(v["rho"])
-            lo.append(max(v["rho"] - v["ci_cluster"][0], 0))
-            hi.append(max(v["ci_cluster"][1] - v["rho"], 0))
-        if not xs:
-            return
-        ax.errorbar(xs, ys, yerr=[lo, hi], color=c, marker=mk, ms=4.2, lw=lw,
-                    capsize=1.8, elinewidth=0.8, label=label or STRAT[strat][0],
-                    mfc="white" if strat in ("mx", "wd") else c, mew=1.2)
+    def err(v):
+        return [[max(v["rho"] - v["ci_cluster"][0], 0)], [max(v["ci_cluster"][1] - v["rho"], 0)]]
 
-    def deco(ax, title):
-        ax.set_xscale("log", base=2)
+    def frame(ax, title):
         ax.axhline(0, color="#8c6d1f", lw=0.8, zorder=0)
-        ax.axhline(1, color="#009E73", lw=0.8, ls="--", zorder=0)
-        ax.set_ylim(-0.08, 1.12)
+        ax.axhline(full, color="#009E73", lw=0.9, ls="--", zorder=0)
+        ax.set_ylim(-0.05, 1.02)
         ax.set_title(title, loc="left")
         ax.spines[["top", "right"]].set_visible(False)
-        ax.grid(axis="y", color="#e6e6e6", lw=0.6, zorder=-1)
+        ax.grid(axis="y", color="#ececec", lw=0.6, zorder=-1)
 
-    a_, b_, c_ = axes
-    for s in ("ev", "rn", "td", "mx"):
-        series(a_, s, BUDGETS)
-    series(a_, "tq", ["1", "4", "16", "64", "256"], offset=1.0)
-    if "dshuf" in A:
-        v = A["dshuf"]
-        a_.plot([v["positions"] * 1.08], [v["rho"]], marker="*", ms=8, color="#D55E00",
-                ls="none", label="full span, random permutation")
-    deco(a_, "(a) how many positions, and whose states")
-    a_.set_xlabel("positions written at layer 8 (log scale)")
+    # (a) spread positions ---------------------------------------------------
+    lines = [("ev", "evenly spaced", "#0072B2", "o"), ("rn", "random", "#56B4E9", "s"),
+             ("td", "largest $\\|d_p\\|$", "#009E73", "D"),
+             ("mx", "same states, misplaced", "#D55E00", "v"),
+             ("tq", "after the span", "#555555", "x")]
+    for key, lab, col, mk in lines:
+        buds = (["1", "4", "16", "64", "256", "half"] + (["full"] if key == "mx" else [])
+                if key != "tq" else ["1", "4", "16", "64", "256"])
+        pts = [(A[f"{key}{b}"]["positions"], A[f"{key}{b}"]) for b in buds if f"{key}{b}" in A]
+        if key == "tq" and "tqall" in A:
+            pass
+        xs = [x for x, _ in pts]; ys = [v["rho"] for _, v in pts]
+        lo = [max(v["rho"] - v["ci_cluster"][0], 0) for _, v in pts]
+        hi = [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in pts]
+        a_.errorbar(xs, ys, yerr=[lo, hi], color=col, marker=mk, ms=4, lw=1.4, capsize=1.6,
+                    elinewidth=0.7, mfc="white" if key in ("mx", "tq") else col, mew=1.1, label=lab)
+    a_.errorbar([m_med], [full], yerr=err(A["evfull"]), color="#0072B2", marker="*", ms=9,
+                capsize=1.6, elinewidth=0.7)
+    a_.annotate("whole span, own states", (m_med, full), xytext=(-6, -14),
+                textcoords="offset points", ha="right", fontsize=6.4, color="#333333")
+
+    a_.set_xscale("log", base=2)
+    a_.set_xticks([1, 4, 16, 64, 256, 1024]); a_.set_xticklabels(["1", "4", "16", "64", "256", "1024"])
+    frame(a_, "(a) spread positions: more state does not help")
+    a_.set_xlabel("positions written (layer 8)")
     a_.set_ylabel(r"recovery $\rho$")
-    a_.legend(loc="upper left", frameon=False, handlelength=1.6, borderaxespad=0.2)
+    a_.legend(loc="upper left", frameon=False, handlelength=1.5, borderaxespad=0.1, ncol=1)
 
-    for s in ("wf", "we", "wd", "wr"):
-        series(b_, s, ["1", "4", "16", "64", "256"])
-    for q, name in (("q0", "Q1"), ("q1", "Q2"), ("q2", "Q3"), ("q3", "Q4")):
-        if q in A:
-            b_.plot([A[q]["positions"]], [A[q]["rho"]], marker="_", ms=9, mew=2, color="#333333")
-            b_.annotate(name, (A[q]["positions"], A[q]["rho"]), xytext=(4, -2),
-                        textcoords="offset points", fontsize=6, color="#333333")
-    deco(b_, "(b) same budget, different content")
-    b_.set_xlabel("contiguous window length")
-    b_.legend(loc="upper left", frameon=False, handlelength=1.6, borderaxespad=0.2)
+    # (b) fragmentation --------------------------------------------------------
+    for bud, lab, col, mk, ref in (("256", "256 positions", "#0072B2", "o", "rn256"),
+                                   ("half", "half the span", "#CC79A7", "s", "rnhalf")):
+        pts = [(n, A.get(f"c{n}x{bud}")) for n in (1, 2, 4, 8, 16, 32)]
+        pts = [(n, v) for n, v in pts if v]
+        b_.errorbar([n for n, _ in pts], [v["rho"] for _, v in pts],
+                    yerr=[[max(v["rho"] - v["ci_cluster"][0], 0) for _, v in pts],
+                          [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in pts]],
+                    color=col, marker=mk, ms=4, lw=1.5, capsize=1.6, elinewidth=0.7, label=lab)
+        if ref in A:
+            b_.axhline(A[ref]["rho"], color=col, lw=0.9, ls=":", zorder=0,
+                       label=f"{lab}, random single positions")
+    b_.set_xscale("log", base=2)
+    b_.set_xticks([1, 2, 4, 8, 16, 32]); b_.set_xticklabels(["1", "2", "4", "8", "16", "32"])
+    frame(b_, "(b) same budget, cut into more blocks")
+    b_.set_xlabel("number of contiguous blocks (budget and energy fixed)")
+    b_.legend(loc="upper right", frameon=False, handlelength=1.8)
 
-    for s in ("ev", "rn", "td", "mx", "wf", "we", "wd", "wr"):
-        xs = [A[f"{s}{b}"]["energy"] for b in BUDGETS
-              if f"{s}{b}" in A and A[f"{s}{b}"].get("energy") is not None]
-        ys = [A[f"{s}{b}"]["rho"] for b in BUDGETS
-              if f"{s}{b}" in A and A[f"{s}{b}"].get("energy") is not None]
-        if xs:
-            c_.plot(xs, ys, marker=STRAT[s][2], ls="none", ms=4.2, color=STRAT[s][1],
-                    mfc="white" if s in ("mx", "wd") else STRAT[s][1], mew=1.1)
-    c_.set_xscale("log")
-    c_.axhline(0, color="#8c6d1f", lw=0.8, zorder=0)
-    c_.axhline(1, color="#009E73", lw=0.8, ls="--", zorder=0)
-    c_.set_ylim(-0.08, 1.12)
-    c_.set_title("(c) recovery against content energy written", loc="left")
-    c_.set_xlabel(r"share of the span's $\sum_p\|d_p\|^2$ written")
-    c_.spines[["top", "right"]].set_visible(False)
-    c_.grid(axis="y", color="#e6e6e6", lw=0.6, zorder=-1)
-    for ax in axes:
-        ax.text(0.99, 0.02, f"n = {rep['n_items']}", transform=ax.transAxes,
-                ha="right", va="bottom", fontsize=6.4, color="#555555")
+    # (c) location of one contiguous block ------------------------------------
+    names = [("wf", "procedure"), ("wd", "description"), ("wr", "random"), ("we", "worked\nexample")]
+    import numpy as np
+    x = np.arange(len(names)); w = 0.36
+    for off, bud, col, lab in ((-w / 2, "256", "#0072B2", "256 positions"),
+                               (w / 2, "half", "#CC79A7", "half the span")):
+        vs = [A.get(f"{k}{bud}") for k, _ in names]
+        c_.bar(x + off, [v["rho"] for v in vs], width=w - 0.04, color=col, label=lab, zorder=2)
+        c_.errorbar(x + off, [v["rho"] for v in vs],
+                    yerr=[[max(v["rho"] - v["ci_cluster"][0], 0) for v in vs],
+                          [max(v["ci_cluster"][1] - v["rho"], 0) for v in vs]],
+                    fmt="none", ecolor="#333333", capsize=1.8, lw=0.8, zorder=3)
+        for xi, v in zip(x + off, vs):
+            c_.text(xi, v["ci_cluster"][1] + 0.02, f"{v['rho']:.2f}", ha="center", fontsize=6)
+    c_.set_xticks(x); c_.set_xticklabels([n for _, n in names])
+    frame(c_, "(c) where one contiguous block is centred")
+    c_.set_xlabel("section the block is centred on")
+    c_.set_ylabel(r"recovery $\rho$")
+    c_.legend(loc="upper right", frameon=False)
+
+    # (d) displacement --------------------------------------------------------
+    pts = [(0.5, A["evfull"])] + [(int(d), A[f"sh{d}"]) for d in ("1", "4", "16", "64", "256")
+                                  if f"sh{d}" in A] + [(m_med / 2, A["mxfull"])]
+    d_.errorbar([p for p, _ in pts], [v["rho"] for _, v in pts],
+                yerr=[[max(v["rho"] - v["ci_cluster"][0], 0) for _, v in pts],
+                      [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in pts]],
+                color="#D55E00", marker="o", ms=4, lw=1.5, capsize=1.6, elinewidth=0.7)
+    if "dshuf" in A:
+        d_.errorbar([m_med * 0.9], [A["dshuf"]["rho"]], yerr=err(A["dshuf"]), color="#555555",
+                    marker="x", ms=5, capsize=1.6, elinewidth=0.7)
+        d_.annotate("random\npermutation", (m_med * 0.9, A["dshuf"]["rho"]), xytext=(0, 16),
+                    textcoords="offset points", ha="center", fontsize=6.2, color="#555555")
+    d_.set_xscale("log", base=2)
+    d_.set_xticks([0.5, 1, 4, 16, 64, 256]); d_.set_xticklabels(["0", "1", "4", "16", "64", "256"])
+    frame(d_, "(d) the whole span, displaced by $D$ positions")
+    d_.set_xlabel("displacement $D$ (positions; last point: half the span)")
+    d_.text(0.99, 0.60, f"all panels: the same {rep['n_items']} rescued items\n"
+            f"({rep['n_calcs']} calculators), Qwen3-8B, layer 8\n"
+            "dashed: whole span written in place", transform=d_.transAxes,
+            ha="right", va="center", fontsize=6.2, color="#555555")
     for ext in ("pdf", "png"):
-        fig.savefig(ROOT / f"paper/fig-posbudget.{ext}", bbox_inches="tight",
-                    dpi=200 if ext == "png" else None)
+        # written next to the numbers, not into paper/: the manuscript is
+        # edited separately and pulls figures from here when it adopts them
+        fig.savefig(OUT / f"fig-posbudget.{ext}", bbox_inches="tight",
+                    dpi=220 if ext == "png" else None)
     plt.close(fig)
-    print("-> paper/fig-posbudget.pdf")
+    print(f"-> {OUT / 'fig-posbudget.pdf'}")
 
 
 if __name__ == "__main__":

@@ -216,6 +216,21 @@ def main(argv=None):
     p.add_argument("--max-new", type=int, default=400)
     p.add_argument("--sweep", choices=["span", "layers", "both"], default="span")
     p.add_argument("--layer-stride", type=int, default=4)
+    p.add_argument("--layers", default="",
+                   help="explicit comma-separated block-from layers, overriding "
+                        "--layer-stride (used to fill a stride-4 sweep to one-"
+                        "layer resolution without redoing the layers it has)")
+    p.add_argument("--calcs", default="",
+                   help="comma-separated group ids to keep (calculators, or "
+                        "skills on TheoremQA)")
+    p.add_argument("--ids-from", default="",
+                   help="a previous knockout jsonl: keep only its items with "
+                        "ok_with and not ok_without -- the items the reading "
+                        "curve is computed on -- so a fill-in run decodes "
+                        "nothing that cannot enter the curve")
+    p.add_argument("--no-baselines", action="store_true",
+                   help="skip ok_with / ok_without; they are merged by "
+                        "instance_id from the run named in --ids-from")
     p.add_argument("--attn", default=None,
                    help="default: sdpa for --sweep span, eager for layers")
     p.add_argument("--seed", type=int, default=0)
@@ -238,9 +253,23 @@ def main(argv=None):
     sc = KnockoutScorer(a.model, attn=attn)
     sc.cue = ""                                  # cot: the effect lives here
     n_layers = sc.model.config.num_hidden_layers
-    layers = list(range(0, n_layers, a.layer_stride))
+    layers = ([int(x) for x in a.layers.split(",") if x.strip()] if a.layers
+              else list(range(0, n_layers, a.layer_stride)))
     keep = [x.strip() for x in a.cells_keep.split(",")]
     todo = pick_instances(cells, instances, keep, a.per_calc, a.max_calcs, a.seed, min_group=a.min_group)
+    if a.calcs:
+        only = {c.strip() for c in a.calcs.split(",") if c.strip()}
+        todo = [t for t in todo if t[0] in only]
+    if a.ids_from:
+        keep_ids = set()
+        for line in open(a.ids_from, encoding="utf-8"):
+            if line.strip():
+                r = json.loads(line)
+                if r.get("ok_with") and not r.get("ok_without"):
+                    keep_ids.add(r["instance_id"])
+        todo = [t for t in todo if t[2] in keep_ids]
+    if a.no_baselines and not a.ids_from:
+        raise SystemExit("--no-baselines needs --ids-from to say which run has them")
     os.makedirs(os.path.dirname(os.path.abspath(a.out)) or ".", exist_ok=True)
     done = resume_done(a.out) if a.resume else set()
     if done:
@@ -269,10 +298,11 @@ def main(argv=None):
             rec = {"instance_id": iid, "cell": cell, "calculator_id": calc,
                    "dataset": a.dataset,
                    "skill_tokens": sk_hi - sk_lo, "task_tokens": tk_hi - tk_lo}
-            rec["ok_with"] = graded(sc.decode_masked(
-                sys1, user1, max_new=a.max_new), inst, "cot")
-            rec["ok_without"] = graded(sc.decode_masked(
-                sys0, user0, max_new=a.max_new), inst, "cot")
+            if not a.no_baselines:
+                rec["ok_with"] = graded(sc.decode_masked(
+                    sys1, user1, max_new=a.max_new), inst, "cot")
+                rec["ok_without"] = graded(sc.decode_masked(
+                    sys0, user0, max_new=a.max_new), inst, "cot")
             if a.sweep in ("span", "both"):
                 rec["ok_mask_skill"] = graded(sc.decode_masked(
                     sys1, user1, mask_spans=[(sk_lo, sk_hi)],

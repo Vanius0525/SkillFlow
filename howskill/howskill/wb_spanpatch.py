@@ -365,6 +365,8 @@ def main(argv=None):
                         "carries at all, and it is the arm to read first when "
                         "every single layer reads near zero.")
     p.add_argument("--max-new", type=int, default=900)
+    p.add_argument("--calcs", default="",
+                   help="comma-separated group ids to keep after selection")
     p.add_argument("--no-baselines", action="store_true",
                    help="skip the none / receiver / gold decodes. They do not "
                         "depend on the layer or the window, cost three long "
@@ -414,6 +416,10 @@ def main(argv=None):
     keep = [x.strip() for x in a.cells_keep.split(",")]
     todo = pick_instances(cells, instances, keep, a.per_calc, a.max_calcs, a.seed,
                           min_group=a.min_group)
+    if a.calcs:
+        # window and single-layer arms read only the item's own states
+        only = {c.strip() for c in a.calcs.split(",") if c.strip()}
+        todo = [t for t in todo if t[0] in only]
     os.makedirs(os.path.dirname(os.path.abspath(a.out)) or ".", exist_ok=True)
     done = resume_done(a.out) if a.resume else set()
     if done:
