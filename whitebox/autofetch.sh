@@ -60,5 +60,8 @@ while true; do
       fi
     done
   done
+  # the e14 runs write per-layer files under /root/out/tA/<tag>/, which the
+  # loop above does not see
+  "$ROOT/whitebox/fetch_ta.sh" 2>/dev/null
   sleep "$INTERVAL"
 done
