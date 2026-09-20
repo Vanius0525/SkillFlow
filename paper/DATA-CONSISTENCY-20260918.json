@@ -171,15 +171,15 @@
     "howskill/results/p8-wb/fetched/by-host/wb2/pb-sx.jsonl": "8fc7846b1470a48cd4dfed10613d03f44e8f7ca6d995b5e31eab945ed685f765"
   },
   "artifact_sha256": {
-    "skillvector.tex": "bc193875d36f47911c8cf9420bfdfed078c35e9f1c0a5d313c99ad11d8e2388a",
+    "skillvector.tex": "4aae913dc00740e441b0a6f079d37b5e89826b812ca590371624fe3169a49324",
     "tab-answer-format.tex": "b85378776a67ffb7b5f7189a59ed88518c147ec4dd60912982a04b9dbec2cde1",
     "tab-big40.tex": "b4dbb79797c1e0e1531ed649bd7b0e7ad4edd7faeb30f0c19ba91033244ab346",
     "tab-skill-content.tex": "babcffd1366b64cbe7abcbfd806a6cb76adc034d2d0a0c9852c06d31e6adba09",
     "tab-replication.tex": "c0e7c41dd8be793eeebd0e9297e9ed940cd9c043955f1d799c0a7bfc6c469113",
-    "fig-channels-medcalc.pdf": "04f550359d1c1e7911eeec4421e210bc3072d6ad5dc60341edfd762e33b84ff6",
-    "fig-rank-medcalc.pdf": "368acd66125cb2708ea8b156ce42ca8f2716f503a53ee8143bc785ed0a1dc080",
-    "fig-transfer-reading.pdf": "03fee1fc52f6d2c046a21bb2c8e2cf3a36e0eac6ef307748a452bc4b0fa71645",
-    "fig-posbudget.pdf": "f119c3135e41e31a909b2a0072acbd8d39d76af3224fc3b3efb5c0456095ae3c"
+    "fig-channels-medcalc.pdf": "ae7e493533d7a8caab6acc24bb58564c4cf2afd774f95051e4a0fa7aa1e69dc8",
+    "fig-rank-medcalc.pdf": "c452980e021365527d98b8bf84c8ae6dad90a3b323541ad123f4d65b9f5809e1",
+    "fig-transfer-reading.pdf": "7430af02a6f1e4ce3a42f9a71bcea828ca473ab6b200e045c6562a9c2e47f855",
+    "fig-posbudget.pdf": "df364944464642afcbdbff2c89d7182e28129f6cb810614d5f9eba030d9fe1d8"
   },
   "selection_policy": "latest complete local measurement family; no partial curves or incompatible baseline merges",
   "scope": "main displays and updated prose; historical diagnostics additionally checked by whitebox/analysis/audit.py"

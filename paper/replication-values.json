@@ -334,7 +334,9 @@
         "dep1-tqa06"
       ],
       "rank": [
-        "tqa06-rank"
+        "tqa06-rank",
+        "tqa06-rank-d1",
+        "tqa06-rank-d2"
       ],
       "knockout": [
         "t06-ko",
