@@ -1224,15 +1224,15 @@ the paper where the synthetic material carries an argument of its own.
 
 Three results, and the third is the one the rest of the paper uses.
 \textbf{The presence component repairs nothing but is not inert}: injected
-alone it takes the rescued cell to $0.062$, and putting the wrong document in
-the prompt also gives $0.062$---it faithfully reproduces the behaviour of having
+alone it takes the rescued cell to $0.098$, and putting the wrong document in
+the prompt also gives $0.098$---it faithfully reproduces the behaviour of having
 \emph{a} document, which is worse than having none. \textbf{The content
-component repairs most of the cell}, $0.812$ against an upper reference of
+component repairs most of the cell}, $0.805$ against an upper reference of
 $1.000$, having been dismissed by every geometric measurement as a small
 residual. \textbf{The patch reproduces the document's whole behavioural
 signature}: across the four cells, replacing the position with
 $h_{\text{skill}}$ gives $1.000 / 0.000 / 1.000 / 0.000$ and adding $\dvec_i$
-gives $0.812 / 0.112 / 1.000 / 0.125$---the same signature, attenuated. A patch
+gives $0.805 / 0.075 / 1.000 / 0.186$---the same signature, attenuated. A patch
 that only ever helped would be consistent with a generic ``try harder'' effect;
 one that also breaks exactly the items the document breaks is carrying the
 document's decision.
@@ -1240,7 +1240,7 @@ document's decision.
 \paragraph{Which control you subtract chooses what you measure.} $\dvec$ is
 defined against a control document, and the choice is a measurement decision
 rather than a detail. Against an \emph{unrelated} document of the same length it
-is topic, procedure and numbers together and repairs $0.812$ of the rescued
+is topic, procedure and numbers together and repairs $0.805$ of the rescued
 cell; against the \emph{same} document with every number replaced it is the
 numbers alone and repairs $0.229$--$0.312$ (layers 21--27); against the same
 document with its sentences shuffled, $0.188$--$0.292$. The three differ by a
@@ -1662,14 +1662,14 @@ On the clinical material each skill has 20 instances, so ``same skill, different
 task'' is directly measurable. Content vectors from different patient notes under
 the same calculator have cosine $0.789$ at layer 20 and $0.876$ at layer 30;
 vectors from different calculators, $0.320$ and $0.653$ ($n=40$, Qwen3-8B). On
-the synthetic tier the analogous split is by conversion family, $0.859$ within
-against $0.699$ across at the last layer. The direction of $\dvec$ carries the
+the synthetic tier the analogous split is by conversion family, $0.869$ within
+against $0.705$ across at the last layer. The direction of $\dvec$ carries the
 identity of the document, increasingly so with depth. Its effect at the final
 position does not: injecting the mean direction $\bar{\dvec}$, or another item's
 $\dvec_j$, repairs $0.000$ at every one of 16 layers in the free-form format
-against $0.268$ for the item's own, and in multiple choice reaches $0.062$,
-$0.292$ and $0.167$ for the mean, a same-family and a different-family donor
-against $0.792$ for $\dvec_i$ (Table~\ref{tab:causal}). The one band where a
+against $0.268$ for the item's own, and in multiple choice reaches $0.098$,
+$0.293$ and $0.049$ for the mean, a same-family and a different-family donor
+against $0.780$ for $\dvec_i$ (Table~\ref{tab:causal}). The one band where a
 donor looks transferable is the band \S\ref{sec:traps} identifies independently
 as one where the forward pass is damaged and every condition rises together.
 
@@ -2001,7 +2001,7 @@ control, two skills' content vectors have cosine $0.48$--$0.56$ at every depth,
 the cosine to the all-skill mean is $0.72$--$0.76$, and $54$--$60\%$ of each
 $\dvec$'s energy lies along that mean (Table~\ref{tab:geometry}). \emph{More than
 half of the content vector points in a direction that carries nothing.} This is
-the span-level counterpart of $\gvec$'s flat $0.062$ at
+the span-level counterpart of $\gvec$'s flat $0.098$ at
 the final position in \S\ref{sec:decomp}: presence is not what acts, in either
 place.
 
@@ -2204,12 +2204,12 @@ encoded by a single vector; they confirm it on Llama-7B/13B and repair it by
 injecting several vectors at several demonstration positions. That result
 \emph{explains one of ours}: on the synthetic tier, $\bar{\dvec}$---one vector
 shared by the whole item set, which is what a reusable skill vector would
-be---recovers $0.062$, and the mapping it would have to encode is a 39-row
+be---recovers $0.098$, and the mapping it would have to encode is a 39-row
 lookup table. We do not claim that null as new; we attribute it.
 
 The limit this paper is about is different, and the two can be separated
 empirically. On the same synthetic tier, the \emph{item's own} $\dvec_i$
-recovers $0.812$ through the same single position despite that same high-rank
+recovers $0.805$ through the same single position despite that same high-rank
 mapping, because the answer is one token; and on clinical skills the same
 injection recovers nothing because the answer is hundreds of tokens. Rank
 constrains which mappings one vector can express; length constrains how much of
@@ -2241,7 +2241,7 @@ reasons, and both are load-bearing here. First, every task on which it succeeds
 has a short answer: capitals, ISO codes, continents, years, word translation,
 antonyms, currency codes---all single-word exact match---and ARC-Easy, which is
 a single letter. That is exactly the half of the answer-length axis where our
-own single-position patch also works ($0.812$ on the synthetic tier,
+own single-position patch also works ($0.805$ on the synthetic tier,
 \S\ref{sec:onepos}); the half where it fails is the one their evaluation does
 not enter. Second, their optimal configuration extracts at a middle layer and
 injects at an \emph{early} one---their stated reason is that an early injection
@@ -2388,15 +2388,15 @@ Figure~\ref{fig:causal} is the causal counterpart of that geometry (numbers in
 Table~\ref{tab:causal}, Appendix~\ref{app:tables}). Four of its curves are worth
 reading separately.
 
-\textbf{The presence component repairs nothing}---$0.062$, three items of 48, at
+\textbf{The presence component repairs nothing}---$0.098$, eight items of 82, at
 every layer past 20, and $0.00$--$0.02$ before. It is not inert noise: injected
 on its own it takes whole-set accuracy from the no-document baseline of $0.180$
-to $0.145$, which is the accuracy of actually putting the wrong document in the
-prompt. On the rescued cell it gives $0.062$, and the wrong document in context
-also gives $0.062$. It faithfully reproduces the behaviour of having a document
+to $0.151$, which is the accuracy of actually putting the wrong document in the
+prompt. On the rescued cell it gives $0.098$, and the wrong document in context
+also gives $0.098$. It faithfully reproduces the behaviour of having a document
 present, and that behaviour is worse than having none.
 
-\textbf{The content component repairs most of the cell}---$0.812$ at layer 26
+\textbf{The content component repairs most of the cell}---$0.805$ at layer 26
 against an upper reference of $1.000$, having been dismissed by every geometric
 measurement in \S\ref{app:geometry} as a small residual.
 
@@ -2416,8 +2416,8 @@ Injecting $h_{\text{skill}}$ into the prompt that already holds the \emph{wrong}
 document gives $0.979$--$1.000$, the same as into a prompt with no document---%
 whatever the surrounding 700 tokens contribute, the final position does not need
 it. But $\bar{\dvec}$, one vector for the whole item set, which is what ``a
-reusable skill vector'' would mean, recovers $0.042$--$0.146$ from layer 21
-against $0.479$--$0.812$ for the item's own. Splitting $\dvec_i$ along
+reusable skill vector'' would mean, recovers $0.049$--$0.122$ from layer 21
+against $0.500$--$0.805$ for the item's own. Splitting $\dvec_i$ along
 $u=\bar{\dvec}/\|\bar{\dvec}\|$ and orthogonal to it and injecting each half
 separates them and reverses the answer at layer 21: past it the parallel half
 carries $\approx 0.9$ of the norm and $0.05$ of the effect while the orthogonal
@@ -2432,19 +2432,19 @@ rescued / persistent / kept / broken at layer 26 on the 1.7B, and
 $1.000 / 0.024 / 1.000 / 0.000$ at layer 30 on the 8B---cell by cell, what the
 document itself does by the definition of the cells. It reproduces the skill's
 failures and its damage as faithfully as its repairs. Adding $\dvec_i$ gives
-$0.812 / 0.112 / 1.000 / 0.125$ and $0.864 / 0.024 / 1.000 / 0.077$: the same
+$0.805 / 0.075 / 1.000 / 0.186$ and $0.864 / 0.024 / 1.000 / 0.077$: the same
 signature, attenuated. A patch that only ever helped would be consistent with a
 generic ``try harder'' effect; one that also breaks exactly the items the
 document breaks is carrying the document's decision. The presence component
 passes the matching test against \emph{its} document: $h_{\text{no}}+\gvec$
-scores $0.062$ on the rescued cell where the wrong document in context scores
-$0.062$ (1.7B), and $0.250$ where it scores $0.250$ (8B), across four different
+scores $0.098$ on the rescued cell where the wrong document in context scores
+$0.098$ (1.7B), and $0.250$ where it scores $0.250$ (8B), across four different
 control documents (Appendix~\ref{app:controls}).
 
 \paragraph{Which control you subtract chooses what you measure.} $\dvec$ is
 defined against a control document, and the choice is a measurement decision
 rather than a detail. Against an \emph{unrelated} document of the same length,
-$\dvec$ is topic, procedure and numbers together and repairs $0.812$ of the
+$\dvec$ is topic, procedure and numbers together and repairs $0.805$ of the
 rescued cell; against the \emph{same} document with every number replaced it is
 the numbers alone and repairs $0.229$--$0.312$ (layers 21--27); against the same
 document with its sentences shuffled, $0.188$--$0.292$. The three differ by a
@@ -2462,7 +2462,8 @@ and the accompanying behavioural ablations.
 rescues. Shaded bands are bootstrap 95\% CIs for the two conditions the argument
 rests on. $h_{\text{no}}+\tvec$ is omitted because it equals $h_{\text{skill}}$
 identically and its curve lies under the black one---we run it, and it agrees
-item by item. Synthetic control, multiple choice, Qwen3-1.7B, fp32, $n_R=48$.}
+item by item. Synthetic control, multiple choice, Qwen3-1.7B, fp32, $n=358$,
+rescued cell $n_R=82$.}
 \label{fig:causal}
 \end{figure}
 
@@ -2534,7 +2535,7 @@ Qwen3-8B   & free-form       & \textbf{0.000} & \textbf{0.000} & \textbf{0.467} 
 \centering
 \includegraphics[width=\textwidth]{fig-decomp-tierA.pdf}
 \caption{The decomposition across depth, synthetic control, Qwen3-1.7B, fp32,
-$n=200$. Left: the three norms. Middle: each component as a share of the total
+$n=358$. Left: the three norms. Middle: each component as a share of the total
 displacement; above $1$ the wrong document moves the state further than the skill
 does, which is the case until layer 17. Right: how aligned two items' content
 vectors are, split by whether they use the same row of the conversion table.}
@@ -2723,47 +2724,38 @@ row is the reason we take the free-form format as the primary evidence: on the
 \toprule
  & Qwen3-1.7B & Qwen3-8B \\
 \midrule
-multiple choice: none / wrong doc / skill & 0.180 / 0.145 / 0.300 & 0.292 / 0.242 / 0.550 \\
+multiple choice: none / wrong doc / skill & 0.179 / 0.151 / 0.288 & 0.292 / 0.242 / 0.550 \\
 free-form: none / wrong doc / skill       & 0.000 / --- / 0.000   & 0.000 / 0.000 / 0.467 \\
 \midrule
 MC, rescued cell: replace outright        & 1.000 & 1.000 \\
-MC, rescued cell: $+\dvec$                & 0.812 & 0.864 \\
-MC, rescued cell: $+\gvec$                & 0.062 & 0.250 (= chance) \\
+MC, rescued cell: $+\dvec$                & 0.805 & 0.864 \\
+MC, rescued cell: $+\gvec$                & 0.098 & 0.250 (= chance) \\
 free-form, rescued cell: replace outright & ---   & 0.304 \\
 free-form, rescued cell: $+\dvec$         & ---   & 0.268 \\
 free-form, rescued cell: $+\gvec$         & ---   & 0.018 \\
 \midrule
 layers where $\|\gvec\| > \|\tvec\|$      & 0--16 & 0--12 \\
-$\mathrm{PR}(\dvec)$ centred, deepest layer & 5.6 & 18.1 \\
-$\cos(\dvec_i,\dvec_j)$ same / other family, deepest & 0.859 / 0.699 & 0.584 / 0.530 \\
+$\mathrm{PR}(\dvec)$ centred, deepest layer & 5.4 & 18.1 \\
+$\cos(\dvec_i,\dvec_j)$ same / other family, deepest & 0.869 / 0.705 & 0.584 / 0.530 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[h]
 \caption{The content component split along its own shared direction and
-orthogonal to it, rescued cell, $n_R=48$. The crossover at layer 21 is the same
+orthogonal to it, rescued cell, $n_R=82$. The crossover at layer 21 is the same
 layer at which cumulative attention knockout on the document becomes free
 (\S\ref{sec:where}) and at which another item's content vector stops working
 (\S\ref{sec:whose}).}
 \label{tab:parperp}
 \centering
 \small
-\begin{tabular}{lcccccc}
-\toprule
-injected & L16 & L18 & L20 & L21 & L24 & L26 \\
-\midrule
-$h_{\text{no}} + \dvec_i$ (whole)          & 0.146 & 0.396 & 0.438 & 0.479 & 0.708 & \textbf{0.812} \\
-$h_{\text{no}} + (\dvec_i\!\cdot\!u)u$ (shared dir.) & 0.146 & 0.354 & 0.292 & 0.125 & 0.042 & 0.062 \\
-$h_{\text{no}} + \dvec_i^{\perp}$ (item-specific)    & 0.000 & 0.083 & 0.146 & \textbf{0.521} & \textbf{0.583} & \textbf{0.604} \\
-$h_{\text{no}} + \bar{\dvec}$ (shared dir., fixed norm) & 0.146 & 0.333 & 0.312 & 0.146 & 0.042 & 0.062 \\
-\bottomrule
-\end{tabular}
+\input{tab-parperp}
 \end{table}
 
 \begin{table}[h]
 \caption{The decomposition of Eq.~\ref{eq:decomp}, synthetic control,
-Qwen3-1.7B, fp32, $n=200$, at the last prompt position. $\mathrm{PR}$ is the
+Qwen3-1.7B, fp32, $n=358$, at the last prompt position. $\mathrm{PR}$ is the
 participation ratio of $\{\dvec_i\}$ after removing their shared mean direction:
 the effective number of dimensions the item-to-item variation occupies, out of
 2048. The last column is the fraction of a single item's $\dvec_i$ that lies
@@ -2771,25 +2763,12 @@ along that shared direction.}
 \label{tab:geometry-tierA}
 \centering
 \small
-\begin{tabular}{rrrrrrrrr}
-\toprule
-layer & $\|\dvec\|$ & $\|\gvec\|$ & $\|\dvec\|/\|\tvec\|$ & $\cos(\dvec,\gvec)$
-& \multicolumn{2}{c}{$\cos(\dvec_i,\dvec_j)$} & $\mathrm{PR}(\dvec)$ & on mean \\
-\cmidrule(lr){6-7}
-& & & & & same fam. & cross fam. & & \\
-\midrule
- 0 &   1.00 &   2.67 & 0.43 & $-0.50$ & 0.995 & 0.995 & 2.6 & 0.997 \\
-10 &  16.31 &  39.02 & 0.45 & $-0.39$ & 0.988 & 0.986 & 4.0 & 0.994 \\
-14 &  33.49 &  68.67 & 0.52 & $-0.38$ & 0.978 & 0.970 & 8.3 & 0.987 \\
-21 & 462.22 & 355.62 & 1.05 & $-0.44$ & 0.915 & 0.789 & 5.6 & 0.916 \\
-27 & 926.57 & 712.91 & 1.00 & $-0.38$ & 0.859 & 0.699 & 5.6 & 0.874 \\
-\bottomrule
-\end{tabular}
+\input{tab-geometry-tierA}
 \end{table}
 \begin{table}[h]
 \caption{Fraction of the rescued cell answered correctly under each injected
-component. Synthetic control, multiple choice, Qwen3-1.7B, fp32, $n=200$,
-rescued cell $n_R=48$. Bootstrap 95\% CIs over items are $\pm0.12$ to $\pm0.15$
+component. Synthetic control, multiple choice, Qwen3-1.7B, fp32, $n=358$,
+rescued cell $n_R=82$. Bootstrap 95\% CIs over items are $\pm0.09$ to $\pm0.11$
 at these magnitudes and are given in the appendix. $\bar{\dvec}$ is the mean
 content direction over items, restored to the typical per-item norm; $\dvec_j$
 is another item's content vector, drawn from the same or a different conversion
@@ -2797,32 +2776,7 @@ family. The row that licenses the name ``content component'' is $\gvec$.}
 \label{tab:causal}
 \centering
 \small
-\begin{tabular}{lccccc}
-\toprule
-injected at the last prompt position & L17--20 & L21 & L24 & L26 & L27\\
-\midrule
-$h_{\text{skill}}$ (replace outright; upper ref.)
-  & 0.27--0.44 & 0.979 & 0.979 & 1.000 & 1.000 \\
-$h_{\text{skill}}$ into the wrong-document prompt
-  & 0.29--0.75 & 0.979 & 0.979 & 1.000 & 1.000 \\
-\midrule
-$h_{\text{no}} + 0.5\,\dvec_i$
-  & 0.21--0.31 & 0.250 & 0.292 & 0.312 & 0.292 \\
-$h_{\text{no}} + \dvec_i$ \quad (content)
-  & 0.29--0.44 & 0.479 & 0.708 & \textbf{0.812} & 0.792 \\
-$h_{\text{no}} + 2\,\dvec_i$
-  & 0.29--0.63 & 0.875 & \textbf{0.979} & 0.979 & 0.958 \\
-\midrule
-$h_{\text{no}} + \gvec_i$ \quad (presence)
-  & 0.00--0.02 & \textbf{0.062} & \textbf{0.062} & \textbf{0.062} & \textbf{0.062} \\
-$h_{\text{no}} + \bar{\dvec}$ \ (one shared direction)
-  & 0.27--0.35 & 0.146 & 0.042 & 0.062 & 0.062 \\
-$h_{\text{no}} + \dvec_j$ \ (same family)
-  & 0.29--0.33 & 0.271 & 0.250 & 0.333 & 0.292 \\
-$h_{\text{no}} + \dvec_j$ \ (other family)
-  & 0.21--0.25 & 0.250 & 0.146 & 0.167 & 0.167 \\
-\bottomrule
-\end{tabular}
+\input{tab-causal}
 \end{table}
 
 \section{Experimental detail}
