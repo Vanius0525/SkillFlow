@@ -930,7 +930,12 @@ Every point behind Table~\ref{tab:replication}. All runs are after the
 instrument fix. MedCalc rows use forty calculators and each model's own
 behavioural screen; TheoremQA rows use SRA-Bench's $747$ questions with its
 prompt and scorer verbatim, and since most of its $320$ skills serve a single
-question the receiver screen is per skill group, and reduces to an item-level screen for singleton skills. Knockout rows are fractions of each
+question the receiver screen is per skill group, and reduces to an item-level screen for singleton skills.
+Those $747$ questions are the pool each TheoremQA run samples from, not the set
+it evaluates: a run takes at most four questions per skill and at most two
+hundred skills, which here is $142$--$168$ items over $113$--$122$ skills before
+the screen. The MedCalc rows are not sampled this way, and the two should not be
+read as equally exhaustive. Knockout rows are fractions of each
 model's rescued items kept when attention to the document is blocked from layer
 $L$ to the end, unrestricted.
 
