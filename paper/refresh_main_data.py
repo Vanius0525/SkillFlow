@@ -8,7 +8,8 @@ import sys
 HERE = Path(__file__).resolve().parent
 env = dict(os.environ, MPLCONFIGDIR='/tmp/skillvector-mpl')
 scripts = ['main_evidence.py', 'replication.py', 'replication_full.py',
-           'fig_channels_full.py', 'fig_rank_full.py', 'check_main_data.py',
+           'fig_channels_full.py', 'fig_rank_full.py', 'fig_posbudget.py',
+           'check_main_data.py',
            '../whitebox/analysis/audit.py']
 logs = []
 for script in scripts:

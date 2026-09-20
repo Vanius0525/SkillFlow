@@ -410,7 +410,54 @@ $0.05$ on the retained groups ($n=135$); noise recovers $0.10$ versus $0.02$.
 This pattern is consistent with perturbations enabling knowledge already
 available to the model, although it does not establish that mechanism.
 A separate caveat is intervention size: skill spans in the screened subset
-contain $365$--$1{,}630$ positions, far more than a single-position probe.
+contain $365$--$1{,}630$ positions, far more than a single-position probe;
+\S\ref{sec:posbudget} separates the number of written positions from their
+arrangement.
+
+\subsection{Which positions carry the effect}
+\label{sec:posbudget}
+
+Span injection writes $365$--$1{,}630$ positions; the final-position probe
+writes one. To separate the arrangement of the span from the amount of state
+it injects, we fix the number of written positions $B$ and vary only which
+positions receive their own donor states, on the same $135$ items, layer and
+receiver as Table~\ref{tab:big40} (Figure~\ref{fig:posbudget}).
+\emph{Quantity does not explain recovery.} Evenly spaced or random subsets
+recover at most $0.15$, even at half the span and half its content energy;
+choosing the positions with the largest content change recovers at most
+$0.12$; and writing states after the span stays at or below $0.07$, whether
+the last $1$ to $234$ prompt positions at layer $8$ or the last $1$, the last
+$16$ or all of them at each of seven layers from $4$ to $30$.
+\emph{Contiguity does.} The same $256$ positions written as one block recover
+$0.37$, and cutting that block into $2$, $4$, $8$, $16$ and $32$ evenly spaced
+pieces lowers recovery to $0.24$, $0.22$, $0.13$, $0.08$ and $0.08$ at constant
+budget and energy (one versus $32$ pieces: $+0.29$ [$0.09,0.48$], McNemar
+$p<10^{-6}$). \emph{Location matters within the span.} A half-span block
+centred on the procedure section recovers $0.82$ [$0.67,0.93$], close to the
+full span; centred on the worked example it recovers $0.18$. \emph{Placement
+must be exact.} Shifting every state by one position recovers $0.15$--$0.22$
+with or without wrap-around, whereas leaving out the first or last $16$
+positions and writing the rest in place keeps $0.89$--$0.92$. The skill's
+effect is therefore carried by contiguous, correctly placed states of its
+procedure-bearing tokens, not by the number of positions written or the
+energy injected.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-posbudget.pdf}
+\caption{Position budget on MedCalc with Qwen3-8B, layer $8$: the same $135$
+screened items ($14$ calculators) and wrong-skill receiver in every panel;
+the dashed line is the whole span written in place ($\rho=0.89$). (a) $B$
+positions, each written with its own donor state (evenly spaced, random, or
+largest $\|d_p\|$), the same states written half a span away, or the last
+$B$ prompt positions after the span. (b) A fixed budget written as $N$
+contiguous blocks; dotted lines are random single positions at the same
+budget. (c) One contiguous block centred on a section of the skill. (d) The
+whole span displaced by $D$ positions, cyclically or without wrap-around;
+triangles write it in place without its first or last $1$ or $16$
+positions. Error bars are calculator-bootstrap $95\%$ intervals.}
+\label{fig:posbudget}
+\end{figure}
 
 \subsection{Skill identity and content within the span}
 \label{sec:whose}
@@ -498,38 +545,41 @@ experiments are plotted.}
 
 \paragraph{Span replacement and attention knockout separate in depth.}
 Figure~\ref{fig:transferreading} compares transfer through span replacement
-with continued use through attention on Qwen3-8B. On the screened subset
-($135$ items, $14$ calculators), replacement recovers $0.98$ at layers $0$
-and $4$, $0.89$ at $8$, and $0.74$ at $12$ of $36$. Recovery drops to
-$0.16$ at both $13$ and $14$, and remains at or below $0.07$ from $15$ to
-$20$. Testing consecutive layers localises the largest drop to $12$--$13$.
-We define the crossing below $\rho=0.5$ as the \emph{transfer boundary}
-(labelled ``handover'' in the figures and tables). The log-probability of the
-donor's generated reasoning also drops between these layers, suggesting that
-binary answer grading sharpens, but does not fully explain, the transition
-(Appendix~\ref{app:fullscale}). To test continued reading, \emph{cumulative
-attention knockout} blocks attention to skill tokens at every layer from $L$
-onward. Among $466$ rescued items, only $0.10$--$0.18$ remain correct for
-$L\le20$, except at $L=4$ ($0.23$). This rises to $0.46$ at $24$, $0.79$ at
-$28$ and $0.91$ at $32$. Thus the first tested depth retaining at least half
-the correct answers is $28/36\approx0.78$, well beyond the transfer boundary.
-Although the interventions use different subsets and outcome measures, they
-show that continued dependence on skill attention can outlast successful
+with continued use through attention on Qwen3-8B. Every layer is measured,
+and both interventions are read on the same screened items. Replacement
+recovers $0.92$--$0.98$ through layer $7$, $0.89$ at $8$ and $0.74$ at $12$
+of $36$, then $0.16$ at $13$ and at most $0.07$ from $14$ onward ($n=135$,
+$14$ calculators); the drop between layers $12$ and $13$ accounts for most of
+the decline. We define the crossing below $\rho=0.5$ as the \emph{transfer
+boundary} (labelled ``handover'' in the figures and tables). The
+log-probability of the donor's generated reasoning also drops between these
+layers, suggesting that binary answer grading sharpens, but does not fully
+explain, the transition (Appendix~\ref{app:fullscale}). To test continued
+reading, \emph{cumulative attention knockout} blocks attention to skill
+tokens at every layer from $L$ onward. On the $134$ rescued items of the same
+subset, $0.03$--$0.12$ stay correct for $L\le23$; this rises to $0.25$ at
+$24$, first passes half at $25$ ($0.58$) and reaches $0.94$ at $35$. The
+transfer boundary therefore lies at $13/36=0.36$ of depth and the reading
+boundary at $25/36=0.69$, measured on the same items under the same screen.
+Writing the last prompt position instead recovers at most $0.06$ at any
+layer. Continued dependence on skill attention thus outlasts successful
 transfer from the skill's states.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
 \caption{Transfer declines earlier than dependence on skill attention,
-Qwen3-8B on MedCalc. All panels use the larger rerun. (a) Single-layer span
-replacement on the screened subset ($n=135$). The shaded band marks the
-largest drop, between layers $12$ and $13$. (b) Fraction of rescued items
-remaining correct when attention to the skill is blocked from layer $L$
-onward ($n=466$). The dotted lines mark $0.5$ in each panel's own metric.
-(c) Repeated injection at layers $16$--$35$ gives no gain over layer $16$
-alone, whereas layers $12$--$15$ recover $0.74$ and every layer at once
-$0.98$; same receiver and items as (a). Span interventions use the corrected
-implementation; attention knockout does not use state capture.}
+Qwen3-8B on MedCalc, with every layer measured. (a) Three interventions on
+one axis and the same screened items ($n=135$; the knockout on their $134$
+rescued items): span states written at layer $L$; attention to the skill
+blocked from $L$ onward; and the last prompt position written at $L$. The
+shaded band spans the layers where the skill is still read but no longer
+transferable. (b) Each window is drawn across the layers it writes: four-layer
+windows tile the stack, and the long windows $14$--$19$, $16$--$35$ and
+$0$--$35$ are shown with them; the faint curve repeats (a). Writing every
+layer at once recovers $0.98$, while any window starting at $16$ or later
+stays at or below $0.06$. Span interventions use the corrected implementation;
+attention knockout does not use state capture.}
 \label{fig:transferreading}
 \end{figure}
 
@@ -540,8 +590,10 @@ intervals resample skill groups. Max control includes half-dose, other-skill,
 permutation and noise comparisons, including same-family means available on
 $41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n$ describes the battery.
 Handover brackets the transfer boundary as a fraction of model depth; reading
-is the first tested attention-knockout depth retaining at least half of rescued
-items. $k^{*}$ is the rank knee on the fixed grid.}
+is the first layer, at one-layer resolution, from which blocking attention to
+the skill still leaves at least half of the rescued items correct, measured on
+the same screened items as the transfer boundary. $k^{*}$ is the rank knee on
+the fixed grid.}
 \label{tab:replication}
 \centering
 \footnotesize
@@ -596,8 +648,8 @@ mean on $31$ Mistral/MedCalc items, where full-span recovery on the same items
 is $0.71$. In every model--task combination, the transfer boundary occurs
 before the reading boundary. The measured transfer boundaries lie at
 $0.33$--$0.43$ of model depth within Qwen and at $0.19$--$0.22$ in Mistral.
-Reading boundaries also vary by task: $0.56$--$0.71$ on TheoremQA and
-$0.78$--$0.88$ on MedCalc across the three models.
+Reading boundaries also vary by task: $0.58$--$0.71$ on TheoremQA and
+$0.69$--$0.84$ on MedCalc across the three models.
 
 The pre-registered width-proportional prediction places Qwen3-0.6B's rank
 knee near $12$. Its observed recovery at $k=16,32,64,128$ is
@@ -616,10 +668,12 @@ hidden width alone, while a difference between families is not established.
 
 \paragraph{Readout checks.}
 \label{sec:traps}
-Alternative readouts can rank interventions differently. Averaged gold-answer
-log-probability favours a mean shared across skills by $3.75$ nats despite
-lower accuracy ($0.256$ versus $0.436$). Forcing an \texttt{ANSWER:} cue removes
-the accuracy gain but leaves a $+0.60$ nat difference. Synthetic multiple
+Alternative readouts can rank interventions differently. On the synthetic task,
+averaged gold-answer log-probability favours a mean shared across skills by
+$5.05$ nats despite lower accuracy ($0.251$ versus $0.288$, $358$ items).
+Forcing an \texttt{ANSWER:} cue on MedCalc cuts the skill's accuracy gain from
+$39.7$ to $4.7$ points ($0.178$ versus $0.131$ on $720$ items) while leaving a
+$+1.08$ nat log-probability difference. Synthetic multiple
 choice retains nearly three quarters of the skill's effect after its numbers
 are corrupted, illustrating possible answer-format shortcuts
 \citep{balepur2024artifacts} (Appendix~\ref{app:traps}). Other domains provide
@@ -969,10 +1023,11 @@ skill rescues from the ones it does not: the norms and angles agree to three
 digits, and the one similarity measure that separates them under the gold skill
 separates them equally under a wrong one. And the document acts through a chain
 of thought, so every causal measurement decodes several hundred tokens; scoring
-under a forced \texttt{ANSWER:} cue instead removes the behavioural effect
-entirely ($0.175$ for all three arms) while leaving a $+0.60$ nat
-log-probability difference---so the span channel has no usable log-probability
-reading, and is reported on accuracy alone.
+under a forced \texttt{ANSWER:} cue instead leaves almost no behavioural effect
+($0.178$ with the skill, $0.131$ without and $0.100$ with a wrong one, on $720$
+items) while retaining a $+1.08$ nat log-probability difference---so the span
+channel has no usable log-probability reading, and is reported on accuracy
+alone.
 
 \paragraph{An instrument fault, and which results predate its fix.} The state
 capture called the model without an explicit attention mask while decoding

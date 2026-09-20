@@ -140,14 +140,23 @@ for cell in replication:
                 close(name+': rank value '+key,rho(rr,key),v[0])
 
 depth=data('main-evidence-values.json')
-dr=screen(load(replication[0]['sources']['depth']))
+import replication as rep0
+check('Figure 3 is the every-layer version',depth.get('version')==2)
+dr=screen(load(depth['sources']['depth']))
+check('Figure 3 span: every layer 0-35',[l for l,_ in depth['sufficiency']]==list(range(36)))
 for layer,value in depth['sufficiency']:
     close(f'Figure 3 span layer {layer}',rho(dr,f'ok_real_L{layer}'),value)
-ko=[r for r in load(['full-ko']) if r['ok_with'] and not r['ok_without']]
-check('Figure 3 knockout n',len(ko)==466)
+kc,kn=rep0.ko_curve(depth['sources']['knockout'],groups=set(rep0.restricted(rep0.load(depth['sources']['depth']))))
+check('Figure 3 knockout: every layer, paired items',
+      sorted(kc)==list(range(36)) and kn==depth['ko_n']==134)
 for layer,value in depth['necessity']:
-    close(f'Figure 3 knockout layer {layer}',sum(r['ok_block_from'][r['layers'].index(layer)] for r in ko)/len(ko),value)
-wr=screen(load(depth['window_sources']))
+    close(f'Figure 3 knockout layer {layer}',kc[layer],value)
+check('Figure 3 boundaries',(depth['transfer_boundary'],depth['reading_boundary'])==(13,25))
+lastr=screen(load(depth['sources']['last']))
+for layer,value in depth['last_position']:
+    close(f'Figure 3 last position layer {layer}',rho(lastr,f'ok_tq1_L{layer}'),value)
+check('Figure 3 last position never recovers',max(v for _,v in depth['last_position'])<0.07)
+wr=screen(load(depth['sources']['windows']))
 check('Figure 3 windows on the battery receiver and items',len(wr)==depth['window_n']==135)
 for window,value in depth['windows'].items():
     close(f'Figure 3 window {window}',rho(wr,f'ok_real_{window}'),value)
@@ -209,9 +218,28 @@ for needle in ['item-bootstrap','n=137','at or below $0.27$','within $0.10$ accu
                '$0.304$','$415$--$1{,}630$','development comparison','$k^{*}=84$','(pre-fix)']:
     check('no stale main claim: '+needle,needle not in main)
 
-for filename, labels in [('fig-channels-medcalc.pdf',['135','0.81','0.03','0.06']),
+pb=data('posbudget.json')
+check('Figure 4 instrument checks exact',all(a==b for a,b in pb['checks'].values()))
+check('Figure 4 sample',pb['n_items']==135 and pb['n_calcs']==14)
+pbrows=screen(load(['full-battery-a','full-battery-b','full-quarters','pb-ev','pb-rn','pb-mx',
+                    'pb-td','pb-tq','pb-wf','pb-wd','pb-we','pb-wr','pb-c256','pb-chalf',
+                    'pb-sh','pb-wh','pb-sn','pb-sx']))
+check('Figure 4 items are the battery items',len(pbrows)==135)
+for arm in ['ev256','rn256','td256','rnhalf','evhalf','tq256','c1x256','c2x256','c32x256',
+            'c1xhalf','wfhalf','wehalf','wf256','we256','sh1','sn1','sb1','xf16','xl16','mxfull']:
+    close(f'Figure 4 arm {arm}',rho(pbrows,f'ok_{arm}_L8'),pb['arms'][arm]['rho'])
+check('Figure 4: spread positions never reach the contiguous block',
+      max(pb['arms'][a]['rho'] for a in ('ev256','rn256','td256','evhalf','rnhalf'))
+      < pb['arms']['c1x256']['rho'])
+for needle in ['recover at most $0.15$','$0.24$, $0.22$, $0.13$, $0.08$ and $0.08$',
+               'centred on the procedure section recovers $0.82$','recovers $0.15$--$0.22$',
+               'keeps $0.89$--$0.92$']:
+    prose(needle)
+
+for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','procedure','cyclic']),
+                         ('fig-channels-medcalc.pdf',['135','0.81','0.03','0.06']),
                          ('fig-rank-medcalc.pdf',['Mistral','72','135','362','256']),
-                         ('fig-transfer-reading.pdf',['135','0.74','0.98'])]:
+                         ('fig-transfer-reading.pdf',['0.74','0.98','transferable','blocked'])]:
     pdf=pymupdf.open(HERE/filename)
     text=' '.join(page.get_text() for page in pdf)
     for label in labels:check(filename+': rendered '+label,label in text)
@@ -231,7 +259,8 @@ manifest={'checks_passed':len(checks),'source_sha256':sources,
           'artifact_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest()
               for p in [HERE/'skillvector.tex', *[HERE/x for x in
                   ['tab-answer-format.tex','tab-big40.tex','tab-skill-content.tex','tab-replication.tex',
-                   'fig-channels-medcalc.pdf','fig-rank-medcalc.pdf','fig-transfer-reading.pdf']]]},
+                   'fig-channels-medcalc.pdf','fig-rank-medcalc.pdf','fig-transfer-reading.pdf',
+                   'fig-posbudget.pdf']]]},
           'selection_policy':'latest complete local measurement family; no partial curves or incompatible baseline merges',
           'scope':'main displays and updated prose; historical diagnostics additionally checked by whitebox/analysis/audit.py'}
 (HERE/'DATA-CONSISTENCY-20260918.json').write_text(json.dumps(manifest,indent=2)+'\n')

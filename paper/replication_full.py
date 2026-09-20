@@ -54,11 +54,16 @@ def main():
             rows.append((f"sufficiency ($n={n}$)", ", ".join(
                 f"L{l} {fmt(v)}" for l, v in layer_curve(d, "real"))))
         if ko:
-            kr = [r for r in rep.load(ko) if r.get("ok_with") and not r.get("ok_without")]
-            if kr:
-                rows.append((f"necessity ($n={len(kr)}$ rescued)", ", ".join(
-                    f"L{Lk} {sum(bool(r['ok_block_from'][i]) for r in kr) / len(kr):.2f}"
-                    for i, Lk in enumerate(kr[0]["layers"]))))
+            # one-layer fill-ins live in their own files, so the sweeps are
+            # merged per layer (rep.ko_curve) rather than by row update, and
+            # the curve is read on the rescued items of this row's screened
+            # groups -- the items its transfer curve uses
+            groups = set(rep.restricted(rep.load(dep))) if dep else None
+            curve, kn = rep.ko_curve(ko, groups=groups)
+            if curve:
+                rows.append((f"necessity ($n={kn}$ rescued"
+                             + (", screened groups" if groups else "") + ")",
+                             ", ".join(f"L{Lk} {curve[Lk]:.2f}" for Lk in sorted(curve))))
         g = rep.restricted(rep.load(rk)) if rk else {}
         if g:
             n = sum(len(v) for v in g.values())

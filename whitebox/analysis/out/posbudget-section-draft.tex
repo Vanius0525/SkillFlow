@@ -1,0 +1,51 @@
+% Draft for the main text (not yet in paper/skillvector.tex).
+% Proposed placement: a new subsection after "The skill span supports content
+% injection" (sec:battery), replacing Figure 1 (fig:channels), whose two panels
+% are the B=1 and B=m ends of panel (a) here and whose span arms repeat Table 2.
+% Numbers: whitebox/analysis/out/posbudget.{json,md}; 135 items, 14 calculators,
+% Qwen3-8B, layer 8, the battery's receiver; intervals bootstrap calculators.
+
+\subsection{Which positions carry the effect}
+\label{sec:posbudget}
+
+Span injection writes $365$--$1{,}630$ positions; the final-position probe
+writes one. To separate the arrangement of the span from the amount of state
+it injects, we fix the number of written positions $B$ and vary only which
+positions receive their own donor states, on the same $135$ items, layer and
+receiver as Table~\ref{tab:big40} (Figure~\ref{fig:posbudget}).
+\emph{Quantity does not explain recovery.} Evenly spaced or random subsets
+recover at most $0.15$, even at half the span and half its content energy;
+choosing the positions with the largest content change recovers at most
+$0.12$; and writing states after the span stays at or below $0.07$, whether
+the last $1$ to $234$ prompt positions at layer $8$ or the last $1$, the last
+$16$ or all of them at each of seven layers from $4$ to $30$.
+\emph{Contiguity does.} The same $256$ positions written as one block recover
+$0.37$, and cutting that block into $2$, $4$, $8$, $16$ and $32$ evenly spaced
+pieces lowers recovery to $0.24$, $0.22$, $0.13$, $0.08$ and $0.08$ at constant
+budget and energy (one versus $32$ pieces: $+0.29$ [$0.09,0.48$], McNemar
+$p<10^{-6}$). \emph{Location matters within the span.} A half-span block
+centred on the procedure section recovers $0.82$ [$0.67,0.93$], close to the
+full span; centred on the worked example it recovers $0.18$. \emph{Placement
+must be exact.} Shifting every state by one position recovers $0.15$--$0.22$
+with or without wrap-around, whereas leaving out the first or last $16$
+positions and writing the rest in place keeps $0.89$--$0.92$. The skill's
+effect is therefore carried by contiguous, correctly placed states of its
+procedure-bearing tokens, not by the number of positions written or the
+energy injected.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-posbudget.pdf}
+\caption{Position budget on MedCalc with Qwen3-8B, layer $8$: the same $135$
+screened items ($14$ calculators) and wrong-skill receiver in every panel;
+the dashed line is the whole span written in place ($\rho=0.89$). (a) $B$
+positions, each written with its own donor state (evenly spaced, random, or
+largest $\|d_p\|$), the same states written half a span away, or the last
+$B$ prompt positions after the span. (b) A fixed budget written as $N$
+contiguous blocks; dotted lines are random single positions at the same
+budget. (c) One contiguous block centred on a section of the skill. (d) The
+whole span displaced by $D$ positions, cyclically or without wrap-around;
+triangles write it in place without its first or last $1$ or $16$
+positions. Error bars are calculator-bootstrap $95\%$ intervals.}
+\label{fig:posbudget}
+\end{figure}

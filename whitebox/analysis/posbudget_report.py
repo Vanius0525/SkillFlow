@@ -161,7 +161,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-fig", action="store_true")
     ap.add_argument("--B", type=int, default=4000)
+    ap.add_argument("--out", default=None,
+                    help="where the figure and the json/markdown report go "
+                         "(default whitebox/analysis/out; paper/fig_posbudget.py "
+                         "points it at the manuscript directory)")
     a = ap.parse_args()
+    global OUT
+    if a.out:
+        OUT = pathlib.Path(a.out)
     OUT.mkdir(parents=True, exist_ok=True)
 
     bat = load(BATTERY)
@@ -367,13 +374,15 @@ def figure(rep):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    plt.rcParams.update({"font.size": 8, "axes.titlesize": 8.4, "axes.labelsize": 7.8,
-                         "xtick.labelsize": 7, "ytick.labelsize": 7, "pdf.fonttype": 42,
-                         "legend.fontsize": 6.6})
+    # drawn at the manuscript's text width so nothing is scaled down when it
+    # is included at \textwidth: at 0.76 scale the legends fell below 5pt
+    plt.rcParams.update({"font.size": 7.4, "axes.titlesize": 7.8, "axes.labelsize": 7.2,
+                         "xtick.labelsize": 6.6, "ytick.labelsize": 6.6, "pdf.fonttype": 42,
+                         "legend.fontsize": 6.4})
     A = rep["arms"]
     full = A["evfull"]["rho"]
     m_med = rep.get("span_width", {}).get("median", 896)
-    fig, axes = plt.subplots(2, 2, figsize=(7.2, 4.9), layout="constrained")
+    fig, axes = plt.subplots(2, 2, figsize=(5.5, 4.3), layout="constrained")
     (a_, b_), (c_, d_) = axes
 
     def err(v):
@@ -401,12 +410,12 @@ def figure(rep):
         xs = [x for x, _ in pts]; ys = [v["rho"] for _, v in pts]
         lo = [max(v["rho"] - v["ci_cluster"][0], 0) for _, v in pts]
         hi = [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in pts]
-        a_.errorbar(xs, ys, yerr=[lo, hi], color=col, marker=mk, ms=4, lw=1.4, capsize=1.6,
+        a_.errorbar(xs, ys, yerr=[lo, hi], color=col, marker=mk, ms=3.4, lw=1.4, capsize=1.6,
                     elinewidth=0.7, mfc="white" if key in ("mx", "tq") else col, mew=1.1, label=lab)
     a_.errorbar([m_med], [full], yerr=err(A["evfull"]), color="#0072B2", marker="*", ms=9,
                 capsize=1.6, elinewidth=0.7)
     a_.annotate("whole span, own states", (m_med, full), xytext=(-6, -14),
-                textcoords="offset points", ha="right", fontsize=6.4, color="#333333")
+                textcoords="offset points", ha="right", fontsize=6.0, color="#333333")
 
     a_.set_xscale("log", base=2)
     a_.set_xticks([1, 4, 16, 64, 256, 1024]); a_.set_xticklabels(["1", "4", "16", "64", "256", "1024"])
@@ -423,7 +432,7 @@ def figure(rep):
         b_.errorbar([n for n, _ in pts], [v["rho"] for _, v in pts],
                     yerr=[[max(v["rho"] - v["ci_cluster"][0], 0) for _, v in pts],
                           [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in pts]],
-                    color=col, marker=mk, ms=4, lw=1.5, capsize=1.6, elinewidth=0.7, label=lab)
+                    color=col, marker=mk, ms=3.4, lw=1.5, capsize=1.6, elinewidth=0.7, label=lab)
         if ref in A:
             b_.axhline(A[ref]["rho"], color=col, lw=0.9, ls=":", zorder=0,
                        label=f"{lab}, random single positions")
@@ -446,7 +455,7 @@ def figure(rep):
                           [max(v["ci_cluster"][1] - v["rho"], 0) for v in vs]],
                     fmt="none", ecolor="#333333", capsize=1.8, lw=0.8, zorder=3)
         for xi, v in zip(x + off, vs):
-            c_.text(xi, v["ci_cluster"][1] + 0.02, f"{v['rho']:.2f}", ha="center", fontsize=6)
+            c_.text(xi, v["ci_cluster"][1] + 0.02, f"{v['rho']:.2f}", ha="center", fontsize=5.8)
     c_.set_xticks(x); c_.set_xticklabels([n for _, n in names])
     frame(c_, "(c) where one contiguous block is centred")
     c_.set_xlabel("section the block is centred on")
@@ -459,12 +468,12 @@ def figure(rep):
     d_.errorbar([p for p, _ in pts], [v["rho"] for _, v in pts],
                 yerr=[[max(v["rho"] - v["ci_cluster"][0], 0) for _, v in pts],
                       [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in pts]],
-                color="#D55E00", marker="o", ms=4, lw=1.5, capsize=1.6, elinewidth=0.7)
+                color="#D55E00", marker="o", ms=3.4, lw=1.5, capsize=1.6, elinewidth=0.7)
     if "dshuf" in A:
         d_.errorbar([m_med * 0.9], [A["dshuf"]["rho"]], yerr=err(A["dshuf"]), color="#555555",
                     marker="x", ms=5, capsize=1.6, elinewidth=0.7)
         d_.annotate("random\npermutation", (m_med * 0.9, A["dshuf"]["rho"]), xytext=(0, 22),
-                    textcoords="offset points", ha="center", fontsize=6.2, color="#555555")
+                    textcoords="offset points", ha="center", fontsize=6.0, color="#555555")
     for key, lab, col, mk in (("sn", "shifted later, no wrap", "#CC79A7", "s"),
                               ("sb", "shifted earlier, no wrap", "#0072B2", "D")):
         pts = [(int(dd), A.get(f"{key}{dd}")) for dd in ("1", "4", "16")]
@@ -482,7 +491,7 @@ def figure(rep):
                           [max(v["ci_cluster"][1] - v["rho"], 0) for _, v in edge]],
                     color="#009E73", marker="v", ms=3.6, ls="none", capsize=1.4, elinewidth=0.6,
                     label="in place, first/last 1 or 16 dropped")
-    d_.plot([], [], color="#D55E00", marker="o", ms=4, lw=1.5, label="cyclic shift")
+    d_.plot([], [], color="#D55E00", marker="o", ms=3.4, lw=1.5, label="cyclic shift")
     d_.legend(loc="upper right", frameon=False, fontsize=6.0, handlelength=1.6)
     d_.set_xscale("log", base=2)
     d_.set_xticks([0.5, 1, 4, 16, 64, 256]); d_.set_xticklabels(["0", "1", "4", "16", "64", "256"])

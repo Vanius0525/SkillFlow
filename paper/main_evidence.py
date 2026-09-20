@@ -265,13 +265,13 @@ def depth_v2(out_dir=HERE, force=False):
                                gridspec_kw={'width_ratios': [1.25, 1]})
     xs = [L for L in range(36) if span[L] is not None]
     a.plot(xs, [span[L] for L in xs], 'o-', color='#0072B2', ms=2.8, lw=1.5,
-           label='span states written at layer $L$')
+           label='span states written at $L$')
     ks = sorted(kc)
     a.plot(ks, [kc[L] for L in ks], 's-', color='#D55E00', ms=2.6, lw=1.5,
-           label='attention to the skill blocked from $L$ on')
+           label='skill attention blocked from $L$ on')
     lx = [L for L in range(36) if last[L] is not None]
     a.plot(lx, [last[L] for L in lx], '^--', color='#777777', ms=2.6, lw=1.0,
-           label='last prompt position written at $L$')
+           label='last prompt position written at $L$')  # noqa: E501
     tb = next((L for L in xs if span[L] < .5), None)
     rb = next((L for L in ks if kc[L] >= .5), None)
     if tb is not None and rb is not None:
@@ -283,8 +283,8 @@ def depth_v2(out_dir=HERE, force=False):
     a.axhline(.5, color='#999999', lw=.6, ls=':')
     a.set(xlabel='layer $L$', ylabel="fraction of the skill's gain", xlim=(-1, 36), ylim=(-.03, 1.08))
     a.set_title('(a) transfer ends before reading does', loc='left', fontsize=8.5)
-    a.legend(loc='center left', fontsize=6.2, frameon=False, handlelength=1.8,
-             bbox_to_anchor=(0.0, 0.40))
+    a.legend(loc='center left', fontsize=6.2, frameon=False, handlelength=1.6,
+             bbox_to_anchor=(-0.02, 0.33), labelspacing=.35)
     # (b) windows as spans on the same axis
     b.plot(xs, [span[L] for L in xs], '-', color='#0072B2', lw=.9, alpha=.35,
            label='one layer at a time, from (a)')
@@ -297,11 +297,13 @@ def depth_v2(out_dir=HERE, force=False):
         col = '#009E73' if (lo, hi) == (0, 35) else ('#CC79A7' if long else '#0072B2')
         b.add_patch(mp.Rectangle((lo - .45, v - .018), hi - lo + .9, .036, color=col,
                                  alpha=.55 if long else .9, lw=0))
-        if long or (lo, hi) in ((8, 11), (12, 15)):
+        if long or (lo, hi) in ((8, 11), (12, 15), (14, 19)):
             b.text(hi + .6 if (lo, hi) != (0, 35) else 17.5, v + (.04 if (lo, hi) != (16, 35) else -.07),
                    f'{lo}–{hi}: {v:.2f}', fontsize=6, color='#333333',
                    ha='left' if (lo, hi) != (0, 35) else 'center')
     b.axhline(.5, color='#999999', lw=.6, ls=':')
+    b.text(29, .30, 'every four-layer window\nfrom 16 on: $\\leq 0.06$',
+           fontsize=5.8, color='#555555', ha='center')
     b.set(xlabel='layers written (each bar spans its window)', xlim=(-1, 36), ylim=(-.03, 1.08))
     b.set_title('(b) writing more layers at once', loc='left', fontsize=8.5)
     b.legend(loc='center right', fontsize=6.2, frameon=False, bbox_to_anchor=(1.0, 0.5))
