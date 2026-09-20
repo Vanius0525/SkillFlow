@@ -129,20 +129,19 @@ activations help rule out two proposed explanations for the loss of transfer
 \label{sec:related}
 
 \paragraph{Skills and compact context representations.}
-Skill benchmarks evaluate whether agents can retrieve and apply reusable
-procedures \citep{su2026srabench, skillsbench2026, sweskills2026}. We study how
-the model represents a skill once it is in context. Task and function vectors
-transfer behaviours from in-context demonstrations through compact activations
-\citep{hendel2023taskvectors, todd2024functionvectors}; task arithmetic makes
-related edits to model weights \citep{ilharco2023taskarithmetic}.
-\citet{dong2026taskvectorlimits} show limits on the task mappings that a single
-vector can express, including failures on high-rank mappings. Here, rank refers
-instead to a matrix of hidden-state differences across skill positions, and
-we test its effect under several answer formats. Other approaches learn to
-compress context by aggregating activations \citep{ardoin2026promptcompression},
-using special summary tokens \citep{mu2023gist}, encoding context into compact
-states \citep{ge2024icae}, or updating model weights \citep{doc2lora2026,
-deepcontextdistill2025}. We examine the original model's states without
+Skill benchmarks ask whether agents retrieve and apply reusable procedures
+\citep{su2026srabench, skillsbench2026, sweskills2026}; we ask how a model
+represents one already in context. Task and function vectors transfer behaviours
+from in-context demonstrations through compact activations
+\citep{hendel2023taskvectors, todd2024functionvectors}, and task arithmetic
+makes related edits to weights \citep{ilharco2023taskarithmetic}.
+\citet{dong2026taskvectorlimits} bound the task mappings a single vector can
+express, including high-rank ones; our rank is instead that of a matrix of
+hidden-state differences across skill positions, tested under several answer
+formats. Others learn to compress context---aggregated activations
+\citep{ardoin2026promptcompression}, summary tokens \citep{mu2023gist}, compact
+states \citep{ge2024icae}, weight updates \citep{doc2lora2026,
+deepcontextdistill2025}---while we examine the original model's states without
 training a compression mechanism.
 
 \paragraph{Answer representations and activation interventions.}
@@ -163,17 +162,17 @@ onset2025instruction}. We ask whether states stop transferring a skill's effect
 at the same depth that the model stops depending on attention to them.
 
 \paragraph{Representation rank and spectral measurements.}
-Spectral analyses use the relative sizes of matrix singular values to study
-hidden-state geometry \citep{valeriani2023geometry}, sensitivity to
-perturbations \citep{sarkar2026causaldim}, and transformations across layers
-\citep{fernando2026residualspectral}. We instead truncate the matrix of
+Spectral analyses use relative singular-value sizes to study hidden-state
+geometry \citep{valeriani2023geometry}, sensitivity to perturbations
+\citep{sarkar2026causaldim}, and transformations across layers
+\citep{fernando2026residualspectral}; we instead truncate the matrix of
 content-specific state differences across skill positions and measure the
 resulting performance. Reports of unusually large activations
 \citep{sun2024massive, shi2026melayer} and dominant hidden dimensions
-\citep{timkey2021rogue, kovaleva2021bertbusters} also motivate a separate check:
-does an apparent reduction in dimensionality reflect a change in useful
-content, or merely a few large coordinates? We distinguish this geometric
-diagnostic from the rank intervention's behavioural outcome.
+\citep{timkey2021rogue, kovaleva2021bertbusters} motivate a separate check:
+does an apparent drop in dimensionality reflect a change in useful content or
+merely a few large coordinates? We keep that geometric diagnostic distinct from
+the rank intervention's behavioural outcome.
 
 \section{Problem Formulation}
 \label{sec:formulation}
@@ -279,10 +278,8 @@ The main MedCalc span experiments cover $467$ rescued items from $48$
 calculators with at least two such items. Screening for groups whose receiver
 solves no sampled item retains $135$ items from $14$ calculators. The main
 depth sweep, rank curve and span-quarter comparisons use this same subset.
-Earlier experiments used ten calculators for development and four items from
-each of forty calculators for a larger evaluation; screening the latter
-retained $60$ items from $15$ calculators. Appendix~\ref{app:fullscale}
-compares the larger rerun with this earlier sample. TheoremQA uses the same
+Appendix~\ref{app:fullscale} compares this rerun with the earlier development
+samples it replaces. TheoremQA uses the same
 group-based screen, which becomes an item-level screen when a skill has only
 one question. We report sample sizes for each comparison. Main-text accuracy
 and recovery intervals resample skill groups. Each recovery estimate uses
@@ -314,8 +311,8 @@ accuracies of $1.000/0.000/1.000/0.000$, while content injection gives
 $0.805/0.075/1.000/0.186$. Content injection thus broadly reproduces both the
 benefits and the errors induced by the skill. Recovery also depends on the
 subtraction baseline. Using a skill with corrupted numbers or with shuffled sentences gives
-$0.17$--$0.26$ over layers $21$--$27$, compared with $0.805$ for an unrelated
-skill. The content component must therefore be
+$0.17$--$0.28$ over layers $21$--$27$, every layer measured, compared with
+$0.805$ for an unrelated skill. The content component must therefore be
 interpreted relative to the specified wrong skill.
 
 \paragraph{Single-position recovery depends on answer format.}
@@ -326,8 +323,10 @@ numeric answers, no final-position intervention recovers more than one of the
 $119$ rescued items through layer $22$. The best results across layers are
 $0.235$ for state replacement, $0.21$ for content and $0.008$ for presence.
 These answers are one to five tokens long ($341$ of $358$ use two to four).
-Patching the last $1$, $4$ and $16$ positions recovers $0.235$, $0.261$ and
-$0.403$. For step-by-step reasoning, the skill raises accuracy from $0.000$ to
+Patching the last $1$, $4$, $16$, $32$, $48$ and $61$ positions---$61$ is the
+whole no-document prompt---recovers $0.235$, $0.261$, $0.403$, $0.403$, $0.395$
+and $0.370$: the ladder saturates at $16$, and giving the patch every position
+the prompt has does not raise it. For step-by-step reasoning, the skill raises accuracy from $0.000$ to
 $0.989$, yet single-position replacement recovers at most one of $354$ rescued
 items ($0.003$) at any layer.
 These results show that the probe's success depends on answer format; they do
@@ -533,9 +532,10 @@ early layer. Despite a fourfold difference in hidden width, Qwen3-0.6B and
 Qwen3-8B have similar rank knees ($43$ and $47$); Mistral-7B, with the same
 width as Qwen3-8B, has $k^{*}=72$ [$46,94$]. Untruncated recovery is $0.89$,
 $0.91$ and $0.84$, respectively, on each model's screened subset ($135$, $362$
-and $92$ items). Dashed curves retain bottom directions.
-Error bars are calculator-bootstrap $95\%$ intervals. Only complete rank
-experiments are plotted.}
+and $92$ items). Both Qwen models reach that value by $k=256$ and Mistral-7B
+at $k=384$. Dashed curves retain bottom directions. Error bars are
+calculator-bootstrap $95\%$ intervals. Only complete rank experiments are
+plotted.}
 \label{fig:rank}
 \end{figure}
 
@@ -612,10 +612,7 @@ it starts early enough; the identity control is exact on all $467$ items. On
 TheoremQA ($99$ items, $75$ groups, with its battery's receiver), the same
 windows recover $0.84,0.61,0.38,0.20$, the last again equal to layer $16$
 alone. Repeated late injection therefore does not restore early-layer
-recovery in these tests. One possible explanation is that later reading depends on
-associations between skill content and the question established earlier
-\citep{feng2024binding}, but these interventions do not identify the specific
-dependencies responsible.
+recovery in these tests.
 
 \paragraph{A spectral drop is not evidence of compression.}
 Could the loss of transfer reflect compression into fewer dimensions? We
@@ -662,7 +659,8 @@ large activations). Mistral, with the same width as Qwen3-8B, gives
 $k^{*}=72$ [$46,94$] on MedCalc and $64$ [$50,79$] on TheoremQA: higher than
 Qwen3-8B on both tasks, but with overlapping intervals. Its curve is also less
 sharply defined, since recovery keeps rising past $k=128$ ($0.54$; $0.72$ at
-$256$, against $0.84$ untruncated) and its bottom-$k$ controls reach
+$256$) and reaches its untruncated $0.84$ at $k=384$, against $256$ for
+Qwen3-8B; its bottom-$k$ controls reach
 $0.11$--$0.21$. The measured rank requirement is therefore not determined by
 hidden width alone, while a difference between families is not established.
 
@@ -674,26 +672,24 @@ $5.05$ nats despite lower accuracy ($0.251$ versus $0.288$, $358$ items).
 Forcing an \texttt{ANSWER:} cue on MedCalc cuts the skill's accuracy gain from
 $39.7$ to $4.7$ points ($0.178$ versus $0.131$ on $720$ items) while leaving a
 $+1.08$ nat log-probability difference. Synthetic multiple
-choice retains nearly three quarters of the skill's effect after its numbers
-are corrupted, illustrating possible answer-format shortcuts
-\citep{balepur2024artifacts} (Appendix~\ref{app:traps}). Other domains provide
-limited evidence: LogicBench also shows high control recovery, CHAMP has only
-$20$ rescued items, and ToolQA/BigCodeBench require tool execution
+choice retains $0.54$ of the skill's effect after its numbers are corrupted and
+$0.82$ after its lines are scrambled, illustrating possible answer-format
+shortcuts
+\citep{balepur2024artifacts} (Appendix~\ref{app:traps}). Other domains give limited evidence
 (Appendix~\ref{app:replication}).
 
 \section{Conclusion}
 
 In the evaluated tasks and screened subsets, states across a skill's own
-tokens transfer much of its effect. A final-position intervention is more
-sensitive to answer format, succeeding for compact answers while failing for
+tokens transfer much of its effect, while a final-position intervention is more
+sensitive to answer format---succeeding for compact answers, failing for
 extended reasoning. Span recovery depends on content, position and multiple
 leading directions. The rank knee does not scale proportionally with width
-within Qwen; a difference between model families is suggested but not
-established. Across layers, states stop
-transferring most of the effect before attention to them ceases to support
-performance; the spectral drop does not establish compression at this boundary.
-These findings distinguish what skill states can transfer from how subsequent
-computation uses them.
+within Qwen, and a difference between model families is suggested but not
+established. Across layers, states stop transferring most of the effect before
+attention to them ceases to support performance, and the spectral drop does not
+establish compression at that boundary. These findings distinguish what skill
+states can transfer from how subsequent computation uses them.
 
 \label{endmain}
 \clearpage
@@ -722,38 +718,25 @@ three are injected under the same name and header, so the prompt never announces
 which it is.
 
 Both tighter controls move the accounting a long way
-(Table~\ref{tab:controls}). A table whose numbers are all wrong solves $0.729$
+(Table~\ref{tab:controls}). A table whose numbers are all wrong solves $0.720$
 of the rescued cell; a table with the right numbers in scrambled order solves
-$0.625$; the unrelated text solves $0.062$. Against no document the cell is
+$0.659$; the unrelated text solves $0.098$. Against no document the cell is
 $0.000$ by construction and with the gold document it is $1.000$. So when either
-tight control is used, $\gvec$ is no longer inert---it repairs $0.60$--$0.75$---
-and the residual $\dvec$ repairs only $0.19$--$0.31$.
+tight control is used, $\gvec$ is no longer inert---it repairs $0.63$--$0.74$---
+and the residual $\dvec$ repairs only $0.17$--$0.28$.
 
 \begin{table}[t]
 \caption{The same decomposition against three control documents. Synthetic
-control, multiple choice, Qwen3-1.7B, $n=200$, rescued cell $n_R=48$, layers
-21--27. ``in context'' is the control document actually placed in the prompt;
+control, multiple choice, Qwen3-1.7B, $n=358$, rescued cell $n_R=82$, every
+one of layers 21--27. ``in context'' is the control document actually placed in the prompt;
 ``$+\gvec$'' is its state injected at the final position of the no-document
-prompt. That the two agree to within $0.02$ for three very different documents
+prompt. That the two agree to within $0.03$ for three very different documents
 is the strongest validity check we have on the patch itself. $\dvec$ is the
 same measurement in all three rows; only what it is subtracted against changes.}
 \label{tab:controls}
 \centering
 \small
-\begin{tabular}{lccc}
-\toprule
-control document & \multicolumn{3}{c}{fraction of the rescued cell correct}\\
-\cmidrule(lr){2-4}
- & control in context & $h_{\text{no}}+\gvec$ & $h_{\text{no}}+\dvec$ \\
-\midrule
-unrelated text, matched length      & 0.062 & \textbf{0.062} & \textbf{0.812} \\
-same document, lines scrambled      & 0.625 & 0.604--0.625   & 0.188--0.292 \\
-same document, factors replaced     & 0.729 & 0.708--0.750   & 0.229--0.312 \\
-\midrule
-gold skill in context & 1.000 & --- & --- \\
-no document           & 0.000 & --- & --- \\
-\bottomrule
-\end{tabular}
+\input{tab-controls}
 \end{table}
 
 \paragraph{The same control on third-party skills.} We repeated the corrupted
@@ -768,19 +751,19 @@ you anything is a property of the answer format, not of the document.
 
 Read as an attribution rather than as three competing estimates, this says
 something uncomfortable about the multiple-choice form of the task. On the full
-200 items the gold document is worth $0.180 \to 0.300$; a scrambled version of
-it is worth $0.180 \to 0.270$ and a version with every factor wrong is worth
-$0.180 \to 0.260$. Three quarters of the measured skill effect survives
-destroying either the order of the document or the correctness of every number
+358 items the gold document is worth $0.179 \to 0.288$; a scrambled version of
+it is worth $0.179 \to 0.268$ and a version with every factor wrong is worth
+$0.179 \to 0.237$. Four fifths of the measured skill effect survives destroying
+the order of the document, and just over half survives replacing every number
 in it. What the model needs, in this format, is mostly a document containing the
 right vocabulary and the right kinds of number---not a correct table. The
-correct table is worth the remaining $0.03$--$0.04$ absolute, or $0.19$--$0.31$
+correct table is worth the remaining $0.02$--$0.05$ absolute, or $0.17$--$0.28$
 of the rescued cell.
 
 That is a statement about the answer format as much as about the model. We
 registered the test before running it: in the free-form format the number has to
 be produced, so a corrupted table should be worth nothing. It is
-(Table~\ref{tab:format}). Corrupting every factor keeps $0.67$ of the
+(Table~\ref{tab:format}). Corrupting every factor keeps $0.54$ of the
 multiple-choice effect on the full item set and \emph{none} of the free-form
 effect's $0.467$. Scrambling the line order costs little in either, which is what it
 should: our shuffle permutes lines, and each row of the conversion table is one
@@ -852,6 +835,15 @@ the first. Mistral-7B is in Table~\ref{tab:replicationfull}.}
 
 \subsection{Rank truncation and the model ladder, in more detail}
 \label{app:rank2}
+
+On the denser grid every rank curve in the paper reaches its untruncated value:
+the three TheoremQA rows at $k=192$--$384$ ($0.806$/$0.882$/$0.871$ against
+$0.839$ for Qwen3-8B, $0.717$/$0.701$/$0.732$ against $0.740$ for Qwen3-0.6B,
+and $0.819$/$0.880$/$0.819$ against $0.940$ for Mistral-7B at $k=192,256,384$),
+MedCalc with Qwen3-8B and Qwen3-0.6B at $k=256$, and MedCalc with Mistral-7B at
+$k=384$ ($0.842$, exactly its untruncated value; $0.825$ at $512$). The knee
+$k^{*}$ is computed on the fixed grid $\{16,32,64,128\}$ and is unchanged by
+the added points, by construction.
 
 Every measurement so far says \emph{where} the document's effect lives. This one
 says \emph{how big it is}, in the only unit that is comparable across the
@@ -1247,8 +1239,8 @@ defined against a control document, and the choice is a measurement decision
 rather than a detail. Against an \emph{unrelated} document of the same length it
 is topic, procedure and numbers together and repairs $0.805$ of the rescued
 cell; against the \emph{same} document with every number replaced it is the
-numbers alone and repairs $0.229$--$0.312$ (layers 21--27); against the same
-document with its sentences shuffled, $0.188$--$0.292$. The three differ by a
+numbers alone and repairs $0.171$--$0.256$ (layers 21--27); against the same
+document with its sentences shuffled, $0.171$--$0.280$. The three differ by a
 factor of three to four, so a paper
 that reports ``the content component'' without naming its control has not
 specified the quantity. Appendix~\ref{app:controls} gives the full comparison.
@@ -1318,18 +1310,29 @@ instrument check passes on 10 of 10 items in the same run.
 is the range over which the answer is short}---and the clinical result is then
 not a property of that material but an instance of this.
 
-\paragraph{It is a capacity limit, and it can be measured.} Patching one
+\paragraph{It is a ceiling, and more positions do not raise it.} Patching one
 position is a choice, not a measurement, so we repeated the sweep patching the
-last $k$ prompt positions for $k \in \{1,4,16\}$. Replacing them with the skill
-state recovers $0.286$, $0.286$ and $\mathbf{0.554}$ of the rescued cell at
-layer 30. Four positions buy nothing---the last four tokens are the chat
-suffix---and sixteen, which reach back into the question, roughly double the
-recovery. Against the document itself at $1.000$, even sixteen positions carry
-about half. The content does not compress into a small set of positions; how
-much of it a patch transports is a function of how many positions it is given.
+last $k$ prompt positions for $k \in \{1,4,16,32,48,61\}$, every one of the
+$36$ layers. The no-document prompt is $61$--$63$ tokens, so $k=61$ writes all
+of it and the ladder has no further rung. Recovery on the rescued cell, at each
+$k$'s best layer, is $0.235$, $0.261$, $0.403$, $0.403$, $0.395$ and $0.370$,
+and $0.403$ is also the largest value over every $k$ and every layer. Four
+positions buy nothing---the last four tokens are the chat suffix---sixteen,
+which reach back into the question, roughly double the recovery, and past
+sixteen nothing is bought: at $k=32$ the items answered correctly are
+item-for-item those answered correctly at $k=16$, with no discordant pair, and
+at $k=61$ four are lost and none gained (exact McNemar $p=0.125$). We expected
+the ladder to keep climbing and registered that prediction before the larger
+$k$ ran; it does not climb.
 
-We therefore read the low ceiling as a scope condition on single-position
-patching rather than as a negative result about $\dvec$. In a multiple-choice
+The ceiling is therefore not a budget, and it is not an artefact of writing a
+long prompt's states into a short one: the identical probe, receiver and donor
+recover $1.000$ on the rescued cell of the multiple-choice format, where the
+answer is one token at one position. What separates $0.403$ from $1.000$ is the
+answer format; what separates it from span injection's $0.89$ is whether the
+patched positions are the document's own. We therefore read the low ceiling as
+a scope condition on patching positions the document does not occupy, rather
+than as a negative result about $\dvec$. In a multiple-choice
 item the answer \emph{is} one token at one position, so a patch that transports
 the model's decision transports the whole task and looks like it transported the
 document. What the final prompt position holds by layer 21 is the model's
@@ -2447,15 +2450,11 @@ $0.098$ (1.7B), and $0.250$ where it scores $0.250$ (8B), across four different
 control documents (Appendix~\ref{app:controls}).
 
 \paragraph{Which control you subtract chooses what you measure.} $\dvec$ is
-defined against a control document, and the choice is a measurement decision
-rather than a detail. Against an \emph{unrelated} document of the same length,
-$\dvec$ is topic, procedure and numbers together and repairs $0.805$ of the
-rescued cell; against the \emph{same} document with every number replaced it is
-the numbers alone and repairs $0.229$--$0.312$ (layers 21--27); against the same
-document with its sentences shuffled, $0.188$--$0.292$. The three differ by a
-factor of three to four, so a
-paper that reports ``the content component'' without naming its control has not
-specified the quantity. Appendix~\ref{app:controls} gives the full comparison
+defined against a control document, so what ``content'' names depends on which
+document is subtracted: against an unrelated one it is topic, procedure and
+numbers together, against the same document with its numbers replaced or its
+lines shuffled it is much less. The three differ by a factor of three to four
+(\S\ref{app:onepos}); Appendix~\ref{app:controls} gives the full comparison
 and the accompanying behavioural ablations.
 
 

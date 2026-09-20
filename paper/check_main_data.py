@@ -215,7 +215,10 @@ for needle in ['accuracy from $0.000$ to $0.815$', '$0.03$, $0.06$ and $0.05$',
                'preserves $0.87$ recovery, compared with $0.89$']:
     prose(needle)
 for needle in ['item-bootstrap','n=137','at or below $0.27$','within $0.10$ accuracy',
-               '$0.304$','$415$--$1{,}630$','development comparison','$k^{*}=84$','(pre-fix)']:
+               '$0.304$','$415$--$1{,}630$','development comparison','$k^{*}=84$','(pre-fix)',
+               # retired 2026-09-20: the 200-item pilot and the pre-fill-in ladder
+               '$0.812$','$0.17$--$0.26$','nearly three quarters','$0.286$',
+               '$0.229$--$0.312$','$0.188$--$0.292$','function of how many positions']:
     check('no stale main claim: '+needle,needle not in main)
 
 pb=data('posbudget.json')
@@ -235,6 +238,68 @@ for needle in ['recover at most $0.15$','$0.24$, $0.22$, $0.13$, $0.08$ and $0.0
                'centred on the procedure section recovers $0.82$','recovers $0.15$--$0.22$',
                'keeps $0.89$--$0.92$']:
     prose(needle)
+
+# ---- the 2026-09-20 fill-ins -------------------------------------------------
+TA = ROOT/'whitebox/results/fetched/tA'
+
+
+def tier_a(tags, key=None, cell='R'):
+    """{layer: [per-item outcome]} on one cell, merged over a tag and its -b."""
+    out = {}
+    for tag in tags:
+        for path in sorted((TA/tag).glob('layer_*.jsonl')):
+            rr = [r for r in read(path) if r['cell'] == cell]
+            k = key or ('gok_replace_real' if 'gok_replace_real' in rr[0] else 'ok_replace_real')
+            out[int(path.stem.split('_')[1])] = [bool(r[k]) for r in rr]
+    return out
+
+
+LADDER = [('1', ['tA-num-a','tA-num-b']), ('4', ['tA-num-k4']), ('16', ['tA-num-k16']),
+          ('32', ['tA-num-k32']), ('48', ['tA-num-k48']), ('61', ['tA-num-k61'])]
+peaks = []
+for k, tags in LADDER:
+    curve = tier_a(tags)
+    check(f'ladder k={k}: every layer 0-35', sorted(curve) == list(range(36)))
+    check(f'ladder k={k}: 119 rescued items at every layer',
+          all(len(v) == 119 for v in curve.values()))
+    peaks.append(max(sum(v)/len(v) for v in curve.values()))
+for k, want in zip([k for k, _ in LADDER], [0.235, 0.261, 0.403, 0.403, 0.395, 0.370]):
+    check(f'ladder peak k={k} is {want}', round(peaks[LADDER.index((k, dict(LADDER)[k]))], 3) == want)
+check('ladder does not rise past 16 positions', max(peaks) == peaks[2])
+check('k=16 and k=32 are the same items at L29',
+      tier_a(['tA-num-k16'])[29] == tier_a(['tA-num-k32'])[29])
+prose('$0.235$, $0.261$, $0.403$, $0.403$, $0.395$')
+prose('$61$ is the')
+
+ctrl = data('controls-values.json')
+check('controls table is the 358-item rerun', ctrl['n'] == 358 and ctrl['n_R'] == 82)
+for name, v in ctrl['rows'].items():
+    check(f'controls {name}: every layer 0-27', v['layers'] == list(range(28)))
+    tag = {'unrelated text, matched length': 'd17-neutral',
+           'same document, lines scrambled': 'd17-shuffled',
+           'same document, factors replaced': 'd17-corrupted'}[name]
+    band = tier_a([tag, tag+'-b'], key='ok_add_d_a1')
+    lo, hi = min(sum(band[x])/82 for x in range(21, 28)), max(sum(band[x])/82 for x in range(21, 28))
+    check(f'controls {name}: content low', round(lo, 3) == v['add_d'][0])
+    check(f'controls {name}: content high', round(hi, 3) == v['add_d'][1])
+band_all = [v['add_d'] for v in ctrl['rows'].values() if not v['layers'] is None]
+tight = [v['add_d'] for k, v in ctrl['rows'].items() if not k.startswith('unrelated')]
+check('tighter controls span 0.17-0.28',
+      (round(min(x[0] for x in tight), 2), round(max(x[1] for x in tight), 2)) == (0.17, 0.28))
+prose('$0.17$--$0.28$ over layers $21$--$27$')
+
+rk = json.loads((HERE/'replication-values.json').read_text())
+for cell in rk:
+    if cell['task'] == 'TheoremQA':
+        check(f'{cell["model"]}: TheoremQA rank uses the dense tags',
+              any(t.endswith('-d2') for t in cell['sources']['rank']))
+mis = [c for c in rk if c['task'] == 'MedCalc' and c['model'] == 'Mistral-7B'][0]
+check('Mistral MedCalc rank includes the high-k tag', 'mis-rank-hi' in mis['sources']['rank'])
+misrows = screen(load(mis['sources']['rank']))
+check('Mistral MedCalc k=384 reaches its untruncated value',
+      round(rho(misrows, 'ok_rank384_L4'), 2) == round(rho(misrows, 'ok_real_L4'), 2) == 0.84)
+prose('reaches its untruncated $0.84$ at $k=384$')
+prose('retains $0.54$ of the skill')
 
 for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','procedure','cyclic']),
                          ('fig-channels-medcalc.pdf',['135','0.81','0.03','0.06']),

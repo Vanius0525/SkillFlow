@@ -51,7 +51,7 @@ MODELS = [
      ["mis3-rank-L4"], "#CC79A7",
      dict(marker="D", lw=1.6, ms=4.5, capsize=2)),
 ]
-TOP = (1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 96, 128, 256)
+TOP = (1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 96, 128, 192, 256, 384, 512)
 BOTTOM = (4, 16, 32, 64, 128)
 
 
@@ -126,11 +126,13 @@ def main():
     ax.text(1.05, -0.10, "the wrong-skill receiver, unpatched", fontsize=7,
             color="#8c6d1f")
     ax.set_xscale("log", base=2)
-    # the grid now reaches k=256, where Qwen3-8B is back at its untruncated
-    # value; cutting the axis at 128 hid the end of every curve
-    ax.set_xticks([1, 2, 4, 8, 16, 32, 64, 128, 256])
-    ax.set_xticklabels([1, 2, 4, 8, 16, 32, 64, 128, 256], fontsize=8)
-    ax.set_xlim(0.85, 320)
+    # the grid runs to k=512. Qwen3-8B and Qwen3-0.6B are back at their
+    # untruncated value by 256 and Mistral-7B only at 384, which is the whole
+    # point of extending it: cutting the axis at 256 ended Mistral's curve
+    # while it was still climbing and made it look like it never arrives
+    ax.set_xticks([1, 2, 4, 8, 16, 32, 64, 128, 256, 512])
+    ax.set_xticklabels([1, 2, 4, 8, 16, 32, 64, 128, 256, 512], fontsize=8)
+    ax.set_xlim(0.85, 640)
     ax.set_xlabel("rank $k$ the content matrix is truncated to, before "
                   "injection", fontsize=9)
     ax.set_ylabel("recovery $\\rho$, as a fraction of\nthe skill's own effect",

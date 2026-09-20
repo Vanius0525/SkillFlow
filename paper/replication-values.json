@@ -134,7 +134,9 @@
         "dep1-tqa8-d"
       ],
       "rank": [
-        "tqa-rank"
+        "tqa-rank",
+        "tqa-rank-d1",
+        "tqa-rank-d2"
       ],
       "knockout": [
         "tqa-ko",
@@ -429,6 +431,7 @@
         "mis-rank-a",
         "mis-rank-b",
         "mis-rank-lo",
+        "mis-rank-hi",
         "mis-bat-a"
       ],
       "knockout": [
@@ -529,7 +532,9 @@
         "dep1-tqamis-b"
       ],
       "rank": [
-        "tqamis-rank"
+        "tqamis-rank",
+        "tqamis-rank-d1",
+        "tqamis-rank-d2"
       ],
       "knockout": [
         "tqamis-ko",
