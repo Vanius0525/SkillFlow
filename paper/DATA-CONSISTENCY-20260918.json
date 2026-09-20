@@ -1,5 +1,5 @@
 {
-  "checks_passed": 70193,
+  "checks_passed": 70201,
   "source_sha256": {
     "howskill/results/p8-wb/fetched/by-host/hsw/full-battery-a.jsonl": "af6c876c2f714ad312e9c884a1fe869ced3beb3f0bf5679bf7a2c98a697b81fb",
     "howskill/results/p8-wb/fetched/by-host/hsw2/full-battery-b.jsonl": "ee6a418a12f7b220a37b4ddb4333c5d30cdeaafc9a9769cd02c842fa208b7a8f",
@@ -156,6 +156,7 @@
     "howskill/results/p8-step/p8-gold_no_tool.jsonl": "6522d281830224caaa1f90b4720f022eb3612137d1cbe4b5a4a604e3e28de778",
     "howskill/results/p8-step/p8-no_skill.jsonl": "1b23963a180bf0e4b092f836a85f0390f899fc5a55650ab2f5c86a072a6033e5",
     "howskill/results/p8-step/p8-ctrl_neutral_no_tool.jsonl": "fc3c7a48052615aeeb6dcac8ef26352affb8e39f4563f96644187464d7f2772b",
+    "whitebox/results/fetched/tA/rd-e2/per_layer.jsonl": "e13dece0a3a58f19feb1dffce31201d06e7233dd79608c71164dbc7e44e480a0",
     "howskill/results/p8-wb/fetched/by-host/wb2/pb-ev.jsonl": "bc1992072cf929ee967417bfdc812fb3bf8fd01f47ffbae6fb1ad9f1aeafffff",
     "howskill/results/p8-wb/fetched/by-host/wb3/pb-rn.jsonl": "9ab009cf531fc4ec9cae788b89cad1713859fd5185217827f0a7c9c56058b5e8",
     "howskill/results/p8-wb/fetched/by-host/wb4/pb-mx.jsonl": "4b4e577e7ba508c235978951bdfe4b7931e6dd303fd293939c94bb66186acc04",
@@ -441,7 +442,7 @@
     "howskill/results/p8-wb/fetched/by-host/hsw/geom-8b.jsonl": "99cb58075ddf713d001d03c2b284b1a6b1db261176ecc30245cacdce98e50dc2"
   },
   "artifact_sha256": {
-    "skillvector.tex": "18dbf24695f97f9be89ec96126c522edb4788db67cb034ad8c90fc8719cdff8a",
+    "skillvector.tex": "63eb6ea73cb165787a0b3d4dccf1569f0650a6e497638e7d51c4ba23d6ca3c04",
     "tab-answer-format.tex": "b85378776a67ffb7b5f7189a59ed88518c147ec4dd60912982a04b9dbec2cde1",
     "tab-big40.tex": "b4dbb79797c1e0e1531ed649bd7b0e7ad4edd7faeb30f0c19ba91033244ab346",
     "tab-skill-content.tex": "babcffd1366b64cbe7abcbfd806a6cb76adc034d2d0a0c9852c06d31e6adba09",

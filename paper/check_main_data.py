@@ -221,6 +221,27 @@ for needle in ['item-bootstrap','n=137','at or below $0.27$','within $0.10$ accu
                '$0.229$--$0.312$','$0.188$--$0.292$','function of how many positions']:
     check('no stale main claim: '+needle,needle not in main)
 
+# the two main-text numbers with no values file behind them
+prose("close to the current instance's $1.02$")
+check('1.02 comes from tab-skill-content', '$1.02$' in (HERE/'tab-skill-content.tex').read_text())
+import statistics as _st
+_rd = ROOT/'whitebox/results/fetched/tA/rd-e2/per_layer.jsonl'
+sources[str(_rd.relative_to(ROOT))] = hashlib.sha256(_rd.read_bytes()).hexdigest()
+_seen = False
+for _line in _rd.open():
+    _d = json.loads(_line)
+    if _d['layer'] != 27:
+        continue
+    _seen = True
+    _r = _d['rows']; _n = len(_r)
+    check('readout check: 358 items', _n == 358)
+    close('readout check: own-d accuracy', round(sum(bool(x['ok_real']) for x in _r)/_n, 3), 0.288)
+    close('readout check: shared-mean accuracy', round(sum(bool(x['ok_mean']) for x in _r)/_n, 3), 0.251)
+    close('readout check: nats in favour of the shared mean',
+          round(_st.mean(x['lp_mean'] for x in _r) - _st.mean(x['lp_real'] for x in _r), 2), 5.05)
+check('readout check: layer 27 present', _seen)
+prose('$5.05$ nats despite lower accuracy ($0.251$ versus $0.288$, $358$ items)')
+
 pb=data('posbudget.json')
 check('Figure 4 instrument checks exact',all(a==b for a,b in pb['checks'].values()))
 check('Figure 4 sample',pb['n_items']==135 and pb['n_calcs']==14)
