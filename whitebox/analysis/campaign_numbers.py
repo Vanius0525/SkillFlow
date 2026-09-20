@@ -128,11 +128,15 @@ md.append("\nTheoremQA windows, new vs old: " + ", ".join(
 
 # ---- 3. rank curves on three models (Fig. 2, Table 3) ----------------------
 section("3. Rank truncation, full data, three models (Fig. 2)")
-TOP = (1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 96, 128, 256)
+TOP = (1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 96, 128, 192, 256, 384, 512)
 BOT = (4, 16, 32, 64, 128)
 for name, L, tags in (("Qwen3-8B", 8, ["full-battery-a", "full-rank-a", "full-rank-b", "x8-rank-x", "x8-rank-lo"]),
                       ("Qwen3-0.6B", 6, ["q06-bat-a", "q06-rank-a", "q06-rank-b", "q06-rank-lo"]),
-                      ("Mistral-7B", 4, ["mis-bat-a", "mis-rank-a", "mis-rank-b", "mis-rank-lo"])):
+                      ("Mistral-7B", 4, ["mis-bat-a", "mis-rank-a", "mis-rank-b", "mis-rank-lo",
+                                         "mis-rank-hi"]),
+                      ("TheoremQA/Qwen3-8B", 8, ["tqa-rank", "tqa-rank-d1", "tqa-rank-d2"]),
+                      ("TheoremQA/Qwen3-0.6B", 6, ["tqa06-rank", "tqa06-rank-d1", "tqa06-rank-d2"]),
+                      ("TheoremQA/Mistral-7B", 4, ["tqamis-rank", "tqamis-rank-d1", "tqamis-rank-d2"])):
     gg = rep.restricted(rep.load(tags))
     ent = {"n_items_groups": [sum(map(len, gg.values())), len(gg)],
            "full": arm(gg, f"ok_real_L{L}"),
@@ -203,7 +207,10 @@ t1 = {}
 for fmt, tags in (("multiple choice", ["tA-mc"]), ("numeric", ["tA-num-a", "tA-num-b"]),
                   ("chain of thought", ["tA-cot-1", "tA-cot-2", "tA-cot-3", "tA-cot-4"]),
                   ("numeric, last 4 positions", ["tA-num-k4"]),
-                  ("numeric, last 16 positions", ["tA-num-k16"])):
+                  ("numeric, last 16 positions", ["tA-num-k16"]),
+                  ("numeric, last 32 positions", ["tA-num-k32"]),
+                  ("numeric, last 48 positions", ["tA-num-k48"]),
+                  ("numeric, whole prompt (k=61)", ["tA-num-k61"])):
     L = {k: v for k, v in e14(tags).items() if v}
     if not L:
         continue
@@ -259,16 +266,25 @@ if dn and 26 in dn:
     md.append("layer 26 by cell (R/F/K/B): " + "; ".join(
         f"{a} {d[a]}" for a in ("replace_real", "add_d_a1", "add_g", "add_d_a0.5", "add_d_a2", "add_dbar")))
 for tag in ("d17-shuffled", "d17-corrupted"):
-    L = e14([tag])
+    # <tag>-b holds the fourteen layers the first pass skipped, among them 23
+    # and 25, which are inside the 21--27 band the paper quotes.
+    L = e14([tag, tag + "-b"])
     if L:
-        dv = {k: v for k, v in curve(L, "ok_add_d_a1").items() if 21 <= k <= 27}
-        gv = {k: v for k, v in curve(L, "ok_add_g").items() if 21 <= k <= 27}
+        dc, gc = curve(L, "ok_add_d_a1"), curve(L, "ok_add_g")
+        dv = {k: v for k, v in dc.items() if 21 <= k <= 27}
+        gv = {k: v for k, v in gc.items() if 21 <= k <= 27}
         if not dv or not gv:
             continue
-        res[tag] = {"add_d_R_21_27": [r2(min(dv.values())), r2(max(dv.values()))],
-                    "add_g_R_21_27": [r2(min(gv.values())), r2(max(gv.values()))]}
-        md.append(f"{tag}: content d on R over L21-27 {res[tag]['add_d_R_21_27']}, "
-                  f"presence g {res[tag]['add_g_R_21_27']}")
+        dbest = max(dc, key=dc.get)
+        res[tag] = {"layers": sorted(L),
+                    "add_d_R_21_27": [r2(min(dv.values())), r2(max(dv.values()))],
+                    "add_g_R_21_27": [r2(min(gv.values())), r2(max(gv.values()))],
+                    "add_d_best": [dbest, r2(dc[dbest])],
+                    "add_d_curve": {k: r2(v) for k, v in sorted(dc.items())},
+                    "add_g_curve": {k: r2(v) for k, v in sorted(gc.items())}}
+        md.append(f"{tag} ({len(L)} layers): content d on R over L21-27 "
+                  f"{res[tag]['add_d_R_21_27']}, presence g {res[tag]['add_g_R_21_27']}, "
+                  f"best d {res[tag]['add_d_best']}")
 
 # ---- 7. geometry: massive activations, corrected PR -------------------------
 section("7. Span geometry on every calculator (sec. 4.6 spectral paragraph)")

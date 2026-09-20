@@ -52,6 +52,20 @@ NEW = {
                                 ["mis-ko"]),
     ("TheoremQA", "Qwen3-0.6B"): (["t06-bat", "tqa06-rank"], None, None, ["t06-ko"]),
 }
+# 2026-09-20: the three TheoremQA rank curves were five points (k=4..128) and
+# still climbing at the last one; the Mistral MedCalc curve was still climbing
+# at k=256. The dense tags add the knee points and the range above 128, on the
+# restricted groups of each row, so every rank curve in the paper is read on
+# the same grid and its saturation can be seen rather than assumed. k* is
+# unchanged by construction -- it is defined on the fixed grid {16,32,64,128},
+# all four of which the original tags already measured.
+RANK_DENSE = {
+    ("TheoremQA", "Qwen3-8B"): ["tqa-rank", "tqa-rank-d1", "tqa-rank-d2"],
+    ("TheoremQA", "Qwen3-0.6B"): ["tqa06-rank", "tqa06-rank-d1", "tqa06-rank-d2"],
+    ("TheoremQA", "Mistral-7B"): ["tqamis-rank", "tqamis-rank-d1", "tqamis-rank-d2"],
+    ("MedCalc", "Mistral-7B"): ["mis-rank-a", "mis-rank-b", "mis-rank-lo",
+                                "mis-rank-hi", "mis-bat-a"],
+}
 DONE_ROWS = {"q06-bat-a": 467, "q06-bat-b": 467, "q06-depth-a": 467, "q06-depth-b": 467,
              "q06-rank-a": 467, "q06-rank-b": 467, "q06-rank-lo": 467, "q06-ko": 469,
              "mis-bat-a": 221, "mis-bat-b": 221, "mis-depth-a": 221, "mis-depth-b": 221,
@@ -73,6 +87,10 @@ FILL = {
     ("MedCalc", "Mistral-7B"): (["dep1-mcmis"], ["ko1-mcmis"]),
     ("TheoremQA", "Mistral-7B"): (["dep1-tqamis-a", "dep1-tqamis-b"], ["ko1-tqamis"]),
 }
+DONE_ROWS.update({"tqa-rank-d1": 99, "tqa-rank-d2": 99,
+                  "tqa06-rank-d1": 132, "tqa06-rank-d2": 132,
+                  "tqamis-rank-d1": 115, "tqamis-rank-d2": 115,
+                  "mis-rank-hi": 221})
 DONE_ROWS.update({**{f"dep1-mc8-{x}": 135 for x in "abcd"}, **{f"ko1-mc8-{x}": 134 for x in "abcdef"},
                   **{f"dep1-tqa8-{x}": 99 for x in "abcd"}, **{f"ko1-tqa8-{x}": 63 for x in "abc"},
                   "dep1-mc06-a": 362, "dep1-mc06-b": 362, "ko1-mc06": 90,
@@ -154,6 +172,9 @@ def resolved_rows():
         for i, tags in enumerate(NEW.get((task, model), (None,) * 4)):
             if tags and complete(tags):
                 selected[i] = tags
+        dense = RANK_DENSE.get((task, model))
+        if dense and complete(dense):
+            selected[2] = dense
         fill = FILL.get((task, model))
         if fill and selected[1] and selected[3] and complete(fill[0] + fill[1]):
             selected[1] = selected[1] + fill[0]

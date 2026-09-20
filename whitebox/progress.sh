@@ -23,7 +23,7 @@ mis-rank-hi    221  rows sra1
 d17-shuffled-b  14  e14  hsw
 d17-corrupted-b 14  e14  sra1
 tA-num-k32      36  e14  sra4
-tA-num-k48      36  e14  sra4
+tA-num-k48      36  e14  hsw3
 tA-num-k61      36  e14  wb2
 "
 
