@@ -458,11 +458,19 @@ def tab_ladder_models(specs, out: pathlib.Path, name="tab-ladder-models"):
 
 def tab_prdiag(paths, out: pathlib.Path, name="tab-prdiag",
                layers=(8, 12, 14, 16, 20, 28, 34)):
-    """Participation ratio of the document span, measured four ways.
+    """Participation ratio of the content matrix, measured four ways.
 
     The plain number collapses at one layer; each of the three corrections for
     massive activations removes the collapse. Medians, because the plain column
     is bimodal and its mean describes no item.
+
+    The PR columns are the CENTRED content matrix (d_pr_*), which is the
+    quantity the text calls "the centred participation ratio" and the one
+    Eq. (rank) truncates. They used to be the state's own PR (pr_hg /
+    hg_pr_*), which differs by about fifteen points away from the collapse and
+    left the paragraph's numbers unfindable in the table it cited. The last two
+    columns stay on the state: a massive activation is a property of h, not of
+    the difference between two h's.
     """
     rows = []
     for q in paths:
@@ -490,10 +498,10 @@ def tab_prdiag(paths, out: pathlib.Path, name="tab-prdiag",
         if not gs:
             continue
         lines.append(
-            f"${L}$ & ${med(gs, 'pr_hg'):.1f}$ & "
-            f"${med(gs, 'hg_pr_droppos'):.1f}$ & "
-            f"${med(gs, 'hg_pr_unit'):.1f}$ & "
-            f"${med(gs, 'hg_pr_dropdim'):.1f}$ & "
+            f"${L}$ & ${med(gs, 'pr_d'):.1f}$ & "
+            f"${med(gs, 'd_pr_droppos'):.1f}$ & "
+            f"${med(gs, 'd_pr_unit'):.1f}$ & "
+            f"${med(gs, 'd_pr_dropdim'):.1f}$ & "
             f"${med(gs, 'hg_norm_ratio'):.1f}$ & "
             f"${100 * med(gs, 'hg_top_dim_share'):.1f}\\%$ \\\\")
     lines += [r"\bottomrule", r"\end{tabular}"]

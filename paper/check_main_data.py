@@ -288,6 +288,28 @@ check('tighter controls span 0.17-0.28',
       (round(min(x[0] for x in tight), 2), round(max(x[1] for x in tight), 2)) == (0.17, 0.28))
 prose('$0.17$--$0.28$ over layers $21$--$27$')
 
+# the spectral paragraph: the prose and tab:prdiag must be the same quantity,
+# the centred PR of the content matrix, on all 48 documents
+import statistics
+geom = collections.defaultdict(list)
+for path in sorted(BY.glob('*/geom-8b.jsonl')):
+    for row in read(path):
+        for g in row.get('geom', []):
+            geom[g['layer']].append(g)
+gmed = lambda L, k: statistics.median(x[k] for x in geom[L])
+check('spectral: 48 documents', len({r['calculator_id'] for path in sorted(BY.glob('*/geom-8b.jsonl')) for r in read(path)}) == 48)
+check('spectral: PR falls to 1.0 at layer 16', round(gmed(16, 'pr_d'), 1) == 1.0)
+check('spectral: PR is 68 at layer 12', round(gmed(12, 'pr_d')) == 68)
+check('spectral: dropping four loud positions restores 85 at layer 16',
+      round(gmed(16, 'd_pr_droppos')) == 85)
+lo = min(gmed(L, 'd_pr_droppos') for L in geom if L <= 28)
+hi = max(gmed(L, 'd_pr_droppos') for L in geom if L <= 28)
+check('spectral: corrected PR stays 62-98 through layer 28',
+      (round(lo), round(hi)) == (62, 98))
+check('spectral: tab-prdiag reports the same quantity',
+      f"${gmed(16, 'd_pr_droppos'):.1f}$" in (HERE/'tab-prdiag.tex').read_text())
+prose('to $1.0$ at layer $16$'); prose('between $62$ and $98$')
+
 rk = json.loads((HERE/'replication-values.json').read_text())
 for cell in rk:
     if cell['task'] == 'TheoremQA':

@@ -617,12 +617,12 @@ recovery in these tests.
 \paragraph{A spectral drop is not evidence of compression.}
 Could the loss of transfer reflect compression into fewer dimensions? We
 examine the centred participation ratio, a summary of how broadly matrix energy
-is distributed across singular directions. It falls from $69$ at layer $12$
-to $17$ at layer $16$, but this drop is driven by unusually large activations
+is distributed across singular directions. It falls from $68$ at layer $12$
+to $1.0$ at layer $16$, but this drop is driven by unusually large activations
 \citep{sun2024massive, shi2026melayer}. In $35$ of $48$ calculators, one
 token's state reaches $121$--$195$ times the median span norm, always on the
 same two hidden dimensions. Removing the four highest-norm positions restores
-the ratio to $85$ at layer $16$, and it stays between $62$ and $99$ over layers
+the ratio to $85$ at layer $16$, and it stays between $62$ and $98$ over layers
 $0$--$28$. The drop is also absent in Qwen3-0.6B and Qwen3-1.7B.
 This diagnostic therefore does not support compression as the explanation
 for lost transfer: a few large activations distort the dimensionality summary
@@ -1511,13 +1511,15 @@ experiment.
 \label{app:depth}
 
 \begin{table}[h]
-\caption{Participation ratio of the document's span on Qwen3-8B, measured four
-ways, medians over $36$ items (the plain column is bimodal, so its mean
-describes no item). The first column is the quantity usually reported and the
-only one that collapses. The last two columns say why: at layer $16$ one token
-in $34$ of $40$ documents acquires a state $150$ times (median) the span's norm, carried by
-two fixed hidden dimensions, and the top eight dimensions then hold $98\%$ of
-the variance. Removing four positions out of four hundred, or normalising each
+\caption{Centred participation ratio of the content matrix across the
+document's span on Qwen3-8B, measured four ways, medians over $96$ items from
+all $48$ documents (the plain column is bimodal, so its mean describes no
+item). The first column is the quantity usually reported and the only one that
+collapses. The last two columns say why---they are properties of the state
+itself, not of the difference: at layer $16$ one token in $35$ of $48$
+documents acquires a state $153$ times (median) the span's norm, carried by two
+fixed hidden dimensions, and the top eight dimensions then hold $98\%$ of the
+variance. Removing four positions out of four hundred, or normalising each
 position to unit length, removes the collapse entirely.}
 \label{tab:prdiag}
 \centering

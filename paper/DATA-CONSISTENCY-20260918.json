@@ -1,5 +1,5 @@
 {
-  "checks_passed": 70185,
+  "checks_passed": 70193,
   "source_sha256": {
     "howskill/results/p8-wb/fetched/by-host/hsw/full-battery-a.jsonl": "af6c876c2f714ad312e9c884a1fe869ced3beb3f0bf5679bf7a2c98a697b81fb",
     "howskill/results/p8-wb/fetched/by-host/hsw2/full-battery-b.jsonl": "ee6a418a12f7b220a37b4ddb4333c5d30cdeaafc9a9769cd02c842fa208b7a8f",
@@ -437,10 +437,11 @@
     "whitebox/results/fetched/tA/d17-corrupted-b/layer_14.jsonl": "5b3ab0d61d3d736a40cb9a0d17087d50b7535a062015cbc8006b307671c32649",
     "whitebox/results/fetched/tA/d17-corrupted-b/layer_15.jsonl": "eb9ad6b43bca6e92308cd2f478696d6efa85927732309028541b3ba8940efb50",
     "whitebox/results/fetched/tA/d17-corrupted-b/layer_23.jsonl": "cdd9e4e885502390ee99b6747af2038c9b5a8741f9667cdf638bc188d7d533f6",
-    "whitebox/results/fetched/tA/d17-corrupted-b/layer_25.jsonl": "1ffe3752c10aa6ed8461cd86a1b8957257cd7827bcf661a13ffe184ded812228"
+    "whitebox/results/fetched/tA/d17-corrupted-b/layer_25.jsonl": "1ffe3752c10aa6ed8461cd86a1b8957257cd7827bcf661a13ffe184ded812228",
+    "howskill/results/p8-wb/fetched/by-host/hsw/geom-8b.jsonl": "99cb58075ddf713d001d03c2b284b1a6b1db261176ecc30245cacdce98e50dc2"
   },
   "artifact_sha256": {
-    "skillvector.tex": "1b8f1437d20a3b1cd0eb2596a203f08432be45c86a17ea6583973749d8ae3774",
+    "skillvector.tex": "18dbf24695f97f9be89ec96126c522edb4788db67cb034ad8c90fc8719cdff8a",
     "tab-answer-format.tex": "b85378776a67ffb7b5f7189a59ed88518c147ec4dd60912982a04b9dbec2cde1",
     "tab-big40.tex": "b4dbb79797c1e0e1531ed649bd7b0e7ad4edd7faeb30f0c19ba91033244ab346",
     "tab-skill-content.tex": "babcffd1366b64cbe7abcbfd806a6cb76adc034d2d0a0c9852c06d31e6adba09",
