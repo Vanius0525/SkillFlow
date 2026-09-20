@@ -959,6 +959,13 @@ $0.38$, permuted $0.25$ and noise $0.15$, and the depth curve has no cliff
 \subsection{Evaluation scope and intervention provenance}
 \label{app:limits}
 
+\paragraph{An accidental replication.} A queueing mistake ran one $36$-layer
+synthetic sweep ($358$ items, two arms, generations up to $900$ tokens) twice,
+on two different GPUs in two different containers. All $36$ layer files agree
+byte for byte. This does not bound the nondeterminism discussed in
+\S\ref{sec:setup}---it is one configuration on one pair of devices---but it is
+the only end-to-end check of it we have, and it came out exact.
+
 \paragraph{Sample size and scope.} The battery was developed on $n=40$ (ten
 calculators $\times$ four rescued instances), which gives intervals of roughly
 $\pm 0.15$; \S\ref{sec:battery} reruns it on forty calculators and
@@ -1252,33 +1259,34 @@ Single-position patching is the standard move in this literature, and
 Table~\ref{tab:causal} is a multiple-choice result, so it is worth asking what
 that one position is carrying. The same items exist in a free-form numeric form,
 where the answer is a number the model must compute rather than an option it
-must select; there the skill is worth $0 \to 0.467$ and the rescued cell has 56
-items.
+must select; there the skill is worth $0.006 \to 0.332$ and the rescued cell
+has $119$ of the $358$ items.
 
-Two things change and one does not. The ceiling collapses: through layer 22
-every condition reads zero, including replacing the position outright with the
+Two things change and one does not. The ceiling collapses: through layer 22 no
+condition exceeds $0.008$, including replacing the position outright with the
 true skill state, and the best any single-position intervention achieves is
-$0.304$, at layer 32. What does not change is the ordering---the content
-component recovers $0.268$ of that $0.304$ and the presence component
-$0.018$---so the conclusion of \S\ref{sec:decomp} survives the format while the
-magnitude does not (full sweep in Appendix~\ref{app:tables}).
+$0.235$, at layer 30. What does not change is the ordering---the content
+component recovers $0.210$ and the presence component $0.008$---so the
+conclusion of \S\ref{sec:decomp} survives the format while the magnitude does
+not (full sweep in Appendix~\ref{app:tables}).
 
 \paragraph{It is the format, not the model.} The identical sweep on the
-\emph{same model and the same items} in multiple-choice form (Qwen3-8B,
-$n=120$, $n_R=44$) recovers $0.977$ at layer 26 and $1.000$ at layers 30 and 35.
+\emph{same model and the same $358$ items} in multiple-choice form (Qwen3-8B,
+$n_R=94$) recovers $0.957$ at layer 26 and $1.000$ at layers 29, 30 and 35.
 Same model, same items, same intervention, same layers: $1.000$ when the answer
-is one option letter, $0.304$ when it is a number the model has to produce.
+is one option letter, $0.235$ when it is a number the model has to produce.
 
-The reason is mechanical and can be counted. Of the 120 items, \emph{none} has a
-gold answer that is a single token under this tokenizer: 36 are two tokens, 55
-three, 29 four. A patch at one prompt position can fix at most the first
-generated token; the remaining one to three are produced in a context that still
-does not contain the conversion table. Multiple choice compresses the answer to
-exactly one token---which is exactly the unit a single-position patch
-transports. Patching the last $k$ positions instead of one confirms that it is a
-capacity and not a threshold: $k = 1, 4, 16$ recover $0.286$, $0.286$ and
-$0.554$ at layer 30, so sixteen positions carry about half of what the document
-carries and four---the chat suffix---carry nothing extra.
+The reason is mechanical and can be counted. The gold answers run one to five
+tokens under this tokenizer and $341$ of the $358$ use two to four. A patch at
+one prompt position can fix at most the first generated token; the rest are
+produced in a context that still does not contain the conversion table.
+Multiple choice compresses the answer to exactly one token---which is exactly
+the unit a single-position patch transports. Patching the last $k$ positions
+instead of one does \emph{not} lift the ceiling in proportion: $k=1,4,16$
+recover $0.235$, $0.261$ and $0.403$, and $k=32,48,61$ recover $0.403$, $0.395$
+and $0.370$, so sixteen positions carry about half of what the document carries,
+four---the chat suffix---carry nothing extra, and everything past sixteen
+carries nothing at all.
 
 \paragraph{On third-party skills the same probe reads nothing.} There,
 replacing the final prompt position with the with-skill state repairs at most 3
@@ -2505,13 +2513,15 @@ blue arrow.}
 
 \begin{table}[h]
 \caption{The same items under two answer formats. Top: the effect itself. In
-multiple choice the small model shows a $+12$pp skill effect over an $0.18$
+multiple choice the small model shows a $+11$pp skill effect over an $0.18$
 floor; in free-form it shows nothing at all, over a floor of exactly zero, and
-the effect appears only at 8B. Bottom: the same four documents under both
-formats, where ``share'' is
-$(\text{acc}-\text{none})/(\text{gold}-\text{none})$. Destroying every number in
-the document keeps two thirds of the effect in multiple choice and none of it in
-free-form.}
+the effect appears only at 8B. Top block and the multiple-choice column of the
+bottom block are the $358$-item reruns; the free-form control column is the
+earlier $120$-item sample, which has not been rerun with the corrupted and
+scrambled documents. Bottom: the same four documents under both formats, where
+``share'' is $(\text{acc}-\text{none})/(\text{gold}-\text{none})$. Destroying
+every number in the document keeps just over half of the effect in multiple
+choice and none of it in free-form.}
 \label{tab:format}
 \centering
 \small
@@ -2519,18 +2529,18 @@ free-form.}
 \toprule
 model & format & no document & wrong document & gold skill & effect \\
 \midrule
-Qwen3-1.7B & multiple choice & 0.180 & 0.145 & 0.300 & $+12.0$pp \\
+Qwen3-1.7B & multiple choice & 0.179 & 0.151 & 0.288 & $+10.9$pp \\
 Qwen3-1.7B & free-form       & \textbf{0.000} & --- & \textbf{0.000} & $\mathbf{0}$ \\
-Qwen3-8B   & multiple choice & 0.292 & 0.242 & 0.550 & $+25.8$pp \\
-Qwen3-8B   & free-form       & \textbf{0.000} & \textbf{0.000} & \textbf{0.467} & $\mathbf{+46.7}$\textbf{pp} \\
+Qwen3-8B   & multiple choice & 0.274 & 0.249 & 0.425 & $+15.1$pp \\
+Qwen3-8B   & free-form       & \textbf{0.006} & \textbf{0.006} & \textbf{0.332} & $\mathbf{+32.6}$\textbf{pp} \\
 \midrule
 \multicolumn{2}{l}{document in context} & \multicolumn{2}{c}{multiple choice (1.7B)} & \multicolumn{2}{c}{free-form (8B)} \\
 \multicolumn{2}{l}{} & acc & share & acc & share \\
 \midrule
-\multicolumn{2}{l}{none}                        & 0.180 & --- & 0.000 & --- \\
-\multicolumn{2}{l}{same document, \emph{factors} replaced} & 0.260 & 0.67 & \textbf{0.000} & \textbf{0.00} \\
-\multicolumn{2}{l}{same document, \emph{lines} scrambled}  & 0.270 & 0.75 & 0.325 & 0.70 \\
-\multicolumn{2}{l}{gold skill}                  & 0.300 & 1.00 & 0.467 & 1.00 \\
+\multicolumn{2}{l}{none}                        & 0.179 & --- & 0.000 & --- \\
+\multicolumn{2}{l}{same document, \emph{factors} replaced} & 0.237 & 0.54 & \textbf{0.000} & \textbf{0.00} \\
+\multicolumn{2}{l}{same document, \emph{lines} scrambled}  & 0.268 & 0.82 & 0.325 & 0.70 \\
+\multicolumn{2}{l}{gold skill}                  & 0.288 & 1.00 & 0.467 & 1.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -2563,7 +2573,9 @@ $n=39$.}
 ``Donor'' is the with-skill forward and ``receiver'' the prompt being patched
 into; the two span channels patch into a length-matched filler-substituted
 prompt, the final-position channel into the no-document prompt, which is why
-their baselines differ. Peaks in \textbf{bold} where the channel recovers most
+their baselines differ. The final-position rows are the $358$-item reruns; the
+two span channels are the earlier $39$-item transplant runs, which were not
+rerun. Peaks in \textbf{bold} where the channel recovers most
 of the donor.}
 \label{tab:windows2}
 \centering
@@ -2583,9 +2595,9 @@ channel & configuration & recv. & peak (layers) & donor \\
  & 8B, free-form         & 0.008 & 0.025 (any, i.e.\ none) & 0.467 \\
 \midrule
 \multirow{3}{*}{final position(s)}
- & 1.7B, MC, rescued cell & 0.000 & \textbf{1.000} (24--27) & 1.000 \\
- & 8B, MC, rescued cell   & 0.000 & \textbf{1.000} (30--35) & 1.000 \\
- & 8B, free-form, rescued cell & 0.000 & 0.304 ($k$=1), 0.554 ($k$=16) & 1.000 \\
+ & 1.7B, MC, rescued cell & 0.000 & \textbf{1.000} (26--27) & 1.000 \\
+ & 8B, MC, rescued cell   & 0.000 & \textbf{1.000} (29--35) & 1.000 \\
+ & 8B, free-form, rescued cell & 0.000 & 0.235 ($k$=1), 0.403 ($k$=16) & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -2718,9 +2730,11 @@ final position & the last prompt token        & 21--27 & 0.436--0.487 & 0.231 \\
 
 
 \begin{table}[h]
-\caption{The same measurements at two model sizes. The multiple-choice presence
-row is the reason we take the free-form format as the primary evidence: on the
-8B, chance on four options is $0.250$, and that is exactly where $\gvec$ sits.}
+\caption{The same measurements at two model sizes, on the $358$-item reruns.
+The multiple-choice presence row is the reason we take the free-form format as
+the primary evidence: on the 8B, chance on four options is $0.250$ and $\gvec$
+sits at $0.298$, within a few points of it, while in free-form it reads
+$0.008$.}
 \label{tab:ladder}
 \centering
 \small
@@ -2728,15 +2742,15 @@ row is the reason we take the free-form format as the primary evidence: on the
 \toprule
  & Qwen3-1.7B & Qwen3-8B \\
 \midrule
-multiple choice: none / wrong doc / skill & 0.179 / 0.151 / 0.288 & 0.292 / 0.242 / 0.550 \\
-free-form: none / wrong doc / skill       & 0.000 / --- / 0.000   & 0.000 / 0.000 / 0.467 \\
+multiple choice: none / wrong doc / skill & 0.179 / 0.151 / 0.288 & 0.274 / 0.249 / 0.425 \\
+free-form: none / wrong doc / skill       & 0.000 / --- / 0.000   & 0.006 / 0.006 / 0.332 \\
 \midrule
 MC, rescued cell: replace outright        & 1.000 & 1.000 \\
-MC, rescued cell: $+\dvec$                & 0.805 & 0.864 \\
-MC, rescued cell: $+\gvec$                & 0.098 & 0.250 (= chance) \\
-free-form, rescued cell: replace outright & ---   & 0.304 \\
-free-form, rescued cell: $+\dvec$         & ---   & 0.268 \\
-free-form, rescued cell: $+\gvec$         & ---   & 0.018 \\
+MC, rescued cell: $+\dvec$                & 0.805 & 0.894 \\
+MC, rescued cell: $+\gvec$                & 0.098 & 0.298 \\
+free-form, rescued cell: replace outright & ---   & 0.235 \\
+free-form, rescued cell: $+\dvec$         & ---   & 0.210 \\
+free-form, rescued cell: $+\gvec$         & ---   & 0.008 \\
 \midrule
 layers where $\|\gvec\| > \|\tvec\|$      & 0--16 & 0--12 \\
 $\mathrm{PR}(\dvec)$ centred, deepest layer & 5.4 & 18.1 \\
