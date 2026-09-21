@@ -166,21 +166,26 @@ k  =    1      4     16     32     48     61
 
 ---
 
-## 6. ⚠ 机器：有一批可能被起来了，需要确认并停机
+## 6. 机器：已确认全部 STOPPED（2026-09-21 接手时核实，无需再处理）
 
 2026-09-21 我为 §5 第 9 项准备实验时，对 **sra2 / sra4 / hsw / wb** 执行过
 `inspire notebook start --no-wait`，随后用户叫停。**没有执行过 `qstart`，本地也没有守护进程，
-所以即使起来了也没有任何作业在跑**，只是可能空转烧点券（0.33 点券/小时，预算 998M，可忽略）。
+所以即使起来了也没有任何作业在跑**。
 
-当时平台从 WSL 连不上：`getaddrinfo ENOTFOUND qz.sii.edu.cn` —— 就是 CLAUDE.md 记的
-**WSL DNS 走错网卡**的老问题，通常几分钟自恢复。**接手后第一件事**：
-
-```bash
-inspire notebook list --workspace 可上网GPU资源      # DNS 恢复后才能用
-for h in sra2 sra4 hsw wb; do inspire notebook stop wt-gpu-$h --workspace 可上网GPU资源; done
-```
-
+**核实结果**：`inspire notebook list --workspace 可上网GPU资源` 显示 `可上网GPU资源` 下
+11 台实例（`wt-gpu-wb/wb2/wb3/wb4`、`sra1-4`、`hsw/hsw2/hsw3`）**全部 STOPPED**。
+那批 `start` 没有生效，不烧点券，**不需要执行任何停机操作**。
 队列文件已 `git checkout` 还原成昨天那批**已完成**的作业，不会被误跑。
+
+⚠ **原文对断连原因的归因是错的，已更正**：当时 `getaddrinfo ENOTFOUND qz.sii.edu.cn`
+**不是** CLAUDE.md 记的「WSL DNS 走错网卡」，而是 **v2rayN 的 sing-box TUN 劫持了 53 端口**。
+平台四个域名全是只有校园 DNS 才有记录的私网地址，走远程 DNS 必然 NXDOMAIN。
+它**不会自恢复**，必须写 hosts 绕开 DNS（TUN 对私网 `10.0.0.0/8` 本来就直连，路由层没问题）。
+完整的 IP 表、幂等脚本、WSL 侧补同步的做法、以及两个会导致误判的诊断陷阱，
+已写进 CLAUDE.md 新增的「VPN 与平台内网域名」一节。**开着 VPN 排查平台连不上时先看那一节。**
+
+同日的环境自检（§1 四条中的前三条）已全部跑过：`check_main_data.py` PASS 70201 checks、
+`audit.py` ALL CHECKS PASSED、`build.sh` errors=none / undefined=0 / overfull=0 / 正文 10 页 / 全文 46 页。
 
 **运维基础设施**（本地守护进程，**当前全部已停**，需要时再起）：
 
@@ -205,6 +210,10 @@ for h in sra2 sra4 hsw wb; do inspire notebook stop wt-gpu-$h --workspace 可上
 
 ## 7. 环境变化
 
+- **VPN 与平台共存已配好**（2026-09-21）：Windows hosts 里写了 4 条 `# BEGIN/END SII-INSPIRE`
+  托管记录，开着 v2rayN TUN 也能用平台，其余流量照常走 VPN（实测 github / google 均 200）。
+  IP 若变化，改 `C:\Users\12970\AppData\Local\Temp\sii-hosts.ps1` 提权重跑即可（幂等）。
+  细节见 CLAUDE.md「VPN 与平台内网域名」一节。
 - **GitHub 走 443**：2026-09-21 本机 22 端口被拒（`Connection closed by 20.205.243.166 port 22`），
   `~/.ssh/config` 已加 `Host github.com / HostName ssh.github.com / Port 443 / User git`，
   备份在 `~/.ssh/config.bak-20260921`。`git push` 现在直接可用。
