@@ -4,7 +4,7 @@
 哪个 tag。改动实验或正文时**同步更新本文件**。
 
 最后更新 **2026-09-21**。配套文件：`CAMPAIGN-2026-09-20.md`（本轮补跑与预注册）、
-`HANDOFF-TAKEOVER-2026-09-20.md`（接管）、`IDEAS.md`（待深挖）。
+`HANDOFF-TAKEOVER-2026-09-21.md`（接管）、`IDEAS.md`（待深挖）。
 
 ---
 
@@ -135,10 +135,22 @@ for tag, pool in (("near", same), ("far", other)):
 
 2026-09-21 已据此改写附录 §B.6（原文把 0.403 vs 0.89 归因于位置，是**跨任务比较，说过头了**）。
 
-### 4.3 §5 仍未做的三项
+### 4.3 真实材料上没有「题目 span」通道
 
-见 `HANDOFF-TAKEOVER-2026-09-20.md` §5：第 1 项（TheoremQA 严格全量，~60 GPU·h）、
-第 4 项（表 3 下半问题依赖补全 36 层，~64 GPU·h）、第 7 项（全部 466 题逐层敲除，~45 GPU·h）。
+现有 MedCalc / TheoremQA 的窗口实验全部是 `--span skill`（文档自己的 token）。
+**`--span task`（题目自己的 token）从没在真实材料上跑过**——附录里那套
+「文档 span → 题目 span → 末位置」的接力故事（`fig:windows`、`tab:windows2`）
+**只在 Tier A 上有**（1.7B 多选 n=39 / 8B 自由作答 n=120）。
+
+`wb_spanpatch` 原生支持 `--span task`，不需要新代码，两个任务各 36 层约 16–20 GPU·h。
+命令写在 `HANDOFF-TAKEOVER-2026-09-21.md` §5 第 9 项。
+**2026-09-21 用户明确说先不要开跑，等他的新 idea。**
+
+### 4.4 仍未做的清单
+
+见 `HANDOFF-TAKEOVER-2026-09-21.md` §5：第 1 项（TheoremQA 严格全量，~60 GPU·h）、
+第 4 项（表 3 下半问题依赖补全 36 层，~64 GPU·h）、第 7 项（全部 466 题逐层敲除，~45 GPU·h）、
+第 8 项（自由作答下的接收方对照，~4 GPU·h）、第 9 项（题目 span 通道，~16–20 GPU·h）。
 
 ---
 
