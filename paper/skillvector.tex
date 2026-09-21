@@ -1337,15 +1337,30 @@ The ceiling is therefore not a budget, and it is not an artefact of writing a
 long prompt's states into a short one: the identical probe, receiver and donor
 recover $1.000$ on the rescued cell of the multiple-choice format, where the
 answer is one token at one position. What separates $0.403$ from $1.000$ is the
-answer format; what separates it from span injection's $0.89$ is whether the
-patched positions are the document's own. The clinical material shows the same
-shape independently: writing donor states at the last $1$, $16$ and up to $256$
-positions \emph{after} the skill recovers $0.03$, $0.06$ and $0.05$
-(\S\ref{sec:decomp}), also flat in the number of positions. On both materials,
-positions the document does not occupy do not buy recovery in proportion to how
-many of them are written. We therefore read the low ceiling as
-a scope condition on patching positions the document does not occupy, rather
-than as a negative result about $\dvec$. In a multiple-choice
+answer format.
+
+It is \emph{not} explained by the patched positions being ones the document
+does not occupy. On this same free-form material the document's own $688$
+positions do no better: they recover $0.408$ at layer $0$, which is close to
+putting the document back, and then at most $0.17$ from layer $3$ and nothing
+from layer $15$ (Table~\ref{tab:windows2}), below what the last sixteen
+positions reach. In free-form no channel on this task exceeds about $0.41$ at
+any layer, so the ceiling is a property of the answer format rather than of
+which positions are written. The comparison that does isolate position is on
+the clinical material, where receiver, items and layer are held fixed: the
+document's own span recovers $0.89$ and up to $256$ positions after it recover
+$0.05$ (\S\ref{sec:decomp}).
+
+One thing this ladder does not separate is the receiver. It patches into the
+\emph{no-document} prompt, while span injection patches into a length-matched
+\emph{wrong-document} one, so a receiver effect is not excluded here. Where we
+have measured it---the same decomposition at the final position on the
+synthetic multiple-choice task---the wrong-document receiver is never worse
+than the no-document one and is better in the middle layers
+(Table~\ref{tab:causal}), so it would move the ceiling the wrong way; but we
+have not run it in free-form. We therefore read the low ceiling as a scope
+condition on single-position and short-suffix patching under a multi-token
+answer format, rather than as a negative result about $\dvec$. In a multiple-choice
 item the answer \emph{is} one token at one position, so a patch that transports
 the model's decision transports the whole task and looks like it transported the
 document. What the final prompt position holds by layer 21 is the model's
