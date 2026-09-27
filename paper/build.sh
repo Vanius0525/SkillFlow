@@ -23,9 +23,11 @@ cp "$HERE"/main.tex "$HERE"/*.bib "$STAGE"/
 cp -r "$HERE"/sections "$HERE"/appendix "$HERE"/tables "$STAGE"/
 mkdir -p "$STAGE/figures" && cp "$HERE"/figures/*.pdf "$STAGE/figures/"
 
-if [ "$MODE" = submission ]; then
-  sed -i 's/^\\extendedappendixtrue$/\\extendedappendixfalse/' "$STAGE/main.tex"
-fi
+# The switch is set here for whichever target was asked for, so the build does
+# not depend on which way main.tex happens to be left in the repository.
+if [ "$MODE" = submission ]; then WANT='\\extendedappendixfalse'; else WANT='\\extendedappendixtrue'; fi
+sed -i -E "s/^\\\\extendedappendix(true|false)$/$WANT/" "$STAGE/main.tex"
+grep -q "^$WANT\$" "$STAGE/main.tex" || { echo "could not set the appendix switch"; exit 1; }
 
 cd "$STAGE"
 "$PDFLATEX" -interaction=nonstopmode "$JOB.tex" > /dev/null 2>&1 || true

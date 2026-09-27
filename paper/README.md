@@ -35,16 +35,21 @@ emails you the real one), the CCS concepts (regenerate at
 `main.tex` carries one switch:
 
 ```latex
-\extendedappendixtrue    % full technical report  — appendices A–G
-\extendedappendixfalse   % WWW submission         — appendices A, B, D only
+\extendedappendixfalse   % WWW submission, 12 pages  — appendices A and B  (the default)
+\extendedappendixtrue    % technical report, 34 pages — appendices A–H
 ```
 
 Nothing is deleted by the switch; the extended files simply are not `\input`.
+The default is the submission, so a fresh Overleaf upload compiles the version
+that has to fit the page limit. Flip the line in Overleaf to read the full one.
 
 ```
-./build.sh              # full report
-./build.sh submission   # flips the switch in the staging copy only
+./build.sh              # technical report -> skillvector.pdf          (34 pages)
+./build.sh submission   # WWW submission   -> skillvector-www2027.pdf  (12 pages)
 ```
+
+`build.sh` sets the switch in its staging copy for whichever target you ask
+for, so it does not matter which way the line is left in the repository.
 
 Both print the structure, the undefined references, the overfull boxes, the
 main-text page count and the total page count. The structure is printed on

@@ -21,8 +21,11 @@
 
    | 目标 | 开关 | 页数 | 用途 |
    |---|---|---|---|
-   | 投稿版 | `\extendedappendixfalse` | **正文 8 页 / 全文 12 页** | WWW 2027（上限 12 页含参考文献与附录） |
-   | 技术报告 | `\extendedappendixtrue`（默认） | 正文 8 页 / 全文 34 页 | arXiv / 审稿人索要 / 自己查 |
+   | 投稿版 | `\extendedappendixfalse`（**默认**） | **正文 8 页 / 全文 12 页** | WWW 2027（上限 12 页含参考文献与附录） |
+   | 技术报告 | `\extendedappendixtrue` | 正文 8 页 / 全文 34 页 | arXiv / 审稿人索要 / 自己查 |
+
+   仓库里 `main.tex` 默认是**投稿版**，所以 Overleaf 上传后直接编译就是 12 页。
+   `build.sh` 会在 staging 副本里按目标显式设置这一行，不依赖仓库里留成哪一边。
 
    ```bash
    ./build.sh              # 34 页 → skillvector.pdf
@@ -146,7 +149,7 @@ python3 ../whitebox/analysis/audit.py  # ALL CHECKS PASSED
 `paper/overleaf-skillvector.zip`（45 个文件 / 0.25 MB，`tools/make_overleaf_zip.sh` 生成）：
 只含 `main.tex`、`README.md`、`.bib`、`sections/`、`appendix/`、`tables/`、`figures/*.pdf`。
 不含 Python、PNG、审计日志、legacy。Overleaf 自己有 `acmart`，编译器选 pdfLaTeX。
-投稿版就在 Overleaf 里把 `\extendedappendixtrue` 改成 `\extendedappendixfalse`。
+包里默认就是投稿版（12 页）；要读完整版就在 Overleaf 里把 `\extendedappendixfalse` 改成 `true`。
 
 ---
 

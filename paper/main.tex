@@ -71,11 +71,14 @@
 
 %% ------------------------------------------------------- appendix switch
 %% A WWW submission has room for the appendices the main text points at and
-%% nothing more. \extendedappendixfalse builds that submission;
-%% \extendedappendixtrue builds the full technical report. Nothing is deleted
-%% either way -- the extended files are simply not \input.
+%% nothing more. \extendedappendixfalse builds that submission (12 pages);
+%% \extendedappendixtrue builds the full technical report (34 pages). Nothing
+%% is deleted either way -- the extended files are simply not \input.
+%% This default is the submission, so that a fresh Overleaf upload compiles
+%% the version that has to fit the page limit. build.sh sets it explicitly
+%% for whichever target you ask for and does not depend on this line.
 \newif\ifextendedappendix
-\extendedappendixtrue
+\extendedappendixfalse
 
 %% A pointer into an appendix only the extended build carries.
 %%   \extref{Appendix}{label}{what the submission build says instead}
