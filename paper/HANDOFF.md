@@ -66,6 +66,23 @@ WWW 2027 长文是 **8 页正文 + 参考文献 + 可选附录，总共不超过
 例：`\extref{Appendix}{app:onepos}{the extended version}` →
 完整版 "Appendix D.1"，投稿版 "the extended version"。
 
+### 图 1 改成并排（2026-09-28 晚）
+
+`fig_channels_full.py` 原来是 `subplots(2, 1)`，两个面板上下叠、figsize (4.9, 3.0)、
+用 `height_ratios` 让两边的条一样粗。改成 `subplots(1, 2)`、figsize (7.1, 2.15)，
+长宽比从 1.84 变成 **3.49**，在两栏页面上只占一条横带。
+
+两处为窄面板做的调整，改回去会出问题：
+
+- 两个面板臂数不同（3 与 5）。等高的轴下直接画会让左边的条变粗，所以把条**居中放进一个
+  共享的 5 槽坐标**（`off = (span - len(items)) / 2`），两边条的物理粗细相同。
+- 两条基线标注原来同一行，面板宽度减半后 `wrong-skill receiver (0.00)` 和
+  `correct skill (0.92)` 会叠在一起，改成上下各一行（y = −0.62 / −1.12，ylim 下界放到 −1.55）。
+
+正文 caption 里 "Top:" / "Bottom:" 相应改成 "Left:" / "Right:"，图宽从 `0.92\textwidth`
+改成 `\textwidth`（图变矮了，占不了多少高度）。`check_main_data.py` 会检查
+`135 / 0.81 / 0.03 / 0.06` 四个数在 PDF 里渲染得出来，改完仍然通过。
+
 ### 删了什么（两个版本都删，理由是重复或已被取代）
 
 | 删除项 | 理由 |

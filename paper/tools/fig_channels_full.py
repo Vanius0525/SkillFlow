@@ -10,9 +10,14 @@ wrong-skill receiver, and its caption had to warn that the panels were not
 comparable. Both panels now read the same 135 rescued items from the same 14
 calculators, into the same wrong-skill receiver, after the instrument fix:
 
-  top     donor states at the last 1, 16, or up to 256 positions after the
+  left    donor states at the last 1, 16, or up to 256 positions after the
           skill, all at layer 8 (completed pb-tq comparison);
-  bottom  the span battery at layer 8 (wb_spanvec full-battery-a/b).
+  right   the span battery at layer 8 (wb_spanvec full-battery-a/b).
+
+The two panels sit side by side so the figure costs one row of a two-column
+page rather than two. They carry different numbers of arms, so the bars are
+anchored to the top of a shared five-slot axis: that keeps a bar the same
+thickness in both panels, which stacking used to get from height_ratios.
 
 Incomplete multi-layer fp-* runs are excluded. Error bars use the same
 calculator bootstrap as the main table.
@@ -76,13 +81,15 @@ def main():
     # Layout and styling follow figs.fig_channels: horizontal bars, the first
     # arm of each panel in the dark shade, each panel's own correct-skill and
     # receiver lines labelled under its lowest bar.
-    fig, (axT, axB) = plt.subplots(2, 1, figsize=(4.9, 3.0), sharex=True,
-                                   gridspec_kw={"height_ratios": [len(top) + 0.7,
-                                                                  len(bottom) + 0.7]})
+    span = max(len(top), len(bottom))
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(7.1, 2.15), sharex=True)
     for ax, items, title in (
-            (axT, top, f"written at the last prompt positions, after the skill ($n={n}$)"),
-            (axB, bottom, f"written over the skill's own span ($n={n}$)")):
-        y = list(range(len(items)))[::-1]
+            (axL, top, f"written at the last positions after the skill ($n={n}$)"),
+            (axR, bottom, f"written over the skill's own span ($n={n}$)")):
+        # centred in a shared span so a bar is the same thickness in both
+        # panels even though one has three arms and the other five
+        off = (span - len(items)) / 2
+        y = [span - 1 - off - i for i in range(len(items))]
         vals = [v[1][0] for v in items]
         lo = [max(v[1][0] - v[1][1], 0) for v in items]
         hi = [max(v[1][2] - v[1][0], 0) for v in items]
@@ -96,18 +103,21 @@ def main():
         ax.set_yticklabels([v[0] for v in items], fontsize=7.6)
         ax.axvline(gold[0], color="#009E73", lw=1.1, ls="--", zorder=0)
         ax.axvline(recv[0], color="#D55E00", lw=1.1, ls=":", zorder=0)
-        ax.set_title(title, fontsize=8.8, loc="left", pad=6)
+        ax.set_title(title, fontsize=8.2, loc="left", pad=5)
         ax.set_xlim(0, 1.12)
         ax.spines[["top", "right"]].set_visible(False)
         ax.tick_params(axis="x", labelsize=7.5)
-        # baseline labels go UNDER the lowest bar, not over the title
-        ax.text(recv[0] + 0.012, -0.72, f"wrong-skill receiver ({recv[0]:.2f})",
+        # The baseline labels go under the bars. Side by side the panels are
+        # half as wide as they were stacked, and on one line these two run into
+        # each other whenever the receiver sits near zero, so they get a line each.
+        ax.text(recv[0] + 0.012, -0.62, f"wrong-skill receiver ({recv[0]:.2f})",
                 fontsize=6.6, color="#D55E00", va="center")
-        ax.text(gold[0] - 0.012, -0.72, f"correct skill ({gold[0]:.2f})",
+        ax.text(gold[0] - 0.012, -1.12, f"correct skill ({gold[0]:.2f})",
                 fontsize=6.6, color="#009E73", va="center", ha="right")
-        ax.set_ylim(-1.1, len(items) - 0.4)
-    axB.set_xlabel("accuracy on the rescued items the skill is needed for", fontsize=8)
-    fig.tight_layout()
+        ax.set_ylim(-1.55, span - 0.4)
+    fig.supxlabel("accuracy on the rescued items the skill is needed for",
+                  fontsize=8, y=0.02)
+    fig.tight_layout(w_pad=1.6)
     fig.savefig(out / "fig-channels-medcalc.pdf", bbox_inches="tight")
     fig.savefig(out / "fig-channels-medcalc.png", bbox_inches="tight", dpi=200)
     plt.close(fig)
