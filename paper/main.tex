@@ -1,0 +1,156 @@
+%% main.tex --- "A Skill's Effect Lives on Its Own Tokens"
+%% Submission format: The ACM Web Conference 2027 (WWW '27), research track.
+%%
+%% The track asks for  \documentclass[sigconf, anonymous, review]{acmart}
+%% and caps a long paper at 8 pages of main content plus references and an
+%% optional appendix, 12 pages in total, with the first 8 pages self-contained.
+%% See https://www2027.thewebconf.org/research-track-papers/
+%%
+%% Layout of this project
+%%   main.tex              this file: preamble, metadata, document skeleton
+%%   sections/             main text, one file per section
+%%   appendix/             appendices, one file per theme
+%%   tables/               tabulars written by the generators in tools/
+%%   figures/              figures written by the generators in tools/
+%%   skillvector.bib       bibliography
+%%
+%% Build:  latexmk -pdf main.tex      (or ./build.sh from the repository)
+
+\documentclass[sigconf, anonymous, review]{acmart}
+
+%% ------------------------------------------------------------------ rights
+%% Placeholders. Replace with the block the ACM rights form emails you.
+\setcopyright{acmlicensed}
+\copyrightyear{2027}
+\acmYear{2027}
+\acmDOI{XXXXXXX.XXXXXXX}
+\acmConference[WWW '27]{Proceedings of the ACM Web Conference 2027}%
+  {April 2027}{To be announced}
+\acmISBN{978-X-XXXX-XXXX-X/27/04}
+
+%% -------------------------------------------------------------- packages
+%% acmart already loads graphicx, booktabs, xcolor, hyperref, url and natbib.
+\usepackage{amsmath}
+% libertine (loaded by acmart) already defines \Bbbk, and amssymb redefines it.
+\let\Bbbk\relax
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\graphicspath{{figures/}}
+
+%% This paper is float-dense: 11 figures and 26 tables, most of them full width.
+%% With LaTeX's defaults the appendix queue overflows and floats are dropped
+%% without an error, so the page is allowed to be mostly float and float-only
+%% pages are allowed to be less than full.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\dblfloatpagefraction}{0.7}
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{3}
+\setcounter{totalnumber}{6}
+\setcounter{dbltopnumber}{4}
+
+%% ---------------------------------------------------------------- macros
+% A visible marker for numbers that are not in yet. Must be empty at submission.
+\newcommand{\PEND}[1]{\textcolor{red}{[pending: #1]}}
+\newcommand{\dvec}{\ensuremath{d}}
+\newcommand{\gvec}{\ensuremath{g}}
+\newcommand{\tvec}{\ensuremath{t}}
+
+%% Long inline lists such as $0.06, 0.00, 0.62, 0.94$ carry no legal break point,
+%% and in a 241pt column they run into the gutter. Make the comma a mild break
+%% opportunity in maths only; TeX still prefers an ordinary interword break.
+\mathchardef\mathcommachar\mathcode`\,
+\mathcode`\,="8000
+{\catcode`\,=\active \gdef,{\mathcommachar\discretionary{}{}{}}}
+\emergencystretch=1em
+
+%% ------------------------------------------------------- appendix switch
+%% A WWW submission has room for the appendices the main text points at and
+%% nothing more. \extendedappendixfalse builds that submission;
+%% \extendedappendixtrue builds the full technical report. Nothing is deleted
+%% either way -- the extended files are simply not \input.
+\newif\ifextendedappendix
+\extendedappendixtrue
+
+%% A pointer into an appendix only the extended build carries.
+%%   \extref{Appendix}{label}{what the submission build says instead}
+%% The extended build renders exactly what the text said before this switch
+%% existed; the submission build names the extended version instead of \ref's ??.
+\newcommand{\extref}[3]{\ifextendedappendix#1~\ref{#2}\else#3\fi}
+
+\begin{document}
+
+\title{A Skill's Effect Lives on Its Own Tokens}
+
+\author{Anonymous Author(s)}
+\affiliation{%
+  \institution{Anonymous Institution}
+  \country{}
+}
+\email{anonymous@example.com}
+
+\input{sections/00-abstract}
+
+%% TODO before submission: regenerate from the ACM CCS tool at
+%% https://dl.acm.org/ccs and paste the block it produces.
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10010147.10010178.10010179</concept_id>
+       <concept_desc>Computing methodologies~Natural language processing</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10010147.10010178.10010187</concept_id>
+       <concept_desc>Computing methodologies~Knowledge representation and reasoning</concept_desc>
+       <concept_significance>300</concept_significance>
+       </concept>
+</ccs2012>
+\end{CCSXML}
+\ccsdesc[500]{Computing methodologies~Natural language processing}
+\ccsdesc[300]{Computing methodologies~Knowledge representation and reasoning}
+
+\keywords{large language models, skill documents, in-context learning,
+activation patching, representation rank, mechanistic interpretability}
+
+\maketitle
+
+%% ================================================================ main text
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-problem-formulation}
+\input{sections/04-experiment}
+\input{sections/05-conclusion}
+\label{endmain}
+
+\section*{AI Use Statement}
+Generative AI tools assisted with manuscript restructuring and language editing,
+literature lookup and reference checks, consistency checks between reported
+results and local experiment records, and figure-label editing. The authors
+are responsible for the final text, scientific claims and experimental artifacts.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{skillvector}
+
+%% ================================================================= appendix
+\appendix
+%% Kept in both builds: what a reader needs to reproduce or scope the result.
+\input{appendix/a-setup}
+\input{appendix/b-full-dataset-rerun}
+%% The technical report only. A WWW submission has 12 pages in total and the
+%% main text takes 8 of them, so these do not fit; nothing here is deleted.
+\ifextendedappendix
+  \input{appendix/c-controls-and-traps}
+  \input{appendix/d-final-position}
+  \input{appendix/e-span}
+  \input{appendix/f-rank-and-replication}
+  \input{appendix/g-related-work}
+  \input{appendix/h-additional-tables}
+\fi
+
+\end{document}

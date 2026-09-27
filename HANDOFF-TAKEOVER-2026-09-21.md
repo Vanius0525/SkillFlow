@@ -1,5 +1,11 @@
 # 接管文档：SkillVector（2026-09-21，写给新的 Claude Code 实例）
 
+> **2026-09-28 追加**：论文已从 ICLR 单栏改为 **WWW 2027（`acmart`/`sigconf`）**，
+> `paper/` 目录整体重构（`sections/` + `appendix/` + `tables/` + `figures/` + `tools/`），
+> 并拆成两个构建目标：投稿版 12 页、技术报告版 34 页。正文内容未改。
+> 细节、验收数字、投稿前 TODO 见 [`paper/HANDOFF.md`](paper/HANDOFF.md) 顶部那一节。
+> 本文件其余内容（实验状态、缺口、机器、坑）仍然有效。
+
 读完这一份就能接手。上一份是 [`HANDOFF-TAKEOVER-2026-09-20.md`](HANDOFF-TAKEOVER-2026-09-20.md)，
 这一轮（09-20 → 09-21）的调度、**事前预注册**与逐条对照在
 [`CAMPAIGN-2026-09-20.md`](CAMPAIGN-2026-09-20.md)。
@@ -23,20 +29,24 @@
 
 ## 1. 先跑这四条确认环境没坏
 
+> **路径在 2026-09-28 改过**（脚本移进 `paper/tools/`，生成物进 `paper/tables/` 与 `paper/figures/`）。
+> 下面是改之后的命令；旧命令会找不到文件。
+
 ```bash
 cd ~/proj/agent-harness
-python3 paper/check_main_data.py          # 必须 PASS: 70201 checks
+python3 paper/tools/check_main_data.py    # 必须 PASS: 70201 checks
 python3 whitebox/analysis/audit.py        # 必须 ALL CHECKS PASSED
-./paper/build.sh                          # errors=none / undefined=0 / overfull=0 / main text pages=10
-cd paper && MPLCONFIGDIR=/tmp/skillvector-mpl python3 refresh_main_data.py   # 八个阶段全过
+./paper/build.sh                          # errors=none / undefined=0 / hbox=0 / 正文 8 页 / 全文 34 页
+./paper/build.sh submission               # WWW 投稿版：全文 12 页
+cd paper && MPLCONFIGDIR=/tmp/skillvector-mpl python3 tools/refresh_main_data.py   # 八个阶段全过
 ```
 
-`refresh_main_data.py` 不覆盖这三个新脚本，改了对应数据要手动跑：
+`refresh_main_data.py` 不覆盖这三个脚本，改了对应数据要手动跑：
 
 ```bash
-python3 paper/controls_table.py    # tab-controls.tex  （§4.2 的三个对照文档）
-python3 paper/decomp_tables.py     # tab-causal / tab-parperp / tab-geometry-tierA
-cd paper && python3 figs.py --e14 "tierA=../whitebox/results/fetched/tA/d17-neutral" --out .
+python3 paper/tools/controls_table.py   # tables/tab-controls.tex （§4.2 的三个对照文档）
+python3 paper/tools/decomp_tables.py    # tab-causal / tab-parperp / tab-geometry-tierA
+cd paper && python3 tools/figs.py --e14 "tierA=../whitebox/results/fetched/tA/d17-neutral" --out figures
 ```
 
 ---

@@ -1,0 +1,245 @@
+% Appendix A -- setup, scope and experimental detail.
+\section{Setup, in full}
+\label{app:setup}
+
+\paragraph{Two task families.} \emph{Real skills, the main material}:
+MedCalc-Bench instances with the 55 gold calculator skills released with
+SRA-Bench---$55$ calculators $\times$ $20$ instances $= 1{,}100$ items, graded
+deterministically against a numeric tolerance with no model in the loop. Both
+the skills and the tasks are other people's, which is what makes the effect size
+credible. Qwen3-8B, single turn, no tools, greedy. Behavioural baseline and replication
+intervals resample skill groups because items sharing a skill are dependent;
+original item-level intervals in individual tables and plots are identified
+separately in the main text.
+\emph{A synthetic positive control}: a fictional unit system with a one-page
+document giving its conversion table, so the no-document floor is guaranteed,
+contamination is impossible, and we know exactly what content means. Items are
+generated from the table ($n=358$), and every item whose answer appears in a
+worked example is dropped.
+
+\paragraph{Two dependent variables.} Accuracy, from a greedily decoded free-form
+answer graded by the task's own scorer, and the teacher-forced log-probability of
+the gold answer. They fail differently and disagree often enough that reporting
+one alone is unsafe (\S\ref{sec:traps}); accuracy is read first throughout. No
+item was rewritten into multiple choice to obtain an accuracy channel---%
+\extref{\S}{sec:format}{The extended version} shows why that rewrite is not harmless.
+
+\paragraph{How to read an arm's number.} Interventions are reported both as raw
+accuracy and as the fraction of the range an intervention could possibly
+recover,
+\begin{equation}
+\rho(\text{arm}) \;=\;
+\frac{\text{acc}(\text{arm}) - \text{acc}(\text{receiver})}
+     {\text{acc}(\text{donor}) - \text{acc}(\text{receiver})},
+\end{equation}
+where the receiver is the prompt being patched into, unpatched, and the donor is
+the document actually in the prompt. $\rho$ is what transfers across settings and
+raw accuracy is not: the four configurations in \extref{Figure}{fig:ladder}{the answer-length ladder} have
+donors at $0.550$, $0.467$, $1.000$ and $0.950$ and receivers from $0.000$ to
+$0.350$, and an earlier draft of this paper reported a channel as \emph{stronger}
+under a longer answer by comparing $0.408$ against $1.000$ when as fractions
+they are $0.87$ and $1.00$. Every figure axis labelled ``fraction'' is
+Eq.~\ref{eq:rho}.
+
+\paragraph{The instrument's own noise floor, measured.} Every decoding run
+carries a \emph{null} arm: the receiver's own span states are captured and
+written back over themselves. With a length-matched receiver this is a
+bit-for-bit identity, so the null arm must equal the unpatched receiver at every
+layer. Before the fix of Appendix~\ref{app:detail} it did not, quite. On
+Qwen3-8B, across $1{,}766$ paired observations from every pre-fix run that
+carries both arms, the null arm agrees with the receiver on $93.9\%$ of items:
+$108$ flip, $46$ from wrong to right and $62$ from right to wrong, symmetric
+within a sign test ($p = 0.15$). The pipeline itself is
+deterministic---the same configuration run on two different machines agreed on
+all $360$ item-by-arm cells---so this is not run-to-run variation but a
+reproducible property of the instrument: the capture and decoding passes took
+different attention kernels, which perturbs the written-back state by $1.2\%$ at
+layer 8, and the dependent variable is the end of a chain of thought several
+hundred tokens long, which is long enough for that to change an argmax somewhere
+and propagate. It scales with the model: the same arm flips $0.6\%$ of items on
+Qwen3-0.6B ($1{,}696$ pairs) and $0.8\%$ on Qwen3-1.7B ($1{,}338$), against
+$6.1\%$ on the 8B. After the fix it is exact ($80/80$).
+
+Three consequences are used throughout. First, \textbf{an effect smaller than
+about six points is not resolvable on the 8B} in pre-fix runs, whatever a
+binomial interval says. Second, the floor is not uniform: on the
+persistent-failure cell it is $16\%$, between two and three times the average,
+which is what one expects of items on a
+decision boundary, so numbers read on that cell are read against a coarser
+ruler. Third, on the restricted split the pre-fix null arm read $0.034$ rather than
+zero---the split conditions on the receiver failing, so a flip there can only go
+upward---so pre-fix span numbers are read against $0.034$; after the fix it reads
+exactly $0.000$, the floor Table~\ref{tab:big40}'s $0.750$ is read against. We have rarely seen this control reported in the patching literature; at a single answer token it is small enough to be invisible, and it
+becomes large only once the dependent variable is a long generation.
+
+\paragraph{Four cells.}
+
+Every item is labelled by what the document did to it: \textbf{R} (rescued:
+wrong without, right with), \textbf{F} (persistent: wrong both ways), \textbf{K}
+(kept: right both ways), \textbf{B} (broken: right without, wrong with).
+\textbf{R is the only cell in which the document demonstrably works}, every table
+here is read by cell, and \S\ref{sec:traps} shows the aggregate over all four can
+be sign-inverted relative to R.
+
+
+
+\subsection{Experimental detail}
+\label{app:detail}
+
+\paragraph{Models and numerics.} Qwen3-1.7B (28 layers, $d=2048$) and Qwen3-8B
+(36 layers, $d=4096$); \S\ref{sec:ladder} adds Qwen3-0.6B (28 layers, $d=1024$)
+and Mistral-7B-Instruct-v0.3 (32 layers, $d=4096$), whose chat template has no
+system role, so the system text is merged into the user turn. Greedy decoding throughout, \texttt{enable\_thinking}
+disabled and verified by a self-test on the rendered template. Eager attention
+wherever an attention mask is manipulated, because sdpa and flash silently
+ignore a 4D mask; layer-output hooks are implementation-independent, so the
+decode-heavy runs use sdpa, which is about $2.5\times$ faster on a 2k-token
+prompt. The 1.7B synthetic runs are fp32: bf16 costs $0.5$--$2.5$ nats on the
+log-probability of a token deep in the tail, and every log-probability quantity
+here is a difference of such numbers. The 8B runs are bf16 and the gaps we
+report from them are $5$--$8$ nats, well outside that error; the accuracy
+channel is immune to it either way.
+
+\paragraph{Self-tests, and one that failed.} Three checks run with the
+experiments. (i) \emph{Self-transplant}: donor and receiver are the same
+forward, so the patch must be an exact no-op. On the fp32 synthetic runs the
+deviation is $0.0$ nats at every layer. On the bf16 8B runs it is up to $0.38$
+nats---bf16 arithmetic over two sequence lengths---while the accuracy channel
+remains an exact no-op at every layer, which is how we tell the two apart.
+(ii) \emph{Last-layer patch}: replacing the final layer's output at the patched
+position makes that position's logits the donor's by construction, so the next
+token must match exactly. (iii) \emph{Query-side control} for the knockouts.
+
+\paragraph{An error worth recording.} The first version of the real-skill
+scoring code patched at index $-1$ of a forward run over prompt \emph{and}
+answer, which is the last token of the answer---after every position whose
+logits are scored. Every arm returned the untouched baseline to six decimals,
+which is what made it visible. Relative indices are the wrong default whenever
+the forward length varies between the capture and the patch.
+
+\paragraph{Control documents.} The synthetic controls are generated from the
+skill document by \texttt{make\_controls.py}, which checks two things: the
+corrupted document's numbers must not coincide with the task set's gold answers
+(7 of 249 do, $2.8\%$), and the shuffle must not be the identity. All three
+controls are stored under the same filename in separate directories, because the
+injector derives the ``\# Skill: \emph{name}'' header from the file stem---a file
+called \texttt{SKILL.\discretionary{}{}{}zorb-units.\discretionary{}{}{}corrupted.md} would announce the manipulation in
+the prompt, and the control would then differ from the treatment in two ways.
+
+\paragraph{Item set.} The synthetic set is generated from the conversion table
+with the value range $2$--$40$, dropping any item whose answer also appears in a
+worked example of the document ($n=358$; the sweeps use the first 120 or 200).
+Distractors are values reachable by misreading the table---the neighbouring row,
+the wrong family, the inverted direction---never random numbers, and the key is
+rotated across A/B/C/D so a position-biased model still scores at chance.
+
+
+\subsection{Evaluation scope and intervention provenance}
+\label{app:limits}
+
+\paragraph{An accidental replication.} A queueing mistake ran one $36$-layer
+synthetic sweep ($358$ items, two arms, generations up to $900$ tokens) twice,
+on two different GPUs in two different containers. All $36$ layer files agree
+byte for byte. This does not bound the nondeterminism discussed in
+\S\ref{sec:setup}---it is one configuration on one pair of devices---but it is
+the only end-to-end check of it we have, and it came out exact.
+
+\paragraph{Sample size and scope.} The battery was developed on $n=40$ (ten
+calculators $\times$ four rescued instances), which gives intervals of roughly
+$\pm 0.15$; \S\ref{sec:battery} reruns it on forty calculators and
+\S\ref{sec:ladder} on further models and a second task, and the conclusions are
+the ones that survived that. We report profiles and not individual layers: the one
+non-monotonicity in the depth curve ($0.250$ at layer 18 against $0.475$ at 20)
+has overlapping intervals and we do not interpret it. Among the three models,
+Qwen3-1.7B is the weakest rung: the document rescues only $8$--$11\%$ of its
+items, so its truncation curve is not resolved and is reported for completeness
+rather than relied on. The width argument rests on Qwen3-0.6B against Qwen3-8B,
+a factor of four within one family; a second family of the same width needs
+more directions (\extref{Appendix}{app:replication}{extended version}).
+In the pre-fix development runs, four independent shards recomputed the three baselines and agreed to the item
+($0.950$ / $0.025$ / $0.175$), and the no-op arm sits on the receiver's baseline
+at all twelve layers to within the $5\%$ numerical floor of
+\S\ref{sec:cells}, so the instrument is checked even where the estimate is
+coarse. The span channel, the depth sweep and the truncation curve have three
+models and two tasks; the knockouts two models and two tasks; the final-position
+results two models (Qwen3-1.7B, fp32); the document-order comparison and the
+within-document localisation one.
+
+\paragraph{Which items the causal claims are about.} Two restrictions stack.
+Causal claims are made only on the rescued cell, the only cell in which the
+document demonstrably works; on the persistent-failure cell the same arms track
+the document rather than correctness---the transplant fails exactly where the
+document fails---which is the right behaviour but is not a substitute for the
+other cells. And within that cell the span arms are read on the calculators
+whose \emph{receiver} never solves an item, because on the others the model does
+not need the document, and before the fix any disruption of the wrong one,
+noise included, let it fall back on what it already knows ($\rho = 0.14$ for
+noise there against $0.00$ here). After the fix noise no longer does that
+($0.00$ on those calculators), but a donor from another skill still reads $0.47$
+there against $0.19$ on the rest. On forty calculators the restriction keeps fifteen of them and
+$60$ items. On this split, accuracy is $0.750$ for the transplant and at most
+$0.083$ for the tested negative controls; the main text distinguishes item-level
+intervals from group-bootstrap uncertainty. Those forty calculators are
+themselves the $160$ rescued items with the most instances per calculator, out
+of $467$. We therefore reran the battery, the truncation curve, the depth sweep,
+the dose curve and the within-document quarters over \emph{every} rescued item
+of every calculator with at least two ($467$ items, $48$ calculators; the
+restriction then keeps $135$ items over $14$). Every conclusion holds and no
+control moves above $0.12$; Appendix~\ref{app:fullscale} gives the comparison
+arm by arm.
+
+\paragraph{What the rank result does and does not establish.}
+\S\ref{sec:rank} truncates the injected content matrix to rank $k$ at a layer
+where the untruncated version recovers most of the effect, and recovery stays near the control floor at $k \le 32$ while the bottom-$k$ control stays at the floor. That
+licenses the forward direction: the effect requires directions of the same order
+as the span's participation ratio, and within the Qwen family neither number
+scales with width. It does not license a claim that the number belongs to the
+document alone (Mistral-7B needs more), nor a converse about depth. Supplying a deep layer
+with a higher-rank message taken from a shallow one does not restore the
+handover ($\rho=0.00$ against $0.06$ for the same-layer donor, $0.00$ with the
+norm matched), so we do not claim that what a deep layer lacks is rank.
+
+\paragraph{Diagnostic results for the behavioural readout.} We could not find any
+representational quantity at the final position that distinguishes the items a
+skill rescues from the ones it does not: the norms and angles agree to three
+digits, and the one similarity measure that separates them under the gold skill
+separates them equally under a wrong one. And the document acts through a chain
+of thought, so every causal measurement decodes several hundred tokens; scoring
+under a forced \texttt{ANSWER:} cue instead leaves almost no behavioural effect
+($0.178$ with the skill, $0.131$ without and $0.100$ with a wrong one, on $720$
+items) while retaining a $+1.08$ nat log-probability difference---so the span
+channel has no usable log-probability reading, and is reported on accuracy
+alone.
+
+\paragraph{An instrument fault, and which results predate its fix.} The state
+capture called the model without an explicit attention mask while decoding
+passed one; for a single unpadded sequence these are mathematically identical
+but take different attention kernels, and they disagree by $1.2\%$ of the
+state's magnitude at layer 8 and $25\%$ at layer 34. The visible consequence was
+that the null arm---the receiver's own states written back over
+themselves---changed the answer on $6.1\%$ of Qwen3-8B items. Passing the mask in
+both makes the null arm exact ($80/80$ across two reruns) and leaves the transplant at
+$\rho = 1.00$ as before. \emph{Rerun after the fix and reported from the
+reruns}: Table~\ref{tab:big40} including the same-family donor, the
+forty-calculator sufficiency curve, the layer windows, the forty-calculator rank
+curve, the ten-calculator dose sweep and battery (Figure~\ref{fig:channels}),
+the document-order comparison at layers $8$ and $16$, the within-document
+quarters on ten and forty calculators, the Qwen3-0.6B truncation curve, and
+every TheoremQA and Mistral-7B run; the attention knockout does not use the
+capture path. \emph{Still from before the fix}: the synthetic tier and the
+final-position sweeps, the ten-calculator development rank curve, the rank
+curves at layers $12$ and $16$, the cross-layer donor, the Qwen3-0.6B depth
+sweep and knockout on MedCalc, Qwen3-1.7B, the halves split, and
+\extref{Figures}{fig:dose}{the dose and prompt-order figures}\ifextendedappendix\ and~\ref{fig:skilltask}\fi; these are read against a null
+arm at $0.034$ rather than $0.000$ on the restricted split. Where a rerun
+changed a conclusion---the worked example's share of the document, the
+instance-specific part at layer $16$, the dose curve's shape---the text says
+so.
+
+\paragraph{Numerics.} Log-probabilities on the synthetic control are fp32,
+because bf16 costs $0.5$--$2.5$ nats on a token deep in the tail. The 8B numbers
+are bf16, which appears as self-transplant deviations of $0.1$--$1.1$ nats while
+the accuracy channel remains an exact no-op; accuracy is read first throughout.
+
+
+

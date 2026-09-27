@@ -1,0 +1,143 @@
+% Appendix -- rank truncation, the model ladder and cross-task replication.
+\section{Rank truncation, the model ladder and replication}
+\label{app:scale}
+
+\begin{table*}[tbp]
+\caption{The channel and the truncation curve at three model widths, each with
+its own restricted split and its own injection layer at matched relative depth.
+$\rho$ is Eq.~\ref{eq:rho}; \emph{gold} is what the document itself is worth on
+that model's restricted items, which is why the $0.6$B and $1.7$B rows have low
+absolute accuracy and a large $n$: those models solve almost nothing without the
+document, so almost every item qualifies. Qwen3-0.6B and Qwen3-8B are after the
+instrument fix; Qwen3-1.7B is before it, and its curve is not monotone, so its
+$k^{*}$ is not interpretable. $k^{*}$ sits between $32$ and $64$ at $d=1024$
+and at $d=4096$ alike; a width-proportional account predicts $k\approx12$ for
+the first. Mistral-7B is in Table~\ref{tab:replicationfull}.}
+\label{tab:laddermodels}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-ladder-models}
+\end{table*}
+
+\subsection{Rank truncation and the model ladder, in more detail}
+\label{app:rank2}
+
+On the denser grid every rank curve in the paper reaches its untruncated value:
+the three TheoremQA rows at $k=192$--$384$ ($0.806$/$0.882$/$0.871$ against
+$0.839$ for Qwen3-8B, $0.717$/$0.701$/$0.732$ against $0.740$ for Qwen3-0.6B,
+and $0.819$/$0.880$/$0.819$ against $0.940$ for Mistral-7B at $k=192,256,384$),
+MedCalc with Qwen3-8B and Qwen3-0.6B at $k=256$, and MedCalc with Mistral-7B at
+$k=384$ ($0.842$, exactly its untruncated value; $0.825$ at $512$). The knee
+$k^{*}$ is computed on the fixed grid $\{16,32,64,128\}$ and is unchanged by
+the added points, by construction.
+
+Every measurement so far says \emph{where} the document's effect lives. This one
+says \emph{how big it is}, in the only unit that is comparable across the
+task-vector literature: the number of directions of the injected object that the
+model actually uses.
+
+We truncate the content matrix across the span's positions to rank $k$ before
+writing it. With $\dvec \in \mathbb{R}^{m \times D}$ and $\bar{\dvec}$ its mean
+over positions,
+\begin{equation}
+\dvec^{(k)} \;=\; \bar{\dvec} \;+\; \sum_{i=1}^{k} \sigma_i u_i v_i^{\top},
+\qquad
+\dvec - \bar{\dvec} \;=\; \textstyle\sum_i \sigma_i u_i v_i^{\top},
+\end{equation}
+the mean kept and only the variation truncated, so that $k$ is comparable with a
+centred participation ratio. $k=1$ is the closest thing in this setting to a
+task vector: one direction, applied at every position of the span.
+
+One direction is not enough, and neither are sixteen
+(Figure~\ref{fig:rank}). On the full rerun's screened subset after the fix
+($n=135$, $14$ calculators), recovery
+at layer $8$ is $0.07, 0.05, 0.12, 0.63, 0.77$ at $k = 4, 16, 32, 64, 128$
+against $0.89$ untruncated, and half of the curve's range above $k=16$ is
+recovered at $k^{*}=47$ ($95\%$ bootstrap interval over calculators $[43, 55]$;
+interpolated in $\log_2 k$, the definition fixed before the model ladder ran).
+The ten-calculator development curve, before the fix, reads
+$0.11, 0.06, 0.06, 0.11, 0.11, 0.33, 0.72, 0.94$ at $k = 1,2,4,8,16,32,64,128$
+and gives $k^{*}=45$.
+
+$k^{*}$ is anchored to the largest value on the grid $k \le 128$, not to the
+untruncated transplant. Where $k=128$ is close to untruncated (Qwen3-8B, $0.77$
+against $0.89$) that makes little difference; where it is not (Mistral-7B,
+$0.71$ against $0.92$) the knee is bounded by the grid, and a finer or longer
+grid could move it up.
+
+\paragraph{It is the top of the spectrum, not the count.} Keeping the
+\emph{bottom} $k$ singular directions instead---the same rank, the discarded
+half of the spectrum---gives $\rho = 0.06$ at $k=16$ and $0.00$ at $k=64$ on
+forty calculators ($0.00$ and $0.06$ on the development set), both at the
+receiver. Without that control, ``sixty-four directions are enough'' could not
+be distinguished from ``any sixty-four directions will do''.
+
+\paragraph{The requirement does not fall with depth (pre-fix, small $n$).} If
+the handover died at layer $15$ because the object had shrunk, the number of
+directions needed would shrink with it. Repeating the truncation where the
+transplant still works, on the calculators the receiver never solves, gives
+accuracy $0.00$ at $k=16$ and $0.62$ at $k=128$ against $1.00$ untruncated at
+layer $12$ ($n=16$), and $0.25$ at $k=16$ and $0.71$ at $k=128$ against $0.79$ at
+layer $16$ with the document after the question ($n=28$)---the knee between $64$
+and $128$ in both. These runs predate the fix and are small; we read them as
+``not lower'', not as a measured knee. At layer $16$ with the document \emph{before} the question, where the
+transplant is already at the floor ($\rho=0.06$), there is no curve at all:
+every truncation reads between $0.00$ and $0.06$, because there is no longer an
+effect for truncation to remove. We do not read the rank of the layer-$16$
+doc-first object at all, since that is the layer at which the massive
+activations of \S\ref{sec:depth} take over its spectrum.
+
+
+
+\paragraph{The obvious converse does not work, and we report that.} If a deep
+layer's handover failed for want of directions, supplying it with a higher-rank
+message should restore it. We tried the direct version---write the layer-8
+donor into layer 16---on ten calculators ($n=30$ after restricting to items that
+neither the wrong document nor the no-document prompt solves). It does not
+restore; it reads $\rho = 0.00$ where the same-layer donor reads $0.06$,
+and matching the norm to layer 16's scale recovers only part of the gap
+($0.13$). The layer-8 state is not a high-rank version of the layer-16 state, it
+is a different code, and the transfer is directional:
+\citet{ardoin2026promptcompression} find middle-to-early injection optimal, and
+we find early-to-middle injection harmful.
+\subsection{Replication across tasks and model families, in full}
+\label{app:replication}
+
+Every point behind Table~\ref{tab:replication}. All runs are after the
+instrument fix. MedCalc rows use forty calculators and each model's own
+behavioural screen; TheoremQA rows use SRA-Bench's $747$ questions with its
+prompt and scorer verbatim, and since most of its $320$ skills serve a single
+question the receiver screen is per skill group, and reduces to an item-level screen for singleton skills.
+Those $747$ questions are the pool each TheoremQA run samples from, not the set
+it evaluates: a run takes at most four questions per skill and at most two
+hundred skills, which here is $142$--$168$ items over $113$--$122$ skills before
+the screen. The MedCalc rows are not sampled this way, and the two should not be
+read as equally exhaustive. Knockout rows are fractions of each
+model's rescued items kept when attention to the document is blocked from layer
+$L$ to the end, unrestricted.
+
+\begin{table*}[tbp]
+\caption{The replication curves. Battery, sufficiency and rank are $\rho$
+(Eq.~\ref{eq:rho}) on the restricted split; necessity is the fraction of rescued
+items kept. ``Another family'' (MedCalc) and ``another skill'' (TheoremQA) are
+the transfer controls available in each set.}
+\label{tab:replicationfull}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-replication-full}
+\end{table*}
+
+Three observations are not in the main text. (i) On TheoremQA with Qwen3-8B,
+blocking attention to the document from layer $0$ still keeps $0.31$ of the
+rescued items, against $0.12$ on MedCalc. Blocking attention is not removing
+the document---its positions still shift the question's rotary phase and length
+---and the receiver restriction selects failures near the model's decision
+boundary; we have not separated the two. (ii) The same receiver-based selection is the
+most likely reason TheoremQA's controls sit at $0.19$--$0.25$ for Qwen3-8B. (iii)
+On LogicBench (not shown), the method's resolution fails: with mostly binary
+answers the restricted split ($n=57$, $16$ skills) gives the transplant $0.75$
+$[0.60, 0.88]$, its own $\dvec$ on the shared prefix $0.80$, half a dose $0.44$, another skill
+$0.38$, permuted $0.25$ and noise $0.15$, and the depth curve has no cliff
+($0.93$ at layer $0$, $0.49$ at $16$, $0.33$ at $20$).

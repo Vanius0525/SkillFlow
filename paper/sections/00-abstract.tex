@@ -1,0 +1,23 @@
+\begin{abstract}
+Skills supplied in a language model's context can improve task performance,
+but how the model represents and uses their content remains unclear. Can one
+hidden-state vector carry a skill's effect, or are states at multiple token
+positions needed? We compare a correct skill with a wrong skill of the same
+token length, then inject the difference between their hidden states. In
+synthetic tasks, the final prompt position carries a large change shared by
+both skills, yet the content-specific difference accounts for most of the
+behavioural gain. Recovery at this position depends on answer format: it falls
+from $1.000$ for a one-token answer to $0.235$ for a short number and $0.003$
+for step-by-step reasoning. Injecting states across the skill's own token span
+instead recovers $0.89$ of its gain on a screened clinical-calculator subset
+of $135$ items. Recovery depends on both skill content and token order.
+Keeping only the leading $32$ directions of the centred state difference
+recovers $0.12$, compared with $0.77$ for $128$ directions. The rank needed to
+reach half of the measured recovery range does not scale proportionally with
+model width within Qwen; Mistral's is higher, though with overlapping intervals. Across two task
+domains and two model families, paired interventions further show that span
+states stop transferring most of the skill's effect before the model stops
+depending on attention to them. These findings identify a transferable
+representation across skill tokens and clarify the limits of probing it at a
+single prompt position.
+\end{abstract}

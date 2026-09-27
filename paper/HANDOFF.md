@@ -1,4 +1,156 @@
-# SkillVector 论文重写交接
+# SkillVector 论文交接
+
+最新一轮：**2026-09-28，改投 WWW 2027 版式 + 整个 paper/ 目录重构**。
+更早的记录（ICLR 单栏时期的重写、润色、图表样式回退）从「2026-09-18 图表样式」一节起原样保留。
+
+---
+
+## 2026-09-28  改成 WWW 2027（ACM acmart/sigconf）+ 目录重构
+
+### 做了什么
+
+1. **版式**：ICLR 单栏 `article + iclr2027_conference.sty` → **`\documentclass[sigconf, anonymous, review]{acmart}`**，
+   即 WWW 2027 research track 指定的设置（<https://www2027.thewebconf.org/research-track-papers/>）。
+2. **正文内容一个字没改**（用 `sed` 按行切片，切完 md5 与原文逐字节一致）。改动只有排版性的：
+   图全部升为 `figure*`、23 张表升为 `table*`（两栏下单栏宽 241pt，表的自然宽度 234–498pt，
+   实测见下），`[h]` → `[tbp]`，以及 7 处指向附录的 `\ref` 换成了下面说的 `\extref`。
+3. **单文件 → 分章文件**：`skillvector.tex`（2873 行）拆成 `sections/`（6 个）+ `appendix/`（8 个），
+   生成物进 `tables/`、`figures/`，脚本进 `tools/`，数值记录进 `values/`，审计日志进 `audit/`。
+4. **附录去重与去过时**（见下「删了什么」）。
+5. **两个构建目标**，靠 `main.tex` 里一个开关切换，**什么都没删**：
+
+   | 目标 | 开关 | 页数 | 用途 |
+   |---|---|---|---|
+   | 投稿版 | `\extendedappendixfalse` | **正文 8 页 / 全文 12 页** | WWW 2027（上限 12 页含参考文献与附录） |
+   | 技术报告 | `\extendedappendixtrue`（默认） | 正文 8 页 / 全文 34 页 | arXiv / 审稿人索要 / 自己查 |
+
+   ```bash
+   ./build.sh              # 34 页 → skillvector.pdf
+   ./build.sh submission   # 12 页 → skillvector-www2027.pdf
+   ```
+
+### 为什么必须有两个目标
+
+WWW 2027 长文是 **8 页正文 + 参考文献 + 可选附录，总共不超过 12 页**，且前 8 页要自足。
+正文（不改内容）在两栏下正好 8 页，参考文献约 1 页，**留给附录的只有约 3 页**，
+而附录在两栏下是 **约 25 页**。实测各节页数（完整版）：
+
+| 附录 | 内容 | 页数 |
+|---|---|---|
+| A | Setup, in full + Experimental detail + Evaluation scope | 2 |
+| B | The full-dataset rerun（`tab:fullscale`、逐层深度、哪些 head 读 span） | 1.5 |
+| C | Control documents + 三个 measurement traps + MC 格式 | 3 |
+| D | 末位置几何 + 分解 + 答案长度阶梯 + 合成层全量 | 3 |
+| E | span battery + 向量由什么构成 + 深度 + belongs | 11 |
+| F | 秩截断 + model ladder + 跨任务复现 | 3 |
+| G | Related work, at length | 1.5 |
+| H | Additional tables | 4 |
+
+投稿版保留 **A + B**（复现所需 + 全量重跑那张表），其余六节只是不 `\input`，
+文件仍在仓库里、仍能编译。
+
+### `\extref`：让两个版本的交叉引用都成立
+
+正文有 7 处、核心附录有 4 处 `\ref` 指向被排除的附录。新宏：
+
+```latex
+\newcommand{\extref}[3]{\ifextendedappendix#1~\ref{#2}\else#3\fi}
+```
+
+- 完整版渲染成**和改之前逐字相同**的 `Appendix~\ref{...}`；
+- 投稿版渲染成 "the extended version"，不出 `??`。
+
+例：`\extref{Appendix}{app:onepos}{the extended version}` →
+完整版 "Appendix D.1"，投稿版 "the extended version"。
+
+### 删了什么（两个版本都删，理由是重复或已被取代）
+
+| 删除项 | 理由 |
+|---|---|
+| `app:decomp` 开头「几何与行为相反」整段（15 行） | 与 `app:geometry` 一节几乎逐字重复，改成一句指针 |
+| 第二处 "Which control you subtract chooses what you measure"（7 行） | 同一段在 `app:onepos` 已有带数字的完整版 |
+| 「shuffle 打乱行序代价很小」那句的第二次出现 | 同一文件内两小节各说了一遍 |
+| `app:depth` 里 **pre-fix 的 window 表**（n=27，7 个 calculator） | 紧接着的段落自己写着 "those estimates are superseded" |
+| `tab:ladder` 的前两行 | 与 `tab:format` 上半块逐数字相同，改成指针 |
+| `tab-prdiag-06/-17/-dl.tex`、`tab-skilltask.tex` | 生成了但全文没有 `\input` |
+| `fig-decode-medcalc`、`fig-depth-medcalc`、`fig-dose-tierA`（pdf+png） | 全文没有 `\includegraphics`；decode 那张是 09-14 删掉的 skill 识别实验的遗物 |
+
+**没有删**（想删但证据不足，留给你判断）：
+- `tab:windows`（三通道表，n=39）：前两行被 `tab:windows2` 完全覆盖，第三行（末位置整集
+  0.436–0.487 / 接收方 0.231）是 `tab:windows2` 没有的量，所以没动。
+- `app:replication` 里 LogicBench 那条否定结果（5 行）：不承担任何正文结论，但删负结果要你点头。
+- 所有其余 pre-fix 数字：文中都明确标注了 pre-fix 且给了 post-fix 对照，属于诚实记录。
+
+### 目录结构
+
+```
+paper/
+  main.tex                 前言 + ACM 元数据 + \input 骨架 + \extendedappendix 开关
+  README.md                怎么编、怎么上 Overleaf、怎么重算数字
+  sections/                00-abstract … 05-conclusion（6 个文件）
+  appendix/                a-setup … h-additional-tables（8 个文件）
+  tables/                  18 个由 tools/ 生成的 tabular 片段
+  figures/                 10 个 pdf（+ png 副本，不进 Overleaf 包）
+  skillvector.bib
+  build.sh                 两个目标都从这里编
+  tools/                   生成器 + 数据核对（原来散在 paper/ 根目录的 14 个 .py）
+    _paths.py              新增：PAPER/TABLES/FIGURES/VALUES 与 main_text()
+    make_overleaf_zip.py   打 Overleaf 包（这台 WSL 没有 zip(1)，用 Python 写）
+  values/                  *-values.json、posbudget.json、DATA-CONSISTENCY
+  audit/                   历次审计日志
+  legacy/                  ICLR 的 .sty/.bst、旧 skillvector.tex、旧 .bak、旧预览图 —— **可以整个删掉**
+```
+
+### 流水线改了哪些路径（都已验证）
+
+`tools/_paths.py` 统一给出 `PAPER / TABLES / FIGURES / VALUES / AUDIT`，以及 `main_text()`
+——因为 `check_main_data.py` 原本是 `skillvector.tex.split('\label{endmain}')[0]` 拿正文做
+prose 检查，拆文件后改成按 `main.tex` 的 `\input` 顺序拼 `sections/*.tex`。
+
+```bash
+cd paper
+MPLCONFIGDIR=/tmp/skillvector-mpl python3 tools/refresh_main_data.py   # 8 个阶段全 PASS
+python3 tools/check_main_data.py     # PASS: 70201 checks（和改之前同一个数）
+python3 ../whitebox/analysis/audit.py  # ALL CHECKS PASSED
+```
+
+`refresh_main_data.py` 仍然不覆盖 `controls_table.py` / `decomp_tables.py` / `figs.py`，
+改了对应数据要手动跑，命令在 `README.md`。
+
+### 验收（2026-09-28）
+
+| 项 | 投稿版 | 完整版 |
+|---|---|---|
+| LaTeX error | 0 | 0 |
+| 未定义引用 | 0 | 0 |
+| Overfull hbox | 0 | 0 |
+| Overfull vbox | 0 | 1（1.6pt，分页产物，不是跑出版心） |
+| 正文页数 | 8（上限 8） | 8 |
+| 全文页数 | **12**（上限 12） | 34 |
+| `check_main_data.py` | 70201 checks PASS | 同 |
+| `whitebox/analysis/audit.py` | ALL CHECKS PASSED | 同 |
+
+### 投稿前还必须做的三件事（`main.tex` 里都标了 TODO）
+
+1. `\acmConference` / `\acmDOI` / `\acmISBN` 现在是占位符，要换成 ACM rights form 发来的那一段。
+2. CCS concepts 现在是我按标准 CCS 树填的
+   （`10010147.10010178.10010179` = Computing methodologies → NLP，
+   `…10010187` = Knowledge representation and reasoning），**投稿前用
+   <https://dl.acm.org/ccs> 重新生成一遍**。
+3. `\author{Anonymous Author(s)}` 那一块，去匿名时换成真实作者。
+
+另：正文 8 页是**踩着上限**的。任何正文改动都可能顶到 9 页，改完必须重跑 `./build.sh submission` 看页数。
+
+### Overleaf
+
+`paper/overleaf-skillvector.zip`（45 个文件 / 0.25 MB，`tools/make_overleaf_zip.sh` 生成）：
+只含 `main.tex`、`README.md`、`.bib`、`sections/`、`appendix/`、`tables/`、`figures/*.pdf`。
+不含 Python、PNG、审计日志、legacy。Overleaf 自己有 `acmart`，编译器选 pdfLaTeX。
+投稿版就在 Overleaf 里把 `\extendedappendixtrue` 改成 `\extendedappendixfalse`。
+
+---
+
+## 2026-09-18 及更早：ICLR 单栏时期的记录
 
 更新日期：2026-09-18（图表样式回退为当日第二轮）。
 

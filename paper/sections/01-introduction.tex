@@ -1,0 +1,69 @@
+\section{Introduction}
+\label{sec:intro}
+
+A skill is a reusable procedure, formula, lookup table or worked example supplied
+in a language model's context to help it solve a task. Recent benchmarks show
+that skills can improve performance \citep{su2026srabench, skillsbench2026},
+but higher accuracy alone does not explain how a model uses them. Does a single
+hidden-state vector carry the useful content, or does the model rely on states
+distributed across the skill's token positions? How long does it continue to
+read those states? We address these questions by intervening on the model's
+representations and measuring how much of the skill's performance gain they
+recover.
+
+Our starting point is a contrast between behaviour and hidden-state geometry.
+Across $1{,}100$ clinical-calculator instances, the correct skill improves
+accuracy by $39.7$ percentage points over no skill, whereas a wrong skill of
+the same token length changes it by $-2.9$ points ($95\%$ interval
+$[-8.6,+2.9]$, paired calculator bootstrap). Yet in a synthetic task, correct and wrong skills produce
+similar changes at the final prompt position: their state differences relative
+to no skill have cosine similarity $0.91$--$0.95$ over layers $0$--$10$.
+These observations motivate a causal question: does the shared state change
+support the improvement, or is the content-specific difference responsible?
+
+We subtract hidden states and inject each difference back into the model. On
+the synthetic task, the change from no skill to a wrong skill recovers only
+$0.098$ of the correct skill's gain, whereas the correct-minus-wrong difference
+recovers $0.805$. Recovery also depends on answer format: the best state
+replacement recovers $1.000$ for one-token multiple choice, $0.235$ for a short
+number and $0.003$ for step-by-step reasoning. Success at the final prompt
+position can therefore reflect transfer of a compact answer decision, while
+failure need not imply that the skill lacks a transferable representation.
+
+We find that \emph{states across the skill's own token span can transfer much
+of its effect}. Replacing a wrong skill's states with the correct skill's at
+one layer recovers $0.89$ of its gain on a screened subset of $135$ items from
+$14$ clinical calculators. Halving the injection, permuting its positions or
+substituting norm-matched noise recovers at most $0.05$. Truncating the matrix
+of state differences tests how many directions support recovery. With the
+positional mean preserved, $32$ leading directions recover $0.12$, $128$
+recover $0.77$, and the bottom $64$ recover only $0.03$. Both position and the
+retained directions matter for this intervention.
+
+We compare models by the number of directions needed to reach half of the
+measured recovery range. Reducing hidden width fourfold within Qwen changes
+this value from $47$ to $43$, rather than the pre-registered proportional
+prediction of approximately $12$; Mistral at the larger width gives $64$--$72$,
+with intervals that overlap Qwen's.
+Across layers, skill states stop transferring most of the effect while
+attention to them still supports performance. This separation replicates
+wherever both interventions are available. A few unusually large activations
+explain an apparent drop in dimensionality, which therefore does not establish
+compression. Our contributions are:
+\begin{enumerate}\itemsep0pt\parskip0pt
+\item \textbf{Locating a transferable skill representation.} Matched-control
+subtraction isolates content-specific state differences, answer-format
+comparisons reveal the limits of a single-position probe, and span injection
+identifies a representation that recovers the skill's effect
+(\S\ref{sec:decomp}--\ref{sec:whose}).
+\item \textbf{Measuring the representation rank required for recovery.}
+Truncating the injected matrix shows that recovery depends on multiple leading
+directions. The measured rank curves depart from proportional width scaling
+within Qwen (\S\ref{sec:rank}, \S\ref{sec:ladder}).
+\item \textbf{Separating skill transfer from continued reading.} Span
+replacement and blocking attention to skill tokens reveal distinct depth
+boundaries. Interventions over multiple layers and checks for unusually large
+activations help rule out two proposed explanations for the loss of transfer
+(\S\ref{sec:depth}).
+\end{enumerate}
+

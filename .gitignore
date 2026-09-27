@@ -54,3 +54,7 @@ whitebox/tasks/*/tasks.filtered*.jsonl
 # howskill run outputs (server-side), and graft prefix files
 /howskill/results/
 /howskill/grafts/
+
+# The pre-WWW ICLR sources and stale previews, kept on disk for one release
+# and recoverable from history; not worth carrying at a second path.
+paper/legacy/

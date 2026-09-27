@@ -1,0 +1,49 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Skills and compact context representations.}
+Skill benchmarks ask whether agents retrieve and apply reusable procedures
+\citep{su2026srabench, skillsbench2026, sweskills2026}; we ask how a model
+represents one already in context. Task and function vectors transfer behaviours
+from in-context demonstrations through compact activations
+\citep{hendel2023taskvectors, todd2024functionvectors}, and task arithmetic
+makes related edits to weights \citep{ilharco2023taskarithmetic}.
+\citet{dong2026taskvectorlimits} bound the task mappings a single vector can
+express, including high-rank ones; our rank is instead that of a matrix of
+hidden-state differences across skill positions, tested under several answer
+formats. Others learn to compress context---aggregated activations
+\citep{ardoin2026promptcompression}, summary tokens \citep{mu2023gist}, compact
+states \citep{ge2024icae}, weight updates \citep{doc2lora2026,
+deepcontextdistill2025}---while we examine the original model's states without
+training a compression mechanism.
+
+\paragraph{Answer representations and activation interventions.}
+Multiple-choice answering requires selecting an answer symbol
+\citep{wiegreffe2025mcq}, whereas reasoning can depend on states distributed
+over generated positions \citep{dura2026sequentialpatching}. Transferring states
+from completed reasoning \citep{mehrafarin2026cothidden} therefore tests a
+different setting from ours, which captures states before generation begins.
+Repeatedly applying activation directions can also steer extended generations
+\citep{panickssery2024caa, liu2024icv, stolfo2025instruction}; our
+single-position tests apply a one-time intervention at a prompt position.
+Following activation-patching methodology \citep{zhang2023bestpractices,
+heimersheim2024patching}, we compare generated answers against explicit
+baselines and verify that writing a run's own states back leaves it unchanged.
+Prior work traces factual information and context use across layers
+\citep{meng2022rome, geva2023dissecting, sia2024incontexttranslation,
+onset2025instruction}. We ask whether states stop transferring a skill's effect
+at the same depth that the model stops depending on attention to them.
+
+\paragraph{Representation rank and spectral measurements.}
+Spectral analyses use relative singular-value sizes to study hidden-state
+geometry \citep{valeriani2023geometry}, sensitivity to perturbations
+\citep{sarkar2026causaldim}, and transformations across layers
+\citep{fernando2026residualspectral}; we instead truncate the matrix of
+content-specific state differences across skill positions and measure the
+resulting performance. Reports of unusually large activations
+\citep{sun2024massive, shi2026melayer} and dominant hidden dimensions
+\citep{timkey2021rogue, kovaleva2021bertbusters} motivate a separate check:
+does an apparent drop in dimensionality reflect a change in useful content or
+merely a few large coordinates? We keep that geometric diagnostic distinct from
+the rank intervention's behavioural outcome.
+

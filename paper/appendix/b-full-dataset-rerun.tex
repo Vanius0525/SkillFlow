@@ -1,0 +1,108 @@
+% Appendix -- the full-dataset rerun (kept in the WWW submission build).
+\section{The full-dataset rerun, and what reads the span}
+\label{app:fullscale}
+
+Every MedCalc $\times$ Qwen3-8B result in the main text was developed on the
+forty calculators with the most rescued items, sampling four each: $160$ of
+$467$ rescued items, and $60$ items over $15$ calculators after the
+receiver-never-solves restriction. We reran each of them with every rescued
+item of every calculator that has at least two ($467$ items, $48$ calculators),
+changing nothing else. The restriction is stricter on the larger set---a
+calculator now has to fail on up to twenty items rather than four---so it keeps
+$135$ items over $14$ calculators, and we also report the per-item restriction
+($369$ items over $45$), which keeps the items whose own receiver fails.
+
+\begin{table*}[tbp]
+\caption{Full-dataset rerun against the subset the main text cites, Qwen3-8B on
+MedCalc, layer $8$. Recovery is Eq.~\ref{eq:rho}; intervals are group bootstrap
+over calculators. \emph{per-calc} is the main text's restriction, \emph{per-item}
+the weaker one. Controls reach $0.12$ under the group screen and $0.25$ under
+the item screen; each arm uses its own matched baselines.}
+\label{tab:fullscale}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+arm & full, per-calc ($n=135$) & subset ($n=60$) & full, per-item ($n=369$) \\
+\midrule
+transplant \texttt{real} & $\mathbf{0.89}$ $[0.76,0.97]$ & $0.87$ & $0.94$ \\
+same skill, matched prefix & $0.65$ $[0.37,0.87]$ & $0.73$ & $0.84$ \\
+\midrule
+half dose $\alpha=0.5$ & $0.04$ & $0.06$ & $0.11$ \\
+positions permuted & $0.05$ & $0.08$ & $0.21$ \\
+norm-matched noise & $0.02$ & $0.10$ & $0.18$ \\
+other calculator & $0.05$ & --- & $0.25$ \\
+other family, mean & $0.05$ & $0.06$ & $0.16$ \\
+same family, mean & $0.12$ $[0.00,0.25]$ & $0.05$ & $0.24$ \\
+identity patch & $0.00$ $[0.00,0.00]$ & $0.00$ & $0.00$ \\
+\midrule
+rank $128$ / $64$ / $32$ / $16$ & $0.77/0.63/0.12/0.05$ & $0.77/0.54/0.13/0.06$ & $0.88/0.70/0.22/0.18$ \\
+bottom-$64$ / bottom-$16$ & $0.03/0.04$ & $0.00/0.06$ & $0.11/0.12$ \\
+quarters $q_0/q_1/q_2/q_3$ & $0.09/\mathbf{0.56}/0.12/0.05$ & $0.12/0.56/0.12/0.12$ & $0.18/0.64/0.22/0.19$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The transplant, the truncation knee between $32$ and $64$ directions, and the
+formula quarter's dominance all reproduce. The one arm that moves is the
+same-family donor, from $0.05$ to $0.12$, on the $41$ items where it is defined.
+
+\paragraph{The depth sweep at one-layer resolution.} The subset sweep measured
+layers $0,4,8,12,14,15,16,20$ and placed the collapse somewhere after $12$.
+At full scale we added $13$ and $17$--$19$:
+recovery is $0.98,0.98,0.89,0.74$ at layers $0,4,8,12$, then
+$0.16,0.16,0.06,0.06,0.07,0.03,0.02,0.03$ at $13$ through $20$ (per-calc; the
+per-item restriction gives $1.00,0.98,0.94,0.79$ then
+$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$). Layers $13$ and $14$ are
+indistinguishable under both restrictions, so the transition is a single layer
+between $12$ and $13$ and not the gradual decline a stride-$2$ sweep suggests.
+
+\paragraph{A continuous dependent variable at the same boundary.} Accuracy over
+a chain of thought is a threshold, and a smooth decline inside the model could
+present as a step in it. We therefore decode the with-document trajectory once
+per item and teacher-force that same trajectory under every other condition,
+reading its mean token log-probability: $q = (\ell_L - \ell_{\text{recv}}) /
+(\ell_{\text{gold}} - \ell_{\text{recv}})$ has the same two anchors as $\rho$
+with no decoding threshold anywhere in it ($n=442$ items on which the document
+run is correct, $48$ calculators). $q$ reads
+$0.999, 0.989, 0.960, 0.831$ at layers $0,4,8,12$, then $0.598$
+$[0.550,0.648]$ at $13$, $0.595$ at $14$, $0.340$ at $16$, $0.201$ at $20$ and
+$0.129$ at $24$. Expressed per layer as a fraction of its range, the step at
+$12\to13$ is $26.8\%$, against $3.7\%$ per layer over $8$--$12$ and $0.3\%$ from
+$13$ to $14$: the discontinuity is present in a readout that cannot be produced
+by grading. It is smaller than the behavioural step ($61\%$ of range), so the
+grader sharpens the boundary roughly twofold without creating it, and it is
+spread evenly across the four quarters of the trajectory ($0.20,0.26,0.31,0.21$)
+rather than concentrated at the answer, which is the opposite of what a grading
+artefact predicts. We also tried restricting $q$ to the tokens after the final
+answer marker and report that it carries no information here: once the full
+reasoning is teacher-forced, every condition predicts the final number almost
+perfectly (median $\ell$ between $-0.001$ and $-0.005$ for all of them, and the
+gold-minus-receiver denominator has median $0.0014$, below $0.01$ on $59\%$ of
+items).
+
+\paragraph{Which heads read the span.} For every attention head we recorded what
+the span writes into the positions after it, as
+$W_O^h \sum_{s \in \text{span}} a_{t,s} v_s$, and took its change between the
+document and filler runs ($n=455$). Raw magnitudes are dominated by the last
+layers, but the residual stream grows by more than an order of magnitude with
+depth; normalised by it, the read-out concentrates in layers $12$--$21$ and
+peaks at $18$. It is not a small circuit: of the $1{,}152$ heads the top $1\%$
+carry $10.5\%$ of the read-out and the top $5\%$ carry $31.1\%$, and no head
+attends to the span more than uniformly ($0.4$--$1.2\times$, with the span
+occupying half the prompt). Blocking the $32$ highest-ranked heads' attention to
+the span---ranked on half the calculators and evaluated on the held-out
+half---costs $0.39$ of the document's effect, against $0.23$ for $32$ random
+heads at the same layers (paired difference $0.154$, $95\%$ CI $[0.061,0.251]$,
+McNemar $39$ versus $9$ discordant, $n=195$ over $23$ calculators). The ranking
+is therefore causal, but it buys only $0.15$ over chance and $32$ heads remove
+well under half the effect: the span is read diffusely, and we do not claim a
+nameable set of reader heads. One further observation constrains what fails at
+depth. After an injection at layer $L$, the span's own states from $L+1$ onward
+are identical to the document run by construction---the span attends only to a
+shared prefix and to itself---and the downstream per-head read-out of the span
+is indeed $0.86$--$0.99$ of the document's at every injection layer we tried,
+including those at which behaviour is gone. The content is present and is read;
+what an injection at layer $16$ cannot undo is the reading that the question
+positions already did at layers below it.
+

@@ -1,0 +1,170 @@
+% Appendix G -- additional tables.
+\section{Additional tables}
+
+% These numbers are recomputed from the run outputs by
+% whitebox/analysis/audit.py, which fails loudly if any of them drifts.
+\begin{table*}[tbp]
+\caption{Where the aggregate log-probability gap comes from, synthetic control,
+layer 21, $n=39$. A cell's contribution to the mean is its size share times its
+own gap, so the column adds up exactly. The mean vector beats the true state
+overall because F and B---the cells where the document does not work---%
+contribute $133\%$ of the gap; on R, where it does work, the true state wins by
+$2.5$ nats and by $0.69$ in accuracy.}
+\label{tab:cells}
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+cell & $n$ & mean $-$ real (nats) & contribution to $+2.747$ & acc.\ real & acc.\ mean \\
+\midrule
+\textbf{R} rescued    & 13 & $-2.506$ & $-0.835$ \ ($-30\%$) & \textbf{0.923} & 0.231 \\
+\textbf{F} persistent & 17 & $+5.907$ & $+2.575$ \ ($+94\%$) & 0.059 & 0.294 \\
+K kept                &  4 & $-0.740$ & $-0.076$ \ ($-3\%$)  & 1.000 & 0.500 \\
+\textbf{B} broken     &  5 & $+8.455$ & $+1.084$ \ ($+40\%$) & 0.000 & 0.200 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+
+\begin{table*}[tbp]
+\caption{The numbers behind Figure~\ref{fig:channels}, restricted as the figure
+is to the calculators whose receiver never solves an item.}
+\label{tab:battery}
+\centering
+\small
+\input{tables/tab-battery-dep}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{The document-span depth sweep over all forty items, unrestricted.
+Compare Table~\ref{tab:realspandepth}: the profile is the same shape with a
+higher floor, because the calculators this adds are ones a wrong document
+already rescues.}
+\label{tab:realspan-all}
+\centering
+\small
+\input{tables/tab-realspan}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{The same depth sweep run a second time against the other receiver---a
+single fixed wrong skill rather than each skill's own paired control---on the
+same items. The two agree wherever the first is well behaved; the one bump in
+the first run does not replicate.}
+\label{tab:realspanfixed}
+\centering
+\small
+\input{tables/tab-realspan-fixed}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{The same arms over all forty items, unrestricted, after the instrument
+fix. The six calculators this adds are ones the model can partly do without the
+gold document: their receiver scores $0.375$, another skill's vector $0.667$ and
+norm-matched noise $0.375$, against $0.000$, $0.188$ and $0.000$ on the four
+that need the document. Pooling them raises the transfer arm from $\rho=0.19$
+to $0.32$, which is why the main text reports the restricted set.}
+\label{tab:battery-all}
+\centering
+\small
+\input{tables/tab-battery}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{What the content vector contains once it is able to contain the
+task---the numbers behind Figure~\ref{fig:skilltask}.}
+\label{tab:skilltask}
+\centering
+\small
+\input{tables/tab-skilltask-dep}
+\end{table*}
+
+
+\label{app:tables}
+
+\begin{table*}[tbp]
+\caption{Three transplant channels, synthetic control, Qwen3-1.7B, $n=39$.
+Each row is a separate experiment; the receiver baseline differs because the
+document-span and question-span transplants run inside a prompt that still
+contains a filler document.}
+\label{tab:windows}
+\centering
+\small
+\begin{tabular}{llccc}
+\toprule
+channel & positions transplanted & effective layers & peak acc. & receiver baseline \\
+\midrule
+document span & the document's own 688 tokens & 0--10 & 0.436 (L3--4) & 0.154 \\
+question span & the question's 42--47 tokens  & 11--16 & 0.333 (L12/14) & 0.154 \\
+final position & the last prompt token        & 21--27 & 0.436--0.487 & 0.231 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+\begin{table*}[tbp]
+\caption{The same measurements at two model sizes, on the $358$-item reruns.
+The effect itself, in both formats, is the top block of Table~\ref{tab:format}.
+The multiple-choice presence row is the reason we take the free-form format as
+the primary evidence: on the 8B, chance on four options is $0.250$ and $\gvec$
+sits at $0.298$, within a few points of it, while in free-form it reads
+$0.008$.}
+\label{tab:ladder}
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+ & Qwen3-1.7B & Qwen3-8B \\
+\midrule
+MC, rescued cell: replace outright        & 1.000 & 1.000 \\
+MC, rescued cell: $+\dvec$                & 0.805 & 0.894 \\
+MC, rescued cell: $+\gvec$                & 0.098 & 0.298 \\
+free-form, rescued cell: replace outright & ---   & 0.235 \\
+free-form, rescued cell: $+\dvec$         & ---   & 0.210 \\
+free-form, rescued cell: $+\gvec$         & ---   & 0.008 \\
+\midrule
+layers where $\|\gvec\| > \|\tvec\|$      & 0--16 & 0--12 \\
+$\mathrm{PR}(\dvec)$ centred, deepest layer & 5.4 & 18.1 \\
+$\cos(\dvec_i,\dvec_j)$ same / other family, deepest & 0.869 / 0.705 & 0.584 / 0.530 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{The content component split along its own shared direction and
+orthogonal to it, rescued cell, $n_R=82$. The crossover at layer 21 is the same
+layer at which cumulative attention knockout on the document becomes free
+(\S\ref{sec:where}) and at which another item's content vector stops working
+(\S\ref{sec:whose}).}
+\label{tab:parperp}
+\centering
+\small
+\input{tables/tab-parperp}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{The decomposition of Eq.~\ref{eq:decomp}, synthetic control,
+Qwen3-1.7B, fp32, $n=358$, at the last prompt position. $\mathrm{PR}$ is the
+participation ratio of $\{\dvec_i\}$ after removing their shared mean direction:
+the effective number of dimensions the item-to-item variation occupies, out of
+2048. The last column is the fraction of a single item's $\dvec_i$ that lies
+along that shared direction.}
+\label{tab:geometry-tierA}
+\centering
+\small
+\input{tables/tab-geometry-tierA}
+\end{table*}
+\begin{table*}[tbp]
+\caption{Fraction of the rescued cell answered correctly under each injected
+component. Synthetic control, multiple choice, Qwen3-1.7B, fp32, $n=358$,
+rescued cell $n_R=82$. Bootstrap 95\% CIs over items are $\pm0.09$ to $\pm0.11$
+at these magnitudes and are given in the appendix. $\bar{\dvec}$ is the mean
+content direction over items, restored to the typical per-item norm; $\dvec_j$
+is another item's content vector, drawn from the same or a different conversion
+family. The row that licenses the name ``content component'' is $\gvec$.}
+\label{tab:causal}
+\centering
+\small
+\input{tables/tab-causal}
+\end{table*}

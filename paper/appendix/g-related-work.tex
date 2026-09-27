@@ -1,0 +1,144 @@
+% Appendix F -- related work in full.
+\section{Related work, at length}
+\label{app:related}
+
+\paragraph{Skill benchmarks measure the effect, not the mechanism.}
+A 2026 literature evaluates skill documents behaviourally: across domains
+\citep{skillsbench2026}, on executable software-engineering tasks
+\citep{sweskills2026}, and under different delivery protocols
+\citep{skillsinjector2026}; a parallel line studies which skill to retrieve.
+Closest in motivation is distilling a skill into weights
+\citep{skilltolora2026}, which asks what a skill \emph{could} become rather
+than what it already is at inference time. None of this work looks inside the
+forward pass, and the effect sizes it reports are exactly what our
+\S\ref{sec:traps} shows can be format-dependent.
+
+\paragraph{Task and function vectors, and the two limits on what one carries.}
+That a context can be compressed into a single activation-space direction is
+established for in-context demonstrations \citep{hendel2023taskvectors,
+todd2024functionvectors} and, in weight space, for fine-tuning
+\citep{ilharco2023taskarithmetic}. Methodologically we are in this line: our
+$\dvec$ is extracted and re-injected the same way. Two limits on that move are
+now known, and they are not the same limit.
+
+\citet{dong2026taskvectorlimits} prove the first. In a linear transformer,
+injecting one task vector is functionally a rank-one map, so a task whose
+input--output relation is high-rank---a bijection, for instance---cannot be
+encoded by a single vector; they confirm it on Llama-7B/13B and repair it by
+injecting several vectors at several demonstration positions. That result
+\emph{explains one of ours}: on the synthetic tier, $\bar{\dvec}$---one vector
+shared by the whole item set, which is what a reusable skill vector would
+be---recovers $0.098$, and the mapping it would have to encode is a 39-row
+lookup table. We do not claim that null as new; we attribute it.
+
+The limit this paper is about is different, and the two can be separated
+empirically. On the same synthetic tier, the \emph{item's own} $\dvec_i$
+recovers $0.805$ through the same single position despite that same high-rank
+mapping, because the answer is one token; and on clinical skills the same
+injection recovers nothing because the answer is hundreds of tokens. Rank
+constrains which mappings one vector can express; length constrains how much of
+a decision any small position group can carry, whatever the mapping.
+\citet{dura2026sequentialpatching} state the length limit as a motivation for
+patching CoT sequentially rather than at a static position; \S\ref{sec:onepos}
+turns it into a controlled measurement, and \S\ref{sec:rank} measures the rank
+of the \emph{representation} rather than of the mapping.
+
+We also differ in position. Function and task vectors are read from, and written
+to, one position, and are validated on tasks whose answer is a single token.
+\citet{mehrafarin2026cothidden} show how far that can be pushed and, read
+against our result, show what the position holds: patching a single late
+position with a state taken from the model's \emph{own completed} chain of
+thought recovers the correct GSM8K answer at least $99\%$ of the time, while our
+donor---taken from the prompt, before any reasoning---recovers nothing. Same
+position, same intervention; what differs is whether the answer already exists
+in the donor. \citet{dasilva2025steeringoff} report a reliability failure of the
+same channel from another direction: across 36 models, function vectors with
+default parameters recover 5-shot performance in $20\%$ of model--task pairs.
+
+\paragraph{When one vector \emph{is} enough, and what that tells us.}
+The strongest recent positive result for single-vector compression is
+\citet{ardoin2026promptcompression}, who learn a weighted sum of an instruction
+prompt's activations at a middle layer, inject the resulting \emph{single}
+vector at one placeholder position in an early layer, and lose under two points
+of accuracy. We read it as convergent rather than contradictory, for two
+reasons, and both are load-bearing here. First, every task on which it succeeds
+has a short answer: capitals, ISO codes, continents, years, word translation,
+antonyms, currency codes---all single-word exact match---and ARC-Easy, which is
+a single letter. That is exactly the half of the answer-length axis where our
+own single-position patch also works ($0.805$ on the synthetic tier,
+\S\ref{sec:onepos}); the half where it fails is the one their evaluation does
+not enter. Second, their optimal configuration extracts at a middle layer and
+injects at an \emph{early} one---their stated reason is that an early injection
+leaves more layers to integrate it---which is independently the direction of our
+depth result (\S\ref{sec:depth}). Taken with \citet{dong2026taskvectorlimits}
+and \citet{wiegreffe2025mcq}, the three give one sentence: a single vector is a
+\emph{selector} among behaviours the model already has---their appendix encodes
+nine tasks in one vector, about three bits---and not a carrier of content that
+needs a hundred directions to rebuild.
+
+\paragraph{Three different objects are called ``rank'' here.} Because this paper
+adds a fourth, we separate them explicitly. \citet{dong2026taskvectorlimits}
+bound the rank of the \emph{task map}: which input--output relations one
+injected vector can express. \citet{sarkar2026causaldim} measure the rank of the
+\emph{Jacobian}, $\mathrm{eff\text{-}rank}\,\mathbb{E}_x[J_L^\top J_L]$---how
+many directions of a layer causally reach the output---and report it to be
+layer-intrinsic and, notably, unchanged between Gemma-2-2B and Gemma-2-9B.
+\citet{fernando2026residualspectral} measure the rank of the \emph{composed
+operator} across depth and find it collapses by about $65\times$ in
+Llama-3.1-8B. We measure the rank of a \emph{representation}: the matrix
+$\dvec\in\mathbb{R}^{m\times d}$ that one document contributes across its own
+$m$ span positions. The distinction matters for what our result means. An
+earlier draft combined a layer-intrinsic causal capacity
+\citep{sarkar2026causaldim} with the participation ratio of $\dvec$ falling from
+$64$ to $17$ to argue that the handover closes on the \emph{message} side; that
+fall is massive activations (\S\ref{sec:depth}), and with them excluded the
+ratio is flat, so we withdraw the argument and do not know on which side the
+window closes. We are also, among these four, the only one to truncate the
+injected object itself and read out behaviour; the other three use a theorem, a
+first-order attribution proxy, and a spectral surgery on the weights.
+
+A caution applies to all of the descriptive ones, ours included.
+\citet{sun2024massive} document activations three orders of magnitude above the
+median, carried by a fixed pair of hidden dimensions at a small set of token
+positions, appearing at a single layer \citep{shi2026melayer} and acting as
+bias terms. A spectral statistic computed on a residual stream past that layer
+is a statistic about those activations. Our own centred participation ratio
+reads $1.0$ over four hundred positions at layer $16$ of Qwen3-8B and $66$ once
+four positions are dropped (\S\ref{sec:depth}); an uncentred entropy rank, which
+is what \citet{fernando2026residualspectral} report collapsing by $65\times$, is
+if anything more exposed, since the massive component is not removed by
+centring there either. We do not claim their result is an artefact---their
+object is the composed operator, not a representation---but the check is cheap
+and we think it should be standard.
+
+\paragraph{Compressing a document into parameters or into few tokens.} A
+parallel line replaces the document with weights rather than activations---
+hypernetworks that emit LoRA parameters from a document
+\citep{doc2lora2026}, and context distillation into a knowledge module in both
+output and hidden space \citep{deepcontextdistill2025}. These are orthogonal to
+us in method (weights, and training, versus activations and none) but share the
+premise that a document's effect is compressible.
+\citet{contextreturns2026} report that re-supplying the context after such
+internalisation \emph{degrades} accuracy, which is a phenomenon our
+$\tvec=\gvec+\dvec$ split gives a vocabulary for: what is internalised is not
+the same object as what the document contributes while present.
+
+\paragraph{Activation patching.}
+We follow the methodology literature on what patching licenses
+\citep{zhang2023bestpractices, heimersheim2024patching}: transplants establish
+sufficiency, knockouts necessity, and neither alone establishes a route. Two
+recent results are close to ours and we read them as convergent evidence rather
+than as competition. \citet{onset2025instruction} patch between minimal-contrast
+prompts differing only in an instruction span and find an ``onset'' layer past
+which interventions stop mattering; our layer-21 result---beyond which masking
+the document is free---is the same shape of finding from the opposite direction
+(knockout rather than patch) with a document rather than an instruction.
+\citet{jit2025taskrepr} argue that transferable task representations are
+temporally local and assembled just in time; our knockouts say the same thing
+about reading a document, in that no single position group is necessary.
+\citet{semanticconflicts2026} likewise localise recoverable causal signal to a
+changed cue region plus a few intermediate tokens before aggregation near the
+output. Mechanistic work on retrieval-augmented generation
+\citep{ragcite2026} patches the residual stream to localise attribution but
+does not separate presence from content.
+

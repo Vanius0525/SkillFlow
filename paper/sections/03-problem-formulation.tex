@@ -1,0 +1,79 @@
+\section{Problem Formulation}
+\label{sec:formulation}
+
+\paragraph{Skills, positions and representations.}
+Let $x$ be a question, $s$ its correct skill, and $\tilde{s}$ an unrelated skill
+with the same token length. For a fixed autoregressive model of hidden width
+$D$, let $h^L_{\mathrm{skill}}(p)$, $h^L_{\mathrm{wrong}}(p)$ and
+$h^L_{\mathrm{no}}(p)$ denote residual-stream hidden states at layer $L$ and prompt position
+$p$ with $s$, with $\tilde{s}$ and without a skill. At the final prompt position,
+we decompose the total displacement as
+\begin{equation}
+\underbrace{h_{\mathrm{skill}}-h_{\mathrm{no}}}_{\tvec\ \text{(total)}}
+=
+\underbrace{h_{\mathrm{wrong}}-h_{\mathrm{no}}}_{\gvec\ \text{(presence)}}
++
+\underbrace{h_{\mathrm{skill}}-h_{\mathrm{wrong}}}_{\dvec\ \text{(content)}}.
+\label{eq:decomp}
+\end{equation}
+We omit layer and position indices in Eq.~\ref{eq:decomp} for readability.
+``Presence'' denotes the change induced by the chosen wrong skill; ``content''
+denotes the additional change induced by replacing it with the correct skill.
+This algebraic decomposition does not assume independent underlying factors.
+We test each component by adding it to the corresponding state in a no-skill run.
+
+Across the skill's $m$ token positions $S$, the content-specific difference
+is a matrix $\dvec_S^L=H^L_{\mathrm{skill}}(S)-H^L_{\mathrm{wrong}}(S)
+\in\mathbb{R}^{m\times D}$. We use a run containing the wrong skill as the
+\emph{receiver}, and the correct-skill run as the \emph{donor}. Injection at dose
+$\alpha$ sets
+\begin{equation}
+H^L_{\mathrm{patched}}(S)=H^L_{\mathrm{wrong}}(S)+\alpha\dvec_S^L.
+\label{eq:inject}
+\end{equation}
+At $\alpha=1$, the donor's states replace the receiver's across the span;
+other states remain unchanged at that layer. Computation then continues.
+Matching lengths preserves positions and their encodings. Span interventions
+change many more states than final-position interventions, which limits direct
+comparisons.
+
+\paragraph{Behavioural recovery and evaluation subsets.}
+We score generated answers and measure the fraction of the donor's accuracy
+gain recovered by an intervention:
+\begin{equation}
+\rho(\mathrm{arm})=
+\frac{\mathrm{acc}(\mathrm{arm})-\mathrm{acc}(\mathrm{receiver})}
+     {\mathrm{acc}(\mathrm{donor})-\mathrm{acc}(\mathrm{receiver})}.
+\label{eq:rho}
+\end{equation}
+Here, an arm is an intervention condition, and the donor baseline uses the
+correct skill in context. Thus $\rho=1$ recovers the donor's observed gain,
+and values above one indicate greater accuracy than the donor. We distinguish rescued
+items (R: wrong without the skill, correct with it), persistent failures (F:
+wrong under both), kept items (K: correct under both), and broken items (B:
+correct without, wrong with). Main causal comparisons use rescued items. For
+span interventions, we further retain only skill groups for which the
+wrong-skill receiver solves none of the sampled items. We apply this screen
+separately within each run, model and task, without using intervention outcomes.
+The estimates are conditional on baseline failure in the sampled group;
+they do not measure recovery over the full benchmark.
+
+\paragraph{Rank and depth as intervention variables.}
+To test how many directions support recovery, we subtract the mean across
+positions, truncate the resulting matrix, and restore the mean:
+\begin{equation}
+\dvec^{(k)}=\mathbf{1}\bar{\dvec}+\sum_{i=1}^{k}\sigma_i u_i v_i^\top,
+\qquad
+\dvec-\mathbf{1}\bar{\dvec}=\sum_i\sigma_i u_i v_i^\top.
+\label{eq:rank}
+\end{equation}
+Here, $\bar{\dvec}\in\mathbb{R}^{1\times D}$ is the mean state difference,
+repeated at every position. The singular values $\sigma_i$ are ordered from
+largest to smallest, with $u_i$ and $v_i$ their associated directions. Thus $k$
+counts retained directions after centring, and the complete injected matrix has
+rank at most $k+1$. A bottom-$k$ control keeps the $k$ smallest singular
+directions and the same mean. We also vary the intervention layer. Span
+replacement tests whether states at that layer suffice to transfer the effect;
+blocking attention to the span from that layer onward tests whether subsequent
+computation still depends on reading it.
+

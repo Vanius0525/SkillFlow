@@ -1,0 +1,174 @@
+% Appendix -- control documents and the three measurement traps.
+\section{Control documents in full}
+\label{app:controls}
+
+$\dvec$ is defined by the document it is subtracted against, so ``content'' is
+whatever separates the skill from that control. Our default control holds only
+length fixed. Two tighter ones, generated from the skill document itself, hold
+more: \textbf{shuffled} keeps every word and every number and destroys the line
+order; \textbf{corrupted} keeps the wording, the procedure, the table layout and
+the ordering of the units, and replaces \emph{every conversion factor}. All
+three are injected under the same name and header, so the prompt never announces
+which it is.
+
+Both tighter controls move the accounting a long way
+(Table~\ref{tab:controls}). A table whose numbers are all wrong solves $0.720$
+of the rescued cell; a table with the right numbers in scrambled order solves
+$0.659$; the unrelated text solves $0.098$. Against no document the cell is
+$0.000$ by construction and with the gold document it is $1.000$. So when either
+tight control is used, $\gvec$ is no longer inert---it repairs $0.63$--$0.74$---
+and the residual $\dvec$ repairs only $0.17$--$0.28$.
+
+\begin{table*}[tbp]
+\caption{The same decomposition against three control documents. Synthetic
+control, multiple choice, Qwen3-1.7B, $n=358$, rescued cell $n_R=82$, every
+one of layers 21--27. ``in context'' is the control document actually placed in the prompt;
+``$+\gvec$'' is its state injected at the final position of the no-document
+prompt. That the two agree to within $0.03$ for three very different documents
+is the strongest validity check we have on the patch itself. $\dvec$ is the
+same measurement in all three rows; only what it is subtracted against changes.}
+\label{tab:controls}
+\centering
+\small
+\input{tables/tab-controls}
+\end{table*}
+
+\paragraph{The same control on third-party skills.} We repeated the corrupted
+control on the clinical calculators, where the arm already exists in the
+released harness (numeric constants in the prose perturbed, wording, structure
+and executable tools untouched). That material is free-form and answered through
+a chain of thought, and there the corrupted skill is worth \emph{nothing}: on 20
+rescued items it scores $0.050$, which is what no skill at all scores, against
+$0.950$ for the gold skill. The synthetic and the real material therefore agree,
+and they agree on the thing that matters---whether corrupting a document costs
+you anything is a property of the answer format, not of the document.
+
+Read as an attribution rather than as three competing estimates, this says
+something uncomfortable about the multiple-choice form of the task. On the full
+358 items the gold document is worth $0.179 \to 0.288$; a scrambled version of
+it is worth $0.179 \to 0.268$ and a version with every factor wrong is worth
+$0.179 \to 0.237$. Four fifths of the measured skill effect survives destroying
+the order of the document, and just over half survives replacing every number
+in it. What the model needs, in this format, is mostly a document containing the
+right vocabulary and the right kinds of number---not a correct table. The
+correct table is worth the remaining $0.02$--$0.05$ absolute, or $0.17$--$0.28$
+of the rescued cell.
+
+That is a statement about the answer format as much as about the model. We
+registered the test before running it: in the free-form format the number has to
+be produced, so a corrupted table should be worth nothing. It is
+(Table~\ref{tab:format}). Corrupting every factor keeps $0.54$ of the
+multiple-choice effect on the full item set and \emph{none} of the free-form
+effect's $0.467$. Scrambling the line order costs little in either, which is what it
+should: our shuffle permutes lines, and each row of the conversion table is one
+line, so every factor is still there to be retrieved---just not in a readable
+order.
+
+\subsection{Multiple choice manufactures a floor and merges retrieval with
+execution}
+\label{sec:format}
+
+Our synthetic items exist in two forms with identical content: four-option
+multiple choice, and free-form (``give the number only''). The forms do not
+measure the same thing, and there is a mechanism in the literature for why.
+\citet{wiegreffe2025mcq} localise the choice of an answer \emph{symbol} to a
+single middle layer and one to four attention heads per layer: in multiple
+choice the decision is assembled into one position and one token. That is
+exactly the regime in which a single-position patch transports the whole task,
+and it is why our final-position channel reads $1.000$ there and $0.000$ under a
+chain of thought on the same items.
+
+
+
+Inspecting what the small model writes explains the top half. Without the
+document it echoes the quantity from the question (``2''); with the document it
+writes a \emph{conversion factor from the table} (``21'', ``180'', ``60''). It
+retrieves and does not execute. Multiple choice scores retrieval as success
+whenever the retrieved number can be matched against an option, and the
+positional prior supplies a floor of $0.18$--$0.29$ on top.
+
+The bottom half is the sharper version, and it is a prediction we registered
+before running: if the multiple-choice form is solvable from a document's
+structure rather than its numbers, a table with every factor replaced must score
+near zero in free-form. It scores exactly zero.
+
+Two consequences. A benchmark comparing skill effects across model scales in
+multiple-choice format is measuring a mixture whose composition changes with
+scale. And an ablation that perturbs a document and reports the accuracy drop is
+measuring, in multiple choice, mostly whether the document is still recognisably
+a document.
+
+\section{Three measurement traps, in full}
+\label{app:traps}
+
+\subsection{The aggregate gold-answer log-probability ranks the controls first}
+
+Averaged over all items, the log-probability of the gold answer under each
+patched condition at layer 27, the last, orders as
+\begin{center}
+mean vector $-2.85$ \; $>$ \; filler state $-5.20$ \; $>$ \; \textbf{true skill
+state} $-6.60$ \; $>$ \; no document $-7.30$ \; $>$ \; wrong skill $-10.29$,
+\end{center}
+i.e.\ a content-free average vector scores $3.75$ nats \emph{better} than the
+state the model actually builds while reading the document, with accuracy
+$0.256$ against that state's $0.436$.
+
+The cells of \S\ref{sec:cells} account for the gap arithmetically
+(Table~\ref{tab:cells}): F and B---where the document does not work---contribute
+$133\%$ of it at layer 21, where the gap is $2.75$ nats, while on R the true state wins by $2.5$ nats and $0.69$ in
+accuracy. The mechanism is visible in the option distribution: the mean vector
+raises the entropy over the four answer tokens from $0.187$ to $0.972$ nats
+(maximum $\ln 4 = 1.386$). A flattened distribution cannot assign any token
+$-19$ nats, so it looks excellent exactly where the true state is confidently
+wrong, and flattening never promotes a token to the argmax, so accuracy does not
+move. The one point the two channels agree on is that the \emph{wrong skill} is
+worst on both---positive evidence for content specificity, since injecting the
+wrong content actively misleads.
+
+The practical rule is that an aggregate log-probability over a mixed item set
+measures confidence calibration as much as it measures content, and that a
+decomposition by outcome cell is the cheapest way to tell which.
+
+\subsection{A band where the forward pass is damaged}
+
+Between layers 17 and 20 every patched condition improves together and the
+conditions become indistinguishable. Reading by cell isolates the cause: on the
+K cell---items the model already answers correctly---the true-state patch drops
+the gold log-probability from $-1.6$ at layer 16 to $-7.1$ at layer 18, while
+the filler-state patch, built over an equally long prompt, stays at $-1.5$. Any
+transfer or recovery number falling in 17--20 is reported with that band marked.
+
+\subsection{What the wrong-document control is actually worth}
+\label{sec:plausible}
+
+
+Holding the prompt's length, structure and the document slot's position fixed and
+changing only what sits in that slot gives an ordered comparison the usual
+binary---document or no document---cannot make. On the rescued items, with
+everything else identical ($n=40$, intervals in brackets): no document at all
+$0.025$ $[0.000, 0.073]$; non-clinical prose in the slot $0.250$
+$[0.116, 0.384]$; this skill's own paired neutral document $0.175$
+$[0.057, 0.293]$; one fixed wrong clinical skill $0.150$ $[0.039, 0.261]$; the
+gold document $0.950$ $[0.882, 1.000]$.
+
+Two things follow, one solid and one not. The solid one is that the
+wrong-document control is not the same object as the no-document control: any
+document in the slot moves these items off the floor, so a paper that reports
+``with the document'' against ``without'' is measuring presence and content
+together, and the presence part is not negligible on a cell selected for failing
+without. That is the reason every arm in \S\ref{sec:battery} is measured against
+a receiver that holds a document rather than against an empty slot.
+
+The one that is not solid is the ordering. A clinical distractor costing more
+than irrelevant prose ($0.150$ against $0.250$) is the direction we expected---a
+near miss should be worse than an obvious miss, and the three conditions fall in
+that order---but every pair of intervals overlaps at $n=40$, so we report a
+direction and not a result. We flag it because the design that would settle it is cheap and
+this material affords it: these 55 skills contain graded near misses by
+construction (four different formulae for the corrected QT interval, two for the
+delta gap), so ``how similar must a wrong document be before it hurts'' can be
+measured on an ordered scale rather than a binary. We have not run that
+experiment.
+
+
+
