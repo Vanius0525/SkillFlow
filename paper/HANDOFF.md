@@ -1,5 +1,14 @@
 # SkillVector 论文交接
 
+## 2026-10-03 研究定位简报 PDF（完成）
+
+- 用户要求先给 A 类会议竞争力判断，再概述最近邻核心实验，并将此前 last-token / RSI 问题一起整理成桌面 PDF。
+- 结论：有继续投入和形成 A 类论文的基础，但当前证据尚不足以判断已达到较有把握中稿的程度；优先主打 transfer 与 reading 分离，补接收态交互和语义覆盖控制。WWW 另有 Web 范围要求。
+- 交付：[7 页 PDF](reports/研究定位与相关工作_20261003.pdf)、[可编辑源稿](reports/研究定位与相关工作_20261003.md)、[构建脚本](reports/build_research_brief.py)。包含八篇最近邻的对象/实验/贡献、last-token 设计、RSI 两阶段候选和 14 条可点击一手出处。
+- 桌面副本：`/mnt/c/Users/12970/Desktop/SkillFlow_论文竞争力与相关研究_20261003.pdf`。
+- 验证：`python paper/reports/build_research_brief.py`；PyMuPDF 检查 7 页、文本可提取且无空字符；目视检查首页、近邻页与参考文献页。初版 Droid fallback 缺 Latin 字形，已改用 Windows Microsoft YaHei 内嵌字体并重新验证。脚本依赖 ReportLab 及本机字体路径。
+- 未运行新模型实验、未修改 LaTeX。详细文献审查及待补实验仍以同日 audit 记录为准。用户既有 `howskill/data/cells.json.tmp` 未动。
+
 ## 2026-10-03 正文创新定位与 context/prompt、last-token、RSI 调研（完成）
 
 - 用户范围：以当前 `sections/*.tex` 正文为准，评估相关研究、last-token 注入先例、WWW 适配和 Recursive Self-Improvement 的研究连接；本轮不启动模型实验、不修改论文正文。
