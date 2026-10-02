@@ -1,5 +1,18 @@
 # SkillVector 论文交接
 
+## 2026-10-03 正文创新定位与 context/prompt、last-token、RSI 调研（完成）
+
+- 用户范围：以当前 `sections/*.tex` 正文为准，评估相关研究、last-token 注入先例、WWW 适配和 Recursive Self-Improvement 的研究连接；本轮不启动模型实验、不修改论文正文。
+- 已核实近邻：Hendel et al. 2023 的 task vectors、Todd et al. ICLR 2024 的 function vectors 均有末位置注入；Li et al. arXiv:2509.04466 已研究可转移表示的时间/语义局部性及长输出衰减；Sia et al. NeurIPS 2024 使用从某层起累计 context masking；Pola & Balasubramanian arXiv:2511.10694 同时 patch 指令关键词与最终 context token。因此这些单项不能笼统声称首创。
+- **即时记录：正文 §4.4 的“constant budget and energy”与实现不符。** `howskill/howskill/wb_posbudget.py:215–229` 为每个块数重新选取原位位置，`:395–410` 记录 `sum(dnorm2[src])/tot` 后直接注入，没有能量归一化或逐项能量匹配。`whitebox/analysis/out/posbudget.md` 中 c1x256…c32x256 的平均能量四舍五入均为 0.29，但这不等于每项能量固定；half 档均值已有 0.49/0.50 差别。块数变化还改变了语义覆盖。连续块恢复更好的观察可保留，但“连续性是独立原因”的断言应收窄并补控制。本轮仅记录，未擅改正文/代码。
+- 官方 WWW 2027 CFP 当前明确要求首页说明 Web 科学问题；仅使用 Web 数据/API 不满足范围。现稿无工具的 MedCalc/TheoremQA 机制研究存在范围风险。来源：https://www2027.thewebconf.org/research-track-papers/ （2026-10-03 核查）。
+- 完整报告：[RESEARCH-context-lasttoken-rsi-20261003.md](audit/RESEARCH-context-lasttoken-rsi-20261003.md)。包含一手出处、阅读深度、方法比较、WWW 判断、判别实验、RSI 近邻与独立研究设计。
+- 新补近邻：Davidson et al. arXiv:2505.12075v3 已从自然语言指令提取 FV；Bigoulaeva et al. ACL 2026 / arXiv:2602.07930v2 把 query 前指令末 token 移植到 filler，研究多层非加性交互；不能只对比最早的 few-shot task-vector 论文。
+- JIT 后续核对到 v3（2025-12-01），明确某些长输出仍能被单 TV 支持，且增加 Qwen 复现；最终报告不采用 v1 的过宽概括。
+- RSI 直接近邻：Coalition-Aware Skill Reliability（arXiv:2608.22610）已做技能组合与跨域效用审计；HyperAgents（2603.19461）有固定 meta-agent 对照；AIDE²（2609.26457）作者仍承认在 outer-loop 改进角色上无法决定性区分强基线。不能把 task 提升直接写成递归改进效率提升。
+- 当前问题告一段落：没有新模型实验、没有修改 LaTeX。下一步优先在现稿做晚层 span/query 交互判别和连续性语义覆盖控制；RSI 独立先做 meta-skill 的后代质量行为筛选。
+
+
 最新一轮：**2026-09-28，改投 WWW 2027 版式 + 整个 paper/ 目录重构**。
 更早的记录（ICLR 单栏时期的重写、润色、图表样式回退）从「2026-09-18 图表样式」一节起原样保留。
 
@@ -242,6 +255,8 @@ python3 ../whitebox/analysis/audit.py  # ALL CHECKS PASSED
 - 图标签改名时暂将内部筛选键 needs_document 一并改名，数值一致性检查立即识别出 n=40 与原 n=16 的不一致；已修复内部键并重生成，最终图的全部数字标签与原稿一致，错误中间图未作为最终结果交付。
 
 ## Open Ideas / 值得深挖的问题
+
+- **2026-10-03：meta-skill 的内部表示能否因果影响下一代改进效率？** 触发：现稿 span transfer 与 continued reading 分离；近期 HyperAgents/AIDE² 研究改进过程本身，Coalition-Aware 已覆盖技能库效用。最小验证：旧/新 meta-skill 的双向 patch 后生成 candidate skill，在全新固定 executor 与隐藏新任务评测后代质量；比较固定 improver 与更新 improver 的独立演化链。价值在连接内部因果中介与下一代可继承增益，不是又做技能移除审计。假说未验证，详细设计与失败判据见 `../IDEAS.md` 的 I8 及本轮调研报告 §6.2。
 
 - **2026-09-17：skill span 的位置预算与任务映射复杂度是否共同决定单向量失效？** 触发：现稿单位置与完整 span（约 415–1,630 token）干预的效果差很大，但同时改变了干预容量；Dong et al., arXiv:2506.09048 的双射任务使 task vector 在原任务/逆任务较好、组合双射接近随机。值得做：把“答案长所以单向量失败”与“技能映射本身需要分布式表示”分开。最小实验：同一模型、同一 skill 与答案格式下，在独立 held-out 题上比较 1/4/16/64/全 span 的保序位置预算、相同预算的语义区域和随机/错位控制；另构造低/高映射复杂度的技能，在各预算下画恢复曲线。若高复杂度任务在等长答案下需要更多位置，且不是单纯 token 数或扰动能量造成，可能形成独立机制结果；若所有曲线只由答案长度或扰动总量解释，则该想法失败。
   - 现有部分位置证据：40-calculator 修复后 quarter ablation 已覆盖四个独立四分之一及完整 span（$0.12/0.56/0.12/0.12$ 对 $0.87$）；共享前缀有 $0.73$ 对完整 span $0.87$。因此新实验是填补同一 skill span 内连续、等预算、跨长度的位置剂量曲线，不是首次做局部 span 干预。

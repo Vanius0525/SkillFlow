@@ -1,5 +1,21 @@
 # IDEAS — 够独立成线、和当前主问题关系不大的方向
 
+## I8. meta-skill 的内部因果作用能否传到下一代改进效率（2026-10-03）
+
+**一句话 idea。** 在固定开放权重模型中，对指导“如何改进技能”的 meta-skill 做双向内部干预，检验其效果是否通过生成的新 skill 传递到下一代的独立任务增益。
+
+**触发观察。** 当前正文 MedCalc 的 span transfer 边界约 L13，continued reading 边界约 L25，两者不同；但这些只是单次计算证据。外部 HyperAgents（[arXiv:2603.19461](https://arxiv.org/abs/2603.19461)）使改进机制可编辑；AIDE²（[arXiv:2609.26457](https://arxiv.org/abs/2609.26457)）报告八天七次接受改进，同时承认新 agent 的外层改进角色相对强基线尚无法决定性区分。这提示应直接测“改进能力”而不是只测完成任务能力。
+
+**为什么值得做。** [Coalition-Aware Skill Reliability](https://arxiv.org/abs/2608.22610) 已覆盖技能边际贡献与相互干扰，所以普通“新 skill 真的有效吗”不够新。潜在增量是把内部计算干预连接到后代改进质量，区分产生有效修改的程序知识与只改变当次输出形式。本轮检索未找到完全相同的两阶段因果实验，但不构成首创保证。
+
+**最小验证方案。** 先确认新旧 meta-skill 在相同失败轨迹和预算下，产生的 candidate skill 有稳定的跨任务家族质量差异。再做 old/new、new→old patch、old→new patch、无关更新及文本关键句消融；生成 candidate 后重启独立 executor，在未参与生成/选择的隐藏任务上测性能增益、有效改进概率和旧能力保持。固定模型、retrieval、harness 与 evaluator，只有指定 skill 版本跨轮保留。若前两阶段成立，再运行固定 improver、只更新 task-skill、同时更新 meta-skill 的多条独立演化链。
+
+**可能的 killer result。** 对 meta-skill 程序部分的双向 patch 能可重复地改变下一代在新任务上的改进收益，机制诊断还能预测或提高下一轮搜索效率；不是只移植当次答案。
+
+**失败模式。** 元技能无跨家族增益；只改变格式；依赖同题 donor；额外干预算力抵消收益；文本消融已解释一切且 whitebox 没有新增预测。高 rank/高 recovery/较早边界都不能未经验证作为自改进目标。先小规模行为筛选，不直接启动完整 DGM。
+
+详细文献与协议：[2026-10-03 调研](paper/audit/RESEARCH-context-lasttoken-rsi-20261003.md)。
+
 规矩（来自全局偏好）：每条至少写 **一句话 idea、触发它的观察（含数字或现象）、
 为什么值得做、最小验证方案、记录日期**。宁可多记一条，也不要因为「可能不成立」而不记。
 
