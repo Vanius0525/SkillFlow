@@ -600,8 +600,8 @@ question span recovers $0.000$--$0.025$ at every one of 12 layers.
 The second question gives a different shape. No single pathway is necessary:
 masking only the final position's attention to the document costs nothing
 ($0.436$ against $0.436$) and masking only the question span's leaves $0.282$,
-so the read is redundantly distributed, as \citet{jit2025taskrepr} report for
-task representations generally. What is necessary is the document's own tokens.
+suggesting that these reader groups can partly substitute for one another.
+Removing access to the whole document has a larger effect in this setting.
 On third-party skills, making them unattendable for the whole forward takes
 accuracy from $0.550$ $[0.400, 0.700]$ to $0.075$ $[0.000, 0.175]$, against
 $0.025$ $[0.000, 0.075]$ with no document in the prompt at all---ninety per cent

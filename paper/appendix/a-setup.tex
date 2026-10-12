@@ -211,30 +211,17 @@ items) while retaining a $+1.08$ nat log-probability difference---so the span
 channel has no usable log-probability reading, and is reported on accuracy
 alone.
 
-\paragraph{An instrument fault, and which results predate its fix.} The state
-capture called the model without an explicit attention mask while decoding
-passed one; for a single unpadded sequence these are mathematically identical
-but take different attention kernels, and they disagree by $1.2\%$ of the
-state's magnitude at layer 8 and $25\%$ at layer 34. The visible consequence was
-that the null arm---the receiver's own states written back over
-themselves---changed the answer on $6.1\%$ of Qwen3-8B items. Passing the mask in
-both makes the null arm exact ($80/80$ across two reruns) and leaves the transplant at
-$\rho = 1.00$ as before. \emph{Rerun after the fix and reported from the
-reruns}: Table~\ref{tab:big40} including the same-family donor, the
-forty-calculator sufficiency curve, the layer windows, the forty-calculator rank
-curve, the ten-calculator dose sweep and battery (Figure~\ref{fig:channels}),
-the document-order comparison at layers $8$ and $16$, the within-document
-quarters on ten and forty calculators, the Qwen3-0.6B truncation curve, and
-every TheoremQA and Mistral-7B run; the attention knockout does not use the
-capture path. \emph{Still from before the fix}: the synthetic tier and the
-final-position sweeps, the ten-calculator development rank curve, the rank
-curves at layers $12$ and $16$, the cross-layer donor, the Qwen3-0.6B depth
-sweep and knockout on MedCalc, Qwen3-1.7B, the halves split, and
-\extref{Figures}{fig:dose}{the dose and prompt-order figures}\ifextendedappendix\ and~\ref{fig:skilltask}\fi; these are read against a null
-arm at $0.034$ rather than $0.000$ on the restricted split. Where a rerun
-changed a conclusion---the worked example's share of the document, the
-instance-specific part at layer $16$, the dose curve's shape---the text says
-so.
+\paragraph{An instrument fault and result provenance.}
+State capture omitted the attention mask supplied during decoding. Although
+mathematically equivalent for an unpadded sequence, these calls selected
+different kernels. Their states differed by $1.2\%$ at layer $8$ and $25\%$ at
+layer $34$, and identity patching changed $6.1\%$ of Qwen3-8B answers.
+Matching the masks restores exact identity agreement. All main-text state
+interventions use the corrected implementation, including the synthetic and
+final-position sweeps (\S\ref{sec:setup}). Attention knockout does not use state
+capture. Historical development results in the extended appendices retain
+their original sample sizes and provenance. The corrected full-data rerun in
+Appendix~\ref{app:fullscale} supersedes the earlier $60$-item battery.
 
 \paragraph{Numerics.} Log-probabilities on the synthetic control are fp32,
 because bf16 costs $0.5$--$2.5$ nats on a token deep in the tail. The 8B numbers

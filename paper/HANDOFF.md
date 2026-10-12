@@ -1,5 +1,21 @@
 # SkillVector 论文交接
 
+## 2026-10-12 正文近邻定位、语言修订与 WWW 故事线
+
+- 用户要求保留原文逻辑，直接润色已有工作定位并增加引用，同时给出 A 类论文故事线和具体 Web 关系。补充偏好：少用分号、破折号，减少过度防御表达，按正常学术写作陈述发现。
+- 标题改为 `Transferring and Reading Skills in Language Model Contexts`。保持六个正文文件的章节顺序、标签和实验数值。新增 Davidson 指令 FV、Bigoulaeva ACL 2026 IV 的 BibTeX；在正文显式使用已有 JIT 条目，细化 Sia/Pola 和 Dong 的关系。
+- 纠正位置预算段：不同块数选取不同内容，平均能量接近但非逐题匹配。使用 calculator-bootstrap 区间，说明 procedure 覆盖不同。错位描述明确为 content difference 的错位。
+- last-token 段以一次性 prefill 协议解释结果，区分输出形式和纯长度效应。深度段明确两种干预背景，将接收态交互作为下一问题。附录相关工作中两处把 JIT 等同读取敲除的说法也同步修正。
+- [故事线与 Web 方案](audit/STORYLINE-WWW-20261012.md)：主线是可转移性与读取依赖的关系，Web 优先程序文档检索/交付，再考虑多步工作流的规程保留。未启动新模型实验或部署 Web 环境。
+- 2026-10-12 官网复核：WWW 摘要 10 月 18 日、全文 10 月 25 日 AoE；首页须明确 Web 科学问题。主文件会议日期/地点同步为 2027-05-10 至 14、Dublin。
+- 静态检查：引用键全部存在，章节和标签保留，`git diff --check` 通过；正文分号由 41 减为 13，多数保留在图注并列项。
+- 编译环境：原 Windows MiKTeX 在本会话报 `Exec format error`，未产生新 PDF；已用独立 Windows 临时目录避免覆盖既有构建目录。转用 /tmp 中的官方 Tectonic 0.17.0，首次编译需要下载 TeX bundle。最终验证结果见下方补记。
+- 图文一致性：位置预算图仍含 `budget and energy fixed` 旧标签，已修改 `whitebox/analysis/posbudget_report.py` 的显示文字并用现有 JSON 重绘 PDF，未改曲线数值。
+- 附录同步：压缩并纠正 A 节过时 provenance 清单，保留故障描述和当前主文修复状态；B 节提前声明双栏表，避免末尾浮动表独占第 13 页。B 节末的接收态机制解释改为待检验问题。
+- 扩展版验证：正文 8 页、总计 34 页，无未定义引用或 overfull。更新 `skillvector.pdf`。首次仅缓存编译缺数学字体，联网补齐后通过。
+- 最终投稿版验证：Tectonic 0.17.0 编译为正文 8 页、总计 12 页，无未定义引用、无 overfull。同引擎编译未修改 HEAD 也是 8/12 页。PDF 更新至 `skillvector-www2027.pdf`；详细验证见 [BUILD-CHECK-20261012.json](audit/BUILD-CHECK-20261012.json)。
+
+
 ## 2026-10-03 研究定位简报 PDF（完成）
 
 - 用户要求先给 A 类会议竞争力判断，再概述最近邻核心实验，并将此前 last-token / RSI 问题一起整理成桌面 PDF。

@@ -9,7 +9,7 @@
 Our main evaluation pairs MedCalc-Bench \citep{khandekar2024medcalc} with
 skills from SRA-Bench \citep{su2026srabench}, covering $55$ clinical calculators
 with $20$ questions each ($1{,}100$ items). Qwen3-8B \citep{yang2025qwen3}
-generates step-by-step reasoning using greedy decoding, without tools; we
+generates step-by-step reasoning using greedy decoding, without tools. We
 evaluate its answers with the benchmark scorer. Accuracy is $74.2\%$ with the
 correct skill, $34.5\%$ without a skill, and $31.5\%$ with a wrong skill.
 For the decomposition and answer-format experiments, we use a synthetic
@@ -30,7 +30,7 @@ one question. We report sample sizes for each comparison. Main-text accuracy
 and recovery intervals resample skill groups. Each recovery estimate uses
 donor and receiver baselines on the items available for that intervention.
 Incomplete reruns are excluded rather than combined into curves with changing
-sample sets; complete earlier measurements are retained and identified.
+sample sets. Complete earlier measurements are retained and identified.
 
 \paragraph{Identity control.}
 Writing the receiver's own states back should leave its output unchanged.
@@ -49,7 +49,7 @@ discrepancies can propagate through long generations \citep{he2025nondeterminism
 On the synthetic task with Qwen3-1.7B ($358$ items, $82$ rescued), we inject
 each component of Eq.~\ref{eq:decomp} at the final prompt position. On rescued
 items, the presence component recovers $0.098$ of the gain, exactly the
-wrong-skill baseline; the content component recovers $0.805$, compared with
+wrong-skill baseline. The content component recovers $0.805$, compared with
 $1.000$ for full state replacement. The effect extends to failures: across
 rescued, persistent-failure, kept and broken items, replacement gives
 accuracies of $1.000/0.000/1.000/0.000$, while content injection gives
@@ -68,14 +68,17 @@ numeric answers, no final-position intervention recovers more than one of the
 $119$ rescued items through layer $22$. The best results across layers are
 $0.235$ for state replacement, $0.21$ for content and $0.008$ for presence.
 These answers are one to five tokens long ($341$ of $358$ use two to four).
-Patching the last $1$, $4$, $16$, $32$, $48$ and $61$ positions---$61$ is the
-whole no-document prompt---recovers $0.235$, $0.261$, $0.403$, $0.403$, $0.395$
+Patching the last $1$, $4$, $16$, $32$, $48$ and $61$ positions ($61$ covers the
+whole no-document prompt) recovers $0.235$, $0.261$, $0.403$, $0.403$, $0.395$
 and $0.370$: the ladder saturates at $16$, and giving the patch every position
 the prompt has does not raise it. For step-by-step reasoning, the skill raises accuracy from $0.000$ to
 $0.989$, yet single-position replacement recovers at most one of $354$ rescued
 items ($0.003$) at any layer.
-These results show that the probe's success depends on answer format; they do
-not establish a general limit on the information a hidden state can hold.
+Recovery varies with answer format, which changes both output length and
+computation. Same-query replacement of the final-layer final state also
+copies the next-token decision. We therefore interpret the comparison as a
+test of this one-time intervention, alongside prior evidence that transfer
+depends on position and task scope \citep{jit2025taskrepr}.
 
 \begin{table}[tbp]
 \caption{Final-position state replacement across answer formats, Qwen3-8B.
@@ -93,7 +96,7 @@ of positions after the skill at layer $8$, using the same $135$ items and
 wrong-skill receiver as span injection (Figure~\ref{fig:channels}). The last
 $1$, $16$ and up to $256$ positions recover $0.03$, $0.06$ and $0.05$,
 respectively. Earlier multi-layer probes
-are reported separately in \extref{Appendix}{app:onepos}{the extended version}; the complete matched
+are reported separately in \extref{Appendix}{app:onepos}{the extended version}. The complete matched
 comparison here concerns layer $8$.
 
 \subsection{The skill span supports content injection}
@@ -123,8 +126,8 @@ receiver accuracy. Error bars are calculator-bootstrap $95\%$ intervals.}
 \paragraph{Dose, transfer, order and noise controls.}
 Recovery changes nonlinearly with injection strength. On the screened subset
 ($n=135$, $14$ calculators), $\alpha=0.4,0.5,0.55$ gives
-$0.04,0.04,0.14$ recovery, while $0.6,0.7,1.0$ gives $0.53,0.87,0.89$;
-doubling the injection to $\alpha=2$ reduces recovery to $0.77$. Most of the
+$0.04,0.04,0.14$ recovery, while $0.6,0.7,1.0$ gives $0.53,0.87,0.89$.
+Doubling the injection to $\alpha=2$ reduces recovery to $0.77$. Most of the
 increase occurs between $0.55$ and $0.7$. To test content specificity, we
 compare correct and other-skill injections over a common prefix length: the
 correct prefix recovers $0.65$, whereas content from an unrelated skill
@@ -150,41 +153,38 @@ calculators. Table~\ref{tab:replication} gives the interval for full-span recove
 The receiver screen affects how these controls should be interpreted. On the
 $34$ excluded calculators, the wrong-skill receiver already solves some items.
 Other-skill content recovers $0.17$ on these groups ($n=332$), compared with
-$0.05$ on the retained groups ($n=135$); noise recovers $0.10$ versus $0.02$.
+$0.05$ on the retained groups ($n=135$). Noise recovers $0.10$ versus $0.02$.
 This pattern is consistent with perturbations enabling knowledge already
 available to the model, although it does not establish that mechanism.
 A separate caveat is intervention size: skill spans in the screened subset
-contain $365$--$1{,}630$ positions, far more than a single-position probe;
+contain $365$--$1{,}630$ positions, far more than a single-position probe.
 \S\ref{sec:posbudget} separates the number of written positions from their
 arrangement.
 
 \subsection{Which positions carry the effect}
 \label{sec:posbudget}
 
-Span injection writes $365$--$1{,}630$ positions; the final-position probe
-writes one. To separate the arrangement of the span from the amount of state
-it injects, we fix the number of written positions $B$ and vary only which
-positions receive their own donor states, on the same $135$ items, layer and
-receiver as Table~\ref{tab:big40} (Figure~\ref{fig:posbudget}).
-\emph{Quantity does not explain recovery.} Evenly spaced or random subsets
-recover at most $0.15$, even at half the span and half its content energy;
-choosing the positions with the largest content change recovers at most
-$0.12$; and writing states after the span stays at or below $0.07$, whether
-the last $1$ to $234$ prompt positions at layer $8$ or the last $1$, the last
-$16$ or all of them at each of seven layers from $4$ to $30$.
-\emph{Contiguity does.} The same $256$ positions written as one block recover
-$0.37$, and cutting that block into $2$, $4$, $8$, $16$ and $32$ evenly spaced
-pieces lowers recovery to $0.24$, $0.22$, $0.13$, $0.08$ and $0.08$ at constant
-budget and energy (one versus $32$ pieces: $+0.29$ [$0.09,0.48$], McNemar
-$p<10^{-6}$). \emph{Location matters within the span.} A half-span block
-centred on the procedure section recovers $0.82$ [$0.67,0.93$], close to the
-full span; centred on the worked example it recovers $0.18$. \emph{Placement
-must be exact.} Shifting every state by one position recovers $0.15$--$0.22$
-with or without wrap-around, whereas leaving out the first or last $16$
-positions and writing the rest in place keeps $0.89$--$0.92$. The skill's
-effect is therefore carried by contiguous, correctly placed states of its
-procedure-bearing tokens, not by the number of positions written or the
-energy injected.
+Span injection writes $365$--$1{,}630$ positions, whereas the final-position probe
+writes one. We compare position selections at fixed written-token budgets
+$B$, using the same $135$ items, layer and receiver as
+Table~\ref{tab:big40} (Figure~\ref{fig:posbudget}).
+\emph{Quantity alone is insufficient.} Evenly spaced or random subsets
+recover at most $0.15$, even at half the span. Choosing the positions with
+the largest content change recovers at most $0.12$. Writing after the span
+stays at or below $0.07$, at layer $8$ or the seven tested layers from $4$ to $30$.
+\emph{Block selections differ.} Selecting $256$ positions as one block
+recovers $0.37$. Selecting them as $2$, $4$, $8$, $16$ and $32$ spaced blocks
+gives $0.24$, $0.22$, $0.13$, $0.08$ and $0.08$. The one-versus-$32$ difference
+is $0.29$ [$0.09,0.48$], with calculator-bootstrap uncertainty. These selections
+have similar mean energy shares ($0.291$ versus $0.295$), but energy is not
+matched per item and the selected content changes: procedure coverage is
+$38.6\%$ versus $30.7\%$. This does not isolate contiguity from semantic coverage.
+\emph{Section and placement matter.} A half-span block centred on the
+procedure recovers $0.82$ [$0.67,0.93$], versus $0.18$ around the example.
+Shifting each content difference by one position gives $0.15$--$0.22$ with or
+without wrap-around. Omitting the first or last $16$ positions but leaving the
+rest in place preserves $0.89$--$0.92$. Recovery is thus sensitive to which
+content is injected and where, beyond the number of written positions.
 
 \begin{figure*}[tbp]
 \centering
@@ -193,11 +193,11 @@ energy injected.
 screened items ($14$ calculators) and wrong-skill receiver in every panel;
 the dashed line is the whole span written in place ($\rho=0.89$). (a) $B$
 positions, each written with its own donor state (evenly spaced, random, or
-largest $\|d_p\|$), the same states written half a span away, or the last
+largest $\|d_p\|$), the corresponding differences written half a span away, or the last
 $B$ prompt positions after the span. (b) A fixed budget written as $N$
 contiguous blocks; dotted lines are random single positions at the same
 budget. (c) One contiguous block centred on a section of the skill. (d) The
-whole span displaced by $D$ positions, cyclically or without wrap-around;
+span differences displaced by $D$ positions, cyclically or without wrap-around;
 triangles write it in place without its first or last $1$ or $16$
 positions. Error bars are calculator-bootstrap $95\%$ intervals.}
 \label{fig:posbudget}
@@ -260,7 +260,7 @@ insufficient under this intervention.
 For comparison across models, we summarise each curve by $k^{*}$: the first
 rank reaching halfway from recovery at $k=16$ to the maximum on the fixed grid
 $\{16,32,64,128\}$, with interpolation in $\log_2 k$. We call this the
-\emph{rank knee}; it is not the minimum rank needed for full recovery.
+\emph{rank knee}, a summary of the measured recovery range.
 Qwen3-8B gives $k^{*}=47$ [$43,55$], approximately $1.1\%$ of its hidden
 width. \extref{Appendix}{app:rank2}{The extended version} reports development and deeper-layer curves.
 These measurements describe what the injected representation can recover,
@@ -294,7 +294,7 @@ with continued use through attention on Qwen3-8B. Every layer is measured,
 and both interventions are read on the same screened items. Replacement
 recovers $0.92$--$0.98$ through layer $7$, $0.89$ at $8$ and $0.74$ at $12$
 of $36$, then $0.16$ at $13$ and at most $0.07$ from $14$ onward ($n=135$,
-$14$ calculators); the drop between layers $12$ and $13$ accounts for most of
+$14$ calculators). The drop between layers $12$ and $13$ accounts for most of
 the decline. We define the crossing below $\rho=0.5$ as the \emph{transfer
 boundary} (labelled ``handover'' in the figures and tables). The
 log-probability of the donor's generated reasoning also drops between these
@@ -302,13 +302,17 @@ layers, suggesting that binary answer grading sharpens, but does not fully
 explain, the transition (Appendix~\ref{app:fullscale}). To test continued
 reading, \emph{cumulative attention knockout} blocks attention to skill
 tokens at every layer from $L$ onward. On the $134$ rescued items of the same
-subset, $0.03$--$0.12$ stay correct for $L\le23$; this rises to $0.25$ at
+subset, $0.03$--$0.12$ stay correct for $L\le23$. This rises to $0.25$ at
 $24$, first passes half at $25$ ($0.58$) and reaches $0.94$ at $35$. The
 transfer boundary therefore lies at $13/36=0.36$ of depth and the reading
 boundary at $25/36=0.69$, measured on the same items under the same screen.
 Writing the last prompt position instead recovers at most $0.06$ at any
 layer. Continued dependence on skill attention thus outlasts successful
-transfer from the skill's states.
+transfer from the skill's states. Transfer measures recovery in a wrong-skill
+receiver, whereas knockout measures dependence in a correct-skill run. The
+separation leaves open how span states interact with the receiver's other
+states, a question motivated by the multi-layer interactions found by
+\citet{bigoulaeva2026instructionvectors}.
 
 \begin{figure*}[tbp]
 \centering
@@ -318,8 +322,8 @@ Qwen3-8B on MedCalc, with every layer measured. (a) Three interventions on
 one axis and the same screened items ($n=135$; the knockout on their $134$
 rescued items): span states written at layer $L$; attention to the skill
 blocked from $L$ onward; and the last prompt position written at $L$. The
-shaded band spans the layers where the skill is still read but no longer
-transferable. (b) Each window is drawn across the layers it writes: four-layer
+shaded band spans the layers where skill attention still supports performance but span
+replacement recovers less than half of the gain. (b) Each window is drawn across the layers it writes: four-layer
 windows tile the stack, and the long windows $14$--$19$, $16$--$35$ and
 $0$--$35$ are shown with them; the faint curve repeats (a). Writing every
 layer at once recovers $0.98$, while any window starting at $16$ or later
@@ -351,9 +355,9 @@ To test whether a single late injection is simply too weak, we replace span
 states repeatedly within consecutive layer windows, using the battery's
 receiver and the same $135$ items as the depth sweep. Windows $8$--$11$,
 $12$--$15$, $14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and
-$0.06$; the last equals layer $16$ alone. Writing every layer at once
+$0.06$. The last equals layer $16$ alone. Writing every layer at once
 recovers $0.98$ [$0.91,1.03$], so the transplant itself remains effective when
-it starts early enough; the identity control is exact on all $467$ items. On
+it starts early enough. The identity control is exact on all $467$ items. On
 TheoremQA ($99$ items, $75$ groups, with its battery's receiver), the same
 windows recover $0.84,0.61,0.38,0.20$, the last again equal to layer $16$
 alone. Repeated late injection therefore does not restore early-layer
@@ -404,7 +408,7 @@ $k^{*}=72$ [$46,94$] on MedCalc and $64$ [$50,79$] on TheoremQA: higher than
 Qwen3-8B on both tasks, but with overlapping intervals. Its curve is also less
 sharply defined, since recovery keeps rising past $k=128$ ($0.54$; $0.72$ at
 $256$) and reaches its untruncated $0.84$ at $k=384$, against $256$ for
-Qwen3-8B; its bottom-$k$ controls reach
+Qwen3-8B. Its bottom-$k$ controls reach
 $0.11$--$0.21$. The measured rank requirement is therefore not determined by
 hidden width alone, while a difference between families is not established.
 

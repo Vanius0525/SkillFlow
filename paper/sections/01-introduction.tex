@@ -9,7 +9,12 @@ hidden-state vector carry the useful content, or does the model rely on states
 distributed across the skill's token positions? How long does it continue to
 read those states? We address these questions by intervening on the model's
 representations and measuring how much of the skill's performance gain they
-recover.
+recover. Prior work transfers task information from demonstrations and
+instructions through compact states \citep{hendel2023taskvectors,
+todd2024functionvectors, davidson2025prompting, bigoulaeva2026instructionvectors},
+but transfer can depend on token position and task scope
+\citep{jit2025taskrepr}. We examine long procedural contexts, pairing
+state transfer with interventions on continued access to the source tokens.
 
 Our starting point is a contrast between behaviour and hidden-state geometry.
 Across $1{,}100$ clinical-calculator instances, the correct skill improves
@@ -43,7 +48,7 @@ retained directions matter for this intervention.
 We compare models by the number of directions needed to reach half of the
 measured recovery range. Reducing hidden width fourfold within Qwen changes
 this value from $47$ to $43$, rather than the pre-registered proportional
-prediction of approximately $12$; Mistral at the larger width gives $64$--$72$,
+prediction of approximately $12$. Mistral at the larger width gives $64$--$72$,
 with intervals that overlap Qwen's.
 Across layers, skill states stop transferring most of the effect while
 attention to them still supports performance. This separation replicates
@@ -62,8 +67,8 @@ directions. The measured rank curves depart from proportional width scaling
 within Qwen (\S\ref{sec:rank}, \S\ref{sec:ladder}).
 \item \textbf{Separating skill transfer from continued reading.} Span
 replacement and blocking attention to skill tokens reveal distinct depth
-boundaries. Interventions over multiple layers and checks for unusually large
-activations help rule out two proposed explanations for the loss of transfer
+boundaries. Multi-layer interventions test whether repeated late replacement
+restores transfer. Spectral checks identify the influence of unusually large activations
 (\S\ref{sec:depth}).
 \end{enumerate}
 

@@ -1,17 +1,5 @@
 % Appendix -- the full-dataset rerun (kept in the WWW submission build).
-\section{The full-dataset rerun, and what reads the span}
-\label{app:fullscale}
-
-Every MedCalc $\times$ Qwen3-8B result in the main text was developed on the
-forty calculators with the most rescued items, sampling four each: $160$ of
-$467$ rescued items, and $60$ items over $15$ calculators after the
-receiver-never-solves restriction. We reran each of them with every rescued
-item of every calculator that has at least two ($467$ items, $48$ calculators),
-changing nothing else. The restriction is stricter on the larger set---a
-calculator now has to fail on up to twenty items rather than four---so it keeps
-$135$ items over $14$ calculators, and we also report the per-item restriction
-($369$ items over $45$), which keeps the items whose own receiver fails.
-
+% Queue the wide table before the heading to avoid a trailing float-only page.
 \begin{table*}[tbp]
 \caption{Full-dataset rerun against the subset the main text cites, Qwen3-8B on
 MedCalc, layer $8$. Recovery is Eq.~\ref{eq:rho}; intervals are group bootstrap
@@ -42,6 +30,21 @@ quarters $q_0/q_1/q_2/q_3$ & $0.09/\mathbf{0.56}/0.12/0.05$ & $0.12/0.56/0.12/0.
 \bottomrule
 \end{tabular}
 \end{table*}
+
+\section{The full-dataset rerun, and what reads the span}
+\label{app:fullscale}
+
+Every MedCalc $\times$ Qwen3-8B result in the main text was developed on the
+forty calculators with the most rescued items, sampling four each: $160$ of
+$467$ rescued items, and $60$ items over $15$ calculators after the
+receiver-never-solves restriction. We reran each of them with every rescued
+item of every calculator that has at least two ($467$ items, $48$ calculators),
+changing nothing else. The restriction is stricter on the larger set---a
+calculator now has to fail on up to twenty items rather than four---so it keeps
+$135$ items over $14$ calculators, and we also report the per-item restriction
+($369$ items over $45$), which keeps the items whose own receiver fails.
+
+
 
 The transplant, the truncation knee between $32$ and $64$ directions, and the
 formula quarter's dominance all reproduce. The one arm that moves is the
@@ -81,9 +84,9 @@ perfectly (median $\ell$ between $-0.001$ and $-0.005$ for all of them, and the
 gold-minus-receiver denominator has median $0.0014$, below $0.01$ on $59\%$ of
 items).
 
-\paragraph{Which heads read the span.} For every attention head we recorded what
-the span writes into the positions after it, as
-$W_O^h \sum_{s \in \text{span}} a_{t,s} v_s$, and took its change between the
+\paragraph{Which heads read the span.} We recorded each head's contribution
+from the span to later positions,
+$W_O^h \sum_{s \in \text{span}} a_{t,s} v_s$, comparing the
 document and filler runs ($n=455$). Raw magnitudes are dominated by the last
 layers, but the residual stream grows by more than an order of magnitude with
 depth; normalised by it, the read-out concentrates in layers $12$--$21$ and
@@ -102,7 +105,7 @@ depth. After an injection at layer $L$, the span's own states from $L+1$ onward
 are identical to the document run by construction---the span attends only to a
 shared prefix and to itself---and the downstream per-head read-out of the span
 is indeed $0.86$--$0.99$ of the document's at every injection layer we tried,
-including those at which behaviour is gone. The content is present and is read;
-what an injection at layer $16$ cannot undo is the reading that the question
-positions already did at layers below it.
+including those at which behaviour is gone. This read-out is compatible with continued access to donor content. A late
+span patch leaves the receiver's earlier question-state updates unchanged,
+motivating a direct test of their interaction with the transplanted states.
 

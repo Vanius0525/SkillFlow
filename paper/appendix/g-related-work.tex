@@ -124,18 +124,19 @@ $\tvec=\gvec+\dvec$ split gives a vocabulary for: what is internalised is not
 the same object as what the document contributes while present.
 
 \paragraph{Activation patching.}
-We follow the methodology literature on what patching licenses
-\citep{zhang2023bestpractices, heimersheim2024patching}: transplants establish
-sufficiency, knockouts necessity, and neither alone establishes a route. Two
-recent results are close to ours and we read them as convergent evidence rather
-than as competition. \citet{onset2025instruction} patch between minimal-contrast
-prompts differing only in an instruction span and find an ``onset'' layer past
-which interventions stop mattering; our layer-21 result---beyond which masking
-the document is free---is the same shape of finding from the opposite direction
-(knockout rather than patch) with a document rather than an instruction.
-\citet{jit2025taskrepr} argue that transferable task representations are
-temporally local and assembled just in time; our knockouts say the same thing
-about reading a document, in that no single position group is necessary.
+Activation patching tests recovery in a specified receiver, while knockouts
+test dependence under a specified removal intervention
+\citep{zhang2023bestpractices, heimersheim2024patching}.
+\citet{onset2025instruction} compare instruction-span and final-position
+patches between minimal-contrast prompts. Our main-text depth comparison pairs
+span replacement with cumulative attention knockout on matched screened items.
+\citet{jit2025taskrepr} distinguish transferable states from decodable task
+identity and find temporal and semantic locality. This motivates comparing
+positions, while continued reading requires a separate intervention.
+Instruction-based function vectors can use different components from
+example-based ones \citep{davidson2025prompting}, and patches at the final
+instruction token can interact across layers
+\citep{bigoulaeva2026instructionvectors}.
 \citet{semanticconflicts2026} likewise localise recoverable causal signal to a
 changed cue region plus a few intermediate tokens before aggregation near the
 output. Mechanistic work on retrieval-augmented generation

@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-12",
+  "engine": "Tectonic 0.17.0 (XeTeX)",
+  "command": "XDG_CACHE_HOME=/tmp/skillflow-tectonic-cache /tmp/tectonic-skillflow/tectonic --only-cached -k --keep-logs -o /tmp/skillflow-tex-out paper/main.tex",
+  "main_pages": 8,
+  "total_pages": 12,
+  "undefined_citations_or_references": false,
+  "overfull_boxes": 0,
+  "comparison": "Unedited HEAD also compiled to 8 main / 12 total with this engine. It had three overfull boxes; revised submission has none.",
+  "bibliography_notes": "ACM style reports incomplete optional venue/page metadata in existing entries and the arXiv entry. The new ACL entry includes official publisher, address, pages, and DOI. No missing citation keys.",
+  "scope": "No new model experiments. Position-budget plot regenerated from existing JSON with revised labels only.",
+  "extended_total_pages": 34,
+  "extended_undefined_or_overfull": false
+}

@@ -3,42 +3,51 @@
 
 \paragraph{Skills and compact context representations.}
 Skill benchmarks ask whether agents retrieve and apply reusable procedures
-\citep{su2026srabench, skillsbench2026, sweskills2026}; we ask how a model
+\citep{su2026srabench, skillsbench2026, sweskills2026}. We ask how a model
 represents one already in context. Task and function vectors transfer behaviours
 from in-context demonstrations through compact activations
 \citep{hendel2023taskvectors, todd2024functionvectors}, and task arithmetic
 makes related edits to weights \citep{ilharco2023taskarithmetic}.
-\citet{dong2026taskvectorlimits} bound the task mappings a single vector can
-express, including high-rank ones; our rank is instead that of a matrix of
-hidden-state differences across skill positions, tested under several answer
-formats. Others learn to compress context---aggregated activations
+Instruction-derived function vectors can involve components distinct from
+those used by demonstrations \citep{davidson2025prompting}. Transferable task
+representations also have temporal and semantic locality
+\citep{jit2025taskrepr}, including variation across extended outputs.
+\citet{bigoulaeva2026instructionvectors} patch the final instruction token
+before the query and find superadditive effects across layers.
+\citet{dong2026taskvectorlimits} analyse single-vector limitations in a
+linear-attention setting and test multiple task vectors. Their task-mapping
+rank differs from our rank of state differences across procedural tokens.
+Learned context compression uses aggregated activations
 \citep{ardoin2026promptcompression}, summary tokens \citep{mu2023gist}, compact
 states \citep{ge2024icae}, weight updates \citep{doc2lora2026,
-deepcontextdistill2025}---while we examine the original model's states without
+deepcontextdistill2025}. We examine the original model's states without
 training a compression mechanism.
 
 \paragraph{Answer representations and activation interventions.}
-Multiple-choice answering requires selecting an answer symbol
+Multiple-choice tasks require selecting an answer symbol
 \citep{wiegreffe2025mcq}, whereas reasoning can depend on states distributed
 over generated positions \citep{dura2026sequentialpatching}. Transferring states
 from completed reasoning \citep{mehrafarin2026cothidden} therefore tests a
 different setting from ours, which captures states before generation begins.
 Repeatedly applying activation directions can also steer extended generations
-\citep{panickssery2024caa, liu2024icv, stolfo2025instruction}; our
-single-position tests apply a one-time intervention at a prompt position.
+\citep{panickssery2024caa, liu2024icv, stolfo2025instruction}. Our
+single-position tests instead use one-time residual-state patches before
+generation, a different protocol from head-selected function vectors.
 Following activation-patching methodology \citep{zhang2023bestpractices,
 heimersheim2024patching}, we compare generated answers against explicit
 baselines and verify that writing a run's own states back leaves it unchanged.
-Prior work traces factual information and context use across layers
-\citep{meng2022rome, geva2023dissecting, sia2024incontexttranslation,
-onset2025instruction}. We ask whether states stop transferring a skill's effect
-at the same depth that the model stops depending on attention to them.
+Prior work traces factual information across layers
+\citep{meng2022rome, geva2023dissecting}.
+\citet{sia2024incontexttranslation} use cumulative context masking, while
+\citet{onset2025instruction} compare instruction-span and final-position
+patches. We pair span transfer with cumulative attention knockout in the
+same setting to distinguish transferability from continued reading dependence.
 
 \paragraph{Representation rank and spectral measurements.}
 Spectral analyses use relative singular-value sizes to study hidden-state
 geometry \citep{valeriani2023geometry}, sensitivity to perturbations
 \citep{sarkar2026causaldim}, and transformations across layers
-\citep{fernando2026residualspectral}; we instead truncate the matrix of
+\citep{fernando2026residualspectral}. We truncate the matrix of
 content-specific state differences across skill positions and measure the
 resulting performance. Reports of unusually large activations
 \citep{sun2024massive, shi2026melayer} and dominant hidden dimensions

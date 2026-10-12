@@ -40,7 +40,7 @@ STRAT = {
     "ev": ("evenly spaced, own states", "#0072B2", "o"),
     "rn": ("random positions, own states", "#56B4E9", "s"),
     "td": ("largest $\\|d\\|$, own states", "#009E73", "D"),
-    "mx": ("same states, misplaced", "#D55E00", "v"),
+    "mx": ("same differences, misplaced", "#D55E00", "v"),
     "tq": ("last $B$ prompt positions", "#666666", "x"),
     "wf": ("window on procedure", "#0072B2", "o"),
     "we": ("window on worked example", "#009E73", "D"),
@@ -364,10 +364,10 @@ def main():
 def figure(rep):
     """Four panels, one question each, all on the same 135 items.
 
-    (a) spread positions: count and energy do not buy recovery
-    (b) the same budget cut into more blocks: contiguity does
+    (a) recovery under spread position selections
+    (b) different block selections at the same token budget
     (c) where one contiguous block sits: the procedure section
-    (d) the whole span moved by D positions: placement must be exact
+    (d) content differences moved by D positions
     Okabe-Ito hues; every series also has its own marker and a direct label,
     so identity never rests on colour alone.
     """
@@ -399,7 +399,7 @@ def figure(rep):
     # (a) spread positions ---------------------------------------------------
     lines = [("ev", "evenly spaced", "#0072B2", "o"), ("rn", "random", "#56B4E9", "s"),
              ("td", "largest $\\|d_p\\|$", "#009E73", "D"),
-             ("mx", "same states, misplaced", "#D55E00", "v"),
+             ("mx", "same differences, misplaced", "#D55E00", "v"),
              ("tq", "after the span", "#555555", "x")]
     for key, lab, col, mk in lines:
         buds = (["1", "4", "16", "64", "256", "half"] + (["full"] if key == "mx" else [])
@@ -419,7 +419,7 @@ def figure(rep):
 
     a_.set_xscale("log", base=2)
     a_.set_xticks([1, 4, 16, 64, 256, 1024]); a_.set_xticklabels(["1", "4", "16", "64", "256", "1024"])
-    frame(a_, "(a) spread positions: more state does not help")
+    frame(a_, "(a) recovery under spread position selections")
     a_.set_xlabel("positions written (layer 8)")
     a_.set_ylabel(r"recovery $\rho$")
     a_.legend(loc="upper left", frameon=False, handlelength=1.5, borderaxespad=0.1, ncol=1)
@@ -438,8 +438,8 @@ def figure(rep):
                        label=f"{lab}, random single positions")
     b_.set_xscale("log", base=2)
     b_.set_xticks([1, 2, 4, 8, 16, 32]); b_.set_xticklabels(["1", "2", "4", "8", "16", "32"])
-    frame(b_, "(b) same budget, cut into more blocks")
-    b_.set_xlabel("number of contiguous blocks (budget and energy fixed)")
+    frame(b_, "(b) same budget, different block selections")
+    b_.set_xlabel("number of contiguous blocks (token budget fixed)")
     b_.legend(loc="upper right", frameon=False, handlelength=1.8)
 
     # (c) location of one contiguous block ------------------------------------
@@ -495,7 +495,7 @@ def figure(rep):
     d_.legend(loc="upper right", frameon=False, fontsize=6.0, handlelength=1.6)
     d_.set_xscale("log", base=2)
     d_.set_xticks([0.5, 1, 4, 16, 64, 256]); d_.set_xticklabels(["0", "1", "4", "16", "64", "256"])
-    frame(d_, "(d) the whole span, displaced by $D$ positions")
+    frame(d_, "(d) span differences displaced by $D$ positions")
     d_.set_xlabel("displacement $D$ (positions; last point: half the span)")
     pass
     for ext in ("pdf", "png"):
