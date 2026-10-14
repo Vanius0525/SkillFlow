@@ -24,22 +24,11 @@ one alone is unsafe (\S\ref{sec:traps}); accuracy is read first throughout. No
 item was rewritten into multiple choice to obtain an accuracy channel---%
 \extref{\S}{sec:format}{The extended version} shows why that rewrite is not harmless.
 
-\paragraph{How to read an arm's number.} Interventions are reported both as raw
-accuracy and as the fraction of the range an intervention could possibly
-recover,
-\begin{equation}
-\rho(\text{arm}) \;=\;
-\frac{\text{acc}(\text{arm}) - \text{acc}(\text{receiver})}
-     {\text{acc}(\text{donor}) - \text{acc}(\text{receiver})},
-\end{equation}
-where the receiver is the prompt being patched into, unpatched, and the donor is
-the document actually in the prompt. $\rho$ is what transfers across settings and
-raw accuracy is not: the four configurations in \extref{Figure}{fig:ladder}{the answer-length ladder} have
-donors at $0.550$, $0.467$, $1.000$ and $0.950$ and receivers from $0.000$ to
-$0.350$, and an earlier draft of this paper reported a channel as \emph{stronger}
-under a longer answer by comparing $0.408$ against $1.000$ when as fractions
-they are $0.87$ and $1.00$. Every figure axis labelled ``fraction'' is
-Eq.~\ref{eq:rho}.
+\paragraph{Interpreting recovery.}
+Equation~\ref{eq:rho} normalises an intervention by donor and receiver
+accuracy on the same items. It measures the fraction of the available gain,
+not raw accuracy or a percentage of information transferred. Values can exceed
+one. Comparisons across protocols must retain their own paired baselines.
 
 \paragraph{The instrument's own noise floor, measured.} Every decoding run
 carries a \emph{null} arm: the receiver's own span states are captured and

@@ -168,3 +168,72 @@ family. The row that licenses the name ``content component'' is $\gvec$.}
 \small
 \input{tables/tab-causal}
 \end{table*}
+
+\subsection{Additional diagnostics for the main-text argument}
+\label{app:narrative-diagnostics}
+
+On the synthetic Qwen3-1.7B task ($358$ items), the effect extends beyond
+rescued items: across rescued, persistent-failure, kept and broken items, replacement gives
+accuracies of $1.000/\allowbreak0.000/\allowbreak1.000/\allowbreak0.000$, while content injection gives
+$0.805/\allowbreak0.075/\allowbreak1.000/\allowbreak0.186$. Content injection thus broadly reproduces both the
+benefits and the errors induced by the skill.
+
+\paragraph{Readout checks.}
+
+Alternative readouts can rank interventions differently. On the synthetic task,
+averaged gold-answer log-probability favours a mean shared across skills by
+$5.05$ nats despite lower accuracy ($0.251$ versus $0.288$, $358$ items).
+Forcing an \texttt{ANSWER:} cue on MedCalc cuts the skill's accuracy gain from
+$39.7$ to $4.7$ points ($0.178$ versus $0.131$ on $720$ items) while leaving a
+$+1.08$ nat log-probability difference. Synthetic multiple
+choice retains $0.54$ of the skill's effect after its numbers are corrupted and
+$0.82$ after its lines are scrambled, illustrating possible answer-format
+shortcuts
+\citep{balepur2024artifacts} (\extref{Appendix}{app:traps}{extended version}). Other domains give limited evidence
+(\extref{Appendix}{app:replication}{extended version}).
+
+
+The receiver screen affects how these controls should be interpreted. On the
+$34$ excluded calculators, the wrong-skill receiver already solves some items.
+Other-skill content recovers $0.17$ on these groups ($n=332$), compared with
+$0.05$ on the retained groups ($n=135$). Noise recovers $0.10$ versus $0.02$.
+This pattern is consistent with perturbations enabling knowledge already
+available to the model, although it does not establish that mechanism.
+A separate caveat is intervention size: skill spans in the screened subset
+contain $365$--$1{,}630$ positions, far more than a single-position probe.
+\S\ref{sec:posbudget} separates the number of written positions from their
+arrangement.
+
+
+The pre-registered width-proportional prediction places Qwen3-0.6B's rank
+knee near $12$. Its observed recovery at $k=16,32,64,128$ is
+$0.00,0.12,0.79,0.67$, giving $k^{*}=43$ [$39,52$], close to Qwen3-8B's
+$47$ [$43,55$] despite the fourfold width difference. On TheoremQA, the
+corresponding knees are $52$ [$46,62$] and $50$ [$39,67$], again inconsistent
+with proportional scaling. Their participation ratios are also similar in
+scale ($65$--$75$ versus $70$--$99$ over layers $0$--$20$, excluding unusually
+large activations). Mistral, with the same width as Qwen3-8B, gives
+$k^{*}=72$ [$46,94$] on MedCalc and $64$ [$50,79$] on TheoremQA: higher than
+Qwen3-8B on both tasks, but with overlapping intervals. Its curve is also less
+sharply defined, since recovery keeps rising past $k=128$ ($0.54$; $0.72$ at
+$256$) and reaches its untruncated $0.84$ at $k=384$, against $256$ for
+Qwen3-8B. Its bottom-$k$ controls reach
+$0.11$--$0.21$. The measured rank requirement is therefore not determined by
+hidden width alone, while a difference between families is not established.
+
+\paragraph{How to read an arm's number.} Interventions are reported both as raw
+accuracy and as the fraction of the range an intervention could possibly
+recover,
+\begin{equation}
+\rho(\text{arm}) \;=\;
+\frac{\text{acc}(\text{arm}) - \text{acc}(\text{receiver})}
+     {\text{acc}(\text{donor}) - \text{acc}(\text{receiver})},
+\end{equation}
+where the receiver is the unpatched target prompt and the donor contains the
+source document. Normalisation matters when baselines differ: the four
+configurations in \extref{Figure}{fig:ladder}{the answer-length ladder} have
+donor accuracies of $0.550$, $0.467$, $1.000$ and $0.950$, with receiver
+accuracies from $0.000$ to $0.350$. Raw accuracies of $0.408$ and $1.000$
+correspond to recovery fractions of $0.87$ and $1.00$ in their respective
+settings. Transfer recovery uses Eq.~\ref{eq:rho}; knockout survival instead
+reports the fraction of the knockout run's rescued items that remain correct.

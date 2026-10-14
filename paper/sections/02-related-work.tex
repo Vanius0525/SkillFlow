@@ -1,58 +1,49 @@
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Skills and compact context representations.}
-Skill benchmarks ask whether agents retrieve and apply reusable procedures
-\citep{su2026srabench, skillsbench2026, sweskills2026}. We ask how a model
-represents one already in context. Task and function vectors transfer behaviours
-from in-context demonstrations through compact activations
-\citep{hendel2023taskvectors, todd2024functionvectors}, and task arithmetic
-makes related edits to weights \citep{ilharco2023taskarithmetic}.
-Instruction-derived function vectors can involve components distinct from
-those used by demonstrations \citep{davidson2025prompting}. Transferable task
-representations also have temporal and semantic locality
-\citep{jit2025taskrepr}, including variation across extended outputs.
-\citet{bigoulaeva2026instructionvectors} patch the final instruction token
-before the query and find superadditive effects across layers.
-\citet{dong2026taskvectorlimits} analyse single-vector limitations in a
-linear-attention setting and test multiple task vectors. Their task-mapping
-rank differs from our rank of state differences across procedural tokens.
-Learned context compression uses aggregated activations
-\citep{ardoin2026promptcompression}, summary tokens \citep{mu2023gist}, compact
-states \citep{ge2024icae}, weight updates \citep{doc2lora2026,
-deepcontextdistill2025}. We examine the original model's states without
-training a compression mechanism.
-
-\paragraph{Answer representations and activation interventions.}
-Multiple-choice tasks require selecting an answer symbol
-\citep{wiegreffe2025mcq}, whereas reasoning can depend on states distributed
-over generated positions \citep{dura2026sequentialpatching}. Transferring states
-from completed reasoning \citep{mehrafarin2026cothidden} therefore tests a
-different setting from ours, which captures states before generation begins.
-Repeatedly applying activation directions can also steer extended generations
-\citep{panickssery2024caa, liu2024icv, stolfo2025instruction}. Our
-single-position tests instead use one-time residual-state patches before
-generation, a different protocol from head-selected function vectors.
-Following activation-patching methodology \citep{zhang2023bestpractices,
-heimersheim2024patching}, we compare generated answers against explicit
-baselines and verify that writing a run's own states back leaves it unchanged.
-Prior work traces factual information across layers
-\citep{meng2022rome, geva2023dissecting}.
-\citet{sia2024incontexttranslation} use cumulative context masking, while
+\paragraph{Transfer interventions and source dependence.}
+Task and function vectors transfer behaviours from demonstrations
+\citep{hendel2023taskvectors, todd2024functionvectors}. Natural-language
+instructions can yield different function-vector components
+\citep{davidson2025prompting}, and instruction-vector patches can interact
+superadditively across layers \citep{bigoulaeva2026instructionvectors}.
+Transfer also depends on time and semantic scope \citep{jit2025taskrepr}.
+These results motivate testing continued source dependence separately:
+\citet{sia2024incontexttranslation} use cumulative context masking, and
 \citet{onset2025instruction} compare instruction-span and final-position
-patches. We pair span transfer with cumulative attention knockout in the
-same setting to distinguish transferability from continued reading dependence.
+patches. We pair span transfer with cumulative attention knockout under
+matched task and model conditions.
 
-\paragraph{Representation rank and spectral measurements.}
-Spectral analyses use relative singular-value sizes to study hidden-state
-geometry \citep{valeriani2023geometry}, sensitivity to perturbations
-\citep{sarkar2026causaldim}, and transformations across layers
-\citep{fernando2026residualspectral}. We truncate the matrix of
-content-specific state differences across skill positions and measure the
-resulting performance. Reports of unusually large activations
-\citep{sun2024massive, shi2026melayer} and dominant hidden dimensions
-\citep{timkey2021rogue, kovaleva2021bertbusters} motivate a separate check:
-does an apparent drop in dimensionality reflect a change in useful content or
-merely a few large coordinates? We keep that geometric diagnostic distinct from
-the rank intervention's behavioural outcome.
+\paragraph{What a transferred state measures.}
+A multiple-choice answer symbol \citep{wiegreffe2025mcq} and states from
+completed reasoning \citep{mehrafarin2026cothidden} differ from the procedural
+context supplied before generation. Sequential patching
+\citep{dura2026sequentialpatching} and repeated activation steering
+\citep{panickssery2024caa, liu2024icv, stolfo2025instruction} also intervene
+beyond our one-time prefill protocol. Following activation-patching methodology
+\citep{zhang2023bestpractices, heimersheim2024patching}, we use matched
+controls, generated answers and identity checks to delimit what recovery
+establishes. Our depth comparison extends beyond tracing factual recall
+\citep{meng2022rome, geva2023dissecting} to the sustained use of procedures.
 
+\paragraph{Skills and compact context representations.}
+Skill benchmarks evaluate retrieval and application
+\citep{su2026srabench, skillsbench2026, sweskills2026}. We hold document
+selection fixed and study the reader. Learned compression uses aggregated
+activations \citep{ardoin2026promptcompression}, summary tokens
+\citep{mu2023gist}, compact states \citep{ge2024icae} or weight updates
+\citep{doc2lora2026, deepcontextdistill2025}. We intervene on naturally
+occurring states without training a compressor.
+\citet{dong2026taskvectorlimits} study single-vector limitations in
+linear attention and test multiple task vectors. Their task-mapping rank
+differs from our rank of state differences across procedural positions.
+
+\paragraph{Rank and spectral diagnostics.}
+Spectral studies describe hidden-state geometry
+\citep{valeriani2023geometry, fernando2026residualspectral} and perturbation
+sensitivity \citep{sarkar2026causaldim}. We instead truncate the injected
+matrix and measure recovered behaviour. Unusually large activations
+\citep{sun2024massive, shi2026melayer} and dominant dimensions
+\citep{timkey2021rogue, kovaleva2021bertbusters} motivate a separate check
+of whether an apparent spectral collapse actually reflects useful-content
+compression.

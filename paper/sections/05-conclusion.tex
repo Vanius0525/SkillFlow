@@ -1,14 +1,28 @@
-\section{Conclusion}
+\section{Discussion and Conclusion}
+\label{sec:discussion}
 
-In the evaluated tasks and screened subsets, states across a skill's own
-tokens transfer much of its effect, while a final-position intervention is more
-sensitive to answer format in our one-time patching tests.
-Span recovery depends on content, position and multiple
-leading directions. The rank knee does not scale proportionally with width
-within Qwen, and a difference between model families is suggested but not
-established. Across layers, states stop transferring most of the effect before
-attention to them ceases to support performance, and the spectral drop does not
-establish compression at that boundary. These findings distinguish what skill
-states can transfer from continued dependence on reading them. Explaining
-how the receiving computation constrains transfer is a next step.
+\paragraph{What the depth gap establishes.}
+The paired tests distinguish early effective transfer, an intermediate interval
+of weak transfer with continued reading dependence, and later tolerance to
+blocking further reading. These operational regimes do not identify separate
+internal algorithms. The gap is compatible with dependence on the receiving
+state, whose role remains unresolved.
 
+\paragraph{Implications for representation research.}
+What a state can transfer and whether its source remains necessary are
+different questions. Content and cross-question controls identify useful
+procedural information, while position and rank interventions characterise
+its usable structure. Failed late transfer and distorted spectral summaries
+cannot alone establish that this information has disappeared or been
+compressed. Pairing transfer with source-access interventions provides a
+behavioural way to distinguish these claims.
+
+\paragraph{Implications for context compression and reuse.}
+Representations proposed for reuse should be tested both for recovery in the
+intended receiver and for tolerance to removing source access. Our findings
+show why token count, state norm and single-format success are insufficient
+proxies, and why hidden width alone need not determine a suitable rank budget.
+These are evaluation principles, not demonstrated efficiency gains. The
+evidence concerns fixed contexts and screened subsets. Layer depth does not
+specify agent steps or establish when documents can be dropped during
+multi-turn execution.

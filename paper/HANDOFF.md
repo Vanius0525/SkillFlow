@@ -1,5 +1,24 @@
 # SkillVector 论文交接
 
+## 2026-10-14 正文按 transfer/reading 间隙重构（完成，文件沿用 20261012 标识）
+
+- 用户授权重排正文逻辑，要求不新增实验；后续只考虑 Figure 4 中间区间的多模型/多任务扩展。Web 联系限定于引言，不扩展 Web 实验。
+- 主线已改为：外部程序表示何时能替代源文档 → 建立内容敏感的 transfer probe → 检查位置、跨题共享和秩 → transfer 失效但仍依赖 reading 的中间区间 → 排除简单解释 → 上下文压缩/复用的评价启示。重写 abstract、intro、related work、方法开头与 reading 定义、实验衔接及讨论；保留四张主图、数值与标签。
+- 三阶段只作为两个干预阈值所定义的操作性区间，不命名为独立内部执行算法。接收态相容性仍是未识别机制，不把未做实验写成结果。
+- 次要诊断与原有详细 rank 说明转入扩展附录 H；投稿附录 A 删除重复的 recovery 公式及旧叙事，原文也留在 H。
+- 新增 [WWW 引言先例调研](audit/WWW-INTRO-PRECEDENTS-20261012.md)：AIM 是强的“在线服务引入、通用任务验证”先例；postEdit 的 WWW 首页可核实但完整投稿 PDF 下载失败；SheetAgent 有具体表格应用；DoT 含 WebShop，不是纯 intro 先例。新增 HtmlRAG 引用仅支撑 Web 文档交付动机。当前不能保证仅靠引言通过 2027 scope 审查。
+- 新增 [Figure 4 扩展方案](audit/FIGURE4-EXTENSION-PLAN-20261012.md)：六组边界已有结果，先复用全层文件并核验共同 item，再扩 Mistral 的重复晚层注入；没有启动模型或平台任务。
+- **当场核对的分母问题**：replication-values 中 transfer/knockout n 分别为 135/134、99/63、362/90、132/125、92/46、115/65。相同 screened groups 不等于同题严格配对。方法和 Table 4 caption 已明确独立 baseline 的 rescued 子集；后续 P0 需做 item 交集复核。当前未运行该新增分析，不报告其结果。
+- 验证过程：本 worktree 不含 gitignored 原始结果；在 /tmp staging 复制本轮 paper，用只读软链接访问主工作区的 howskill/whitebox 结果，重写 staging JSON 中的旧绝对路径后运行 check_main_data.py，70,201 检查通过、439 个源文件哈希。历史 audit.py 在拥有结果的主工作区运行通过。最初直接在 worktree 跑历史审计因缺结果失败，不是数据不一致。
+- 更新 check_main_data.py 的文字定位：迁入附录的数值仍检查，所有数值断言保留；同时修复上一轮改写遗留的四个逐字措辞断言，未改变预期数值。编译使用 /tmp Tectonic 缓存，不调用会覆盖 Windows 目录的 build.sh。
+- 最终投稿版正文 8 页、全文 12 页，无未定义引用或 overfull；扩展版 34 页，无未定义引用，保留一条 1.15pt 竖向 overfull 警告，末页目视无裁切。两份 PDF 和 Overleaf 包已更新。详见 [构建记录](audit/BUILD-CHECK-RESTRUCTURE-20261012.json)。
+- 下一步：先阅读新正文决定研究定位；若继续 Figure 4，按方案 P0 处理同题分母与阈值稳定性，再决定是否需要 P1 新实验。
+
+### Open Ideas / 值得深挖的问题
+
+- 2026-10-12：将“仍被读取但不能转移”的区间作为表示复用的压力测试。观察：Qwen3-8B/MedCalc 为 L13 vs L25，其他五组也有边界间隙，但干预分母有明显差异。价值：把可转移性与实际源依赖分开。最小验证：共同 item 复核及跨家族重复晚层注入。机制来源尚未识别；延续旧接收态假说，不声称本轮发现独立新机制。
+
+
 ## 2026-10-12 正文近邻定位、语言修订与 WWW 故事线
 
 - 用户要求保留原文逻辑，直接润色已有工作定位并增加引用，同时给出 A 类论文故事线和具体 Web 关系。补充偏好：少用分号、破折号，减少过度防御表达，按正常学术写作陈述发现。

@@ -1,4 +1,4 @@
-\section{Experiment}
+\section{Evidence for Transfer without Source Independence}
 \label{sec:experiments}
 
 \subsection{Experimental setup}
@@ -23,14 +23,10 @@ The main MedCalc span experiments cover $467$ rescued items from $48$
 calculators with at least two such items. Screening for groups whose receiver
 solves no sampled item retains $135$ items from $14$ calculators. The main
 depth sweep, rank curve and span-quarter comparisons use this same subset.
-Appendix~\ref{app:fullscale} compares this rerun with the earlier development
-samples it replaces. TheoremQA uses the same
-group-based screen, which becomes an item-level screen when a skill has only
-one question. We report sample sizes for each comparison. Main-text accuracy
-and recovery intervals resample skill groups. Each recovery estimate uses
-donor and receiver baselines on the items available for that intervention.
-Incomplete reruns are excluded rather than combined into curves with changing
-sample sets. Complete earlier measurements are retained and identified.
+TheoremQA uses the same screen, becoming item-level when a skill has only one
+question. Intervals resample skill groups, with donor and receiver baselines
+matched to each intervention's available items. Only complete reruns enter
+curves. Appendix~\ref{app:fullscale} records earlier development samples.
 
 \paragraph{Identity control.}
 Writing the receiver's own states back should leave its output unchanged.
@@ -42,19 +38,25 @@ synthetic decomposition. All main-text interventions use the correction. Appendi
 provenance and Appendix~\ref{app:detail} implementation details. Small numerical
 discrepancies can propagate through long generations \citep{he2025nondeterminism}.
 
-\subsection{Resolving the paradox: content and answer format}
+\subsection{Establishing a content-sensitive transfer probe}
 \label{sec:decomp}
 
-\paragraph{The smaller content component carries the improvement.}
+\paragraph{Content gain and state displacement need not agree.}
+Across the $1{,}100$ clinical-calculator instances, the correct skill adds
+$39.7$ accuracy points over no skill, while the matched wrong skill changes
+accuracy by $-2.9$ points ($95\%$ interval $[-8.6,+2.9]$, paired calculator
+bootstrap). Yet on the synthetic task, correct and wrong skills have similar
+final-position displacements relative to no skill: cosine similarity is
+$0.91$--$0.95$ over layers $0$--$10$. A large shared displacement is therefore
+not sufficient evidence that the probe captures useful content. We test the
+two components separately rather than treating the total displacement as a skill.
+
+\paragraph{Content subtraction recovers the behavioural effect.}
 On the synthetic task with Qwen3-1.7B ($358$ items, $82$ rescued), we inject
 each component of Eq.~\ref{eq:decomp} at the final prompt position. On rescued
 items, the presence component recovers $0.098$ of the gain, exactly the
 wrong-skill baseline. The content component recovers $0.805$, compared with
-$1.000$ for full state replacement. The effect extends to failures: across
-rescued, persistent-failure, kept and broken items, replacement gives
-accuracies of $1.000/0.000/1.000/0.000$, while content injection gives
-$0.805/0.075/1.000/0.186$. Content injection thus broadly reproduces both the
-benefits and the errors induced by the skill. Recovery also depends on the
+$1.000$ for full state replacement. Recovery also depends on the
 subtraction baseline. Using a skill with corrupted numbers or with shuffled sentences gives
 $0.17$--$0.28$ over layers $21$--$27$, every layer measured, compared with
 $0.805$ for an unrelated skill. The content component must therefore be
@@ -99,7 +101,15 @@ respectively. Earlier multi-layer probes
 are reported separately in \extref{Appendix}{app:onepos}{the extended version}. The complete matched
 comparison here concerns layer $8$.
 
-\subsection{The skill span supports content injection}
+\paragraph{Readout checks.}
+\label{sec:traps}
+Generated-answer accuracy is the primary readout. Gold-answer
+log-probability can favour an intervention with worse accuracy, and forcing
+an answer cue can suppress the skill's benefit. Multiple-choice controls also
+retain substantial performance after content corruption
+\citep{balepur2024artifacts} (\extref{Appendix}{app:traps}{extended version}).
+
+\subsection{Recovering the effect at its source positions}
 \label{sec:battery}
 
 \paragraph{Changing the intervention positions restores recovery.}
@@ -150,18 +160,12 @@ calculators. Table~\ref{tab:replication} gives the interval for full-span recove
 \input{tables/tab-big40}
 \end{table*}
 
-The receiver screen affects how these controls should be interpreted. On the
-$34$ excluded calculators, the wrong-skill receiver already solves some items.
-Other-skill content recovers $0.17$ on these groups ($n=332$), compared with
-$0.05$ on the retained groups ($n=135$). Noise recovers $0.10$ versus $0.02$.
-This pattern is consistent with perturbations enabling knowledge already
-available to the model, although it does not establish that mechanism.
-A separate caveat is intervention size: skill spans in the screened subset
-contain $365$--$1{,}630$ positions, far more than a single-position probe.
-\S\ref{sec:posbudget} separates the number of written positions from their
-arrangement.
+These results are conditional on the receiver screen. On excluded groups,
+other-skill and noise controls perform better, limiting extrapolation to the
+full benchmark. Span patches also write many more states than a final-position
+probe. We address this size difference next.
 
-\subsection{Which positions carry the effect}
+\subsection{Distinguishing position budget from placement}
 \label{sec:posbudget}
 
 Span injection writes $365$--$1{,}630$ positions, whereas the final-position probe
@@ -203,11 +207,12 @@ positions. Error bars are calculator-bootstrap $95\%$ intervals.}
 \label{fig:posbudget}
 \end{figure*}
 
-\subsection{Skill identity and content within the span}
+\subsection{Testing whether transfer carries reusable content}
 \label{sec:whose}
 
-Table~\ref{tab:skillcontent} examines which content supports transfer and
-whether it depends on the question. Of four contiguous span quarters, the
+A successful same-question patch could carry a task-specific answer rather
+than reusable procedural content. Table~\ref{tab:skillcontent} tests this
+alternative by varying the injected section and the donor question. Of four contiguous span quarters, the
 formula quarter gives the largest standalone recovery ($0.56$), compared with
 $0.89$ for the full span. With the skill before the question, causal masking
 prevents its states from depending on later question tokens: states are
@@ -242,7 +247,7 @@ $0.06$ with it first ($135$ items, $14$ calculators). Because these screens
 retain different subsets, the contrast suggests sensitivity to prompt order
 but is not a matched estimate of its effect (\extref{Appendix}{app:belongs}{extended version}).
 
-\subsection{Rank required to recover the skill's effect}
+\subsection{Testing a compact representation of the span}
 \label{sec:rank}
 
 We next inject the truncated matrix in Eq.~\ref{eq:rank} to measure how
@@ -284,11 +289,16 @@ plotted.}
 \label{fig:rank}
 \end{figure*}
 
-\subsection{Transfer depth and continued use of the skill}
+\subsection{Identifying the interval between transfer and reading}
 \label{sec:where}
 \label{sec:depth}
 
-\paragraph{Span replacement and attention knockout separate in depth.}
+The preceding controls establish effective early transfer of content across
+skill positions. We now ask whether losing that effect at later layers means
+the model no longer needs the document. Figure~\ref{fig:transferreading}
+tests this inference directly.
+
+\paragraph{Transfer weakens while reading remains important.}
 Figure~\ref{fig:transferreading} compares transfer through span replacement
 with continued use through attention on Qwen3-8B. Every layer is measured,
 and both interventions are read on the same screened items. Replacement
@@ -305,14 +315,18 @@ tokens at every layer from $L$ onward. On the $134$ rescued items of the same
 subset, $0.03$--$0.12$ stay correct for $L\le23$. This rises to $0.25$ at
 $24$, first passes half at $25$ ($0.58$) and reaches $0.94$ at $35$. The
 transfer boundary therefore lies at $13/36=0.36$ of depth and the reading
-boundary at $25/36=0.69$, measured on the same items under the same screen.
+boundary at $25/36=0.69$, using the same screen and restricting knockout
+to its donor-correct items.
 Writing the last prompt position instead recovers at most $0.06$ at any
 layer. Continued dependence on skill attention thus outlasts successful
 transfer from the skill's states. Transfer measures recovery in a wrong-skill
 receiver, whereas knockout measures dependence in a correct-skill run. The
-separation leaves open how span states interact with the receiver's other
-states, a question motivated by the multi-layer interactions found by
-\citet{bigoulaeva2026instructionvectors}.
+separation identifies the intermediate regime operationally: from layers
+$13$ through $24$, span replacement recovers less than half the gain and
+blocking further reading leaves fewer than half the rescued items correct.
+From layer $25$, at least half remain correct without further reading, with
+residual dependence continuing to diminish. Thus transfer loss precedes,
+rather than demonstrates, tolerance to removal of source access.
 
 \begin{figure*}[tbp]
 \centering
@@ -341,7 +355,7 @@ $41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n$ describes the battery.
 Handover brackets the transfer boundary as a fraction of model depth; reading
 is the first layer, at one-layer resolution, from which blocking attention to
 the skill still leaves at least half of the rescued items correct, measured on
-the same screened items as the transfer boundary. $k^{*}$ is the rank knee on
+the knockout run's rescued items within the same screened groups. $k^{*}$ is the rank knee on
 the fixed grid.}
 \label{tab:replication}
 \centering
@@ -350,8 +364,8 @@ the fixed grid.}
 \input{tables/tab-replication}
 \end{table*}
 
-\paragraph{Adding late intervention layers does not restore transfer.}
-To test whether a single late injection is simply too weak, we replace span
+\paragraph{Repeated replacement does not bridge the gap.}
+To test whether late failure reflects intervening at too few layers, we replace span
 states repeatedly within consecutive layer windows, using the battery's
 receiver and the same $135$ items as the depth sweep. Windows $8$--$11$,
 $12$--$15$, $14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and
@@ -361,7 +375,9 @@ it starts early enough. The identity control is exact on all $467$ items. On
 TheoremQA ($99$ items, $75$ groups, with its battery's receiver), the same
 windows recover $0.84,0.61,0.38,0.20$, the last again equal to layer $16$
 alone. Repeated late injection therefore does not restore early-layer
-recovery in these tests.
+recovery in these tests. This constrains a simple shortage-of-interventions
+explanation, while leaving interactions with the receiver's other states open
+\citep{bigoulaeva2026instructionvectors}.
 
 \paragraph{A spectral drop is not evidence of compression.}
 Could the loss of transfer reflect compression into fewer dimensions? We
@@ -383,8 +399,8 @@ for lost transfer: a few large activations distort the dimensionality summary
 We extend span injection, rank truncation and the available depth comparisons
 to Qwen3-0.6B ($D=1024$), Mistral-7B ($D=4096$, $32$ layers), and TheoremQA.
 Each model is injected at an early layer, and the receiver screen is applied
-separately to each run. Table~\ref{tab:replication} distinguishes completed
-comparisons from missing controls or attention knockouts. Results for
+separately to each run. Table~\ref{tab:replication} collects the paired transfer and reading boundaries
+alongside the early-transfer and rank results. Results for
 Qwen3-1.7B, where skills rescue only $8$--$11\%$ of items, appear in \extref{Appendix Table}{tab:laddermodels}{the extended version}.
 
 Span recovery ranges from $0.74$ to $0.94$ across the six model--task
@@ -397,32 +413,11 @@ Reading boundaries also vary by task: $0.58$--$0.71$ on TheoremQA and
 $0.69$--$0.84$ on MedCalc across the three models.
 
 The pre-registered width-proportional prediction places Qwen3-0.6B's rank
-knee near $12$. Its observed recovery at $k=16,32,64,128$ is
-$0.00,0.12,0.79,0.67$, giving $k^{*}=43$ [$39,52$], close to Qwen3-8B's
-$47$ [$43,55$] despite the fourfold width difference. On TheoremQA, the
-corresponding knees are $52$ [$46,62$] and $50$ [$39,67$], again inconsistent
-with proportional scaling. Their participation ratios are also similar in
-scale ($65$--$75$ versus $70$--$99$ over layers $0$--$20$, excluding unusually
-large activations). Mistral, with the same width as Qwen3-8B, gives
-$k^{*}=72$ [$46,94$] on MedCalc and $64$ [$50,79$] on TheoremQA: higher than
-Qwen3-8B on both tasks, but with overlapping intervals. Its curve is also less
-sharply defined, since recovery keeps rising past $k=128$ ($0.54$; $0.72$ at
-$256$) and reaches its untruncated $0.84$ at $k=384$, against $256$ for
-Qwen3-8B. Its bottom-$k$ controls reach
-$0.11$--$0.21$. The measured rank requirement is therefore not determined by
-hidden width alone, while a difference between families is not established.
-
-\paragraph{Readout checks.}
-\label{sec:traps}
-Alternative readouts can rank interventions differently. On the synthetic task,
-averaged gold-answer log-probability favours a mean shared across skills by
-$5.05$ nats despite lower accuracy ($0.251$ versus $0.288$, $358$ items).
-Forcing an \texttt{ANSWER:} cue on MedCalc cuts the skill's accuracy gain from
-$39.7$ to $4.7$ points ($0.178$ versus $0.131$ on $720$ items) while leaving a
-$+1.08$ nat log-probability difference. Synthetic multiple
-choice retains $0.54$ of the skill's effect after its numbers are corrupted and
-$0.82$ after its lines are scrambled, illustrating possible answer-format
-shortcuts
-\citep{balepur2024artifacts} (\extref{Appendix}{app:traps}{extended version}). Other domains give limited evidence
-(\extref{Appendix}{app:replication}{extended version}).
-
+knee near $12$. Instead, it is $43$ [$39,52$], close to Qwen3-8B's $47$
+[$43,55$] despite the fourfold width difference. TheoremQA gives $52$
+[$46,62$] and $50$ [$39,67$], respectively. Mistral gives $k^{*}=72$ [$46,94$] on MedCalc
+and $64$ [$50,79$] on TheoremQA. These values are higher than Qwen3-8B's
+but have overlapping intervals. Thus hidden width alone does not determine
+the measured rank requirement, while a difference between families is not
+established. Full curves and controls are retained in Figure~\ref{fig:rank}
+and \extref{Appendix}{app:rank2}{the extended version}.

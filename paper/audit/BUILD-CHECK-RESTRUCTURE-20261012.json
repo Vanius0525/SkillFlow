@@ -1,0 +1,36 @@
+{
+  "completed_on": "2026-10-14",
+  "engine": "Tectonic 0.17.0, cached bundle",
+  "submission": {
+    "main_pages": 8,
+    "total_pages": 12,
+    "undefined_references": 0,
+    "overfull": 0,
+    "artifact": "paper/skillvector-www2027.pdf"
+  },
+  "extended": {
+    "total_pages": 34,
+    "undefined_references": 0,
+    "overfull_vbox_pt": 1.14653,
+    "visual_check": "last page has no clipping",
+    "artifact": "paper/skillvector.pdf"
+  },
+  "data_check": {
+    "passed": 70201,
+    "source_files_hashed": 439,
+    "method": "Temporary paper copy with read-only links to primary checkout results; staging JSON absolute roots rewritten",
+    "command": "python3 paper/tools/check_main_data.py"
+  },
+  "historical_audit": "ALL CHECKS PASSED",
+  "new_experiments": false,
+  "figures_and_numeric_tables_changed": false,
+  "visual_checks": [
+    "submission pages 1, 8, 12",
+    "extended page 34"
+  ],
+  "build_command": "XDG_CACHE_HOME=/tmp/skillflow-tectonic-cache /tmp/tectonic-skillflow/tectonic --only-cached -k --keep-logs -o OUTPUT PAPER/main.tex",
+  "artifact_sha256": {
+    "skillvector-www2027.pdf": "f09d4524b61f36c5850e8dbc58a0be191016ab8b83b43b73e594a0bb5f9b6911",
+    "skillvector.pdf": "0d61cd071591645981d6694e440dd026edbbd685c32b9833d5efa324a59d2c1c"
+  }
+}

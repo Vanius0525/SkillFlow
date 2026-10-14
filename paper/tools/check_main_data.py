@@ -86,6 +86,11 @@ def prose(needle):
 
 # The main text is now sections/*.tex, inputs in the order main.tex uses.
 main = main_text()
+archived = re.sub(r"\s+", " ", (PAPER/'appendix/h-additional-tables.tex').read_text())
+
+def diagnostic_prose(needle):
+    check('extended diagnostic: '+needle, needle in archived)
+
 battery = data('battery-values.json')
 base = screen(load(battery['sources']))
 check('battery 135 items / 14 groups', len(base)==135 and len({r['calculator_id'] for r in base})==14)
@@ -211,7 +216,6 @@ for needle in ['accuracy from $0.000$ to $0.815$', '$0.03$, $0.06$ and $0.05$',
                '$0.89$, $0.74$, $0.16$ and $0.06$',
                'recovers $0.98$ [$0.91,1.03$]', 'largest control is $0.35$',
                'recovery on the same items is $0.71$', '$k^{*}=72$ [$46,94$] on MedCalc',
-               '$0.00,0.12,0.79,0.67$, giving $k^{*}=43$ [$39,52$]',
                '$0.235$ for state replacement', '$365$--$1{,}630$ positions',
                'recovers only $0.03$ with the skill first ($n=135$) and $0.04$',
                'preserves $0.87$ recovery, compared with $0.89$']:
@@ -242,7 +246,8 @@ for _line in _rd.open():
     close('readout check: nats in favour of the shared mean',
           round(_st.mean(x['lp_mean'] for x in _r) - _st.mean(x['lp_real'] for x in _r), 2), 5.05)
 check('readout check: layer 27 present', _seen)
-prose('$5.05$ nats despite lower accuracy ($0.251$ versus $0.288$, $358$ items)')
+diagnostic_prose('$5.05$ nats despite lower accuracy ($0.251$ versus $0.288$, $358$ items)')
+diagnostic_prose('$0.00,0.12,0.79,0.67$, giving $k^{*}=43$ [$39,52$]')
 
 pb=data('posbudget.json')
 check('Figure 4 instrument checks exact',all(a==b for a,b in pb['checks'].values()))
@@ -258,8 +263,8 @@ check('Figure 4: spread positions never reach the contiguous block',
       max(pb['arms'][a]['rho'] for a in ('ev256','rn256','td256','evhalf','rnhalf'))
       < pb['arms']['c1x256']['rho'])
 for needle in ['recover at most $0.15$','$0.24$, $0.22$, $0.13$, $0.08$ and $0.08$',
-               'centred on the procedure section recovers $0.82$','recovers $0.15$--$0.22$',
-               'keeps $0.89$--$0.92$']:
+               'centred on the procedure recovers $0.82$','gives $0.15$--$0.22$',
+               'preserves $0.89$--$0.92$']:
     prose(needle)
 
 # ---- the 2026-09-20 fill-ins -------------------------------------------------
@@ -292,7 +297,7 @@ check('ladder does not rise past 16 positions', max(peaks) == peaks[2])
 check('k=16 and k=32 are the same items at L29',
       tier_a(['tA-num-k16'])[29] == tier_a(['tA-num-k32'])[29])
 prose('$0.235$, $0.261$, $0.403$, $0.403$, $0.395$')
-prose('$61$ is the')
+prose('$61$ covers the whole no-document prompt')
 
 ctrl = data('controls-values.json')
 check('controls table is the 358-item rerun', ctrl['n'] == 358 and ctrl['n_R'] == 82)
@@ -343,8 +348,8 @@ check('Mistral MedCalc rank includes the high-k tag', 'mis-rank-hi' in mis['sour
 misrows = screen(load(mis['sources']['rank']))
 check('Mistral MedCalc k=384 reaches its untruncated value',
       round(rho(misrows, 'ok_rank384_L4'), 2) == round(rho(misrows, 'ok_real_L4'), 2) == 0.84)
-prose('reaches its untruncated $0.84$ at $k=384$')
-prose('retains $0.54$ of the skill')
+diagnostic_prose('reaches its untruncated $0.84$ at $k=384$')
+diagnostic_prose('retains $0.54$ of the skill')
 
 for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','procedure','cyclic']),
                          ('fig-channels-medcalc.pdf',['135','0.81','0.03','0.06']),
@@ -367,7 +372,7 @@ for tags in [('q06-bat-a','q06-bat-b'),('mis-rank-a','mis-rank-b','mis-rank-lo')
 
 manifest={'checks_passed':len(checks),'source_sha256':sources,
           'artifact_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest()
-              for p in [*MAIN_TEXT,
+              for p in [*MAIN_TEXT, PAPER/'appendix/h-additional-tables.tex',
                   *[TABLES/x for x in ['tab-answer-format.tex','tab-big40.tex',
                        'tab-skill-content.tex','tab-replication.tex']],
                   *[FIGURES/x for x in ['fig-channels-medcalc.pdf','fig-rank-medcalc.pdf',
