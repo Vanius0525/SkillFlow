@@ -1,4 +1,4 @@
-\section{Evidence for Transfer without Source Independence}
+\section{Experiments}
 \label{sec:experiments}
 
 \subsection{Experimental setup}
@@ -101,14 +101,6 @@ respectively. Earlier multi-layer probes
 are reported separately in \extref{Appendix}{app:onepos}{the extended version}. The complete matched
 comparison here concerns layer $8$.
 
-\paragraph{Readout checks.}
-\label{sec:traps}
-Generated-answer accuracy is the primary readout. Gold-answer
-log-probability can favour an intervention with worse accuracy, and forcing
-an answer cue can suppress the skill's benefit. Multiple-choice controls also
-retain substantial performance after content corruption
-\citep{balepur2024artifacts} (\extref{Appendix}{app:traps}{extended version}).
-
 \subsection{Recovering the effect at its source positions}
 \label{sec:battery}
 
@@ -124,7 +116,7 @@ All positions outside the chosen intervention retain their receiver states.
 \begin{figure*}[tbp]
 \centering
 \includegraphics[width=\textwidth]{fig-channels-medcalc.pdf}
-\caption{Matched position comparison on MedCalc with Qwen3-8B after the fix.
+\caption{Matched position comparison on MedCalc with Qwen3-8B.
 Both panels use layer $8$, the same wrong-skill receiver and $135$ items from
 $14$ calculators. Left: donor states written at the last $1$, $16$, or up to
 $256$ available positions after the skill. Right: interventions over the skill
@@ -163,12 +155,104 @@ calculators. Table~\ref{tab:replication} gives the interval for full-span recove
 These results are conditional on the receiver screen. On excluded groups,
 other-skill and noise controls perform better, limiting extrapolation to the
 full benchmark. Span patches also write many more states than a final-position
-probe. We address this size difference next.
+probe. We return to this size difference in \S\ref{sec:posbudget}, after
+testing whether transfer loss coincides with the end of reading.
+
+\subsection{Identifying the interval between transfer and reading}
+\label{sec:where}
+\label{sec:depth}
+
+The effective early span intervention gives us a probe with which to test
+the paradox: does losing the transfer effect at later layers mean
+the model no longer needs the document? Figure~\ref{fig:transferreading}
+tests this inference directly.
+
+\paragraph{Transfer weakens while reading remains important.}
+Figure~\ref{fig:transferreading} compares transfer through span replacement
+with continued use through attention on Qwen3-8B. Every layer is measured,
+using the same screened groups and each intervention's eligible items. Replacement
+recovers $0.92$--$0.98$ through layer $7$, $0.89$ at $8$ and $0.74$ at $12$
+of $36$, then $0.16$ at $13$ and at most $0.07$ from $15$ onward ($n=135$,
+$14$ calculators). The drop between layers $12$ and $13$ accounts for most of
+the decline. We define the crossing below $\rho=0.5$ as the \emph{transfer
+boundary} (reported as transfer in Table~\ref{tab:replication}). The
+log-probability of the donor's generated reasoning also drops between these
+layers, suggesting that binary answer grading sharpens, but does not fully
+explain, the transition (Appendix~\ref{app:fullscale}). To test continued
+reading, \emph{cumulative attention knockout} blocks attention to skill
+tokens at every layer from $L$ onward. On the $134$ rescued items of the same
+subset, $0.03$--$0.12$ stay correct for $L\le23$. This rises to $0.25$ at
+$24$, first passes half at $25$ ($0.58$) and reaches $0.94$ at $35$. The
+transfer boundary therefore lies at $13/36=0.36$ of depth and the reading
+boundary at $25/36=0.69$, using the same screen and restricting knockout
+to its donor-correct items.
+Writing the last prompt position instead recovers at most $0.06$ at any
+layer. Continued dependence on skill attention thus outlasts successful
+transfer from the skill's states. Transfer measures recovery in a wrong-skill
+receiver, whereas knockout measures dependence in a correct-skill run. The
+separation identifies the intermediate regime operationally: from layers
+$13$ through $24$, span replacement recovers less than half the gain and
+blocking further reading leaves fewer than half the rescued items correct.
+The first crossing is at layer $25$; retention briefly falls below half again
+at $26$, then rises above it from $27$ onward. The boundary summarises the
+curve rather than asserting a monotonic transition. Thus transfer loss precedes,
+rather than demonstrates, tolerance to removal of source access.
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
+\caption{Transfer declines earlier than dependence on skill attention,
+Qwen3-8B on MedCalc, with every layer measured. (a) Three interventions on
+one axis and the same screened groups ($n=135$ for transfer and $134$
+eligible rescued items for knockout): span states written at layer $L$; attention to the skill
+blocked from $L$ onward; and the last prompt position written at $L$. The
+shaded band spans the layers where skill attention still supports performance but span
+replacement recovers less than half of the gain. (b) Each window is drawn across the layers it writes: four-layer
+windows tile the stack, and the long windows $14$--$19$, $16$--$35$ and
+$0$--$35$ are shown with them; the faint curve repeats the span-transfer curve in (a). Writing every
+layer at once recovers $0.98$, while any window starting at $16$ or later
+stays at or below $0.06$. Span interventions use the corrected implementation;
+attention knockout does not use state capture.}
+\label{fig:transferreading}
+\end{figure*}
+
+
+
+\paragraph{Repeated replacement does not bridge the gap.}
+To test whether late failure reflects intervening at too few layers, we replace span
+states repeatedly within consecutive layer windows, using the battery's
+receiver and the same $135$ items as the depth sweep. Windows $8$--$11$,
+$12$--$15$, $14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and
+$0.06$. The last equals layer $16$ alone. Writing every layer at once
+recovers $0.98$ [$0.91,1.03$], so the transplant itself remains effective when
+it starts early enough. The identity control is exact on all $467$ items. On
+TheoremQA ($99$ items, $75$ groups, with its battery's receiver), the same
+windows recover $0.84,0.61,0.38,0.20$, the last again equal to layer $16$
+alone. Repeated late injection therefore does not restore early-layer
+recovery in these tests. This constrains a simple shortage-of-interventions
+explanation, while leaving interactions with the receiver's other states open
+\citep{bigoulaeva2026instructionvectors}.
+
+\paragraph{A spectral drop is not evidence of compression.}
+Could the loss of transfer reflect compression into fewer dimensions? We
+examine the centred participation ratio, a summary of how broadly matrix energy
+is distributed across singular directions. It falls from $68$ at layer $12$
+to $1.0$ at layer $16$, but this drop is driven by unusually large activations
+\citep{sun2024massive, shi2026melayer}. In $35$ of $48$ calculators, one
+token's state reaches $121$--$195$ times the median span norm, always on the
+same two hidden dimensions. Removing the four highest-norm positions restores
+the ratio to $85$ at layer $16$, and it stays between $62$ and $98$ over layers
+$0$--$28$. The drop is also absent in Qwen3-0.6B and Qwen3-1.7B.
+This diagnostic therefore does not support compression as the explanation
+for lost transfer: a few large activations distort the dimensionality summary
+(\extref{Appendix Table}{tab:prdiag}{extended version}).
+
 
 \subsection{Distinguishing position budget from placement}
 \label{sec:posbudget}
 
-Span injection writes $365$--$1{,}630$ positions, whereas the final-position probe
+Having established the depth gap, we examine what makes the early probe
+effective. Span injection writes $365$--$1{,}630$ positions, whereas the final-position probe
 writes one. We compare position selections at fixed written-token budgets
 $B$, using the same $135$ items, layer and receiver as
 Table~\ref{tab:big40} (Figure~\ref{fig:posbudget}).
@@ -192,7 +276,7 @@ content is injected and where, beyond the number of written positions.
 
 \begin{figure*}[tbp]
 \centering
-\includegraphics[width=0.72\textwidth]{fig-posbudget.pdf}
+\includegraphics[width=\textwidth]{fig-posbudget.pdf}
 \caption{Position budget on MedCalc with Qwen3-8B, layer $8$: the same $135$
 screened items ($14$ calculators) and wrong-skill receiver in every panel;
 the dashed line is the whole span written in place ($\rho=0.89$). (a) $B$
@@ -225,7 +309,7 @@ remainder recovers little on its own. Early transfer therefore relies largely
 on content shared across questions, with greater question dependence later.
 
 \begin{table}[tbp]
-\caption{Content and question dependence of span states, Qwen3-8B after the fix.
+\caption{Content and question dependence of span states, Qwen3-8B.
 Top: each contiguous quarter is injected separately, on $135$ items from $14$
 calculators. Bottom: with the skill after the question, content shared across
 other instances and the instance-specific remainder are injected separately,
@@ -250,7 +334,8 @@ but is not a matched estimate of its effect (\extref{Appendix}{app:belongs}{exte
 \subsection{Testing a compact representation of the span}
 \label{sec:rank}
 
-We next inject the truncated matrix in Eq.~\ref{eq:rank} to measure how
+Finally, we test whether the transferable span can be reduced to a few
+directions. We inject the truncated matrix in Eq.~\ref{eq:rank} to measure how
 recovery depends on the retained directions. Each intervention preserves the
 same skill-specific mean at every span position, so the comparison tests how
 much variation across positions is needed beyond that mean. At layer $8$ on
@@ -275,123 +360,17 @@ states may activate pathways absent from an unpatched run
 
 \begin{figure*}[tbp]
 \centering
-\includegraphics[width=0.88\textwidth]{fig-rank-medcalc.pdf}
-\caption{Recovery after retaining $k$ leading centred directions and restoring
-the positional mean, on MedCalc after the fix. Each model is injected at an
-early layer. Despite a fourfold difference in hidden width, Qwen3-0.6B and
-Qwen3-8B have similar rank knees ($43$ and $47$); Mistral-7B, with the same
-width as Qwen3-8B, has $k^{*}=72$ [$46,94$]. Untruncated recovery is $0.89$,
+\includegraphics[width=\textwidth]{fig-rank-medcalc.pdf}
+\caption{Rank truncation on MedCalc, with the positional mean restored. Each
+model is injected at an early layer. Qwen3-0.6B and Qwen3-8B have similar
+rank knees ($43$ and $47$) despite a fourfold width difference; Mistral-7B
+has $k^{*}=72$ [$46,94$]. Untruncated recovery is $0.89$,
 $0.91$ and $0.84$, respectively, on each model's screened subset ($135$, $362$
-and $92$ items). Both Qwen models reach that value by $k=256$ and Mistral-7B
-at $k=384$. Dashed curves retain bottom directions. Error bars are
+and $92$ items). Dotted lines mark untruncated recovery; dashed curves retain bottom directions. Error bars are
 calculator-bootstrap $95\%$ intervals. Only complete rank experiments are
 plotted.}
 \label{fig:rank}
 \end{figure*}
-
-\subsection{Identifying the interval between transfer and reading}
-\label{sec:where}
-\label{sec:depth}
-
-The preceding controls establish effective early transfer of content across
-skill positions. We now ask whether losing that effect at later layers means
-the model no longer needs the document. Figure~\ref{fig:transferreading}
-tests this inference directly.
-
-\paragraph{Transfer weakens while reading remains important.}
-Figure~\ref{fig:transferreading} compares transfer through span replacement
-with continued use through attention on Qwen3-8B. Every layer is measured,
-and both interventions are read on the same screened items. Replacement
-recovers $0.92$--$0.98$ through layer $7$, $0.89$ at $8$ and $0.74$ at $12$
-of $36$, then $0.16$ at $13$ and at most $0.07$ from $14$ onward ($n=135$,
-$14$ calculators). The drop between layers $12$ and $13$ accounts for most of
-the decline. We define the crossing below $\rho=0.5$ as the \emph{transfer
-boundary} (labelled ``handover'' in the figures and tables). The
-log-probability of the donor's generated reasoning also drops between these
-layers, suggesting that binary answer grading sharpens, but does not fully
-explain, the transition (Appendix~\ref{app:fullscale}). To test continued
-reading, \emph{cumulative attention knockout} blocks attention to skill
-tokens at every layer from $L$ onward. On the $134$ rescued items of the same
-subset, $0.03$--$0.12$ stay correct for $L\le23$. This rises to $0.25$ at
-$24$, first passes half at $25$ ($0.58$) and reaches $0.94$ at $35$. The
-transfer boundary therefore lies at $13/36=0.36$ of depth and the reading
-boundary at $25/36=0.69$, using the same screen and restricting knockout
-to its donor-correct items.
-Writing the last prompt position instead recovers at most $0.06$ at any
-layer. Continued dependence on skill attention thus outlasts successful
-transfer from the skill's states. Transfer measures recovery in a wrong-skill
-receiver, whereas knockout measures dependence in a correct-skill run. The
-separation identifies the intermediate regime operationally: from layers
-$13$ through $24$, span replacement recovers less than half the gain and
-blocking further reading leaves fewer than half the rescued items correct.
-From layer $25$, at least half remain correct without further reading, with
-residual dependence continuing to diminish. Thus transfer loss precedes,
-rather than demonstrates, tolerance to removal of source access.
-
-\begin{figure*}[tbp]
-\centering
-\includegraphics[width=0.96\textwidth]{fig-transfer-reading.pdf}
-\caption{Transfer declines earlier than dependence on skill attention,
-Qwen3-8B on MedCalc, with every layer measured. (a) Three interventions on
-one axis and the same screened items ($n=135$; the knockout on their $134$
-rescued items): span states written at layer $L$; attention to the skill
-blocked from $L$ onward; and the last prompt position written at $L$. The
-shaded band spans the layers where skill attention still supports performance but span
-replacement recovers less than half of the gain. (b) Each window is drawn across the layers it writes: four-layer
-windows tile the stack, and the long windows $14$--$19$, $16$--$35$ and
-$0$--$35$ are shown with them; the faint curve repeats (a). Writing every
-layer at once recovers $0.98$, while any window starting at $16$ or later
-stays at or below $0.06$. Span interventions use the corrected implementation;
-attention knockout does not use state capture.}
-\label{fig:transferreading}
-\end{figure*}
-
-\begin{table*}[tbp]
-\caption{Replication with the corrected implementation. Injection layers are
-$8$ for Qwen3-8B, $6$ for Qwen3-0.6B and $4$ for Mistral-7B. Recovery
-intervals resample skill groups. Max control includes half-dose, other-skill,
-permutation and noise comparisons, including same-family means available on
-$41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n$ describes the battery.
-Handover brackets the transfer boundary as a fraction of model depth; reading
-is the first layer, at one-layer resolution, from which blocking attention to
-the skill still leaves at least half of the rescued items correct, measured on
-the knockout run's rescued items within the same screened groups. $k^{*}$ is the rank knee on
-the fixed grid.}
-\label{tab:replication}
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\input{tables/tab-replication}
-\end{table*}
-
-\paragraph{Repeated replacement does not bridge the gap.}
-To test whether late failure reflects intervening at too few layers, we replace span
-states repeatedly within consecutive layer windows, using the battery's
-receiver and the same $135$ items as the depth sweep. Windows $8$--$11$,
-$12$--$15$, $14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and
-$0.06$. The last equals layer $16$ alone. Writing every layer at once
-recovers $0.98$ [$0.91,1.03$], so the transplant itself remains effective when
-it starts early enough. The identity control is exact on all $467$ items. On
-TheoremQA ($99$ items, $75$ groups, with its battery's receiver), the same
-windows recover $0.84,0.61,0.38,0.20$, the last again equal to layer $16$
-alone. Repeated late injection therefore does not restore early-layer
-recovery in these tests. This constrains a simple shortage-of-interventions
-explanation, while leaving interactions with the receiver's other states open
-\citep{bigoulaeva2026instructionvectors}.
-
-\paragraph{A spectral drop is not evidence of compression.}
-Could the loss of transfer reflect compression into fewer dimensions? We
-examine the centred participation ratio, a summary of how broadly matrix energy
-is distributed across singular directions. It falls from $68$ at layer $12$
-to $1.0$ at layer $16$, but this drop is driven by unusually large activations
-\citep{sun2024massive, shi2026melayer}. In $35$ of $48$ calculators, one
-token's state reaches $121$--$195$ times the median span norm, always on the
-same two hidden dimensions. Removing the four highest-norm positions restores
-the ratio to $85$ at layer $16$, and it stays between $62$ and $98$ over layers
-$0$--$28$. The drop is also absent in Qwen3-0.6B and Qwen3-1.7B.
-This diagnostic therefore does not support compression as the explanation
-for lost transfer: a few large activations distort the dimensionality summary
-(\extref{Appendix Table}{tab:prdiag}{extended version}).
 
 \subsection{Replication across models and task domains}
 \label{sec:ladder}
@@ -399,25 +378,43 @@ for lost transfer: a few large activations distort the dimensionality summary
 We extend span injection, rank truncation and the available depth comparisons
 to Qwen3-0.6B ($D=1024$), Mistral-7B ($D=4096$, $32$ layers), and TheoremQA.
 Each model is injected at an early layer, and the receiver screen is applied
-separately to each run. Table~\ref{tab:replication} collects the paired transfer and reading boundaries
-alongside the early-transfer and rank results. Results for
+separately to each run. Table~\ref{tab:replication} collects the transfer and reading boundaries
+alongside the early-transfer and rank results. The two boundaries use the
+same screened groups but separately eligible items, so their ordering is a
+group-level comparison rather than a strictly paired per-item estimate. Results for
 Qwen3-1.7B, where skills rescue only $8$--$11\%$ of items, appear in \extref{Appendix Table}{tab:laddermodels}{the extended version}.
+
+\begin{table*}[tbp]
+\caption{Replication with the corrected implementation. Injection layers are
+$8$ for Qwen3-8B, $6$ for Qwen3-0.6B and $4$ for Mistral-7B. Recovery
+intervals resample skill groups. Control reports the maximum over half-dose, other-skill,
+permutation and noise comparisons, including same-family means available on
+$41$ MedCalc/Qwen3-8B and $31$ MedCalc/Mistral items. $n_T/n_R$ gives the battery and knockout sample sizes; groups refer to the battery.
+Transfer brackets the transfer boundary as a fraction of model depth; reading
+is the first layer, at one-layer resolution, from which blocking attention to
+the skill still leaves at least half of the rescued items correct, measured on
+the knockout run's rescued items within the same screened groups. $k^{*}$ is the rank knee on
+the fixed grid.}
+\label{tab:replication}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\input{tables/tab-replication}
+\end{table*}
 
 Span recovery ranges from $0.74$ to $0.94$ across the six model--task
 combinations. The largest control is $0.35$, for a same-family
 mean on $31$ Mistral/MedCalc items, where full-span recovery on the same items
 is $0.71$. In every model--task combination, the transfer boundary occurs
 before the reading boundary. The measured transfer boundaries lie at
-$0.33$--$0.43$ of model depth within Qwen and at $0.19$--$0.22$ in Mistral.
+$0.33$--$0.39$ of model depth within Qwen and at $0.19$--$0.22$ in Mistral.
 Reading boundaries also vary by task: $0.58$--$0.71$ on TheoremQA and
 $0.69$--$0.84$ on MedCalc across the three models.
 
-The pre-registered width-proportional prediction places Qwen3-0.6B's rank
-knee near $12$. Instead, it is $43$ [$39,52$], close to Qwen3-8B's $47$
-[$43,55$] despite the fourfold width difference. TheoremQA gives $52$
-[$46,62$] and $50$ [$39,67$], respectively. Mistral gives $k^{*}=72$ [$46,94$] on MedCalc
-and $64$ [$50,79$] on TheoremQA. These values are higher than Qwen3-8B's
-but have overlapping intervals. Thus hidden width alone does not determine
-the measured rank requirement, while a difference between families is not
-established. Full curves and controls are retained in Figure~\ref{fig:rank}
-and \extref{Appendix}{app:rank2}{the extended version}.
+Rank requirements also do not scale directly with hidden width. Qwen3-0.6B
+and Qwen3-8B have MedCalc knees of $43$ [$39,52$] and $47$ [$43,55$]
+despite a fourfold width difference; TheoremQA gives $52$ [$46,62$] and
+$50$ [$39,67$]. Mistral gives $k^{*}=72$ [$46,94$] on MedCalc
+and $64$ [$50,79$] on TheoremQA, with intervals overlapping Qwen3-8B's.
+A family difference is therefore not established. The extended version
+retains the width-proportional prediction and additional rank diagnostics.

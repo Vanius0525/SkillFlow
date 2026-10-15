@@ -1,0 +1,40 @@
+{
+  "submission": {
+    "mode": "submission",
+    "stage": "/mnt/c/Users/12970/AppData/Local/Temp/skillvector-submission-20261015-fqw5n7nd",
+    "main_pages": 8,
+    "total_pages": 12,
+    "overfull": [],
+    "undefined_references": 0
+  },
+  "extended": {
+    "mode": "extended",
+    "stage": "/mnt/c/Users/12970/AppData/Local/Temp/skillvector-extended-20261015-snc2bqz6",
+    "main_pages": 8,
+    "total_pages": 34,
+    "overfull": [],
+    "undefined_references": 0
+  },
+  "completed_on": "2026-10-15",
+  "engine": "MiKTeX-pdfTeX 4.23 (MiKTeX 25.12)",
+  "data_check": {
+    "passed": 70204,
+    "source_files_hashed": 439
+  },
+  "historical_audit": "ALL CHECKS PASSED (2026-10-14)",
+  "new_model_experiments": false,
+  "visual_checks": [
+    "submission pages 1, 6, 8",
+    "extended page 34"
+  ],
+  "artifact_sha256": {
+    "skillvector-www2027.pdf": "e0652610c9a32c5cf623c6c06f631301360015a53e98344f03b87dada1f481f4",
+    "skillvector.pdf": "8006f0c4852affcf95ecfeea4c89e77bc420aa6b01c3caf53fea733c4850df92",
+    "overleaf-skillvector.zip": "7ce956b5c346b45682cfc37ea5dc58a318e30536c32c1db283e9bb768df2ac70"
+  },
+  "overleaf": {
+    "members": 45,
+    "crc_passed": true,
+    "matches_working_source": true
+  }
+}

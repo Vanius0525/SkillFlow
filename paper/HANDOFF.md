@@ -1,5 +1,20 @@
 # SkillVector 论文交接
 
+## 2026-10-15 用户指定五段引言与主线重排（完成，10-14 开始）
+
+- 当前任务：围绕 transfer/reading 间隙重排 Introduction、Related Work、Problem Formulation、Experiments、Conclusion，重绘四张主图，统一证据表，生成投稿版与扩展版 PDF。
+- 引言按“Web 文档保留问题 → 转移失效的 paradox → 互补干预 → 深度分离 discovery → 进一步验证与三项贡献”重写；关键深度实验提前到有效 span probe 之后。readout 次要诊断移到扩展附录 H。
+- **新查出的文字错误**：`values/main-evidence-values.json` 中 L14 转移恢复为 0.16129，L15 起才不超过 0.07（两位小数）；旧正文“from 14 onward”已改为 15。knockout 首次在 L25 过半，L26 再低于一半，L27 后恢复；不能写成 L25 以后始终过半，已修正。两项均不改变首次 crossing 的 13/25 边界。
+- 表格显式展示六组 transfer/knockout 样本数，避免同组筛选被误读成严格同题配对。四图从已有 audited JSON 重绘，不修改数值。
+- 最终标题：*When Skill Transfer Fails but Reading Continues*。正文顺序：setup → 有效内容 probe → early span recovery → transfer/reading 间隙 → 位置/跨题/rank 控制 → 六组复现 → conclusion。详细中文说明见 `reports/论文主线与改写说明_20261014.md`。
+- 新增 `tools/style_main_figures.py` 与 `tools/style_main_tables.py`：从 audited JSON 统一重绘四图及两张主证据表，不改数值；纳入 refresh 流程。rank 曲线改为三模型并排小图；主深度图明确区分 ρ 与 q；复现表显示 n_T/n_R。
+- 验证：`MPLCONFIGDIR=/tmp/skillvector-mpl python3 tools/check_main_data.py` 共 **70,204** 检查通过、439 个源文件哈希；本轮历史 `whitebox/analysis/audit.py` 亦通过。无重复 label、无缺失 bibkey、所有图表环境匹配，`git diff --check` 通过。
+- 最终 MiKTeX 编译：投稿版正文 **8 页 / 全文 12 页**；扩展版 **34 页**；两版均无未定义引用、无 overfull。已目视检查投稿首页、主深度图、结尾页及扩展末页，PDF 与 Overleaf 包已更新。构建记录见 `audit/BUILD-REWRITE-20261015.json`。
+- 构建过程：10-14 使用临时 Tectonic 0.15.0；恢复会话后 `/tmp` 清空，10-15 改用可正常调用的 Windows MiKTeX，在新建系统临时目录编译，未覆盖已有桌面 staging。首次 PDF 生成时曾因重绘与编译同时访问 PDF 导致读取失败，最终使用不可变副本构建。首次版式有少量结论越到第 9 页，通过移出 rank 预测细节与压缩重复叙述解决，未改字号或页边距。
+- 本轮仅提交 paper/ 下改动；用户原有 `howskill/data/cells.json.tmp` 保持未跟踪且未修改。完成后按约定提交并推送 master。
+- 未运行模型实验；本轮 scope 核查仍以 WWW 2027 官方 research-track-papers 页面为依据，第一页 Web 动机不能保证满足 scope。下一步若补强实证，优先做六组共同 item 的边界复核与 receiver 状态交互实验；本轮不将这些未做实验写成已有证据。
+
+
 ## 2026-10-14 正文按 transfer/reading 间隙重构（完成，文件沿用 20261012 标识）
 
 - 用户授权重排正文逻辑，要求不新增实验；后续只考虑 Figure 4 中间区间的多模型/多任务扩展。Web 联系限定于引言，不扩展 Web 实验。

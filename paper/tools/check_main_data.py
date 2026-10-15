@@ -132,7 +132,7 @@ for cell in replication:
         close(name+': includes largest control',max(v['rho'] for v in cell['controls'].values()),cell['ctrl'])
     line=table_row('tab-replication.tex',cell['task']+' & '+cell['model']+' &')
     check(name+': table recovery',f'${cell["rho"]:.2f}$ $[{cell["lo"]:.2f},{cell["hi"]:.2f}]$' in line)
-    check(name+': table sample',f'${cell["n"]}$ (${cell["g"]}$)' in line)
+    check(name+': table sample',f'${cell["n"]}/{cell["reading"][1]}$ (${cell["g"]}$)' in line)
     if cell['task']=='MedCalc':
         curve=rank[cell['model']]
         check(name+': figure/table rank sources',curve['tags']==cell['sources']['rank'])
@@ -154,11 +154,14 @@ check('Figure 3 span: every layer 0-35',[l for l,_ in depth['sufficiency']]==lis
 for layer,value in depth['sufficiency']:
     close(f'Figure 3 span layer {layer}',rho(dr,f'ok_real_L{layer}'),value)
 kc,kn=rep0.ko_curve(depth['sources']['knockout'],groups=set(rep0.restricted(rep0.load(depth['sources']['depth']))))
-check('Figure 3 knockout: every layer, paired items',
+check('Depth figure knockout: every layer, eligible items in screened groups',
       sorted(kc)==list(range(36)) and kn==depth['ko_n']==134)
 for layer,value in depth['necessity']:
     close(f'Figure 3 knockout layer {layer}',kc[layer],value)
 check('Figure 3 boundaries',(depth['transfer_boundary'],depth['reading_boundary'])==(13,25))
+check('layer 14 remains at 0.16', round(dict(depth['sufficiency'])[14], 2)==.16)
+check('low late recovery starts at layer 15', round(max(v for l,v in depth['sufficiency'] if l>=15), 2)<=.07)
+check('prose locates late plateau at layer 15', 'from $15$ onward' in main)
 lastr=screen(load(depth['sources']['last']))
 for layer,value in depth['last_position']:
     close(f'Figure 3 last position layer {layer}',rho(lastr,f'ok_tq1_L{layer}'),value)
@@ -354,7 +357,7 @@ diagnostic_prose('retains $0.54$ of the skill')
 for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','procedure','cyclic']),
                          ('fig-channels-medcalc.pdf',['135','0.81','0.03','0.06']),
                          ('fig-rank-medcalc.pdf',['Mistral','72','135','362','256']),
-                         ('fig-transfer-reading.pdf',['0.74','0.98','transferable','blocked'])]:
+                         ('fig-transfer-reading.pdf',['0.74','0.98','Weak transfer','blocked'])]:
     pdf=pymupdf.open(FIGURES/filename)
     text=' '.join(page.get_text() for page in pdf)
     for label in labels:check(filename+': rendered '+label,label in text)

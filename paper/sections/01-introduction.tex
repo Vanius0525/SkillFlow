@@ -1,67 +1,72 @@
 \section{Introduction}
 \label{sec:intro}
 
-Web search increasingly supplies documents directly to language models, which
-use retrieved content to answer questions and carry out tasks. This makes
-document delivery part of the computation: systems must decide what content
-to retain and what can be replaced by a shorter representation. Work on
-Web retrieval-augmented generation already shows that the representation of
-retrieved material affects its usefulness \citep{tan2025htmlrag}.
-Procedural documents pose a particular challenge because formulas, conditions
-and ordered steps must support computation beyond retrieving a fact.
-\emph{When can the model's internal representation stand in for a supplied
-procedure, and when does successful computation still require access to its
-source tokens?} This is the reader-side question we study, motivated by the
-use of external procedures in retrieval-augmented Web systems. We isolate it
-with controlled procedural tasks and known-correct documents, holding
-retrieval fixed.
+Web search and retrieval-augmented generation increasingly deliver documents
+to language models as inputs to computation. For procedural content, such as
+formulas, lookup tables and instructions, retrieving the right page is only
+part of the problem: the reader must preserve and use the procedure while
+producing an answer. The representation of retrieved Web material can itself
+affect answer quality \citep{tan2025htmlrag}. This raises a concrete question
+for document retention and reuse in retrieval-augmented Web systems:
+\emph{when can internal states substitute for a supplied procedure, and when
+does the reader still require access to its source?} We call a reusable
+procedure supplied in context a \emph{skill} and study this reader-side
+question with known-correct documents and controlled procedural tasks.
 
-We call a reusable procedure, formula, lookup table or worked example supplied
-in context a \emph{skill}. Skills can substantially improve performance
-\citep{su2026srabench, skillsbench2026}, but the improvement does not reveal
-whether the model has formed a reusable representation or still relies on
-reading the document. Compact states can transfer tasks and instructions
-\citep{hendel2023taskvectors, todd2024functionvectors,
-davidson2025prompting, bigoulaeva2026instructionvectors}, with effectiveness
-depending on position and task scope \citep{jit2025taskrepr}. A failed transfer,
-however, has several possible causes: the probe may miss useful states,
-the receiving computation may be unable to use them, or the source may no
-longer matter. Distinguishing these possibilities is essential to interpreting
-what a context representation does.
+Our experiments expose an apparent paradox. Skills substantially improve
+answers, and their early hidden states can transfer most of that benefit to
+a run containing an unrelated skill. Yet this transfer effect collapses well
+before the final layer. On Qwen3-8B and clinical calculators, span replacement
+recovers $0.74$ of the available gain at layer $12$ but only $0.16$ at layer
+$13$ of $36$. What has changed? The model may have finished using the
+procedure, or the procedure may remain useful while its states have become
+ineffective in the receiving computation. Existing evidence that compact
+states transfer tasks and instructions \citep{hendel2023taskvectors,
+todd2024functionvectors, davidson2025prompting, bigoulaeva2026instructionvectors}
+does not distinguish these interpretations of a failed transfer.
 
-Our central finding is a separation between \emph{transferability} and
-\emph{continued reading dependence}. We transplant the skill's states into a
-run with an unrelated, equal-length skill, then separately block attention to
-the skill in a correct-skill run. On Qwen3-8B and MedCalc, transfer falls below
-half of the available gain at layer $13$ of $36$, whereas blocking subsequent
-reading still leaves fewer than half of the rescued items correct until layer
-$25$. There is therefore a substantial intermediate depth interval in which
-the states are difficult to transfer yet remain important to their original
-computation. This ordering holds in all six evaluated combinations of three
-models and two task domains. It rules out interpreting loss of transfer as
-the point at which the model has finished using the source.
+The decisive experiment tests both interpretations with complementary
+interventions. We first replace the skill-span states of an equal-length
+wrong-skill receiver with states from the correct-skill run. We then block
+all subsequent attention to the skill in the original correct-skill run.
+The first intervention measures \emph{transferability}; the second measures
+\emph{continued reading dependence}. Varying their starting layer reveals
+whether loss of transfer coincides with tolerance to losing source access.
+To make the transfer test informative, we first establish a content-sensitive
+probe: matched subtraction isolates the correct-versus-wrong skill
+difference, and early span replacement recovers $0.89$ of the gain on a
+screened $135$-item subset, whereas final-position replacement is ineffective
+for the same clinical reasoning task.
 
-We establish an effective transfer probe before interpreting its failure.
-Matched content subtraction separates the useful procedure from the effect
-of adding a document. Synthetic answer-format comparisons expose the limits
-of a final-position probe. Early span replacement then recovers $0.89$ of the
-gain on a screened clinical-calculator subset. Content, cross-question,
-position and rank controls identify what supports this recovery. Repeated
-late replacement and spectral diagnostics constrain explanations of its loss.
+Our core discovery is that \emph{loss of transfer precedes reduced dependence
+on reading}. Transfer falls below half of the available gain at layer $13$,
+but blocking further skill attention leaves fewer than half of the rescued
+items correct until layer $25$. Between these boundaries, the source remains
+important to its original computation even though transplanting its states
+has little effect in the receiver. The paradox is therefore resolved at the
+level of what the interventions measure: transfer failure does not establish
+that the model has finished using the source. This separation gives document
+representation and reuse two distinct evaluation targets, rather than a
+single notion of whether a procedure has been internalised.
 
-For context compression and reuse, successful state transfer and safe
-removal of source access become separate evaluation targets. We contribute:
+Further experiments test the scope and alternative explanations of this
+finding. The boundary ordering holds in all six evaluated combinations of
+three models and two task domains, using each intervention's eligible
+subset. Repeated late replacement does not recover the early transfer
+effect. Content, position, cross-question and rank controls establish that
+early recovery depends on structured procedural information. We make three
+contributions:
 \begin{enumerate}\itemsep0pt\parskip0pt
-\item \textbf{A paired test of transfer and reading.} Span replacement and
-attention knockout reveal an intermediate regime of weak transfer and strong
-source dependence, replicated across models and task domains
-(\S\ref{sec:depth}--\ref{sec:ladder}).
-\item \textbf{A controlled account of the transferred content.} Matched
-subtraction and answer-format tests motivate span interventions. Content,
-position and cross-question controls identify what makes early transfer
-effective (\S\ref{sec:decomp}--\ref{sec:whose}).
-\item \textbf{Constraints on representation compactness.} Rank
-truncation, repeated late injection and spectral diagnostics distinguish
-behaviourally useful structure from geometric summaries
-(\S\ref{sec:rank}--\ref{sec:depth}).
+\item \textbf{A test separating transferability from source dependence.}
+Complementary state replacement and attention knockout reveal an intermediate
+depth interval of weak transfer and strong reading dependence
+(\S\ref{sec:depth}).
+\item \textbf{A validated probe of procedural content.} Matched content,
+position and cross-question controls identify what supports early recovery
+and delimit the failure of a final-position probe
+(\S\ref{sec:decomp}, \S\ref{sec:battery}, \S\ref{sec:posbudget}, \S\ref{sec:whose}).
+\item \textbf{Evidence for the separation's scope and boundaries.} Cross-model
+and cross-task replication, rank truncation and repeated replacement
+constrain explanations of the depth gap and the compactness of reusable
+states (\S\ref{sec:depth}, \S\ref{sec:rank}, \S\ref{sec:ladder}).
 \end{enumerate}

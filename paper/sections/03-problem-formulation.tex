@@ -1,4 +1,4 @@
-\section{Separating Transfer from Reading}
+\section{Problem Formulation}
 \label{sec:formulation}
 
 \paragraph{Two intervention questions.}
@@ -87,8 +87,6 @@ repeated at every position. The singular values $\sigma_i$ are ordered from
 largest to smallest, with $u_i$ and $v_i$ their associated directions. Thus $k$
 counts retained directions after centring, and the complete injected matrix has
 rank at most $k+1$. A bottom-$k$ control keeps the $k$ smallest singular
-directions and the same mean. We also vary the intervention layer. Span
-replacement tests whether states at that layer suffice to transfer the effect.
-Blocking attention to the span from that layer onward tests whether subsequent
-computation still depends on reading it.
+directions and the same mean. This tests the compactness of the transferable
+state difference while preserving its positional mean.
 

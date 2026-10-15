@@ -1,0 +1,15 @@
+{
+  "input_sha256": {
+    "fig-channels-values.json": "2a2c3ea072b6032350804be5210dcaab795c8ea30c90335be8fb779ddcee3685",
+    "main-evidence-values.json": "cbab059b9bc7775427eaf2f57289615b47bf0042fefe49631481d761fd42cbc1",
+    "fig-rank-values.json": "554123eed448bce4227fe0f515d59ccc828e12935a70f729977f1e5ac052bcde",
+    "posbudget.json": "d7d1ff65a5907e4d0112eb058f699f3901799b16bcafcf02b7316c342c1c68fa"
+  },
+  "numeric_records_unchanged": true,
+  "figures": [
+    "fig-channels-medcalc",
+    "fig-transfer-reading",
+    "fig-rank-medcalc",
+    "fig-posbudget"
+  ]
+}

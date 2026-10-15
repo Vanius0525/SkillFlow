@@ -58,7 +58,7 @@ the page count enough to notice.
 
 ## Overleaf
 
-Upload `overleaf-skillvector.zip` (written by `tools/make_overleaf_zip.sh`). It
+Upload `overleaf-skillvector.zip` (written by `tools/make_overleaf_zip.py`). It
 contains `main.tex`, `sections/`, `appendix/`, `tables/`, `figures/*.pdf` and the
 `.bib` — no Python, no PNGs, no audit logs. Overleaf resolves `acmart` itself.
 Set the compiler to pdfLaTeX.
@@ -87,3 +87,34 @@ python3 tools/figs.py --e14 "tierA=../whitebox/results/fetched/tA/d17-neutral" -
 `tools/check_main_data.py` compares every main-text display against the records
 and fails loudly on a drift; `whitebox/analysis/audit.py` does the same for the
 historical results. Both must pass before a build is trusted.
+
+## Story and display revision (2026-10-14)
+
+The current title is *When Skill Transfer Fails but Reading Continues*.
+The introduction follows problem → apparent paradox → complementary interventions
+→ discovery → validation and three contributions. The main depth comparison
+now follows the effective early-transfer probe. See
+[the Chinese storyline and evidence audit](reports/论文主线与改写说明_20261014.md).
+
+The four main figures and two evidence tables have a separate presentation pass:
+
+```bash
+MPLCONFIGDIR=/tmp/skillvector-mpl python3 tools/style_main_figures.py
+python3 tools/style_main_tables.py
+```
+
+These read the audited JSON files under `values/` without changing numerical
+estimates. `refresh_main_data.py` runs them after its numerical generators.
+Transfer and attention-knockout sample sizes are shown separately in the
+replication table. Individual legacy generators alone do not apply the new style.
+
+A Linux build can use Tectonic with a writable cache and output directory:
+
+```bash
+XDG_CACHE_HOME=/tmp/skillflow-tectonic-cache tectonic -k --keep-logs -o /tmp/skillflow-tex-out main.tex
+```
+
+Create the output directory first. Initial use downloads TeX dependencies;
+subsequent builds can add `--only-cached`. The Windows `build.sh` is retained
+for its original environment. Always inspect the `endmain` page and the PDF's
+total page count before copying a build to a delivery filename.

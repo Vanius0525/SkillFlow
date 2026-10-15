@@ -237,3 +237,23 @@ accuracies from $0.000$ to $0.350$. Raw accuracies of $0.408$ and $1.000$
 correspond to recovery fractions of $0.87$ and $1.00$ in their respective
 settings. Transfer recovery uses Eq.~\ref{eq:rho}; knockout survival instead
 reports the fraction of the knockout run's rescued items that remain correct.
+
+\subsection{Additional readout diagnostics}
+\paragraph{Readout checks.}
+\label{sec:traps}
+Generated-answer accuracy is the primary readout. Gold-answer
+log-probability can favour an intervention with worse accuracy, and forcing
+an answer cue can suppress the skill's benefit. Multiple-choice controls also
+retain substantial performance after content corruption
+\citep{balepur2024artifacts} (\extref{Appendix}{app:traps}{extended version}).
+
+\subsection{Width-proportional rank prediction}
+The pre-registered width-proportional prediction places Qwen3-0.6B's rank
+knee near $12$. Instead, it is $43$ [$39,52$], close to Qwen3-8B's $47$
+[$43,55$] despite the fourfold width difference. TheoremQA gives $52$
+[$46,62$] and $50$ [$39,67$], respectively. Mistral gives $k^{*}=72$ [$46,94$] on MedCalc
+and $64$ [$50,79$] on TheoremQA. These values are higher than Qwen3-8B's
+but have overlapping intervals. Thus hidden width alone does not determine
+the measured rank requirement, while a difference between families is not
+established. Full curves and controls are retained in Figure~\ref{fig:rank}
+and \extref{Appendix}{app:rank2}{the extended version}.
