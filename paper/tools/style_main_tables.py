@@ -36,3 +36,26 @@ for i,c in enumerate(cells):
 out += [r'\bottomrule',r'\end{tabular}']
 (TABLES/'tab-replication.tex').write_text('\n'.join(out)+'\n')
 print('Typeset evidence tables with intervention groups and explicit transfer/reading sample sizes.')
+
+# Paired depth comparison, from independently audited common item IDs.
+depth=json.loads((VALUES/'depth-crossmodel-values.json').read_text())
+out=[r'\begin{tabular}{@{}llrcc@{}}',r'\toprule',
+     r'\textbf{Task} & \textbf{Model} & $n$ & $T/R$ & $\Delta$ [95\% CI] \\',r'\midrule']
+for task in ['MedCalc','TheoremQA']:
+    if task=='TheoremQA':out.append(r'\midrule')
+    for c in [c for c in depth if c['task']==task]:
+        d=c['common'];lo,hi=d['boundary_ci'][2]
+        out.append(f'{task} & {c["model"]} & ${d["n"]}$ & ${d["transfer_boundary"]}/{d["reading_boundary"]}$ & '
+                   f'${d["reading_boundary"]-d["transfer_boundary"]}$ $[{lo:.1f},{hi:.1f}]$ '+r'\\')
+out += [r'\bottomrule',r'\end{tabular}']
+(TABLES/'tab-paired-depth.tex').write_text('\n'.join(out)+'\n')
+
+# A shared visual hierarchy for every generated table, including appendices.
+# Keep number-bearing rows verbatim so independent numerical audits remain valid.
+from pathlib import Path
+from _paths import PAPER
+for path in list(TABLES.glob('*.tex')) + list((PAPER/'appendix').glob('*.tex')):
+    text=path.read_text()
+    text=text.replace('\\toprule\n', '\\toprule\n\\rowcolor{TableHeader}\n') if '\\rowcolor{TableHeader}' not in text else text
+    path.write_text(text)
+print('Styled all tables; added common-item boundary table.')

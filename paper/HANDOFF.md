@@ -1,5 +1,15 @@
 # SkillVector 论文交接
 
+## 2026-10-15 skill 主线、跨模型深度验证与全篇图表改版（完成）
+
+- 原 Figure 2(a) 仅 Qwen3-8B / MedCalc；已复用六组完整逐层结果，新增共同 eligible item 分析，六组 T/R 不变，组 bootstrap 的边界差 95% CI 均 >0。共同 n 为 MedCalc 134/90/46、TheoremQA 63/125/65。
+- `python3 paper/tools/depth_crossmodel.py` 可重现，源哈希写 `audit/DEPTH-CROSSMODEL-20261015.json`。没有新增模型推理或启智任务，因此无定期远端检查事项。
+- 正在更新 abstract 为用户指定的 background→gap→approach→findings 结构，intro 同时覆盖 Web skill 注入/分享与 skill-bearing 文档；六节主结构保留。新增 AWM、WebXSkill、等预算负面结果引用。
+- Figure 1 取消轴外长标签和层/样本小字；Figure 2 六组全层图；Figure 3 只保留内容/位置，完整预算图与谱诊断留扩展附录；全部表格统一配色与层级。
+- 分析、调研、故事线和识别边界见 `audit/REVISION-SKILLS-20261015.md`。仍不能将操作性三段理解成单调的内部算法阶段（Qwen3-8B / MedCalc 的 q 在 L26 recross）。
+- 验证：数值审计 **124,560** 检查通过、475 个源文件哈希；历史 `whitebox/analysis/audit.py` 通过；无重复 label/bibkey；`git diff --check` 通过。两版 PDF 均无未定义引用或 overfull，投稿版正文 **8 页 / 全文 12 页**，扩展版 **36 页**。已检查主图、首页及两版末页，PDF 与 Overleaf 包已更新。本轮仅提交 paper/，保留用户未跟踪 `howskill/data/cells.json.tmp`。
+
+
 ## 2026-10-15 用户指定五段引言与主线重排（完成，10-14 开始）
 
 - 当前任务：围绕 transfer/reading 间隙重排 Introduction、Related Work、Problem Formulation、Experiments、Conclusion，重绘四张主图，统一证据表，生成投稿版与扩展版 PDF。

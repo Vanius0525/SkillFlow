@@ -15,6 +15,7 @@ $2.5$ nats and by $0.69$ in accuracy.}
 \small
 \begin{tabular}{lrrrrr}
 \toprule
+\rowcolor{TableHeader}
 cell & $n$ & mean $-$ real (nats) & contribution to $+2.747$ & acc.\ real & acc.\ mean \\
 \midrule
 \textbf{R} rescued    & 13 & $-2.506$ & $-0.835$ \ ($-30\%$) & \textbf{0.923} & 0.231 \\
@@ -93,6 +94,7 @@ contains a filler document.}
 \small
 \begin{tabular}{llccc}
 \toprule
+\rowcolor{TableHeader}
 channel & positions transplanted & effective layers & peak acc. & receiver baseline \\
 \midrule
 document span & the document's own 688 tokens & 0--10 & 0.436 (L3--4) & 0.154 \\
@@ -115,6 +117,7 @@ $0.008$.}
 \small
 \begin{tabular}{lcc}
 \toprule
+\rowcolor{TableHeader}
  & Qwen3-1.7B & Qwen3-8B \\
 \midrule
 MC, rescued cell: replace outright        & 1.000 & 1.000 \\
@@ -257,3 +260,68 @@ but have overlapping intervals. Thus hidden width alone does not determine
 the measured rank requirement, while a difference between families is not
 established. Full curves and controls are retained in Figure~\ref{fig:rank}
 and \extref{Appendix}{app:rank2}{the extended version}.
+
+\subsection{Spectral diagnostic of the depth gap}
+\paragraph{A spectral drop is not evidence of compression.}
+Could the loss of transfer reflect compression into fewer dimensions? We
+examine the centred participation ratio, a summary of how broadly matrix energy
+is distributed across singular directions. It falls from $68$ at layer $12$
+to $1.0$ at layer $16$, but this drop is driven by unusually large activations
+\citep{sun2024massive, shi2026melayer}. In $35$ of $48$ calculators, one
+token's state reaches $121$--$195$ times the median span norm, always on the
+same two hidden dimensions. Removing the four highest-norm positions restores
+the ratio to $85$ at layer $16$, and it stays between $62$ and $98$ over layers
+$0$--$28$. The drop is also absent in Qwen3-0.6B and Qwen3-1.7B.
+This diagnostic therefore does not support compression as the explanation
+for lost transfer: a few large activations distort the dimensionality summary
+(\extref{Appendix Table}{tab:prdiag}{extended version}).
+
+
+
+\subsection{Distributed head-level reading diagnostics}
+\label{app:readerdiagnostics}
+\paragraph{Which heads read the span.} We recorded each head's contribution
+from the span to later positions,
+$W_O^h \sum_{s \in \text{span}} a_{t,s} v_s$, comparing the
+document and filler runs ($n=455$). Raw magnitudes are dominated by the last
+layers, but the residual stream grows by more than an order of magnitude with
+depth; normalised by it, the read-out concentrates in layers $12$--$21$ and
+peaks at $18$. It is not a small circuit: of the $1{,}152$ heads the top $1\%$
+carry $10.5\%$ of the read-out and the top $5\%$ carry $31.1\%$, and no head
+attends to the span more than uniformly ($0.4$--$1.2\times$, with the span
+occupying half the prompt). Blocking the $32$ highest-ranked heads' attention to
+the span---ranked on half the calculators and evaluated on the held-out
+half---costs $0.39$ of the document's effect, against $0.23$ for $32$ random
+heads at the same layers (paired difference $0.154$, $95\%$ CI $[0.061,0.251]$,
+McNemar $39$ versus $9$ discordant, $n=195$ over $23$ calculators). The ranking
+is therefore causal, but it buys only $0.15$ over chance and $32$ heads remove
+well under half the effect: the span is read diffusely, and we do not claim a
+nameable set of reader heads. One further observation constrains what fails at
+depth. After an injection at layer $L$, the span's own states from $L+1$ onward
+are identical to the document run by construction---the span attends only to a
+shared prefix and to itself---and the downstream per-head read-out of the span
+is indeed $0.86$--$0.99$ of the document's at every injection layer we tried,
+including those at which behaviour is gone. This read-out is compatible with continued access to donor content. A late
+span patch leaves the receiver's earlier question-state updates unchanged,
+motivating a direct test of their interaction with the transplanted states.
+
+\subsection{Written-position budget and semantic coverage}
+\label{app:budgetdetails}
+\emph{Quantity alone is insufficient.} Evenly spaced or random subsets
+recover at most $0.15$, even at half the span. Choosing the positions with
+the largest content change recovers at most $0.12$. Writing after the span
+stays at or below $0.07$, at layer $8$ or the seven tested layers from $4$ to $30$.
+\emph{Block selections differ.} Selecting $256$ positions as one block
+recovers $0.37$. Selecting them as $2$, $4$, $8$, $16$ and $32$ spaced blocks
+gives $0.24$, $0.22$, $0.13$, $0.08$ and $0.08$. The one-versus-$32$ difference
+is $0.29$ [$0.09,0.48$], with calculator-bootstrap uncertainty. These selections
+have similar mean energy shares ($0.291$ versus $0.295$), but energy is not
+matched per item and the selected content changes: coverage of the skill-step section is
+$38.6\%$ versus $30.7\%$. This does not isolate contiguity from semantic coverage.
+
+
+\subsection{Final-position budget ladder}
+Patching the last $1$, $4$, $16$, $32$, $48$ and $61$ positions
+($61$ covers the whole no-document prompt) recovers
+$0.235$, $0.261$, $0.403$, $0.403$, $0.395$ and $0.370$, respectively.
+The ladder saturates at $16$ positions.

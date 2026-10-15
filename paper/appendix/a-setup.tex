@@ -5,15 +5,13 @@
 \paragraph{Two task families.} \emph{Real skills, the main material}:
 MedCalc-Bench instances with the 55 gold calculator skills released with
 SRA-Bench---$55$ calculators $\times$ $20$ instances $= 1{,}100$ items, graded
-deterministically against a numeric tolerance with no model in the loop. Both
-the skills and the tasks are other people's, which is what makes the effect size
-credible. Qwen3-8B, single turn, no tools, greedy. Behavioural baseline and replication
+deterministically against a numeric tolerance with no model in the loop. Skills and tasks come from released benchmarks rather than being designed
+to favour the intervention. Qwen3-8B, single turn, no tools, greedy. Behavioural baseline and replication
 intervals resample skill groups because items sharing a skill are dependent;
 original item-level intervals in individual tables and plots are identified
 separately in the main text.
 \emph{A synthetic positive control}: a fictional unit system with a one-page
-document giving its conversion table, so the no-document floor is guaranteed,
-contamination is impossible, and we know exactly what content means. Items are
+document giving its conversion table, so we control the mapping and can measure the no-skill baseline directly. Items are
 generated from the table ($n=358$), and every item whose answer appears in a
 worked example is dropped.
 
@@ -58,7 +56,7 @@ decision boundary, so numbers read on that cell are read against a coarser
 ruler. Third, on the restricted split the pre-fix null arm read $0.034$ rather than
 zero---the split conditions on the receiver failing, so a flip there can only go
 upward---so pre-fix span numbers are read against $0.034$; after the fix it reads
-exactly $0.000$, the floor Table~\ref{tab:big40}'s $0.750$ is read against. We have rarely seen this control reported in the patching literature; at a single answer token it is small enough to be invisible, and it
+exactly $0.000$, the floor Table~\ref{tab:big40}'s $0.815$ is read against. We have rarely seen this control reported in the patching literature; at a single answer token it is small enough to be invisible, and it
 becomes large only once the dependent variable is a long generation.
 
 \paragraph{Four cells.}

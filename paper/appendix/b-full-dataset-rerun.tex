@@ -11,6 +11,7 @@ the item screen; each arm uses its own matched baselines.}
 \small
 \begin{tabular}{lccc}
 \toprule
+\rowcolor{TableHeader}
 arm & full, per-calc ($n=135$) & subset ($n=60$) & full, per-item ($n=369$) \\
 \midrule
 transplant \texttt{real} & $\mathbf{0.89}$ $[0.76,0.97]$ & $0.87$ & $0.94$ \\
@@ -84,28 +85,14 @@ perfectly (median $\ell$ between $-0.001$ and $-0.005$ for all of them, and the
 gold-minus-receiver denominator has median $0.0014$, below $0.01$ on $59\%$ of
 items).
 
-\paragraph{Which heads read the span.} We recorded each head's contribution
-from the span to later positions,
-$W_O^h \sum_{s \in \text{span}} a_{t,s} v_s$, comparing the
-document and filler runs ($n=455$). Raw magnitudes are dominated by the last
-layers, but the residual stream grows by more than an order of magnitude with
-depth; normalised by it, the read-out concentrates in layers $12$--$21$ and
-peaks at $18$. It is not a small circuit: of the $1{,}152$ heads the top $1\%$
-carry $10.5\%$ of the read-out and the top $5\%$ carry $31.1\%$, and no head
-attends to the span more than uniformly ($0.4$--$1.2\times$, with the span
-occupying half the prompt). Blocking the $32$ highest-ranked heads' attention to
-the span---ranked on half the calculators and evaluated on the held-out
-half---costs $0.39$ of the document's effect, against $0.23$ for $32$ random
-heads at the same layers (paired difference $0.154$, $95\%$ CI $[0.061,0.251]$,
-McNemar $39$ versus $9$ discordant, $n=195$ over $23$ calculators). The ranking
-is therefore causal, but it buys only $0.15$ over chance and $32$ heads remove
-well under half the effect: the span is read diffusely, and we do not claim a
-nameable set of reader heads. One further observation constrains what fails at
-depth. After an injection at layer $L$, the span's own states from $L+1$ onward
-are identical to the document run by construction---the span attends only to a
-shared prefix and to itself---and the downstream per-head read-out of the span
-is indeed $0.86$--$0.99$ of the document's at every injection layer we tried,
-including those at which behaviour is gone. This read-out is compatible with continued access to donor content. A late
-span patch leaves the receiver's earlier question-state updates unchanged,
-motivating a direct test of their interaction with the transplanted states.
-
+\paragraph{Distributed reading and receiver state.}
+Head-level readout from the skill span concentrates in layers $12$--$21$
+after normalisation by residual-stream norm. Blocking the $32$ highest-ranked
+heads costs $0.39$ of the skill's effect, versus $0.23$ for random heads at the
+same layers (held-out calculators; paired difference $0.154$, $95\%$ CI
+$[0.061,0.251]$). Reading is distributed rather than confined to a small
+circuit. After late span replacement, downstream readout remains
+$0.86$--$0.99$ of the donor's despite weak behavioural recovery. Earlier
+receiver question-state updates remain unchanged, motivating direct tests
+of their interaction with transplanted states. Full diagnostics appear in
+\extref{Appendix}{app:readerdiagnostics}{the extended version}.

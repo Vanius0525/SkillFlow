@@ -4,18 +4,17 @@
 Skill-state transfer can fail while the source still supports the model's
 original computation. Complementary state replacement and attention knockout
 reveal an intermediate depth interval of weak transfer and continued reading
-dependence. Its boundary ordering recurs across the evaluated models and
-task domains. These operational regimes do not identify separate internal
+dependence. Its boundary ordering recurs across three models from two families and
+two task domains, including evaluation on common eligible items. These operational regimes do not identify separate internal
 algorithms: how transplanted content interacts with the receiver's other
 states remains unresolved.
 
 The controls make this separation interpretable. Effective early transfer
 requires appropriate content and placement, can use information shared across
 questions, and depends on multiple leading directions. Repeated late
-replacement does not restore early recovery, while unusually large
-activations explain an apparent spectral collapse. Neither failed transfer
-nor a geometric summary alone establishes that useful content has disappeared
-or been compressed.
+replacement does not restore early recovery. These controls support a
+distinction between correcting a receiver with transplanted skill states
+and retaining access to a skill in the original computation.
 
 For context representation and reuse, recovery in the intended receiver and
 tolerance to removing source access should be evaluated separately. Token
@@ -23,4 +22,6 @@ count, state norm and single-format success are insufficient proxies. The
 present evidence concerns fixed contexts and screened subsets; it establishes
 evaluation criteria rather than demonstrated efficiency gains. Layer depth
 does not specify agent steps or determine when documents can be dropped
-during multi-turn execution.
+during multi-turn execution. For Web agents that inject and share skills,
+this distinction motivates checking both successful reuse and continued
+source dependence before replacing skill documents with internal states.

@@ -171,6 +171,40 @@ check('Figure 3 windows on the battery receiver and items',len(wr)==depth['windo
 for window,value in depth['windows'].items():
     close(f'Figure 3 window {window}',rho(wr,f'ok_real_{window}'),value)
 
+# Independent common-ID reconstruction: do not import the new analyser's merge.
+paired=data('depth-crossmodel-values.json')
+check('six cross-model depth combinations',len(paired)==6)
+for c in paired:
+    tag=c['task']+'/'+c['model']; nl=c['n_layers']
+    tr=screen(load(c['sources']['depth'])); screened={r['calculator_id'] for r in tr}
+    kr={}
+    for t in c['sources']['knockout']:
+        for path in sorted(BY.glob('*/'+t+'.jsonl')):
+            for r in read(path):
+                item=kr.setdefault(r['instance_id'],dict(ko={}))
+                for k in ['calculator_id','ok_with','ok_without']:
+                    if k in r:
+                        check(tag+': consistent knockout baseline',k not in item or item[k]==r[k])
+                        item[k]=r[k]
+                for l,v in zip(r['layers'],r['ok_block_from']):
+                    check(tag+': consistent knockout layer',l not in item['ko'] or item['ko'][l]==v)
+                    item['ko'][l]=v
+    eligible={i:r for i,r in kr.items() if r.get('ok_with') and not r.get('ok_without') and r['calculator_id'] in screened}
+    common=[r for r in tr if r['instance_id'] in eligible]
+    d=c['common'];check(tag+': exact common IDs',sorted(r['instance_id'] for r in common)==d['ids'])
+    check(tag+': common sample',len(common)==d['n'])
+    for l in range(nl):
+        close(tag+f': original transfer L{l}',rho(tr,f'ok_real_L{l}'),c['transfer'][l])
+        close(tag+f': original reading L{l}',sum(r['ko'][l] for r in eligible.values())/len(eligible),c['retention'][l])
+        close(tag+f': common transfer L{l}',rho(common,f'ok_real_L{l}'),d['transfer'][l])
+        close(tag+f': common reading L{l}',sum(eligible[r['instance_id']]['ko'][l] for r in common)/len(common),d['retention'][l])
+    check(tag+': ordered observed boundaries',d['transfer_boundary']<d['reading_boundary'])
+    check(tag+': no undefined bootstrap boundaries',d['bootstrap_draws']==2000)
+    check(tag+': positive bootstrap gap',d['boundary_ci'][2][0]>0)
+    check(tag+': threshold sensitivity',all(t<r for t,r in d['threshold_sensitivity'].values()))
+    line=table_row('tab-paired-depth.tex',c['task']+' & '+c['model']+' &')
+    check(tag+': paired table values',f"${d['n']}$ & ${d['transfer_boundary']}/{d['reading_boundary']}$" in line)
+
 quarters=screen(load(['full-battery-a','full-quarters']))
 last=screen(load(['full-dl-a','full-dl-b']))
 for label,arm in [('Prose description','q0'),('Formulas','q1'),('Tool signatures','q2'),('Worked example','q3'),('Full span','real')]:
@@ -265,10 +299,12 @@ for arm in ['ev256','rn256','td256','rnhalf','evhalf','tq256','c1x256','c2x256',
 check('Figure 4: spread positions never reach the contiguous block',
       max(pb['arms'][a]['rho'] for a in ('ev256','rn256','td256','evhalf','rnhalf'))
       < pb['arms']['c1x256']['rho'])
-for needle in ['recover at most $0.15$','$0.24$, $0.22$, $0.13$, $0.08$ and $0.08$',
-               'centred on the procedure recovers $0.82$','gives $0.15$--$0.22$',
+for needle in ['recover at most $0.15$',
+               'centred on the skill-step section recovers $0.82$','gives $0.15$--$0.22$',
                'preserves $0.89$--$0.92$']:
     prose(needle)
+
+diagnostic_prose('$0.24$, $0.22$, $0.13$, $0.08$ and $0.08$')
 
 # ---- the 2026-09-20 fill-ins -------------------------------------------------
 TA = ROOT/'whitebox/results/fetched/tA'
@@ -299,8 +335,8 @@ for k, want in zip([k for k, _ in LADDER], [0.235, 0.261, 0.403, 0.403, 0.395, 0
 check('ladder does not rise past 16 positions', max(peaks) == peaks[2])
 check('k=16 and k=32 are the same items at L29',
       tier_a(['tA-num-k16'])[29] == tier_a(['tA-num-k32'])[29])
-prose('$0.235$, $0.261$, $0.403$, $0.403$, $0.395$')
-prose('$61$ covers the whole no-document prompt')
+diagnostic_prose('$0.235$, $0.261$, $0.403$, $0.403$, $0.395$')
+diagnostic_prose('$61$ covers the whole no-document prompt')
 
 ctrl = data('controls-values.json')
 check('controls table is the 358-item rerun', ctrl['n'] == 358 and ctrl['n_R'] == 82)
@@ -339,7 +375,7 @@ check('spectral: corrected PR stays 62-98 through layer 28',
       (round(lo), round(hi)) == (62, 98))
 check('spectral: tab-prdiag reports the same quantity',
       f"${gmed(16, 'd_pr_droppos'):.1f}$" in (TABLES/'tab-prdiag.tex').read_text())
-prose('to $1.0$ at layer $16$'); prose('between $62$ and $98$')
+diagnostic_prose('to $1.0$ at layer $16$'); diagnostic_prose('between $62$ and $98$')
 
 rk = json.loads((VALUES/'replication-values.json').read_text())
 for cell in rk:
@@ -354,10 +390,10 @@ check('Mistral MedCalc k=384 reaches its untruncated value',
 diagnostic_prose('reaches its untruncated $0.84$ at $k=384$')
 diagnostic_prose('retains $0.54$ of the skill')
 
-for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','procedure','cyclic']),
-                         ('fig-channels-medcalc.pdf',['135','0.81','0.03','0.06']),
+for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','Skill','Cyclic']),
+                         ('fig-channels-medcalc.pdf',['0.81','0.03','0.06','Skill span']),
                          ('fig-rank-medcalc.pdf',['Mistral','72','135','362','256']),
-                         ('fig-transfer-reading.pdf',['0.74','0.98','Weak transfer','blocked'])]:
+                         ('fig-transfer-reading.pdf',['Qwen3-8B','Qwen3-0.6B','Mistral-7B','MedCalc','TheoremQA','blocked','L13 / L25'])]:
     pdf=pymupdf.open(FIGURES/filename)
     text=' '.join(page.get_text() for page in pdf)
     for label in labels:check(filename+': rendered '+label,label in text)

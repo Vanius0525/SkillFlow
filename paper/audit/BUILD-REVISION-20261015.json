@@ -1,0 +1,35 @@
+{
+  "submission": {
+    "mode": "submission",
+    "stage": "/mnt/c/Users/12970/AppData/Local/Temp/skillvector-submission-20261015-5ybq6maw",
+    "main_pages": 8,
+    "total_pages": 12,
+    "undefined": [],
+    "overfull": []
+  },
+  "extended": {
+    "mode": "extended",
+    "stage": "/mnt/c/Users/12970/AppData/Local/Temp/skillvector-extended-20261015-htri3yw_",
+    "main_pages": 8,
+    "total_pages": 36,
+    "undefined": [],
+    "overfull": []
+  },
+  "data_checks": 124560,
+  "hashed_sources": 475,
+  "new_model_inference": false,
+  "artifacts": {
+    "skillvector-www2027.pdf": {
+      "bytes": 824511,
+      "sha256": "127d65c6faceca21163d727600cb1d6d651e8279c0ddfe1f0fab75f7e22af989"
+    },
+    "skillvector.pdf": {
+      "bytes": 1228452,
+      "sha256": "d3deb1b39544665a36f0898220176ae814be7eaf772afcc2c55a345ca919bb7f"
+    },
+    "overleaf-skillvector.zip": {
+      "bytes": 302120,
+      "sha256": "a4ca34372b89ccb6aaaac5b73365e5563752e6a1658c82cb396d705f9cd90467"
+    }
+  }
+}

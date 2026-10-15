@@ -10,7 +10,7 @@ from _paths import AUDIT, ROOT
 env = dict(os.environ, MPLCONFIGDIR='/tmp/skillvector-mpl')
 scripts = ['main_evidence.py', 'replication.py', 'replication_full.py',
            'fig_channels_full.py', 'fig_rank_full.py', 'fig_posbudget.py',
-           'style_main_figures.py', 'style_main_tables.py', 'check_main_data.py',
+           'depth_crossmodel.py', 'style_main_figures.py', 'style_main_tables.py', 'check_main_data.py',
            str(ROOT/'whitebox/analysis/audit.py')]
 logs = []
 for script in scripts:

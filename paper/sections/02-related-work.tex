@@ -16,7 +16,7 @@ matched task and model conditions.
 
 \paragraph{What a transferred state measures.}
 A multiple-choice answer symbol \citep{wiegreffe2025mcq} and states from
-completed reasoning \citep{mehrafarin2026cothidden} differ from the procedural
+completed reasoning \citep{mehrafarin2026cothidden} differ from the skill
 context supplied before generation. Sequential patching
 \citep{dura2026sequentialpatching} and repeated activation steering
 \citep{panickssery2024caa, liu2024icv, stolfo2025instruction} also intervene
@@ -24,19 +24,23 @@ beyond our one-time prefill protocol. Following activation-patching methodology
 \citep{zhang2023bestpractices, heimersheim2024patching}, we use matched
 controls, generated answers and identity checks to delimit what recovery
 establishes. Our depth comparison extends beyond tracing factual recall
-\citep{meng2022rome, geva2023dissecting} to the sustained use of procedures.
+\citep{meng2022rome, geva2023dissecting} to the sustained use of skills.
 
 \paragraph{Skills and compact context representations.}
 Skill benchmarks evaluate retrieval and application
-\citep{su2026srabench, skillsbench2026, sweskills2026}. We hold document
-selection fixed and study the reader. Learned compression uses aggregated
+\citep{su2026srabench, skillsbench2026, sweskills2026}. Web-agent work supplies reusable workflows and skills to support browser
+tasks \citep{wang2024awm, wang2026webxskill}. Such gains depend on evaluation
+conditions: under a matched total token budget, online skill and memory
+modules can lose their aggregate advantage \citep{hajimiri2026budgetskills}.
+We hold skill selection fixed and study how injected content is used, rather
+than proposing a skill-learning or retrieval system. Learned compression uses aggregated
 activations \citep{ardoin2026promptcompression}, summary tokens
 \citep{mu2023gist}, compact states \citep{ge2024icae} or weight updates
 \citep{doc2lora2026, deepcontextdistill2025}. We intervene on naturally
 occurring states without training a compressor.
 \citet{dong2026taskvectorlimits} study single-vector limitations in
 linear attention and test multiple task vectors. Their task-mapping rank
-differs from our rank of state differences across procedural positions.
+differs from our rank of state differences across skill positions.
 
 \paragraph{Rank and spectral diagnostics.}
 Spectral studies describe hidden-state geometry

@@ -1,22 +1,22 @@
 \begin{abstract}
-When a language model benefits from a procedure supplied in context, can its
-internal representation replace the source document, and when does the model
-cease to depend on that source? We study this question by pairing two
-interventions: transferring states from a correct-skill run into a matched
-wrong-skill run, and blocking subsequent attention to the skill in the original
-correct-skill run. Their depth profiles reveal an intermediate regime in which
-skill states have lost most of their transfer effect but attention to those
-states remains important for successful answers. On Qwen3-8B with clinical
-calculators, the two half-effect boundaries occur at layers $13$ and $25$ of
-$36$. The ordering holds across three models and two task domains under each
-intervention's eligibility criteria. To establish
-what is being transferred, we isolate content-specific state differences and
-test their position, question dependence and rank. Early replacement across
-the skill span recovers $0.89$ of the gain on a screened $135$-item subset,
-whereas a final-position patch is strongly answer-format dependent. Recovery
-requires appropriate content, placement and multiple leading directions.
-Repeated late replacement fails to close the depth gap, and an apparent
-spectral collapse is explained by unusually large activations. These results
-separate transferability from continued source dependence and provide
-behavioural criteria for evaluating context representations and compression.
+Language models can use skills supplied in context, including formulas, rules
+and step-by-step instructions, to solve tasks. Understanding how they use
+these skills matters for deciding when injected information contributes to
+computation and when its source must remain accessible. However, the relation
+between skill-state transferability and continued dependence on the skill
+source remains unclear: when transplanted states can no longer change a
+model's behaviour, has the model stopped needing the skill? We compare two
+interventions along model depth. We transplant correct-skill span states into
+a wrong-skill run and measure recovered task performance. Separately, we
+block subsequent attention to the skill from a specified layer in the
+correct-skill run and measure the performance loss. Across three models from
+two families on screened subsets of MedCalc and TheoremQA, transfer weakens
+before source dependence subsides. The ordering persists when both
+interventions are evaluated on common eligible items. In this intermediate
+interval, skill states have little corrective effect in the receiver, yet
+removing access to the source still harms the original computation. Content,
+position and repeated-replacement controls help delimit this finding.
+Failed skill transfer alone is therefore insufficient evidence that a model
+has finished using its contextual skills, motivating separate evaluation of
+transferability and source dependence when reusing skill representations.
 \end{abstract}

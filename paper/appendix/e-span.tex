@@ -180,6 +180,7 @@ $1{,}100$ items, CIs bootstrapped over the 55 calculators. The presence effect
 \small
 \begin{tabular}{lrcc}
 \toprule
+\rowcolor{TableHeader}
 & $n$ & accuracy & 95\% CI \\
 \midrule
 gold skill                & 1100 & 74.2\% & [65.8, 81.8] \\
@@ -337,6 +338,7 @@ with the whole span item by item on $18$ of $20$. By quarters:
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lccccc@{}}
 \toprule
+\rowcolor{TableHeader}
 quarter of the span & $n$ & 1st & \textbf{2nd} & 3rd & 4th \\
 \midrule
 forty calculators, after the fix & $60$ & $0.12$ & $\mathbf{0.56}$ & $0.12$ & $0.12$ \\
@@ -435,6 +437,7 @@ each format's own range:
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lccccc@{}}
 \toprule
+\rowcolor{TableHeader}
 layer & 0 & 4 & 8 & 12 & \textbf{16} \\
 \midrule
 document first & $1.00$ & $1.07$ & $1.14$ & $1.00$ & $\mathbf{0.14}$ \\
@@ -708,3 +711,13 @@ down.
 
 
 
+
+\subsection{Complete position-budget sensitivity analysis}
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{fig-posbudget-full.pdf}
+\caption{Complete early-layer position analysis, including token budgets,
+block counts, section choice and displacement. Block count also changes
+semantic coverage and does not isolate contiguity as a causal factor.}
+\label{fig:posbudgetfull}
+\end{figure*}
