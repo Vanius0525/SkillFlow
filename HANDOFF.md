@@ -1,5 +1,8 @@
 # HANDOFF — GAIA scaffold 对比怎么在远端跑
 
+> **论文任务当前入口（2026-10-16）**：先读 [paper/HANDOFF-20261016.md](paper/HANDOFF-20261016.md)，进度索引见 [paper/HANDOFF.md](paper/HANDOFF.md)。下文为2026-08的GAIA历史交接，不代表当前论文或启智状态。
+
+
 面向"接手这台服务器、要把实验跑出来"的人。只写操作和踩过的坑，方法论看
 `experiments-agents.sh` 顶部的注释。
 

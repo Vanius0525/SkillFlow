@@ -1,5 +1,10 @@
 # SkillVector 论文交接
 
+## 新对话入口（2026-10-16）
+
+先读 **[当前完整快照](HANDOFF-20261016.md)**。它汇总截至已推送提交 `9a3c4ae` 的结果、贡献边界、正文取舍、热力图、关键mask混杂与未运行实验。下方同日多轮记录是历史，不应覆盖快照中的最终状态。2026-10-16本轮仅整理交接，未恢复学校资源或启动实验。
+
+
 ## 2026-10-15 贡献审查、正文收束与机制方案（本地部分完成，新增GPU实验明日续接）
 
 - 用户进一步要求客观评价贡献、将不紧密的小实验移出正文、提出橙区机制判别实验及几个热力图设计。学校资源与新增GPU实验仍按用户明确指示留到明天。
@@ -354,3 +359,15 @@ python3 ../whitebox/analysis/audit.py  # ALL CHECKS PASSED
 ## 相关论文记录
 
 - Dong et al., *Understanding Task Vectors in In-Context Learning: Emergence, Functionality, and Limitations*, arXiv:2506.09048：线性 Transformer 分析预测单 task vector 在双射映射上的表达限制，并用原任务/逆任务/组合双射的对照表及多向量注入验证；与本稿相关的是对“一个位置何时够用”的正面反例设计，但其映射秩不同于本稿 span 矩阵截断秩。
+
+## 2026-10-16 reading/transfer 机制与新热力图设计
+
+- 本轮仅研究设计，未启动GPU任务或修改论文结果。报告：`reports/橙区机制判别与因果热力图设计_20261016.md`。
+- 新代码证据：span patch只在prefill的block输出生效；层≤L的source KV已由receiver计算，随后decode仍读取它。缓存覆盖不足是待检验解释，不能称已发现机制。
+- 优先级：reader/source-self边拆分 → source residual×source历史KV四臂 → reader状态修复及同次执行再次切断 → 精确规则反事实。正文新图推荐修复条件×实际层号的准确率热力图。
+- 新近邻：arXiv:2606.17107已研究字段刷新失败与下游缓存旧结论；不能宣称一般缓存历史解释首次。文献、协议、对照与失败判据已落报告。
+- 验证：核对wb_patch.py patch_hook与wb_spanpatch.py decode_ids；文档diff检查。没有新数值结果，下一步是小样本仪器验证，不自动恢复远端任务。
+
+### Open Ideas / 值得深挖的问题（2026-10-16增补）
+
+- 候选：完整执行状态是否决定skill transfer？观察为单层patch未覆盖旧source KV、reader历史，而transfer与来源依赖边界分离。最小验证S/C四臂；强结果需修复后仍有内容特异的来源依赖。已有缓存笔记和中介交互近邻，先判别后评估独立立项价值。详见本轮报告§6。
