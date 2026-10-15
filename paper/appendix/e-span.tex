@@ -173,23 +173,23 @@ itself.
 
 \begin{table}[tbp]
 \caption{Behaviour on the real skills, Qwen3-8B, all three arms on the same
-$1{,}100$ items, CIs bootstrapped over the 55 calculators. The presence effect
-(wrong skill minus no skill) is a clean zero, so the $+39.7$pp is content.}
+$1{,}100$ items from $55$ calculators. Point estimates distinguish the
+$+39.7$pp correct-skill gain from the $-2.9$pp wrong-minus-no-skill change.}
 \label{tab:behaviour}
 \centering
 \small
-\begin{tabular}{lrcc}
+\begin{tabular}{lrc}
 \toprule
 \rowcolor{TableHeader}
-& $n$ & accuracy & 95\% CI \\
+ & $n$ & accuracy  \\
 \midrule
-gold skill                & 1100 & 74.2\% & [65.8, 81.8] \\
-no skill                  & 1100 & 34.5\% & [26.5, 42.8] \\
-wrong skill (length-matched) & 1100 & 31.5\% & [23.7, 39.5] \\
+gold skill & 1100 & 74.2\%  \\
+no skill & 1100 & 34.5\%  \\
+wrong skill (length-matched) & 1100 & 31.5\%  \\
 \midrule
-gold $-$ no skill         & 1100 & $+39.7$pp & [$+31.7$, $+47.7$] \\
-gold $-$ wrong skill      & 1100 & $+42.6$pp & [$+34.7$, $+50.5$] \\
-\textbf{presence: wrong $-$ no skill} & 1100 & $\mathbf{-2.9}$\textbf{pp} & [$-8.8$, $+3.0$] \\
+gold $-$ no skill & 1100 & $+39.7$pp  \\
+gold $-$ wrong skill & 1100 & $+42.6$pp  \\
+\textbf{presence: wrong $-$ no skill} & 1100 & $\mathbf{-2.9}$\textbf{pp}  \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -250,8 +250,7 @@ baselines.}
 \caption{What the content vector contains once it is able to contain the task.
 Document placed after the question, layer 8, Qwen3-8B, the $40$ rescued items,
 plotted as the fraction $\rho$ of Eq.~\ref{eq:rho}, before the instrument fix
-(post-fix numbers in Appendix~\ref{app:madeof}). Exact accuracies and
-intervals are in Table~\ref{tab:skilltask}, Appendix~\ref{app:tables}.}
+(post-fix numbers in Appendix~\ref{app:madeof}). Exact accuracies are in Table~\ref{tab:skilltask}, Appendix~\ref{app:tables}.}
 \label{fig:skilltask}
 \end{figure*}
 

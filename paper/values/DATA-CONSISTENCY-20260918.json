@@ -1,5 +1,5 @@
 {
-  "checks_passed": 124560,
+  "checks_passed": 132551,
   "source_sha256": {
     "howskill/results/p8-wb/fetched/by-host/hsw/full-battery-a.jsonl": "af6c876c2f714ad312e9c884a1fe869ced3beb3f0bf5679bf7a2c98a697b81fb",
     "howskill/results/p8-wb/fetched/by-host/hsw2/full-battery-b.jsonl": "ee6a418a12f7b220a37b4ddb4333c5d30cdeaafc9a9769cd02c842fa208b7a8f",
@@ -479,20 +479,21 @@
   },
   "artifact_sha256": {
     "00-abstract.tex": "bec84ac0d0bc7db60e8a1113ec5af7d1132a26457cfc406ba3876928a16cbba3",
-    "01-introduction.tex": "99ba4f911cac88e236c26145f0a13f258d03cab26280768b7fff9fc48e59bac0",
-    "02-related-work.tex": "0bf41ad257fcea19af63d8a4320efd4ab3a1e815949a5c59ea4010e20782148c",
-    "03-problem-formulation.tex": "28e22be674a086407f865396c2abe217a0b455b35ad5478d44fe58171049c2af",
-    "04-experiment.tex": "168006cff1ac74f6e68618ba8303f2dcbf37cc895b117227290a3c6dc57721e8",
-    "05-conclusion.tex": "0fd8ab8334b39bf03b0538afc1ffb3ad42f79fda156f4140b470549fcac879ad",
-    "h-additional-tables.tex": "e7b7defec88e2e8e14c27dc43338eaf907cc9f99935b2dc4674fdede85245286",
+    "01-introduction.tex": "03c2240abd6c006682a1d43df4f8733cea29a1375d6f4eaf733172ebe0fd770f",
+    "02-related-work.tex": "b264b985e4bb0874c3b8aaae834d209348f8656a96a2cc7fd9262edaf72a824c",
+    "03-problem-formulation.tex": "70e65c9d9a2ac517949ca9e4df2f63b9e03a655a7adad7d674d7f06ac1ee4b29",
+    "04-experiment.tex": "c7c75215ad37369d1f8649788abbec59e0ccbc382b44f65865555a08880a8bd9",
+    "05-conclusion.tex": "5e434d13a8e5ebf2cf01f58a22997bab4739e0fea921f92d1559c3a420f0a308",
+    "h-additional-tables.tex": "29016065764d19aa5ee2656264be51532beb1e4993de1acfc3069634ae93142a",
     "tab-answer-format.tex": "e7de207754e592fa079e1a97b6139d3b05f743f5c7968f87ca092e84ab0bdcaf",
-    "tab-big40.tex": "e1c47f1077e3366d917d61353b5a42f79fea74387f1f560c7392f64af43dd999",
+    "tab-big40.tex": "a7f9db6f6b86aae0aa6572f348756b5223504b8d3ffb287673386d5c313baa7d",
     "tab-skill-content.tex": "33d20644036188f7cdb3f3cebd4bba2ec14ab3862f4feeaa00bda3ec7cebbebf",
-    "tab-replication.tex": "676a05acb40ee07440e1b5ccc6ee51fd6ea1c6096c38f8316b2b9b4dfd339bcc",
-    "fig-channels-medcalc.pdf": "cca0bd818cde7d45cede9e4d7bf61adb504dc4fdcd66cf9ee0dcdf1d715db2b3",
-    "fig-rank-medcalc.pdf": "a20379d471a1a7808011d8325b640786778e26668a5663b89ee85ab44d4410f1",
-    "fig-transfer-reading.pdf": "dd025f558e5cb5d75b4b0643f789b344fb7b1754636bf71248927a76497bcc92",
-    "fig-posbudget.pdf": "13f59bb3dc2cea83dc2000832368e9e97eb2659a7c8eccd6930c3e023ca7a2a7"
+    "tab-replication.tex": "2d3ba0326a900972d30a8c6db8505f904c6d24f1cbda37df68835d86007e23ca",
+    "fig-channels-medcalc.pdf": "7426f959a144fd18c04a857ea1b50dd6f69061fd94b74511fbd300110b4f0b5a",
+    "fig-rank-medcalc.pdf": "1f6383a57b6dc25d2f70f819a6f562fc9ccf74e62352e383534559e4884b4030",
+    "fig-transfer-reading.pdf": "a9978e724c8175b9c49ba4e7208c46ed252172e17e9136f0498a9b4e740f1764",
+    "fig-posbudget.pdf": "98e315bca02f802a68502f0bbf912ab9cf0af0a93b9bbd47987534a6d9f8bcd1",
+    "fig-joint-failure.pdf": "79a4346714f7f16b7abcc44d49797f3aaefdc9c655404c6dc7eaab4c27614f25"
   },
   "selection_policy": "latest complete local measurement family; no partial curves or incompatible baseline merges",
   "scope": "main displays and updated prose; historical diagnostics additionally checked by whitebox/analysis/audit.py"

@@ -20,19 +20,21 @@ out=[r'\begin{tabular}{@{}lrccc@{}}',r'\toprule',
 for label,key in rows:
     v=battery[key];lo,hi=v['ci']
     if key in ('real_L8','a0.5_L8','self_L8'):out.append(r'\addlinespace[3pt]')
+    if key=='real_L8':out.append(r'\rowcolor{TransferHighlight}')
     out.append(f'{label} & ${v["n"]}$ & ${v["accuracy"]:.3f}$ & $[{lo:.3f},\\,{hi:.3f}]$ & ${v["rho"]:+.2f}$ '+r'\\')
 out += [r'\bottomrule',r'\end{tabular}']
 (TABLES/'tab-big40.tex').write_text('\n'.join(out)+'\n')
 
 cells=json.loads((VALUES/'replication-values.json').read_text())
-out=[r'\begin{tabular}{@{}llrccccc@{}}',r'\toprule',
-     r'\textbf{Task} & \textbf{Model} & $n_T/n_R$ (groups) & $\rho$ [95\% CI] & \textbf{Control} & \textbf{Transfer} & \textbf{Reading} & $k^{*}$ \\',r'\midrule']
+out=[r'\begin{tabular}{@{}llrcccc@{}}',r'\toprule',
+     r'\textbf{Task} & \textbf{Model} & $n_T/n_R$ (groups) & $\rho$ [95\% CI] & \textbf{Control} & \textbf{Transfer} $L$ & \textbf{Reading} $L$ \\',r'\midrule']
 for i,c in enumerate(cells):
     if i and cells[i-1]['model']!=c['model']:out.append(r'\addlinespace[3pt]')
     ho,rd=c['handover'],c['reading']
+    nl={'Qwen3-8B':36,'Qwen3-0.6B':28,'Mistral-7B':32}[c['model']]
     out.append(f'{c["task"]} & {c["model"]} & ${c["n"]}/{rd[1]}$ (${c["g"]}$) & '
                f'${c["rho"]:.2f}$ $[{c["lo"]:.2f},{c["hi"]:.2f}]$ & ${c["ctrl"]:.2f}$ & '
-               f'${ho[0]:.2f}$--${ho[1]:.2f}$ & ${rd[0]:.2f}$ & ${c["kstar"]:.0f}$ '+r'\\')
+               f'${round(ho[1]*nl)}$ & ${round(rd[0]*nl)}$ '+r'\\')
 out += [r'\bottomrule',r'\end{tabular}']
 (TABLES/'tab-replication.tex').write_text('\n'.join(out)+'\n')
 print('Typeset evidence tables with intervention groups and explicit transfer/reading sample sizes.')
@@ -46,7 +48,7 @@ for task in ['MedCalc','TheoremQA']:
     for c in [c for c in depth if c['task']==task]:
         d=c['common'];lo,hi=d['boundary_ci'][2]
         out.append(f'{task} & {c["model"]} & ${d["n"]}$ & ${d["transfer_boundary"]}/{d["reading_boundary"]}$ & '
-                   f'${d["reading_boundary"]-d["transfer_boundary"]}$ $[{lo:.1f},{hi:.1f}]$ '+r'\\')
+                   f'\\cellcolor{{ConflictHighlight}}${d["reading_boundary"]-d["transfer_boundary"]}$ $[{lo:.1f},{hi:.1f}]$ '+r'\\')
 out += [r'\bottomrule',r'\end{tabular}']
 (TABLES/'tab-paired-depth.tex').write_text('\n'.join(out)+'\n')
 
@@ -59,3 +61,6 @@ for path in list(TABLES.glob('*.tex')) + list((PAPER/'appendix').glob('*.tex')):
     text=text.replace('\\toprule\n', '\\toprule\n\\rowcolor{TableHeader}\n') if '\\rowcolor{TableHeader}' not in text else text
     path.write_text(text)
 print('Styled all tables; added common-item boundary table.')
+from point_estimates import point_tables
+for path in list(TABLES.glob('*.tex')) + list((PAPER/'appendix').glob('*.tex')):
+    path.write_text(point_tables(path.read_text()))

@@ -325,3 +325,194 @@ Patching the last $1$, $4$, $16$, $32$, $48$ and $61$ positions
 ($61$ covers the whole no-document prompt) recovers
 $0.235$, $0.261$, $0.403$, $0.403$, $0.395$ and $0.370$, respectively.
 The ladder saturates at $16$ positions.
+
+\subsection{Additional probe diagnostics outside the depth-gap claim}
+\paragraph{Isolating content before transferring it.}
+Let $x$ be a question, $s$ its correct skill, and $\tilde{s}$ an unrelated skill
+with the same token length. For a fixed autoregressive model of hidden width
+$D$, let $h^L_{\mathrm{skill}}(p)$, $h^L_{\mathrm{wrong}}(p)$ and
+$h^L_{\mathrm{no}}(p)$ denote residual-stream hidden states at layer $L$ and prompt position
+$p$ with $s$, with $\tilde{s}$ and without a skill. At the final prompt position,
+we decompose the total displacement as
+\begin{equation}
+\underbrace{h_{\mathrm{skill}}-h_{\mathrm{no}}}_{\tvec\ \text{(total)}}
+=
+\underbrace{h_{\mathrm{wrong}}-h_{\mathrm{no}}}_{\gvec\ \text{(presence)}}
++
+\underbrace{h_{\mathrm{skill}}-h_{\mathrm{wrong}}}_{\dvec\ \text{(content)}}.
+\label{eq:decomp}
+\end{equation}
+We omit layer and position indices in Eq.~\ref{eq:decomp} for readability.
+``Presence'' denotes the change induced by the chosen wrong skill. ``Content''
+denotes the additional change induced by replacing it with the correct skill.
+This algebraic decomposition does not assume independent underlying factors.
+We test each component by adding it to the corresponding state in a no-skill run.
+
+
+
+\subsection{Establishing a content-sensitive transfer probe}
+\label{sec:decomp}
+
+\paragraph{Content gain and state displacement need not agree.}
+Across the $1{,}100$ clinical-calculator instances, the correct skill adds
+$39.7$ accuracy points over no skill, while the matched wrong skill changes
+accuracy by $-2.9$ points ($95\%$ interval $[-8.6,+2.9]$, paired calculator
+bootstrap). Yet on the synthetic task, correct and wrong skills have similar
+final-position displacements relative to no skill: cosine similarity is
+$0.91$--$0.95$ over layers $0$--$10$. A large shared displacement is therefore
+not sufficient evidence that the probe captures useful content. We test the
+two components separately rather than treating the total displacement as a skill.
+
+\paragraph{Content subtraction recovers the behavioural effect.}
+On the synthetic task with Qwen3-1.7B ($358$ items, $82$ rescued), we inject
+each component of Eq.~\ref{eq:decomp} at the final prompt position. On rescued
+items, the presence component recovers $0.098$ of the gain, exactly the
+wrong-skill baseline. The content component recovers $0.805$, compared with
+$1.000$ for full state replacement. Recovery also depends on the
+subtraction baseline. Using a skill with corrupted numbers or with shuffled sentences gives
+$0.17$--$0.28$ over layers $21$--$27$, every layer measured, compared with
+$0.805$ for an unrelated skill. The content component must therefore be
+interpreted relative to the specified wrong skill.
+
+\paragraph{Single-position recovery depends on answer format.}
+\label{sec:onepos}
+Table~\ref{tab:answerformat} compares answer formats on the synthetic task.
+All three formats use the same $358$ items and all $36$ layers. For short
+numeric answers, no final-position intervention recovers more than one of the
+$119$ rescued items through layer $22$. The best results across layers are
+$0.235$ for state replacement, $0.21$ for content and $0.008$ for presence.
+These answers are one to five tokens long. Expanding the patch to the last
+$16$ positions recovers $0.403$, and writing the entire no-skill prompt does
+not improve it (extended version).
+For step-by-step reasoning, the skill raises accuracy from $0.000$ to
+$0.989$, yet single-position replacement recovers at most one of $354$ rescued
+items ($0.003$) at any layer.
+Recovery varies with answer format, which changes both output length and
+computation. Same-query replacement of the final-layer final state also
+copies the next-token decision. We therefore interpret the comparison as a
+test of this one-time intervention, alongside prior evidence that transfer
+depends on position and task scope \citep{jit2025taskrepr}.
+
+\begin{table}[tbp]
+\caption{Final-position state replacement across answer formats, Qwen3-8B.
+All formats use the same $358$ items and the same skill, with every layer
+($0$--$35$) tested. Recovery is the best state-replacement result over layers
+on each format's rescued items. The identity intervention reproduces the
+unpatched output on every item and layer.}
+\label{tab:answerformat}
+\centering\small
+\input{tables/tab-answer-format}
+\end{table}
+
+The corrected clinical comparison tests the final position and larger sets
+of positions after the skill at layer $8$, using the same $135$ items and
+wrong-skill receiver as span injection (Figure~\ref{fig:channels}). The last
+$1$, $16$ and up to $256$ positions recover $0.03$, $0.06$ and $0.05$,
+respectively. Earlier multi-layer probes
+are reported separately in \extref{Appendix}{app:onepos}{the extended version}. The complete matched
+comparison here concerns layer $8$.
+
+
+\subsection{Distinguishing position budget from placement}
+\label{sec:posbudget}
+
+Having established the depth gap, we examine what makes the early probe
+effective. Span injection writes $365$--$1{,}630$ positions, whereas the final-position probe
+writes one. We compare position selections at fixed written-token budgets
+$B$, using the same $135$ items, layer and receiver as
+Table~\ref{tab:big40} (Figure~\ref{fig:posbudget}).
+Increasing the written-position budget alone does not restore full-span
+recovery. Spread-out selections recover at most $0.15$, while block-count
+comparisons also change semantic coverage and cannot isolate contiguity
+(\extref{Appendix}{app:budgetdetails}{extended version}).
+\emph{Section and placement matter.} A half-span block centred on the
+skill-step section recovers $0.82$ [$0.67,0.93$], versus $0.18$ around the example.
+A description-centred block also recovers $0.80$; these wide blocks overlap
+sections and do not isolate the contribution of skill steps.
+Shifting each content difference by one position gives $0.15$--$0.22$ with or
+without wrap-around. Omitting the first or last $16$ positions but leaving the
+rest in place preserves $0.89$--$0.92$. Recovery is thus sensitive to which
+content is injected and where, beyond the number of written positions.
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{fig-posbudget.pdf}
+\caption{Content and placement controls for skill transfer, Qwen3-8B on
+MedCalc, layer $8$, with the same $135$ items and receiver. (a) One contiguous
+block centred on different skill sections, at two written-position budgets.
+(b) Content differences displaced from their original positions, with or
+without wrap-around. The dashed line marks the full span written in place
+($\rho=0.89$). All marks show point estimates.
+The extended version retains the complete position-budget analysis.}
+\label{fig:posbudget}
+\end{figure*}
+
+
+\paragraph{Testing the structure of transferable states.}
+To test how many directions support recovery, we subtract the mean across
+positions, truncate the resulting matrix, and restore the mean:
+\begin{equation}
+\dvec^{(k)}=\mathbf{1}\bar{\dvec}+\sum_{i=1}^{k}\sigma_i u_i v_i^\top,
+\qquad
+\dvec-\mathbf{1}\bar{\dvec}=\sum_i\sigma_i u_i v_i^\top.
+\label{eq:rank}
+\end{equation}
+Here, $\bar{\dvec}\in\mathbb{R}^{1\times D}$ is the mean state difference,
+repeated at every position. The singular values $\sigma_i$ are ordered from
+largest to smallest, with $u_i$ and $v_i$ their associated directions. Thus $k$
+counts retained directions after centring, and the complete injected matrix has
+rank at most $k+1$. A bottom-$k$ control keeps the $k$ smallest singular
+directions and the same mean. This tests the compactness of the transferable
+state difference while preserving its positional mean.
+
+
+
+\subsection{Testing a compact representation of the span}
+\label{sec:rank}
+
+Finally, we test whether the transferable span can be reduced to a few
+directions. We inject the truncated matrix in Eq.~\ref{eq:rank} to measure how
+recovery depends on the retained directions. Each intervention preserves the
+same skill-specific mean at every span position, so the comparison tests how
+much variation across positions is needed beyond that mean. At layer $8$ on
+the screened MedCalc subset ($135$ items, $14$ calculators), recovery is
+$0.07,0.05,0.12$ for $k=4,16,32$, rising to $0.63$ at $64$ and $0.77$ at
+$128$, and reaching the untruncated $0.89$ at $256$ (Figure~\ref{fig:rank}).
+Keeping the bottom $4$ to $128$ directions recovers at most $0.04$.
+Recovery therefore depends on which directions are retained: the leading
+directions support most of the measured effect, but a small number is
+insufficient under this intervention.
+
+For comparison across models, we summarise each curve by $k^{*}$: the first
+rank reaching halfway from recovery at $k=16$ to the maximum on the fixed grid
+$\{16,32,64,128\}$, with interpolation in $\log_2 k$. We call this the
+\emph{rank knee}, a summary of the measured recovery range.
+Qwen3-8B gives $k^{*}=47$ [$43,55$], approximately $1.1\%$ of its hidden
+width. \extref{Appendix}{app:rank2}{The extended version} reports development and deeper-layer curves.
+These measurements describe what the injected representation can recover,
+rather than directly measuring the model's unmodified computation: truncated
+states may activate pathways absent from an unpatched run
+\citep{makelov2024illusion}.
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{fig-rank-medcalc.pdf}
+\caption{Rank truncation on MedCalc, with the positional mean restored. Each
+model is injected at an early layer. Qwen3-0.6B and Qwen3-8B have similar
+rank knees ($43$ and $47$) despite a fourfold width difference; Mistral-7B
+has $k^{*}=72$. Untruncated recovery is $0.89$,
+$0.91$ and $0.84$, respectively, on each model's screened subset ($135$, $362$
+and $92$ items). Dotted lines mark untruncated recovery; dashed curves retain bottom directions. All marks show point estimates. Only complete rank experiments are
+plotted.}
+\label{fig:rank}
+\end{figure*}
+
+
+\paragraph{Cross-model rank comparison.}
+Rank requirements also do not scale directly with hidden width. Qwen3-0.6B
+and Qwen3-8B have MedCalc knees of $43$ [$39,52$] and $47$ [$43,55$]
+despite a fourfold width difference; TheoremQA gives $52$ [$46,62$] and
+$50$ [$39,67$]. Mistral gives $k^{*}=72$ [$46,94$] on MedCalc
+and $64$ [$50,79$] on TheoremQA, with intervals overlapping Qwen3-8B's.
+A family difference is therefore not established. The extended version
+retains the width-proportional prediction and additional rank diagnostics.

@@ -118,3 +118,21 @@ Create the output directory first. Initial use downloads TeX dependencies;
 subsequent builds can add `--only-cached`. The Windows `build.sh` is retained
 for its original environment. Always inspect the `endmain` page and the PDF's
 total page count before copying a build to a delivery filename.
+
+## Focused depth-gap manuscript (2026-10-15)
+
+The main text now keeps the validated span probe, transfer/source-attention
+depth separation, common-item checks, joint-failure heatmap, repeated late
+replacement and content-sharing controls. Synthetic probe development, rank
+and detailed position budgets are retained in the extended appendices.
+
+Figure 2 uses actual layer indices. All figure and table displays use point
+estimates; raw uncertainty records remain in `values/` and the numerical
+audit still checks them. `tools/point_estimates.py` is the idempotent table
+presentation pass. `tools/fig_joint_failure.py` recomputes the same-item
+heatmap from raw completed runs; no interpolation or model inference is used.
+
+The current knockout masks skill keys for all query rows, including the skill
+queries. Reader-only versus source-internal attention controls remain open.
+New GPU experiments are deferred at the user's request. See
+[audit/EXTRA-FAMILY-RESUME-20261015.md](audit/EXTRA-FAMILY-RESUME-20261015.md).

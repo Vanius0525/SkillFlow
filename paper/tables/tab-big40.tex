@@ -1,21 +1,22 @@
-\begin{tabular}{@{}lrccc@{}}
+\begin{tabular}{@{}lrcc@{}}
 \toprule
 \rowcolor{TableHeader}
-\textbf{Intervention} & $n$ & \textbf{Accuracy} & \textbf{95\% CI} & \textbf{Recovery} $\rho$ \\
+\textbf{Intervention} & $n$ & \textbf{Accuracy} & \textbf{Recovery} $\rho$ \\
 \midrule
-\emph{correct skill in context} & $135$ & $0.919$ & $[0.844,\,0.976]$ & $+1.00$ \\
+\emph{correct skill in context} & $135$ & $0.919$ & $+1.00$ \\
 \addlinespace[3pt]
-$h_{\text{recv}}+\dvec$ \ (full span) & $135$ & $0.815$ & $[0.670,\,0.925]$ & $+0.89$ \\
-correct content, shared prefix & $135$ & $0.593$ & $[0.336,\,0.820]$ & $+0.65$ \\
+\rowcolor{TransferHighlight}
+$h_{\text{recv}}+\dvec$ \ (full span) & $135$ & $0.815$ & $+0.89$ \\
+correct content, shared prefix & $135$ & $0.593$ & $+0.65$ \\
 \addlinespace[3pt]
-half dose ($\alpha=0.5$) & $135$ & $0.037$ & $[0.000,\,0.103]$ & $+0.04$ \\
-another skill (individual donor) & $135$ & $0.044$ & $[0.007,\,0.119]$ & $+0.05$ \\
-mean from another skill family & $135$ & $0.044$ & $[0.012,\,0.102]$ & $+0.05$ \\
-mean from the same skill family & $41$ & $0.122$ & $[0.000,\,0.250]$ & $+0.12$ \\
-positions permuted & $135$ & $0.044$ & $[0.007,\,0.118]$ & $+0.05$ \\
-norm-matched Gaussian noise & $135$ & $0.022$ & $[0.000,\,0.051]$ & $+0.02$ \\
+half dose ($\alpha=0.5$) & $135$ & $0.037$ & $+0.04$ \\
+another skill (individual donor) & $135$ & $0.044$ & $+0.05$ \\
+mean from another skill family & $135$ & $0.044$ & $+0.05$ \\
+mean from the same skill family & $41$ & $0.122$ & $+0.12$ \\
+positions permuted & $135$ & $0.044$ & $+0.05$ \\
+norm-matched Gaussian noise & $135$ & $0.022$ & $+0.02$ \\
 \addlinespace[3pt]
-\emph{identity intervention} & $135$ & $0.000$ & $[0.000,\,0.000]$ & $+0.00$ \\
-\emph{wrong skill, unpatched} & $135$ & $0.000$ & $[0.000,\,0.000]$ & $+0.00$ \\
+\emph{identity intervention} & $135$ & $0.000$ & $+0.00$ \\
+\emph{wrong skill, unpatched} & $135$ & $0.000$ & $+0.00$ \\
 \bottomrule
 \end{tabular}

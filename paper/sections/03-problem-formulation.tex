@@ -6,27 +6,11 @@ State transfer tests recovery in a wrong-skill receiver. Attention knockout
 tests source dependence in the correct-skill run. Both score generated
 answers while varying intervention depth.
 
-\paragraph{Isolating content before transferring it.}
-Let $x$ be a question, $s$ its correct skill, and $\tilde{s}$ an unrelated skill
-with the same token length. For a fixed autoregressive model of hidden width
-$D$, let $h^L_{\mathrm{skill}}(p)$, $h^L_{\mathrm{wrong}}(p)$ and
-$h^L_{\mathrm{no}}(p)$ denote residual-stream hidden states at layer $L$ and prompt position
-$p$ with $s$, with $\tilde{s}$ and without a skill. At the final prompt position,
-we decompose the total displacement as
-\begin{equation}
-\underbrace{h_{\mathrm{skill}}-h_{\mathrm{no}}}_{\tvec\ \text{(total)}}
-=
-\underbrace{h_{\mathrm{wrong}}-h_{\mathrm{no}}}_{\gvec\ \text{(presence)}}
-+
-\underbrace{h_{\mathrm{skill}}-h_{\mathrm{wrong}}}_{\dvec\ \text{(content)}}.
-\label{eq:decomp}
-\end{equation}
-We omit layer and position indices in Eq.~\ref{eq:decomp} for readability.
-``Presence'' denotes the change induced by the chosen wrong skill. ``Content''
-denotes the additional change induced by replacing it with the correct skill.
-This algebraic decomposition does not assume independent underlying factors.
-We test each component by adding it to the corresponding state in a no-skill run.
-
+\paragraph{Skill-span state transfer.}
+Let $x$ be a question, $s$ its correct skill and $\tilde{s}$ an unrelated,
+equal-length skill. For hidden width $D$, let $H^L_{\mathrm{skill}}$ and
+$H^L_{\mathrm{wrong}}$ denote residual-stream states at layer $L$ under these
+two contexts.
 Across the skill's $m$ token positions $S$, the content-specific difference
 is a matrix $\dvec_S^L=H^L_{\mathrm{skill}}(S)-H^L_{\mathrm{wrong}}(S)
 \in\mathbb{R}^{m\times D}$. We use a run containing the wrong skill as the
@@ -67,6 +51,9 @@ The estimates are conditional on baseline failure in the sampled group, rather t
 Cumulative attention knockout masks the skill positions as attention keys at every
 layer from $L$ onward, during both prefill and decoding. On the knockout run's rescued items within the screened groups, let $q(L)$ be the fraction still solved after this
 intervention. A low $q(L)$ means that removing subsequent access is damaging.
+The mask applies to skill keys for all query positions, including skill
+queries during prefill. It therefore jointly intervenes on reading and
+source-state updates, rather than isolating a reader-to-source pathway.
 The transfer boundary is the first layer with $\rho(L)<0.5$ after early
 successful transfer. The reading boundary is the first with $q(L)\ge0.5$.
 The two boundaries define three operational depth intervals: early transfer,
@@ -77,21 +64,3 @@ We also repeat both curves on the intersection of transfer items and the
 knockout run's rescued items within screened groups, retaining each
 intervention's own baselines. These are summaries of two curves with different
 intervention backgrounds, not a common measure of information content.
-
-\paragraph{Testing the structure of transferable states.}
-To test how many directions support recovery, we subtract the mean across
-positions, truncate the resulting matrix, and restore the mean:
-\begin{equation}
-\dvec^{(k)}=\mathbf{1}\bar{\dvec}+\sum_{i=1}^{k}\sigma_i u_i v_i^\top,
-\qquad
-\dvec-\mathbf{1}\bar{\dvec}=\sum_i\sigma_i u_i v_i^\top.
-\label{eq:rank}
-\end{equation}
-Here, $\bar{\dvec}\in\mathbb{R}^{1\times D}$ is the mean state difference,
-repeated at every position. The singular values $\sigma_i$ are ordered from
-largest to smallest, with $u_i$ and $v_i$ their associated directions. Thus $k$
-counts retained directions after centring, and the complete injected matrix has
-rank at most $k+1$. A bottom-$k$ control keeps the $k$ smallest singular
-directions and the same mean. This tests the compactness of the transferable
-state difference while preserving its positional mean.
-

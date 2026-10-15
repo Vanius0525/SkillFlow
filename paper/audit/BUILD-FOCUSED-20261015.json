@@ -1,0 +1,33 @@
+{
+  "scope": "point-estimate displays, focused depth-gap manuscript and same-item heatmap",
+  "data_checks": 132551,
+  "source_files": 475,
+  "new_model_inference": false,
+  "remote_jobs": [],
+  "experiments_deferred_by_user": true,
+  "builds": {
+    "submission": {
+      "mode": "submission",
+      "stage": "/mnt/c/Users/12970/AppData/Local/Temp/skillvector-submission-20261015-_lcnn183",
+      "main_pages": 7,
+      "total_pages": 11,
+      "undefined": [],
+      "overfull": []
+    },
+    "extended": {
+      "mode": "extended",
+      "stage": "/mnt/c/Users/12970/AppData/Local/Temp/skillvector-extended-20261015-a1bszwwc",
+      "main_pages": 7,
+      "total_pages": 36,
+      "undefined": [],
+      "overfull": []
+    }
+  },
+  "artifact_sha256": {
+    "skillvector-www2027.pdf": "5fe25d89969996095dbd5dd90111016b20e3da64bfe79595e2960fea8349f74e",
+    "skillvector.pdf": "8d5352b5c5ff6ed7847edc0b85c92b8c2c5442fe47fbe33a96fff621cafa1547",
+    "overleaf-skillvector.zip": "d8889df9a6dd11e1fb52a02bdf444e47b0d9bc963f3e4305da614981726e7986",
+    "figures/fig-joint-failure.pdf": "79a4346714f7f16b7abcc44d49797f3aaefdc9c655404c6dc7eaab4c27614f25",
+    "values/joint-failure-values.json": "162346e76396a2768010922d9b1c8033b59e62885614748f6a15b0cacd84ca45"
+  }
+}

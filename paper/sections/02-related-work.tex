@@ -11,8 +11,11 @@ Transfer also depends on time and semantic scope \citep{jit2025taskrepr}.
 These results motivate testing continued source dependence separately:
 \citet{sia2024incontexttranslation} use cumulative context masking, and
 \citet{onset2025instruction} compare instruction-span and final-position
-patches. We pair span transfer with cumulative attention knockout under
-matched task and model conditions.
+patches. \citet{yang2025internalcot} combine layer-from context masking with cross-task
+patching to study subtask scheduling, reporting best-layer transfer strength.
+Our target is the depth interval where source-span transfer has weakened but
+cumulative skill-attention knockout still damages the original computation,
+under matched task and model conditions.
 
 \paragraph{What a transferred state measures.}
 A multiple-choice answer symbol \citep{wiegreffe2025mcq} and states from
@@ -38,16 +41,3 @@ activations \citep{ardoin2026promptcompression}, summary tokens
 \citep{mu2023gist}, compact states \citep{ge2024icae} or weight updates
 \citep{doc2lora2026, deepcontextdistill2025}. We intervene on naturally
 occurring states without training a compressor.
-\citet{dong2026taskvectorlimits} study single-vector limitations in
-linear attention and test multiple task vectors. Their task-mapping rank
-differs from our rank of state differences across skill positions.
-
-\paragraph{Rank and spectral diagnostics.}
-Spectral studies describe hidden-state geometry
-\citep{valeriani2023geometry, fernando2026residualspectral} and perturbation
-sensitivity \citep{sarkar2026causaldim}. We instead truncate the injected
-matrix and measure recovered behaviour. Unusually large activations
-\citep{sun2024massive, shi2026melayer} and dominant dimensions
-\citep{timkey2021rogue, kovaleva2021bertbusters} motivate a separate check
-of whether an apparent spectral collapse actually reflects useful-content
-compression.

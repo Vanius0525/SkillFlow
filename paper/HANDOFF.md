@@ -1,5 +1,26 @@
 # SkillVector 论文交接
 
+## 2026-10-15 贡献审查、正文收束与机制方案（本地部分完成，新增GPU实验明日续接）
+
+- 用户进一步要求客观评价贡献、将不紧密的小实验移出正文、提出橙区机制判别实验及几个热力图设计。学校资源与新增GPU实验仍按用户明确指示留到明天。
+- 已将合成presence/content分解、答案格式与末位置阶梯、详细位置budget、rank/SVD及其主复现表列移出正文，原文件与结果保留扩展附录；主体仍为六节固定结构。
+- 已用现有原始结果增加正文 `fig-joint-failure.pdf`：按skill ID排序，层号×skillgroup，格子为同题transfer失败且knockout失败的比例。严格两协议donor baseline都对、transfer receiver错且knockout无skill错。样本MedCalc124/84/43，TheoremQA61/123/64。独立重算检查已加入check_main_data.py。
+- 反事实当场记录：Qwen3-0.6B/TheoremQA的92个严格eligible skillgroups中23个在总体橙区L11–19没有joint failure，不能声称每个skill必经三阶段。正文与报告已明确。
+- 机制识别问题：`wb_knockout.py:99` 屏蔽所有query行的skill keys，包括skill→skill。正文方法已说明同时干预source内部更新与读取。明天先做reader→skill-only vs skill→skill-only拆分，再做receiver-state 2×2；其次先救回再切断、prefill/decode分离与内容反事实。
+- 详细评价/预期结果/4种热力图方案：`reports/贡献评估与橙区机制实验_20261015.md`。新颖性核查：`audit/NOVELTY-TRANSFER-ATTENTION-20261015.md`。资源续接：`audit/EXTRA-FAMILY-RESUME-20261015.md`。
+- 最终验证：数值审计 **132,551** 检查/475源文件通过；历史audit通过；无重复label/bibkey，diff检查通过。投稿版正文 **7页/全文11页**，扩展 **36页**；两版均无undefined或overfull。已移位附录方法与相关结果以消除初次末页vbox，检查主图与末页，PDF/zip更新。本地任务完成后提交推送。无远端任务/下载/周期轮询。
+
+
+## 2026-10-15 层数横轴、单点展示、新颖性核查（完成）；新家族实验暂缓
+
+- 用户原始目标：Figure 2 横轴用实际层号；所有图表只留单点、移除 CI；增加色块和橙区冲突强调；reading blocked 改为准确含 attention 的措辞；调研橙区现象先例，并在启智扩 Llama/Gemma/DeepSeek。
+- 已修改主绘图脚本：实际层号、`Skill-attention knockout`、橙区 `Weak transfer; source still needed` 标注，移除主/附录绘图脚本误差条及置信带。已新增 `tools/point_estimates.py`，展示层移除 CI 列，原始统计数据保留。
+- 实时新发现：EMNLP 2025 `Internal Chain-of-Thought`（2025.emnlp-main.1147）同时做 layer-from context masking 和 cross-task patching；不能声称两种方法联用首次。已核查全文 §4.1/4.2、Eq 7、Table 2/5：其 transfer 强度取 best-layer，未见与 source dependence 配对的逐深度失效区间；需写成范围受限的新颖性判断。
+- 启智当前受阻：`notebook list --workspace all --all` 所有 Workspace unavailable；`account check` TLS 建连前断开；`curl -I https://qz.sii.edu.cn` SSL unexpected EOF；已有 CPU SSH banner 超时。没有启动新实验，没有下载权重，没有创建新资源。CLI 7.1.8，可更新到7.1.12，未擅自更新。
+- 用户已明确暂缓：先不用学校资源，明天再继续额外实验。已停止平台诊断；没有运行中远端任务或周期检查。继续本地文献、图表和编译。
+- 今天图表、文献、正文取舍与交付已完成，最终结果见上节。明天：按 `audit/EXTRA-FAMILY-RESUME-20261015.md` 恢复平台、先查缓存权重、baseline 与 identity/masking probe，再全层实验；累计 >1GiB 新下载须先报告并确认。
+
+
 ## 2026-10-15 skill 主线、跨模型深度验证与全篇图表改版（完成）
 
 - 原 Figure 2(a) 仅 Qwen3-8B / MedCalc；已复用六组完整逐层结果，新增共同 eligible item 分析，六组 T/R 不变，组 bootstrap 的边界差 95% CI 均 >0。共同 n 为 MedCalc 134/90/46、TheoremQA 63/125/65。

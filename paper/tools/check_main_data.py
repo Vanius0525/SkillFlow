@@ -81,7 +81,7 @@ def table_row(name, prefix):
 
 
 def prose(needle):
-    check('main text: '+needle, needle in main)
+    check('paper evidence text: '+needle, needle in main or needle in archived)
 
 
 # The main text is now sections/*.tex, inputs in the order main.tex uses.
@@ -102,7 +102,7 @@ for arm, values in battery['arms'].items():
     close(f'battery {arm}: accuracy',mean(rows,key),values['accuracy'])
     close(f'battery {arm}: paired recovery',rho(base,key),values['rho'])
     lo, hi = values['ci']
-    tail = f'& ${len(rows)}$ & ${values["accuracy"]:.3f}$ & $[{lo:.3f},\\,{hi:.3f}]$ & ${values["rho"]:+.2f}$'
+    tail = f'& ${len(rows)}$ & ${values["accuracy"]:.3f}$ & ${values["rho"]:+.2f}$'
     check(f'battery {arm}: TeX values',tail in table)
 check('same-family row not normalised by 135-item baseline', battery['arms']['dnear_L8']['n']==41 and round(battery['arms']['dnear_L8']['rho'],2)==.12)
 
@@ -131,8 +131,10 @@ for cell in replication:
     if cell['controls']:
         close(name+': includes largest control',max(v['rho'] for v in cell['controls'].values()),cell['ctrl'])
     line=table_row('tab-replication.tex',cell['task']+' & '+cell['model']+' &')
-    check(name+': table recovery',f'${cell["rho"]:.2f}$ $[{cell["lo"]:.2f},{cell["hi"]:.2f}]$' in line)
+    check(name+': table recovery',f'${cell["rho"]:.2f}$' in line)
     check(name+': table sample',f'${cell["n"]}/{cell["reading"][1]}$ (${cell["g"]}$)' in line)
+    nl={'Qwen3-8B':36,'Qwen3-0.6B':28,'Mistral-7B':32}[cell['model']]
+    check(name+': table boundary layers',f'& ${round(cell["handover"][1]*nl)}$ & ${round(cell["reading"][0]*nl)}$' in line)
     if cell['task']=='MedCalc':
         curve=rank[cell['model']]
         check(name+': figure/table rank sources',curve['tags']==cell['sources']['rank'])
@@ -173,6 +175,7 @@ for window,value in depth['windows'].items():
 
 # Independent common-ID reconstruction: do not import the new analyser's merge.
 paired=data('depth-crossmodel-values.json')
+joint_data={(c['task'],c['model']):c for c in data('joint-failure-values.json')}
 check('six cross-model depth combinations',len(paired)==6)
 for c in paired:
     tag=c['task']+'/'+c['model']; nl=c['n_layers']
@@ -193,6 +196,20 @@ for c in paired:
     common=[r for r in tr if r['instance_id'] in eligible]
     d=c['common'];check(tag+': exact common IDs',sorted(r['instance_id'] for r in common)==d['ids'])
     check(tag+': common sample',len(common)==d['n'])
+    jc=joint_data[(c['task'],c['model'])]
+    strict=[r for r in common if r['ok_gold_in_context'] and not r['ok_receiver']]
+    check(tag+': heatmap strict IDs',sorted(r['instance_id'] for r in strict)==jc['ids'])
+    check(tag+': heatmap rows not outcome-sorted',jc['groups']==sorted({r['calculator_id'] for r in strict}))
+    if c['task']=='TheoremQA' and c['model']=='Qwen3-0.6B':
+        a,b=c['transfer_boundary'],c['reading_boundary']
+        check('heatmap heterogeneity: 23/92 groups without middle joint failure',len(jc['groups'])==92 and sum(not any(row[a:b]) for row in jc['joint_failure'])==23)
+    for g,nn,values in zip(jc['groups'],jc['group_n'],jc['joint_failure']):
+        gr=[r for r in strict if r['calculator_id']==g]
+        check(tag+': heatmap group denominator',len(gr)==nn)
+        for layer,value in enumerate(values):
+            expected=sum(not r[f'ok_real_L{layer}'] and not eligible[r['instance_id']]['ko'][layer] for r in gr)/len(gr)
+            close(tag+f': heatmap {g} L{layer}',expected,value)
+
     for l in range(nl):
         close(tag+f': original transfer L{l}',rho(tr,f'ok_real_L{l}'),c['transfer'][l])
         close(tag+f': original reading L{l}',sum(r['ko'][l] for r in eligible.values())/len(eligible),c['retention'][l])
@@ -393,11 +410,19 @@ diagnostic_prose('retains $0.54$ of the skill')
 for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','Skill','Cyclic']),
                          ('fig-channels-medcalc.pdf',['0.81','0.03','0.06','Skill span']),
                          ('fig-rank-medcalc.pdf',['Mistral','72','135','362','256']),
-                         ('fig-transfer-reading.pdf',['Qwen3-8B','Qwen3-0.6B','Mistral-7B','MedCalc','TheoremQA','blocked','L13 / L25'])]:
+                         ('fig-transfer-reading.pdf',['Qwen3-8B','Qwen3-0.6B','Mistral-7B','MedCalc','TheoremQA','knockout','L13 / L25','Intervention layer','source still needed'])]:
     pdf=pymupdf.open(FIGURES/filename)
     text=' '.join(page.get_text() for page in pdf)
     for label in labels:check(filename+': rendered '+label,label in text)
 
+# Point-estimate presentation must not discard raw uncertainty analyses.
+for path in TABLES.glob('*.tex'):
+    tex=path.read_text()
+    check(path.name+': no displayed CI column',not re.search(r'\bCI\b|confidence interval',tex))
+    check(path.name+': no displayed numeric CI',not re.search(r'\$\[[+-]?\d+(?:\.\d+)?,(?:\\,)?\s*[+-]?\d+(?:\.\d+)?\]\$',tex))
+figtext=' '.join(p.get_text() for p in pymupdf.open(FIGURES/'fig-transfer-reading.pdf'))
+check('depth horizontal axis uses actual layers','Relative layer' not in figtext and 'Intervention layer' in figtext)
+check('depth legend identifies attention intervention','Skill-attention knockout' in figtext)
 # Guard the reporting fixes with the two actual problematic cases.
 import replication as rep
 try:
@@ -415,7 +440,7 @@ manifest={'checks_passed':len(checks),'source_sha256':sources,
                   *[TABLES/x for x in ['tab-answer-format.tex','tab-big40.tex',
                        'tab-skill-content.tex','tab-replication.tex']],
                   *[FIGURES/x for x in ['fig-channels-medcalc.pdf','fig-rank-medcalc.pdf',
-                       'fig-transfer-reading.pdf','fig-posbudget.pdf']]]},
+                       'fig-transfer-reading.pdf','fig-posbudget.pdf','fig-joint-failure.pdf']]]},
           'selection_policy':'latest complete local measurement family; no partial curves or incompatible baseline merges',
           'scope':'main displays and updated prose; historical diagnostics additionally checked by whitebox/analysis/audit.py'}
 (VALUES/'DATA-CONSISTENCY-20260918.json').write_text(json.dumps(manifest,indent=2)+'\n')

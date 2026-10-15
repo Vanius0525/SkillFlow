@@ -140,7 +140,7 @@ def fig_causal(summary, rows, out: pathlib.Path, tag: str, cell="R"):
         st = STYLE.get(c, dict(label=c))
         ax.plot(layers, m, **st)
         if c in ("add_d_a1", "add_g"):
-            ax.fill_between(layers, lo, hi, color=st["color"], alpha=0.13, lw=0)
+            None
     ax.axhline(0, color="k", lw=0.6)
     ax.set_xlabel("layer at which the vector is injected")
     ax.set_ylabel(f"fraction of cell {cell} answered correctly\n(n={len(keep)})")
@@ -515,7 +515,7 @@ def fig_channels(dose, ctrl, diffvec, out: pathlib.Path):
         y = list(range(len(names)))[::-1]
         cols = ["#0072B2"] + ["#a6cee3"] * (len(names) - 1)
         ax.barh(y, vals, color=cols, height=0.6, edgecolor="#31688e", lw=0.4)
-        ax.errorbar(vals, y, xerr=[los, his], fmt="none", ecolor="#333333",
+        ax.errorbar(vals, y, xerr=None, fmt="none", ecolor="#333333",
                     capsize=2, lw=0.9)
         for yi, (m, h) in zip(y, zip(vals, his)):
             if m == m:
@@ -662,8 +662,7 @@ def fig_depth_medcalc(span_paths, geom_paths, out: pathlib.Path):
     fig, ax = plt.subplots(figsize=(6.4, 3.4))
     xs = [p[0] for p in pts]
     ys = [p[1] for p in pts]
-    ax.fill_between(xs, [p[2] for p in pts], [p[3] for p in pts],
-                    color="#0072B2", alpha=0.15, lw=0)
+    None
     ax.plot(xs, ys, "o-", color="#0072B2", lw=2, ms=5,
             label="transplant of the document span")
     if "real_alllayers" in by:
@@ -790,7 +789,7 @@ def fig_rank(paths, out: pathlib.Path, ladder=None, family=None):
     by, n = load_spanvec(paths, restrict="needs_document")
     ks, ys, los, his, g = curve(by, (1, 2, 4, 8, 16, 32, 64, 128))
     fig, ax = plt.subplots(figsize=(5.8, 3.7))
-    ax.errorbar(ks, ys, yerr=[los, his], fmt="o-", color="#0072B2", lw=2,
+    ax.errorbar(ks, ys, yerr=None, fmt="o-", color="#0072B2", lw=2,
                 ms=5.5, capsize=3,
                 label=f"Qwen3-8B, layer 8 ($d\\!=\\!4096$)")
     lo_ks, lo_ys = [], []
@@ -806,7 +805,7 @@ def fig_rank(paths, out: pathlib.Path, ladder=None, family=None):
         by2, n2 = load_spanvec(ladder, restrict="needs_document")
         k2, y2, l2, h2, _ = curve(by2, (4, 16, 24, 32, 40, 48, 56, 64, 128))
         if k2:
-            ax.errorbar(k2, y2, yerr=[l2, h2], fmt="^-", color="#56B4E9",
+            ax.errorbar(k2, y2, yerr=None, fmt="^-", color="#56B4E9",
                         lw=1.6, ms=5, capsize=2, alpha=0.95,
                         label="Qwen3-0.6B, layer 6 ($d\\!=\\!1024$)")
             ax.annotate("width-proportional\nprediction for 0.6B", xy=(12, 0.5),
@@ -821,7 +820,7 @@ def fig_rank(paths, out: pathlib.Path, ladder=None, family=None):
         by3, _ = load_spanvec(family, restrict="needs_document")
         k3, y3, l3, h3, _ = curve(by3, (4, 16, 32, 64, 128))
         if k3:
-            ax.errorbar(k3, y3, yerr=[l3, h3], fmt="D-", color="#CC79A7",
+            ax.errorbar(k3, y3, yerr=None, fmt="D-", color="#CC79A7",
                         lw=1.6, ms=4.5, capsize=2, alpha=0.95,
                         label="Mistral-7B, layer 4 ($d\\!=\\!4096$)")
     ax.axhline(1.0, color="#009E73", ls="--", lw=1.1, zorder=0)

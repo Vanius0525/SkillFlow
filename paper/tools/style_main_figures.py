@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render publication figures from audited values, without recomputing results.
 
-Run after the numeric generators. Every point and interval comes directly from
+Run after the numeric generators. Every displayed point comes directly from
 values/*.json; the input hashes are recorded to make a style-only rerender
 reviewable. This script never writes the numerical records.
 """
@@ -34,6 +34,7 @@ def frame(ax, title=None):
     ax.spines[['top', 'right']].set_visible(False)
     ax.set_axisbelow(True)
     ax.grid(axis='y')
+    ax.set_facecolor('#F7F9FC')
     ax.tick_params(length=3, width=.6)
     if title:
         ax.set_title(title, loc='left', fontweight='bold', pad=8)
@@ -60,12 +61,12 @@ def channels():
         vals=[d[key][k]['acc'] for k,_ in rows]
         colors=[BLUE if key=='bottom' and k=='real' else '#94A7B8' for k,_ in rows]
         ax.barh(yy,[v[0] for v in vals],height=.55,color=colors,zorder=2)
-        ax.errorbar([v[0] for v in vals],yy,xerr=err(vals),fmt='none',
+        ax.errorbar([v[0] for v in vals],yy,xerr=None,fmt='none',
                     ecolor='#34495A',capsize=2,lw=.85,zorder=3)
         # Labels sit in each row above the mark, freeing the left margin.
         for y,v,(_,label) in zip(yy,vals,rows):
             ax.text(.02,y+.37,label,va='bottom',fontsize=7.5)
-            ax.text(v[2]+.025,y,f'{v[0]:.2f}',va='center',fontsize=7.5)
+            ax.text(v[0]+.025,y,f'{v[0]:.2f}',va='center',fontsize=7.5)
         ax.axvline(d['gold'][0],ls='--',color=TEAL,lw=1)
         ax.set(yticks=[],xlim=(0,1.08),ylim=(-.5,5.05),xlabel='Answer accuracy')
         ax.set_xticks([0,.25,.5,.75,1],['0','.25','.50','.75','1.0'])
@@ -77,27 +78,32 @@ def channels():
 
 def depth():
     cells=data('depth-crossmodel-values.json')
-    fig,axes=plt.subplots(2,3,figsize=(7.1,3.85),sharex=True,sharey=True,layout='constrained')
+    fig,axes=plt.subplots(2,3,figsize=(7.1,3.85),sharex=False,sharey=True,layout='constrained')
     for row,task in enumerate(['MedCalc','TheoremQA']):
         for col,model in enumerate(['Qwen3-8B','Qwen3-0.6B','Mistral-7B']):
             c=next(c for c in cells if c['task']==task and c['model']==model)
-            ax=axes[row,col]; nl=c['n_layers']; x=np.arange(nl)/nl
+            ax=axes[row,col]; nl=c['n_layers']; x=np.arange(nl)
             tb,rb=c['transfer_boundary'],c['reading_boundary']
-            ax.axvspan(0,(tb-.5)/nl,color=BLUE,alpha=.045,lw=0)
-            ax.axvspan((tb-.5)/nl,(rb-.5)/nl,color=ORANGE,alpha=.14,lw=0)
-            ax.axvspan((rb-.5)/nl,1,color=TEAL,alpha=.045,lw=0)
+            ax.axvspan(0,tb-.5,color=BLUE,alpha=.045,lw=0)
+            ax.axvspan(tb-.5,rb-.5,color=ORANGE,alpha=.14,lw=0)
+            ax.axvspan(rb-.5,nl-1,color=TEAL,alpha=.045,lw=0)
             ax.plot(x,c['transfer'],color=BLUE,lw=1.35,marker='o',ms=1.8,label=r'Skill transfer $\rho$')
-            ax.plot(x,c['retention'],color=ORANGE,lw=1.35,marker='s',ms=1.8,label=r'Reading blocked $q$')
+            ax.plot(x,c['retention'],color=ORANGE,lw=1.35,marker='s',ms=1.8,label=r'Skill-attention knockout $q$')
             # Thin dotted curves validate the ordering on identical item IDs.
             ax.plot(x,c['common']['transfer'],color=BLUE,lw=.85,ls=':',alpha=.9)
             ax.plot(x,c['common']['retention'],color=ORANGE,lw=.85,ls=':',alpha=.9)
-            for l in [tb,rb]:ax.axvline((l-.5)/nl,color='#9A846C',lw=.65,ls=':')
+            for l in [tb,rb]:ax.axvline(l-.5,color='#9A846C',lw=.65,ls=':')
             ax.axhline(.5,color=GRAY,ls=':',lw=.7)
             ax.text(.96,.91,f'L{tb} / L{rb}',transform=ax.transAxes,ha='right',fontsize=7,color='#765330')
-            ax.set(xlim=(0,1),ylim=(-.04,1.1),xticks=[0,.25,.5,.75,1],yticks=[0,.5,1])
+            ax.scatter([tb],[c['transfer'][tb]],s=18,facecolors='white',edgecolors=ORANGE,linewidths=.9,zorder=4)
+            ax.annotate('Weak transfer;\nsource still needed', xy=(tb,c['transfer'][tb]), xytext=((tb+rb)/2,.70),
+                        ha='center',fontsize=6.2,fontweight='bold',color='#8A4A1D',
+                        arrowprops=dict(arrowstyle='->',color='#8A4A1D',lw=.7),
+                        bbox=dict(boxstyle='round,pad=.25',fc='#FFF4E6',ec='none',alpha=.9))
+            ax.set(xlim=(0,nl-1),ylim=(-.04,1.1),xticks=sorted(set([0,8,16,24,nl-1])),yticks=[0,.5,1])
             frame(ax,model if row==0 else None)
             if col==0:ax.set_ylabel(task+'\nRecovery / retained')
-            if row==1:ax.set_xlabel('Relative layer depth L / N')
+            if row==1:ax.set_xlabel('Intervention layer L')
     handles,labels=axes[0,0].get_legend_handles_labels()
     handles.append(plt.Line2D([],[],color=GRAY,lw=1,ls=':'));labels.append('Common-item check')
     fig.legend(handles,labels,loc='outside upper center',ncol=3,fontsize=7)
@@ -110,7 +116,7 @@ def rank():
         for key,ls in [('top','-'),('bottom','--')]:
             pts=sorted((int(k),v) for k,v in c[key].items())
             x=[k for k,v in pts];values=[v for k,v in pts]
-            ax.errorbar(x,[v[0] for v in values],yerr=err(values) if key=='top' else None,
+            ax.errorbar(x,[v[0] for v in values],yerr=None,
                         color=color,marker=marker if key=='top' else 's',ms=3,lw=1.4,
                         ls=ls,mfc=color if key=='top' else 'white',capsize=1.5,elinewidth=.7)
         ax.axhline(c['full'],color=color,alpha=.6,lw=.85,ls=':')
@@ -134,7 +140,7 @@ def position():
     a,b,c,e=axes.flat
     def series(ax,pts,color,marker,label,ls='-'):
         x=[x for x,v in pts];vs=[(v['rho'],*v['ci_cluster']) for x,v in pts]
-        ax.errorbar(x,[v[0] for v in vs],yerr=err(vs),color=color,marker=marker,
+        ax.errorbar(x,[v[0] for v in vs],yerr=None,color=color,marker=marker,
                     ms=3,lw=1.2,capsize=1.5,elinewidth=.6,label=label,ls=ls)
     for key,label,color,marker in [('ev','Evenly spaced',BLUE,'o'),('rn','Random',TEAL,'s'),
                                  ('td','Largest change',PURPLE,'D'),('mx','Misplaced',ORANGE,'v'),
@@ -153,9 +159,9 @@ def position():
     for off,budget,color,label in [(-.18,'256',BLUE,'256 positions'),(.18,'half',PURPLE,'Half span')]:
         vs=[A[k+budget] for k,_ in names];xx=np.arange(4)+off
         c.bar(xx,[v['rho'] for v in vs],width=.31,color=color,alpha=.88,label=label)
-        c.errorbar(xx,[v['rho'] for v in vs],yerr=err([(v['rho'],*v['ci_cluster']) for v in vs]),
+        c.errorbar(xx,[v['rho'] for v in vs],yerr=None,
                    fmt='none',ecolor='#34495A',capsize=2,lw=.7)
-        for x,v in zip(xx,vs):c.text(x,v['ci_cluster'][1]+.015,f'{v["rho"]:.2f}',ha='center',fontsize=6.5)
+        for x,v in zip(xx,vs):c.text(x,v['rho']+.025,f'{v["rho"]:.2f}',ha='center',fontsize=6.5)
     c.set_xticks(range(4),[n for _,n in names]);c.set_xlabel('Section at the centre of one block')
     c.legend(loc='upper right',fontsize=7)
     pts=[(.5,A['evfull'])]+[(n,A[f'sh{n}']) for n in [1,4,16,64,256]]+[(median/2,A['mxfull'])]
@@ -180,15 +186,15 @@ def position_main():
     for off,budget,color,label in [(-.18,'256',BLUE,'256 positions'),(.18,'half',TEAL,'Half span')]:
         vs=[A[k+budget] for k,_ in names];xx=np.arange(4)+off
         a.bar(xx,[v['rho'] for v in vs],width=.31,color=color,label=label,zorder=2)
-        a.errorbar(xx,[v['rho'] for v in vs],yerr=err([(v['rho'],*v['ci_cluster']) for v in vs]),
+        a.errorbar(xx,[v['rho'] for v in vs],yerr=None,
                    fmt='none',ecolor='#34495A',capsize=2,lw=.7)
-        for x,v in zip(xx,vs):a.text(x,v['ci_cluster'][1]+.02,f'{v["rho"]:.2f}',ha='center',fontsize=6.8)
+        for x,v in zip(xx,vs):a.text(x,v['rho']+.025,f'{v["rho"]:.2f}',ha='center',fontsize=6.8)
     a.set_xticks(range(4),[n for _,n in names]);a.set_xlabel('Section at the centre of one block')
     a.legend(loc='upper right',fontsize=7)
     for key,color,marker,label in [('sh',ORANGE,'o','Cyclic shift'),('sn',PURPLE,'s','Later, no wrap'),('sb',BLUE,'D','Earlier, no wrap')]:
         grid=[1,4,16,64,256] if key=='sh' else [1,4,16]
         vs=[A[f'{key}{n}'] for n in grid]
-        b.errorbar(grid,[v['rho'] for v in vs],yerr=err([(v['rho'],*v['ci_cluster']) for v in vs]),
+        b.errorbar(grid,[v['rho'] for v in vs],yerr=None,
                    color=color,marker=marker,ms=3,lw=1.2,capsize=2,label=label)
     b.set_xscale('log',base=2);b.set_xticks([1,4,16,64,256],['1','4','16','64','256'])
     b.set_xlabel('Position displacement D');b.legend(loc='upper right',fontsize=7)
@@ -206,4 +212,4 @@ if __name__=='__main__':
     (AUDIT/'FIGURE-STYLE-20261015.json').write_text(json.dumps({'input_sha256':before,
         'numeric_records_unchanged':True,'figures': ['fig-channels-medcalc','fig-transfer-reading',
         'fig-rank-medcalc','fig-posbudget','fig-posbudget-full']},indent=2)+'\n')
-    print('Rendered four main figures and the detailed position supplement; numerical records unchanged.')
+    print('Rendered point-estimate figures and supplements; numerical records unchanged.')
