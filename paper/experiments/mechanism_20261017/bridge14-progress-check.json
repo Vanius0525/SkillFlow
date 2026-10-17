@@ -1,0 +1,19 @@
+{
+  "bridge_items": 14,
+  "bridge_records": 210,
+  "identity_exact": 84,
+  "repair_expected_per_shard": 589,
+  "repair_records": {
+    "0": 18,
+    "1": 128,
+    "2": 100,
+    "3": 130
+  },
+  "repair_mean_seconds": {
+    "0": 8.101558360788557,
+    "1": 16.52192496554926,
+    "2": 20.528686145544054,
+    "3": 16.782674909841557
+  },
+  "status": "all four shards running repair; no completion markers yet"
+}

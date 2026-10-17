@@ -1,4 +1,12 @@
-# SkillVector — LaTeX project (WWW 2027 research track)
+# Still Needed, Hard to Transfer — LaTeX project (WWW 2027 research track)
+
+Current title: **Still Needed, Hard to Transfer: Using and Reusing Contextual Skills**.
+
+Result-integrated version (2026-10-17): all mechanism panels contain measured
+results. On 114 common eligible Qwen3-8B/MedCalc items, layer-16 accuracy is
+3.5% with residual-only transfer, 42.1% with residual-plus-source-cache repair,
+and 7.0% after subsequent reader recutting. Existing cross-model/task evidence
+is retained. See [the final Chinese reading guide](reports/最终版本阅读说明_20261017.md).
 
 `main.tex` is the whole document. Everything else is either a piece of it or a
 generator that writes one of those pieces.
@@ -36,7 +44,7 @@ emails you the real one), the CCS concepts (regenerate at
 
 ```latex
 \extendedappendixfalse   % WWW submission, 12 pages  — appendices A and B  (the default)
-\extendedappendixtrue    % technical report, 34 pages — appendices A–H
+\extendedappendixtrue    % technical report, 38 pages — appendices A–H
 ```
 
 Nothing is deleted by the switch; the extended files simply are not `\input`.
@@ -44,7 +52,7 @@ The default is the submission, so a fresh Overleaf upload compiles the version
 that has to fit the page limit. Flip the line in Overleaf to read the full one.
 
 ```
-./build.sh              # technical report -> skillvector.pdf          (34 pages)
+./build.sh              # technical report -> skillvector.pdf          (38 pages)
 ./build.sh submission   # WWW submission   -> skillvector-www2027.pdf  (12 pages)
 ```
 
@@ -90,7 +98,7 @@ historical results. Both must pass before a build is trusted.
 
 ## Story and display revision (2026-10-14)
 
-The current title is *When Skill Transfer Fails but Reading Continues*.
+The title at that revision was *When Skill Transfer Fails but Reading Continues*.
 The introduction follows problem → apparent paradox → complementary interventions
 → discovery → validation and three contributions. The main depth comparison
 now follows the effective early-transfer probe. See
@@ -133,6 +141,27 @@ presentation pass. `tools/fig_joint_failure.py` recomputes the same-item
 heatmap from raw completed runs; no interpolation or model inference is used.
 
 The current knockout masks skill keys for all query rows, including the skill
-queries. Reader-only versus source-internal attention controls remain open.
-New GPU experiments are deferred at the user's request. See
+queries. Reader-only versus source-internal attention controls were subsequently completed
+in the 2026-10-17 experiments; the paragraph above records the older revision. See
 [audit/EXTRA-FAMILY-RESUME-20261015.md](audit/EXTRA-FAMILY-RESUME-20261015.md).
+
+
+## Reproducing the final mechanism figures
+
+The full-token formal records remain in the remote archive under
+`/inspire/ssd/project/project-public/czxs253130660/mechanism-20261017-v1/`.
+Retrieve the small completed-artifact archive once, verify the SHA256 in
+`experiments/mechanism_20261017/retrieval-audit.json`, and extract to that
+local experiment directory. Formal raw shards are ignored by Git; manifests,
+hashes, counts and uncertainty summaries are tracked. Then run:
+
+```bash
+MPLCONFIGDIR=/tmp/paper-mpl python3 experiments/mechanism_20261017/analyze.py experiments/mechanism_20261017/parallel/repair-s4-{0,1,2,3}.jsonl --ids experiments/mechanism_20261017/ids-repair124.json --out-prefix figures/fig-mechanism-repair
+MPLCONFIGDIR=/tmp/paper-mpl python3 experiments/mechanism_20261017/analyze_edges.py experiments/mechanism_20261017/parallel/edges-s4-{0,1,2,3}.jsonl --ids experiments/mechanism_20261017/ids-repair124.json --out-prefix figures/fig-mechanism-edges
+MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_mechanism_results.py
+python3 tools/audit_mechanism.py
+python3 tools/check_main_data.py
+```
+
+The final experiment order is setup → validated reusable-content probe →
+depth separation and robustness → source-history and reading-path mechanisms.

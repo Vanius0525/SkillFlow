@@ -1,0 +1,14 @@
+{
+  "records": 40,
+  "items": 2,
+  "identity_exact": 4,
+  "raw_sha256": "88cd8439e5b15868387b2d910fff1cc6413416e7b407d43da61686d4291e58fe",
+  "truncated": [
+    {
+      "instance_id": "medcalcbench_00266",
+      "arm": "SC",
+      "layer": 16,
+      "n_generated": 900
+    }
+  ]
+}

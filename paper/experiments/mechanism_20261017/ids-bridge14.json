@@ -1,0 +1,19 @@
+{
+  "ids": [
+    "medcalcbench_00987",
+    "medcalcbench_00266",
+    "medcalcbench_00341",
+    "medcalcbench_01000",
+    "medcalcbench_00880",
+    "medcalcbench_00461",
+    "medcalcbench_00482",
+    "medcalcbench_00961",
+    "medcalcbench_00945",
+    "medcalcbench_01040",
+    "medcalcbench_00741",
+    "medcalcbench_00800",
+    "medcalcbench_00860",
+    "medcalcbench_00113"
+  ],
+  "selection": "First historical eligible ID per group in the fixed interleaved 124-ID list; selected before new inference"
+}

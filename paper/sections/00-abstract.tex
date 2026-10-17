@@ -1,22 +1,24 @@
 \begin{abstract}
-Language models can use skills supplied in context, including formulas, rules
-and step-by-step instructions, to solve tasks. Understanding how they use
-these skills matters for deciding when injected information contributes to
-computation and when its source must remain accessible. However, the relation
-between skill-state transferability and continued dependence on the skill
-source remains unclear: when transplanted states can no longer change a
-model's behaviour, has the model stopped needing the skill? We compare two
-interventions along model depth. We transplant correct-skill span states into
-a wrong-skill run and measure recovered task performance. Separately, we
-block subsequent attention to the skill from a specified layer in the
-correct-skill run and measure the performance loss. Across three models from
-two families on screened subsets of MedCalc and TheoremQA, transfer weakens
-before source dependence subsides. The ordering persists when both
-interventions are evaluated on common eligible items. In this intermediate
-interval, skill states have little corrective effect in the receiver, yet
-removing access to the source still harms the original computation. Content,
-position and repeated-replacement controls help delimit this finding.
-Failed skill transfer alone is therefore insufficient evidence that a model
-has finished using its contextual skills, motivating separate evaluation of
-transferability and source dependence when reusing skill representations.
+When a language model follows a newly supplied skill, has it acquired an
+internal ability that can be extracted and reused, or does that ability
+remain tied to the original source and computation? We investigate this
+question through two interventions along model depth. We transplant
+correct-skill span states into a wrong-skill execution and measure recovered
+performance; separately, we block subsequent attention to the skill in the
+original execution and measure retained performance. Across three models
+from two families on MedCalc and TheoremQA, skill-state transfer weakens
+before source dependence subsides. The ordering persists on common eligible
+items. In this intermediate interval, the source remains important even
+though its states have little corrective effect in the receiver. Content,
+position and cross-question controls establish that early transfer carries
+structured skill information, while repeated late replacement does not
+restore its effect. Focused experiments on Qwen3-8B/MedCalc show that
+repairing source states together with their attention caches raises layer-$16$
+accuracy from $3.5\%$ to $42.1\%$, yet blocking subsequent source reading
+reduces it to $7.0\%$. Late transfer therefore depends on computational
+history, and recovering transfer need not remove source dependence.
+These findings separate using a contextual skill from
+reusing its internal states: successful application does not imply an
+independently reusable internal skill, and failed state transfer does not
+mean that the model has finished using the source.
 \end{abstract}

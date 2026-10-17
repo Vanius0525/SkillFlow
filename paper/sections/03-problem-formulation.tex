@@ -26,6 +26,11 @@ Matching lengths preserves positions and their encodings. Span interventions
 change many more states than final-position interventions, which limits direct
 comparisons. Here the final position is the prompt's end, after the query. State patches
 are applied during prefill, after which decoding proceeds without further patches.
+The intervention replaces a block's output, not the complete execution state.
+Key/value caches already computed at that block and earlier blocks retain
+their receiver values. Later generated tokens can still attend to these
+caches, so failed residual-state transfer does not by itself establish
+failure of a cache-complete source transplant.
 
 \paragraph{Behavioural recovery and evaluation subsets.}
 We score generated answers and measure the fraction of the donor's accuracy
@@ -47,7 +52,7 @@ wrong-skill receiver solves none of the sampled items. We apply this screen
 separately within each run, model and task, without using intervention outcomes.
 The estimates are conditional on baseline failure in the sampled group, rather than recovery over the full benchmark.
 
-\paragraph{Measuring continued reading.}
+\paragraph{Measuring source-attention dependence.}
 Cumulative attention knockout masks the skill positions as attention keys at every
 layer from $L$ onward, during both prefill and decoding. On the knockout run's rescued items within the screened groups, let $q(L)$ be the fraction still solved after this
 intervention. A low $q(L)$ means that removing subsequent access is damaging.
@@ -57,7 +62,7 @@ source-state updates, rather than isolating a reader-to-source pathway.
 The transfer boundary is the first layer with $\rho(L)<0.5$ after early
 successful transfer. The reading boundary is the first with $q(L)\ge0.5$.
 The two boundaries define three operational depth intervals: early transfer,
-weak transfer with continued reading dependence, and later tolerance to
+weak transfer with source-attention dependence, and later tolerance to
 blocking access. The middle interval has $\rho<0.5$ and $q<0.5$; later
 recrossings are reported rather than forced into a monotone stage model.
 We also repeat both curves on the intersection of transfer items and the

@@ -516,3 +516,33 @@ $50$ [$39,67$]. Mistral gives $k^{*}=72$ [$46,94$] on MedCalc
 and $64$ [$50,79$] on TheoremQA, with intervals overlapping Qwen3-8B's.
 A family difference is therefore not established. The extended version
 retains the width-proportional prediction and additional rank diagnostics.
+
+
+\subsection{Same-item overlap across skills}
+\paragraph{Joint failure occurs on the same items.}
+Separate averages can conceal different subsets of affected items. We therefore
+retain only items solved by both correct-skill baselines, failed by the
+transfer receiver and rescued in the knockout protocol. Figure~\ref{fig:jointfailure}
+shows, within each skill group, the fraction for which span transfer fails
+\emph{and} cumulative skill-attention knockout also fails at the same layer.
+Rows are ordered by skill ID without using intervention outcomes. The
+heatmap exposes the item-level overlap behind the depth-gap comparison,
+rather than treating two low averages as evidence about identical items.
+The pattern is heterogeneous: on Qwen3-0.6B/TheoremQA, $23$ of $92$ eligible
+skill groups have no joint failure within the aggregate interval $L=11$--$19$.
+The three intervals therefore summarise aggregate interventions rather than
+universal per-skill stages.
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{fig-joint-failure.pdf}
+\caption{Same-item overlap behind weak transfer and source dependence.
+Each row is a skill group and each column an actual layer. Colour gives the
+within-group fraction of items with both an incorrect transferred answer and
+an incorrect answer after cumulative skill-attention knockout. All included
+items have correct donor baselines in both protocols and incorrect receiver
+baselines; knockout additionally requires failure without the skill.
+Samples are $124,84,43$ on MedCalc and $61,123,64$ on TheoremQA, in column
+order. Darker orange indicates greater overlap. All cells are point estimates.}
+\label{fig:jointfailure}
+\end{figure*}

@@ -1,0 +1,10 @@
+{
+  "name": "wt-mechanism-probe2-1016",
+  "root": "/inspire/ssd/project/project-public/czxs253130660/mechanism-20261016-v2",
+  "payload_bytes": 32200,
+  "data_hashes": {
+    "medcalcbench.json": "814f6b082f56cf89dd9c50be7ab87b5bcb0e41633138951e42b38d6923c3244e",
+    "medcalc_skills.json": "36bceb908e8e2a4bbdc21445f18135f33c8b49d2ddd5bb4a99d1877a7980f14b",
+    "neutral_pairs.json": "5defeb7d353b7a71d67cf3fcffd41a1c1759103a5e21c6c6630b93ab3a43a968"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "time": "2026-10-17T01:38:53.499175+08:00",
+  "raw_sha256": "2d78b1c1a7c826371bb786a91b986a4de8f15898620b88eab0969ac06001aecc",
+  "bridge_records": 210,
+  "bridge_items": 14,
+  "identity_exact": 84,
+  "checks_passed": 132720,
+  "source_files": 477,
+  "submission_main_pages": 7,
+  "submission_total_pages": 11,
+  "extended_total_pages": 38,
+  "submission_build": "B0G7IGRp",
+  "extended_build": "qEsGPG1l",
+  "formal_repair_complete": false
+}

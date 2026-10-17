@@ -1,0 +1,21 @@
+{
+  "export": "/mnt/c/Users/12970/Desktop/StillNeeded-Overleaf-20261017-Final-v2",
+  "time": "2026-10-17T14:19:34.799524+08:00",
+  "title": "Still Needed, Hard to Transfer: Using and Reusing Contextual Skills",
+  "zip_sha256": "e9e37aa1f80ce9e725402b6cdba27669258342a323c13941e9cb3728cdeb6826",
+  "zip_entries": 51,
+  "main_pages": 7,
+  "total_pages": 12,
+  "overfull_hbox": 0,
+  "overfull_vbox": 1,
+  "compile_stage": "/mnt/c/Users/12970/Desktop/WWW2027/build-overleaf.lf02rbv0",
+  "scope": "Qwen3-8B + MedCalc for all new mechanism experiments",
+  "mechanism_results_pending": false,
+  "mechanism_figure_pages": [
+    6
+  ],
+  "extended_pages": 38,
+  "extended_sha256": "6a635ac818a01e3ee2eb6e9bea4d775c32ae382211693087946817702dbf12c8",
+  "project_all_entries_byte_exact": true,
+  "workspace_preview_text_exact": true
+}

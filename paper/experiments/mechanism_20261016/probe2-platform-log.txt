@@ -1,0 +1,52 @@
+Job Logs
+2026-10-16T03:20:29.598Z <redacted>-worker-0 watch file /etc/exit_code/<redacted>-worker-0
+2026-10-16T03:20:29.751Z <redacted>-worker-0 START_PROBE /inspire/ssd/project/project-public/czxs253130660/mechanism-20261016-v2
+2026-10-16T03:20:38.897Z <redacted>-worker-0 `torch_dtype` is deprecated! Use `dtype` instead!
+2026-10-16T03:20:58.528Z <redacted>-worker-0 Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:04<00:18,  4.69s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:09<00:13,  4.63s/it]Loading checkpoint shards:  60%|██████    | 3/5 [00:13<00:09,  4.61s/it]Loading checkpoint shards:  80%|████████  | 4/5 [00:17<00:04,  4.23s/it]Loading checkpoint shards: 100%|██████████| 5/5 [00:18<00:00,  3.21s/it]Loading checkpoint shards: 100%|██████████| 5/5 [00:18<00:00,  3.78s/it]
+2026-10-16T03:21:03.932Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "donor", "layer": -1, "correct": true, "seconds": 5.341446485836059, "truncated": false}
+2026-10-16T03:21:10.193Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "receiver", "layer": -1, "correct": false, "seconds": 6.261012887116522, "truncated": false}
+2026-10-16T03:21:14.950Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "donor_full", "layer": -1, "correct": true, "seconds": 4.756187864113599, "truncated": false}
+2026-10-16T03:21:21.501Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "receiver_full", "layer": -1, "correct": false, "seconds": 6.551028708927333, "truncated": false}
+2026-10-16T03:21:21.501Z <redacted>-worker-0 {"check": "split_vs_full", "instance_id": "medcalcbench_00987", "donor_tokens_equal": true, "receiver_tokens_equal": false}
+2026-10-16T03:21:27.960Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "identity_SC", "layer": 8, "correct": false, "seconds": 6.245745041873306, "truncated": false}
+2026-10-16T03:21:32.853Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "S", "layer": 8, "correct": false, "seconds": 4.8918443620204926, "truncated": false}
+2026-10-16T03:21:38.640Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "C", "layer": 8, "correct": false, "seconds": 5.787574355024844, "truncated": false}
+2026-10-16T03:21:44.268Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "SC", "layer": 8, "correct": false, "seconds": 5.6274968148209155, "truncated": false}
+2026-10-16T03:21:53.000Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "SC_recut", "layer": 8, "correct": false, "seconds": 8.731552556622773, "truncated": false}
+2026-10-16T03:21:59.259Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "identity_SC", "layer": 16, "correct": false, "seconds": 6.258333192206919, "truncated": false}
+2026-10-16T03:22:04.824Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "S", "layer": 16, "correct": false, "seconds": 5.565537223126739, "truncated": false}
+2026-10-16T03:22:09.292Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "C", "layer": 16, "correct": false, "seconds": 4.4678167658858, "truncated": false}
+2026-10-16T03:22:15.026Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "SC", "layer": 16, "correct": false, "seconds": 5.733805009163916, "truncated": false}
+2026-10-16T03:22:22.152Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "SC_recut", "layer": 16, "correct": false, "seconds": 7.12501967092976, "truncated": false}
+2026-10-16T03:22:29.573Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "cut_reader_both", "layer": 8, "correct": false, "seconds": 7.421025786083192, "truncated": false}
+2026-10-16T03:22:33.382Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "cut_self_both", "layer": 8, "correct": false, "seconds": 3.80935650318861, "truncated": false}
+2026-10-16T03:22:40.866Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "cut_both_both", "layer": 8, "correct": false, "seconds": 7.483584024012089, "truncated": false}
+2026-10-16T03:22:48.962Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "cut_reader_both", "layer": 16, "correct": false, "seconds": 8.094987354241312, "truncated": false}
+2026-10-16T03:22:54.328Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "cut_self_both", "layer": 16, "correct": false, "seconds": 5.366056804079562, "truncated": false}
+2026-10-16T03:23:02.422Z <redacted>-worker-0 {"instance_id": "medcalcbench_00987", "arm": "cut_both_both", "layer": 16, "correct": false, "seconds": 8.093703710008413, "truncated": false}
+2026-10-16T03:23:02.422Z <redacted>-worker-0 ITEM_DONE 1/2 medcalcbench_00987
+2026-10-16T03:23:11.884Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "donor", "layer": -1, "correct": true, "seconds": 9.447485679760575, "truncated": false}
+2026-10-16T03:23:22.099Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "receiver", "layer": -1, "correct": false, "seconds": 10.214551338925958, "truncated": false}
+2026-10-16T03:23:31.523Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "donor_full", "layer": -1, "correct": true, "seconds": 9.424016753211617, "truncated": false}
+2026-10-16T03:23:43.009Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "receiver_full", "layer": -1, "correct": false, "seconds": 11.486092779319733, "truncated": false}
+2026-10-16T03:23:43.009Z <redacted>-worker-0 {"check": "split_vs_full", "instance_id": "medcalcbench_00266", "donor_tokens_equal": false, "receiver_tokens_equal": false}
+2026-10-16T03:23:53.694Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "identity_SC", "layer": 8, "correct": false, "seconds": 10.329297906719148, "truncated": false}
+2026-10-16T03:24:04.334Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "S", "layer": 8, "correct": false, "seconds": 10.63974814163521, "truncated": false}
+2026-10-16T03:24:16.862Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "C", "layer": 8, "correct": false, "seconds": 12.528081885073334, "truncated": false}
+2026-10-16T03:24:26.926Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "SC", "layer": 8, "correct": true, "seconds": 10.063728555105627, "truncated": false}
+2026-10-16T03:24:40.865Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "SC_recut", "layer": 8, "correct": false, "seconds": 13.938037720043212, "truncated": false}
+2026-10-16T03:24:51.084Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "identity_SC", "layer": 16, "correct": false, "seconds": 10.218916005920619, "truncated": false}
+2026-10-16T03:25:01.827Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "S", "layer": 16, "correct": false, "seconds": 10.743077919818461, "truncated": false}
+2026-10-16T03:25:05.258Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "C", "layer": 16, "correct": false, "seconds": 3.430125406011939, "truncated": false}
+2026-10-16T03:25:30.199Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "SC", "layer": 16, "correct": false, "seconds": 24.940339219290763, "truncated": true}
+2026-10-16T03:25:41.732Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "SC_recut", "layer": 16, "correct": false, "seconds": 11.533040347043425, "truncated": false}
+2026-10-16T03:25:55.823Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "cut_reader_both", "layer": 8, "correct": false, "seconds": 14.090972370002419, "truncated": false}
+2026-10-16T03:26:03.714Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "cut_self_both", "layer": 8, "correct": false, "seconds": 7.890277422964573, "truncated": false}
+2026-10-16T03:26:17.882Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "cut_both_both", "layer": 8, "correct": false, "seconds": 14.16826535994187, "truncated": false}
+2026-10-16T03:26:33.981Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "cut_reader_both", "layer": 16, "correct": false, "seconds": 16.098535106983036, "truncated": false}
+2026-10-16T03:26:43.572Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "cut_self_both", "layer": 16, "correct": true, "seconds": 9.590664631221443, "truncated": false}
+2026-10-16T03:26:59.679Z <redacted>-worker-0 {"instance_id": "medcalcbench_00266", "arm": "cut_both_both", "layer": 16, "correct": false, "seconds": 16.107036656234413, "truncated": false}
+2026-10-16T03:26:59.679Z <redacted>-worker-0 ITEM_DONE 2/2 medcalcbench_00266
+2026-10-16T03:27:00.645Z <redacted>-worker-0 exit code 0
+2026-10-16T03:27:00.645Z <redacted>-worker-0 success
+2026-10-16T03:27:00.645Z <redacted>-worker-0 processExitCode: 0

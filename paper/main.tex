@@ -105,7 +105,7 @@
 
 \begin{document}
 
-\title{When Skill Transfer Fails but Reading Continues}
+\title{Still Needed, Hard to Transfer: Using and Reusing Contextual Skills}
 
 \author{Anonymous Author(s)}
 \affiliation{%
@@ -136,7 +136,23 @@
 \ccsdesc[300]{Computing methodologies~Knowledge representation and reasoning}
 
 \keywords{large language models, skill documents, in-context learning,
-activation patching, representation rank, mechanistic interpretability}
+activation patching, context reuse, mechanistic interpretability}
+
+\begin{teaserfigure}
+\centering
+\includegraphics[width=\textwidth]{fig-teaser.pdf}
+\caption{From successful skill use to internal skill reuse. We transplant
+correct-skill states into a wrong-skill execution and, separately, block
+subsequent skill attention in the original execution. The right panel shows
+measured curves on the same $134$ Qwen3-8B/MedCalc items: transfer recovery
+falls before source dependence, leaving an interval in which the skill
+states transfer poorly while the source still matters. Source dependence is
+$1-q(L)$, the fraction no longer solved after attention knockout.}
+\Description{Three panels show a model using a new rule, state transfer and
+source-attention knockout interventions, and measured depth curves with a
+highlighted gap between layers 13 and 25.}
+\label{fig:teaser}
+\end{teaserfigure}
 
 \maketitle
 
@@ -160,6 +176,7 @@ are responsible for the final text, scientific claims and experimental artifacts
 %% ================================================================= appendix
 \appendix
 %% Kept in both builds: what a reader needs to reproduce or scope the result.
+\input{tables/tab-fullscale-float}
 \input{appendix/a-setup}
 \input{appendix/b-full-dataset-rerun}
 %% The technical report only. A WWW submission has 12 pages in total and the

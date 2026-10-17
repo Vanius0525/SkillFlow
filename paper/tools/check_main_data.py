@@ -88,6 +88,49 @@ def prose(needle):
 main = main_text()
 archived = re.sub(r"\s+", " ", (PAPER/'appendix/h-additional-tables.tex').read_text())
 
+# The first-page teaser uses the audited common-item curves, not a cartoon.
+teaser = json.loads((FIGURES/'fig-teaser-values.json').read_text())
+teaser_source = VALUES/'depth-crossmodel-values.json'
+sources[str(teaser_source.relative_to(ROOT))] = hashlib.sha256(teaser_source.read_bytes()).hexdigest()
+check('teaser source hash',teaser['source_sha256']==sources[str(teaser_source.relative_to(ROOT))])
+teaser_common = next(r for r in json.loads(teaser_source.read_text())
+                    if r['model']=='Qwen3-8B' and r['task']=='MedCalc')['common']
+check('teaser matched sample',teaser['n']==teaser_common['n']==134)
+for layer,(transfer,retention) in enumerate(zip(teaser_common['transfer'],teaser_common['retention'])):
+    close(f'teaser transfer L{layer}',teaser['transfer'][layer],transfer)
+    close(f'teaser dependence L{layer}',teaser['source_dependence'][layer],1-retention)
+check('teaser boundaries',teaser['transfer_boundary']==teaser_common['transfer_boundary']==13
+      and teaser['reading_boundary']==teaser_common['reading_boundary']==25)
+main_source = (PAPER/'main.tex').read_text()
+check('teaser before title block',main_source.index('\\begin{teaserfigure}')<main_source.index('\\maketitle'))
+
+# New mechanism bridge: exact records, no-op controls and protocol drift.
+bridge_dir=PAPER/'experiments/mechanism_20261017'
+bridge_rows=read(bridge_dir/'bridge14-eager.jsonl')
+bridge={(r['instance_id'],r['arm'],r['layer']):r for r in bridge_rows}
+bridge_ids=json.loads((bridge_dir/'ids-bridge14.json').read_text())['ids']
+bridge_manifest=json.loads((bridge_dir/'bridge14-eager.manifest.json').read_text())
+bridge_done=json.loads((bridge_dir/'bridge14-eager.done.json').read_text())
+check('mechanism bridge complete',len(bridge_rows)==len(bridge)==bridge_done['records']==210)
+check('mechanism bridge fixed items',set(bridge_ids)=={r['instance_id'] for r in bridge_rows}
+      and len(bridge_ids)==bridge_done['items']==14)
+check('mechanism bridge group coverage',len({r['group'] for r in bridge_rows})==14)
+check('mechanism bridge inference source',bridge_manifest['script_sha256']==hashlib.sha256((bridge_dir/'run.py').read_bytes()).hexdigest())
+check('mechanism bridge ID source',bridge_manifest['ids_sha256']==hashlib.sha256((bridge_dir/'ids-bridge14.json').read_bytes()).hexdigest())
+bridge_identity=0
+for row in bridge_rows:
+    if row['arm'].startswith('identity_'):
+        baseline='receiver_full' if row['arm'].endswith('_full') else 'receiver'
+        check('mechanism identity '+str((row['instance_id'],row['arm'],row['layer'])),
+              row['token_ids']==bridge[row['instance_id'],baseline,-1]['token_ids'])
+        bridge_identity+=1
+check('mechanism identity count',bridge_identity==84)
+for arm in ('donor','receiver'):
+    check('mechanism '+arm+' protocol correctness flips',sum(
+        bridge[i,arm,-1]['correct']!=bridge[i,arm+'_full',-1]['correct'] for i in bridge_ids)==1)
+bridge_setup=(PAPER/'appendix/a-setup.tex').read_text()
+check('mechanism bridge prose',r'All $84$ own-state checks' in bridge_setup and r'$14$ calculators' in bridge_setup)
+
 def diagnostic_prose(needle):
     check('extended diagnostic: '+needle, needle in archived)
 
@@ -268,7 +311,7 @@ prose(f'$[{ci[0]:.1f},{ci[1]:+.1f}]$')
 for needle in ['accuracy from $0.000$ to $0.815$', '$0.03$, $0.06$ and $0.05$',
                'same-family mean control recovers $0.12$ on its $41$ eligible items',
                '$0.89$, $0.74$, $0.16$ and $0.06$',
-               'recovers $0.98$ [$0.91,1.03$]', 'largest control is $0.35$',
+               'recovers $0.98$', 'largest control is $0.35$',
                'recovery on the same items is $0.71$', '$k^{*}=72$ [$46,94$] on MedCalc',
                '$0.235$ for state replacement', '$365$--$1{,}630$ positions',
                'recovers only $0.03$ with the skill first ($n=135$) and $0.04$',
@@ -433,6 +476,23 @@ else:
     check('incompatible receivers now rejected',False)
 for tags in [('q06-bat-a','q06-bat-b'),('mis-rank-a','mis-rank-b','mis-rank-lo')]:
     check('full rerun complete and used: '+','.join(tags),rep.complete(tags))
+
+# Formal mechanism panels are checked against all four raw shards independently.
+from audit_mechanism import audit as audit_mechanism
+mechanism=audit_mechanism()
+check('mechanism: all formal raw checks pass', mechanism['checks_passed'] >= 8000)
+check('mechanism: fixed/primary/groups/identity',
+      (mechanism['fixed_n'],mechanism['primary_n'],mechanism['groups'],mechanism['identity_controls']) == (124,114,14,48))
+for name,digest in mechanism['source_sha256'].items():
+    sources['paper/'+name]=digest
+mechanism_text=(PAPER/'sections/04-experiment.tex').read_text()
+check('mechanism: actual figure replaces reservation','fig-mechanism-results.pdf' in mechanism_text and 'fig-mechanism-reserved' not in mechanism_text)
+check('mechanism: no pending prose','[Draft:' not in mechanism_text and 'Measurements are pending' not in mechanism_text)
+check('mechanism: primary numerators',all(x in mechanism_text for x in ['$4/114$','$8/114$','$48/114$']))
+check('mechanism: main experimental structure',mechanism_text.count('\\subsection{')==4)
+for name in ['00-abstract.tex','01-introduction.tex','05-conclusion.tex']:
+    text=(PAPER/'sections'/name).read_text()
+    check('mechanism summary synchronized: '+name, all(x in text for x in ['3.5','42.1','7.0']))
 
 manifest={'checks_passed':len(checks),'source_sha256':sources,
           'artifact_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest()

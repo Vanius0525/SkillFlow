@@ -1,0 +1,46 @@
+{
+  "source": "probe2-platform-log.txt; compact platform records, not full output JSONL",
+  "records": 40,
+  "items": 2,
+  "seconds_sum": 360.49540632450953,
+  "mean_seconds": 9.012385158112739,
+  "median_seconds": 8.094345532124862,
+  "min_seconds": 3.430125406011939,
+  "max_seconds": 24.940339219290763,
+  "truncated": 1,
+  "split_checks": [
+    {
+      "check": "split_vs_full",
+      "instance_id": "medcalcbench_00987",
+      "donor_tokens_equal": true,
+      "receiver_tokens_equal": false
+    },
+    {
+      "check": "split_vs_full",
+      "instance_id": "medcalcbench_00266",
+      "donor_tokens_equal": false,
+      "receiver_tokens_equal": false
+    }
+  ],
+  "formal_decode_counts": {
+    "repair": 2728,
+    "edges": 5208
+  },
+  "sequential_estimate_hours": 19.867302392995192,
+  "historical_comparison": [
+    {
+      "instance_id": "medcalcbench_00987",
+      "ok_gold_in_context": true,
+      "ok_receiver": false,
+      "ok_real_L8": false,
+      "ok_real_L16": false
+    },
+    {
+      "instance_id": "medcalcbench_00266",
+      "ok_gold_in_context": true,
+      "ok_receiver": false,
+      "ok_real_L8": true,
+      "ok_real_L16": false
+    }
+  ]
+}

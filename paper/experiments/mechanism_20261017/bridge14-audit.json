@@ -1,0 +1,2215 @@
+[
+  {
+    "path": "experiments/mechanism_20261017/bridge14-eager.jsonl",
+    "sha256": "2d78b1c1a7c826371bb786a91b986a4de8f15898620b88eab0969ac06001aecc",
+    "done_marker": true,
+    "records": 210,
+    "items": 14,
+    "identities": [
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_SC",
+        "layer": 8,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "exact": true
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_SC",
+        "layer": 16,
+        "exact": true
+      }
+    ],
+    "protocol_drift": [
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "donor",
+        "tokens_equal": true,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": true,
+        "correctness_flip": true
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "donor",
+        "tokens_equal": true,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "donor",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": true,
+        "correctness_flip": true
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "receiver",
+        "tokens_equal": true,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "donor",
+        "tokens_equal": true,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "receiver",
+        "tokens_equal": true,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "donor",
+        "tokens_equal": true,
+        "split_correct": true,
+        "full_correct": true,
+        "correctness_flip": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "receiver",
+        "tokens_equal": false,
+        "split_correct": false,
+        "full_correct": false,
+        "correctness_flip": false
+      }
+    ],
+    "mean_seconds": 17.21007880032772,
+    "truncated": 10,
+    "outcomes": [
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "donor",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00987",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00266",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00341",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01000",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00880",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00461",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00482",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00961",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00945",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_01040",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00741",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00800",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00860",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": true
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "no_skill",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "donor",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "receiver",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "donor_full",
+        "layer": -1,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "receiver_full",
+        "layer": -1,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_full",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "S_full",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "S_full",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_split",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "S_split",
+        "layer": 8,
+        "correct": true,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_SC",
+        "layer": 8,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "S_split",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      },
+      {
+        "instance_id": "medcalcbench_00113",
+        "arm": "identity_SC",
+        "layer": 16,
+        "correct": false,
+        "truncated": false
+      }
+    ]
+  }
+]

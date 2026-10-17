@@ -1,5 +1,77 @@
 # SkillVector 论文交接
 
+## 2026-10-17 一天内完成论文：当前执行入口
+
+- **14:21论文与交付已完成验证；本段为最终提交入口，覆盖下方运行中记录**：四卡结果全部填入真实Fig4（正文第6页），无待填机制面板；正文重排为setup→有效可复用探针→主现象与稳健性→机制。标题Still Needed, Hard to Transfer: Using and Reusing Contextual Skills。新增推理仅Qwen3-8B/MedCalc，未追加实验、下载权重或删除数据。
+- 最终独立审计：check_main_data.py **132731检查/489源文件**通过；audit_mechanism.py **8438检查、48精确自身控制**通过；4项instrument测试通过；旧whitebox audit全部通过；git diff --check通过。正式图两panel同114题/14组，原始2356+1488+100条齐、完整hash追踪。推理中的反常与截断不利赋值界已写正文及附录B。
+- 最终两版：投稿正文7页/全文12页（主图均正文，机制图第6页），扩展38页；两版0编译error、0undefined、0overfull hbox，扩展0vbox，投稿末页自动平衡有约1.97pt vbox警告，已目视确认无越界/重叠。构建bFxwDXEA/1L9LQycU；无需为无可见影响的末页平衡警告重复实验或改数值。
+- **请使用桌面 /mnt/c/Users/12970/Desktop/StillNeeded-Overleaf-20261017-Final-v2/**：51文件干净Overleaf ZIP（381KB量级），独立编译StillNeeded-review.pdf、38页StillNeeded-extended.pdf、project/源码和中文阅读说明。精确ZIP已独立编译；项目51项逐字节等于ZIP，ZIP与workspace依赖一致，预览每页文字等于workspace投稿PDF。ZIP SHA256 e9e37aa1f80ce9e725402b6cdba27669258342a323c13941e9cb3728cdeb6826。旧01:25审阅快照及第一次Final导出都保留；第一次Final的图曾浮到第8页，以Final-v2为准。audit/DESKTOP-FINAL-20261017.json记录完整。
+- 资源已收尾：原4090 Notebook wt-mechanism-4090-1017 STOPPED；三个GPU Job成功终态；临时CPU wt-paper-fetch-1017 STOPPED；原本既有wt-dev-cpu保持原状。旧串行pipeline不重启。本条随任务最终commit推master；**push成功后**写experiments/mechanism_20261016/PAPER-TASK-COMPLETE，并停止paper-progress-01a1456c.timer及milestone服务。未推送成功不得将任务标为全部完成。
+
+- **14:10正式结果已完整取回并独立审计，覆盖旧等待记录**：临时CPU Notebook wt-paper-fetch-1017（CPU资源空间/CPU资源-2，4CPU16GiB，cpu-nat-207，2h自动停止）成功恢复SSH；42文件归档2,478,098字节，SHA256 5d1dac695984df93daa37c202100608946aa95aeb20ec7427e52349369bcf500，仅下载一次并安全解包。原空闲4090 Notebook已停止；三个Job均终态，无新推理。全部repair2356、edges1488、identity100记录齐；48自身写回token精确一致。新增tools/audit_mechanism.py独立8438项检查通过，repair与edges所有372条基线token完全相同。
+- **真实机制发现**：124固定题中116 donor/receiver有效，114严格rescued，14组；两panel同114题。L16 S4/114=3.5%、C8/114=7.0%、SC48/114=42.1%、SCrecut8/114=7.0%。预定SC−S +38.6pp，按skill bootstrap95%CI[26.6,46.5]；SC加性交互31.6pp[14.1,41.6]；SC−recut35.1pp[23.2,43.0]。96基线未截断子集SC−S38.5pp；截断最坏重赋值仍35.1pp，无需为主结论补长生成。
+- **路径发现及异常同步记录**：L24 reader cut保留29/114=25.4%，self cut110/114=96.5%，both同reader；L8/16两路径均损害。L24 SC25.4%、recut27.2%，没有额外recut损失，且recut截断28/114，不能把L16结论泛化全层；C18.4%，SC−C不确定区间跨0。reader-cut21截断全部算对仍最多50/114，仍低于self110/114，关键路径差不被截断解释。结果不证明reader-state因果来源，不追加R/SR作为交稿前提。
+- **正文已填实并重排**：按用户建议，4.2合并内容/跨题控制，4.3合并跨模型任务复现/共同样本/重复注入，4.4机制解释；共4节（含setup）。fig-mechanism-results替换全部预留图；摘要/引言第三贡献/结论同步真实42.1/3.5/7.0结果，附录B新增protocol、分母、clusterCI与截断；正在两版构建与最终审计。新Overleaf导出脚本支持--final，禁止pending，尚未导出最终桌面或commit/push。下一步检查build-skillvector.XA3V17gA页数，再全版、审计、ZIP独立编译/新桌面导出、完成后提交推送停timer。
+
+- **本轮补实验决策（用户问是否能填完整）**：现有正文预留的repair与edges两面板均有本次固定124题实验覆盖，不以追加实验作为交稿前提。先审计完整数据。唯一可能优先补的机制实验是receiver question/reader-state R/SR修复：仅在SC不能解释晚层失败、且希望正文主张receiver-state机制时需要；当前结果不能预先支持该因果归因。若关键对比被1536-token截断主导，再做固定受影响条件的更长生成敏感性，不按效果挑题。新模型/benchmark、完整phase网格、更多层号均后置。正式结果尚未完整取回，不能承诺任何机制方向。
+- 文件入口诊断：已重启的原4090 Notebook RUNNING（仅取文件，不运行推理）；CPU原生SSH失败banner exchange timeout；CPU/GPU connection refresh均遇xterm surface not ready。正在尝试已运行Notebook连接刷新，命令会话94298及先前exec66641；未删除缓存、未重复启动实验。取回产物后停止这张为取文件重启的空闲GPU。
+
+- **13:55恢复执行，覆盖旧进度**：live三个GPU Job均job_succeeded；watch最后06:56:45已记录repair_ready=true、done=true，并向当前thread投递repair_ready和done通知。但图表/正文尚未实际更新，不能把通知成功当作论文闭环完成。用户刚明确实验/论文/Inspire操作全部直接执行无需确认。原Notebook现STOPPED，结果在共享盘，已只为取回数据启动原Notebook（post-start none，无推理）；当前排队，同时恢复已有CPU文件通道。先取回全部12组原始JSONL/done/manifest→核验各卡身份控制→repair+edges分析→真实图与正文全量更新→验证ZIP/导出新桌面目录→master commit/push→完成标记停检查。禁止重跑已完成实验。
+
+- 自动闭环核验（本轮）：四小时timer active、下次约04:10；五分钟监视器active/running，最新01:57读取成功、四分片均repair、repair_ready=false、无failure。bridge14通知已实际触发本对话并完成下载/审计/附录更新。已补强两条续接指令：全分片与控制审计→真实图替换占位→同步方法/样本/结果/图注/摘要/引言贡献/结论/附录→两版编译与审计→桌面新干净版本与ZIP→整项完成commit/push及完成标记。新增推理仍只做Qwen3-8B+MedCalc。监视器重载后PID以systemctl为准。
+
+- 四卡正式进度（本轮live回读）：shard0/1/2/3分别18/128/100/130条，共376/2356，全部stage=repair、均无done（不是缺失故障）。四张卡均已通过首题身份控制并进入正式修复。各分片当前平均8.10/16.52/20.53/16.78秒；按当前均值粗估核心还需约3小时，长尾与capture额外耗时未精确计入，完成时间待更新。edges自动随后运行，不重复启动。
+
+- 本轮验证完成：check_main_data.py通过132720检查/477源文件（新增14组桥接独立检查）；两版重建投稿7/11页、扩展38页，0error/undefined/overfull，构建B0G7IGRp/qEsGPG1l；workspace Overleaf ZIP已更新50文件0.37MB，桌面01:25审阅快照未覆盖。正式机制结果尚未齐，继续等待repair_ready/失败里程碑或4小时检查。
+- **01:35桥接里程碑已核验**：bridge14于01:27完成，210条/14题/14组完整取回（JSONL、done、manifest），84次自身写回token完全一致，源码与ID哈希及hook/cache计数通过。新split协议13题donor/receiver有效，S@8修复12题；严格rescued12题，全部基线未截断10题。完整/分段各1道donor、1道receiver评分翻转；共同有效12题中S@8 full12/split11，S@16 full3/split2。只作协议/正控制诊断，不作为124题机制结果。
+- 210条中10条截断（包括6条重复identity），累计3614.12秒、平均17.21秒。详细报告与summary/audit在experiments/mechanism_20261017和reports/机制协议桥接_20261017.md。附录A加入协议桥接和新基线说明，删除“SDPA/flash会静默忽略4D mask”的过强实现概括，改为实际采用eager+显式mask检查。
+- 远端gate eligible13/positive12已通过，协调器已自动启动worker0；parallel-status为parallel-repair-and-edges，四worker状态文件齐。原串行流程没有重启。继续等待四份repair的done；只在四份齐、各卡身份控制通过后用analyze.py生成正式图。桌面01:25审阅版保留，当前workspace附录有新增桥接说明，最终结果版另行导出，不覆盖用户审阅快照。
+
+- 平台入口澄清（本轮live核验）：三个wt-mech-s4-*均job_running，workspace确为可上网GPU资源、compute group 4090-2-cuda12.8。它们是GPU Job，网页入口在“分布式训练”列表 /jobs/distributedTraining，而非Notebook/开发实例列表；网页入口名不代表实际选择了分布式训练空间或正在训练模型。用户可在该页选公共科研项目并搜索wt-mech-s4。
+
+
+- **01:26最新用户要求与交付阶段**：用户要求新实验全部只做Qwen3-8B+MedCalc，不扩其他模型/benchmark；旧跨模型结果保留。标题仅作参考、现有实验路径优先，现采用 Still Needed, Hard to Transfer: Using and Reusing Contextual Skills；不预先以Role of Receiver States作为已成立的机制结论。四卡均按原Qwen3-8B/MedCalc配置继续，没有追加新模型下载。
+- 四卡具体分类与节点（01:18 live）：Notebook wt-mechanism-4090-1017 → qb-prod-4090-gpu030；GPU Job wt-mech-s4-1-1017 → gpu063，-2 → gpu056，-3 → gpu066（完整前缀qb-prod-4090-）；均可上网GPU资源、4090-2-cuda12.8、48GB4090+10CPU+100GiB，全部RUNNING/job_running。
+- 已新增正文sec:mechanism，说明S/C/SC/SC后reader recut，以及reader/self/both路径切断；Fig4为两块明确RESULTS PENDING的无数值空白面板（tools/fig_mechanism_reserved.py→fig-mechanism-reserved.pdf）。原joint-failure段落/图移至扩展附录H，未删结果。新机制结果齐后替换图板、补真实结果和第三贡献；不要把空白图当完成实验。
+- 当前投稿版正文7页/全文11页，扩展37页，均0error/undefined/overfull；构建W2i81dfh与xDC3MvTS。审计132627检查/476源文件通过。ZIP收敛为从main.tex递归可达的TeX/PDF/bib依赖（兼顾扩展开关），无缓存/实验日志/本机路径。tools/export_review.py已独立编译精确ZIP并成功输出桌面 /mnt/c/Users/12970/Desktop/StillNeeded-Overleaf-20261017（上传ZIP、独立编译PDF、project干净源码、阅读说明.md）。01:25:32导出完成，50文件、7/11页、0error/undefined/overfull，桌面ZIP与独立编译输入哈希相同，解压源码50项逐字节一致。该目录此前不存在，导出拒绝覆盖已有目录；审计记录audit/DESKTOP-REVIEW-20261017.json。
+- 中文关键句与Intro/Experiment流程图、卡/实例分类在reports/桌面版本阅读说明_20261017.md；桌面说明由它复制。用户可先上传此审阅版，机制实验继续，整项任务仍未完成，不创建PAPER-TASK-COMPLETE、不提前commit/push。
+- **01:12本轮已完成的本地更新**：按用户“措辞有力度、少防御”的追加要求完成摘要/引言/结论改写，删掉几处重复图注防御句；三条贡献见引言。Teaser首页目视通过，真实数据逐点校验已纳入check_main_data.py；最新审计132627 checks/476源文件，四个31题分片互不重叠覆盖124题、推理源码与两次已运行bridge manifest一致。投稿正文8页/全文11页，扩展37页，两版0error/undefined/overfull；构建bwU8aThW与bfoCD8aq。Overleaf已更新49文件0.36MB。任务仍含运行中实验及正式机制改稿，尚不commit/push。
+- **实际进度（约01:08回读）**：bridge14已生成126/210条、9题已开始、平均18.73秒/生成、5条截断；三卡repair分别28/589、16/589、30/589条，平均15.47/21.40/16.31秒，均已通过每卡首题身份控制。按当前长尾粗估核心修复还需数小时，精简edges在各分片repair后继续。未据中途分数改样本。截断数量比2题探针更多，已记录；analyze.py额外输出“基线都未截断”敏感性子集，预定primary rescued不改变；同时保留各臂截断最坏/最好界。
+- 只读watch服务已重载（PID8823），增加四卡worker状态及repair_ready里程碑：四份repair齐时即续接改稿，不必等edges结束。原4小时timer继续。新analyze_edges.py支持四份精简edges输入，同样强制done/manifest/ID/source哈希和完整覆盖；输出reader/self/both损伤热图及按skill bootstrap。命令 python3 experiments/mechanism_20261017/analyze_edges.py experiments/mechanism_20261017/edges-s4-0.jsonl experiments/mechanism_20261017/edges-s4-1.jsonl experiments/mechanism_20261017/edges-s4-2.jsonl experiments/mechanism_20261017/edges-s4-3.jsonl --ids experiments/mechanism_20261017/ids-repair124.json --out-prefix figures/fig-mechanism-edges。
+- **00:55最新安排，覆盖下方旧串行计划**：用户要求更清晰的解释、可增加多卡、改为“上下文能力能否成为可独立复用内部技能”的叙事，并新增首页teaser；随后明确全文措辞更直接、少防御性说明。引言/摘要/结论已改，三条贡献为有效skill复用探针、沿深度的transfer/source-use分离、跨模型任务复现与竞争解释检验。没有提前声称新修复结果。
+- **实际4张4090**：原Notebook wt-mechanism-4090-1017 + 三个Job wt-mech-s4-1-1017 / -2-1017 / -3-1017，均可上网GPU资源、4090-2-cuda12.8、1,10,100、同官方镜像；00:52 live三个Job均job_running。当前桥接仍在原卡，额外三卡跑各自身份控制后正式分片。
+- 已安全停止旧串行调度父PID35692（核验/proc命令、断言尚无repair124-eager.jsonl），**保留bridge14正在运行的子进程**。停止前原始结果不变，serial-superseded.json记录。新协调PID241223，parallel_orchestrator.py，等待14题桥接gate通过后在原卡启动shard0，最后join四卡。不要再启动pipeline.py或旧单卡repair模板。
+- 正式固定124题按ids[shard::4]分成4份各31题。每卡先用本分片首题验证L8/12/16/24自身写回，再跑repair（L8/12/16/24，S/C/SC/SC_recut），随后edges（L8/16/24，phases=both，reader/self/both）。推理run.py源码未改变；所有新输出在远端v1/parallel/。正式repair总2356生成；精简edges总1488生成。额外3卡允许并行采集，**正式解释/发布仍要求全体桥接与每卡身份控制通过**。没有按新效果选题。
+- 新文件：worker.py、parallel_orchestrator.py、load_completed.py；analyze.py现支持4个输入，强制全分片完整、互不重叠、配置/哈希一致。下载 parallel/repair-s4-0..3 的jsonl/done/manifest；命令 python3 experiments/mechanism_20261017/analyze.py experiments/mechanism_20261017/repair-s4-0.jsonl experiments/mechanism_20261017/repair-s4-1.jsonl experiments/mechanism_20261017/repair-s4-2.jsonl experiments/mechanism_20261017/repair-s4-3.jsonl --ids experiments/mechanism_20261017/ids-repair124.json --out-prefix figures/fig-mechanism-repair。旧repair124-eager输出预期不存在。
+- 完整prefill/decode细分、L28、R/SR读者状态替换、精确规则反事实和新家族下载暂后置。恢复了上述精简reader/self/both边对照，因它直接检验原knockout混合了读取与source内部更新；不是重新恢复整个耗时网格。
+- **Teaser已生成并放首页**：tools/fig_teaser.py → figures/fig-teaser.pdf/svg/png；可编辑矢量。右图来自已审计的common 134题真实曲线，蓝线transfer，绿线1-retention，13–25橙色区间；无示意伪造数据。图值与源SHA在fig-teaser-values.json。投稿版编译通过：正文8页/全文11页、0error/undefined/overfull，首页已渲染目视检查，构建9iosPxVv。扩展PDF与Overleaf待本轮最终重建。
+- 预定正文图序：Fig1 teaser→Fig2有效的source-span transfer（位置/内容对照）→Fig3六组transfer/source-attention深度曲线→Fig4机制repair+精简edges（未有正式结果）。现有joint-failure描述热图可移至附录腾版面；正式机制结果到齐再改实验章节，暂不填预期结论。中文叙事与实验说明另落盘reports/叙事与实验路线_20261017.md。
+
+- 原始目标：读取桌面 HANDOFF-EXPERIMENTS-20261016，继续机制实验及论文；优先可上网GPU资源单卡4090、正文短实验；一天内完成；每4小时在当前对话检查。
+- 已读取桌面完整交接，live确认旧3个机制Job均终态，无正式124题任务。保护已有改动及用户 cells.json.tmp。
+- 已创建 wt-mechanism-4090-1017，Workspace 可上网GPU资源，Project 公共科研项目，group 4090-2-cuda12.8，quota 1,10,100，官方 ngc-pytorch:25.02-cuda12.8.0-py3，平台23小时停止上限（24小时参数被拒绝，没有创建重复实例）。SSH连接成功，实测显卡RTX4090 49140MiB。已启动新后台pipeline，详见下述记录。
+- 计划：取回probe2原始输出→同硬件完整/分段及eager/SDPA桥接→优先固定层修复正文图；耗时边拆分后置，新增家族无大下载批准暂不下载。具体缩减在正式启动前预先记录，禁止按效果选题。
+- 周期检查已创建并回读：systemd user timer paper-progress-01a1456c.timer，每4小时；首次2026-10-17 04:10:58 CST。执行 experiments/mechanism_20261016/check_thread.py，codex queue目标当前thread 01a1456c-2fe8-78c3-bb67-4a850cc990ac，24小时到期或PAPER-TASK-COMPLETE标记后停止。依赖本机运行；已测试投递且测试消息于00:29触发本对话续查，首次真正4小时检查仍约04:10。日志 thread-check-log.jsonl。
+- 平台CLI需要沙箱外执行以写会话缓存，已走平台审批；旧CPU exec文件通道仍在诊断。
+- 已取回并审计 experiments/mechanism_20261016/probe2-raw.jsonl：40条唯一记录，4次identity_SC token IDs完全相同；patch/cache/mask计数及token长度正确；仅SC@L16第二题截断900，见probe2-raw-audit.json。远端done=2题40条、exit=0。
+- 当前后台：个人路径 /inspire/ssd/project/project-public/czxs253130660/mechanism-20261017-v1/pipeline.py，PID35692；2026-10-17约00:16启动。00:26已进入bridge14-eager；bridge2-eager与bridge2-sdpa均完成。PID仅作定位，禁止据旧PID直接kill。
+- 独立新版本代码 experiments/mechanism_20261017/；本地源码包1258124字节，SHA256 d40aade846230c960847b69b422ae0898f3972dce788a49fa4cef896cb0316fa，远端解包前核验。只写新目录，没有覆盖v2。
+- 启动前固定顺序：2题eager桥接→同2题SDPA桥接→每组首ID共14题eager桥接（L8/16）→控制通过后124题repair（L8/12/16/24，S/C/SC/SC_recut）。统一max_new1536，所有题补新no_skill；正式2356次生成。原L28和完整边拆分按用户一天优先要求后置，未按新效果选题。身份控制失败或14题无任何早层正控制时pipeline写failed并停止，不继续正式实验。详见README.md与pipeline.py。
+- 定时续查已实际测试：00:15:56脚本codex queue退出0，确认向当前thread投递message 01a1457f-a8f9-7991-9cb1-a94fa865acec，日志已落盘。定时器首次约04:10；它依赖WSL/systemd/本地daemon活跃，不保证主机关机后运行。
+- 实时异常（00:19）：4090/eager同硬件同backend首题medcalcbench_00987，split donor错、full donor对（均未截断），receiver两协议均错且tokens相同；截至当前的identity_S_full@8/16、identity_S_split@8均精确通过。旧H200此题split donor对，故新旧硬件与prefill漂移不能合并。该异常不是机制证据，继续固定14题估计影响范围。
+- 00:25监视器成功只读回查：bridge2-eager已完成，正在bridge2-sdpa；无pipeline失败标记。新增systemd user service paper-milestones-01a1456c（MainPID6738），每300秒查完成标记，桥接14题/正式完成/失败各至多向本thread通知一次，最多24小时；连续3次读取失败则通知并退出。它不重启GPU，不与4小时检查冲突。状态watch-state.json，证据watch-observations.jsonl，脚本watch.py。
+- 本轮本地验证完成：4项mask测试、全部新脚本py_compile、diff检查；数值审计132551检查/475源文件。重编译投稿正文7页/全文11页、扩展37页；两版0error/undefined/overfull，构建目录桌面WWW2027/build-skillvector.9dy0fPuO与FYvUpzUT。Overleaf ZIP已更新48文件0.33MB。正文遗漏的一处CI展示已移除，对应检查仅更新逐字断言，数值断言保留。
+- 两题eager完整原始审计已落盘：bridge2-eager.jsonl/done/manifest与bridge2-eager-audit.json。30条唯一生成、12次identity精确通过、0截断、平均10.19秒/生成。四个完整/分段基线对比中2个正确性翻转：00987 donor split错/full对；00266 receiver split错/full对。此两题仅作诊断，比例不能外推。2题SDPA已完成，正在取回原始文件。14题eager于00:26:22开始；正式124题尚未启动。
+- SDPA两题原始数据与done/manifest已取回，见bridge2-backends-audit.json与bridge2-backend-comparison.json：两种backend各30条，均12次identity精确通过、0截断；平均eager10.19秒、SDPA7.94秒。相同条件28/30生成token序列不同（含重复identity，非30个独立样本），5条评分不同。关键00266的S_full@8：eager错、SDPA对，与旧SDPA正控制方向一致；尚不能从2题外推其他样本。固定backend的新修复仍使用预定eager，不为更好结果切backend。
+- 00:30测试消息触发的续查（并非已过去4h）：live确认14组桥接仍运行，GPU70%、17633MiB，无失败标记；未新建实例或重复推理。补强analyze.py为强制核验done/manifest、源码SHA、ID SHA、层号/全样本配置和精确覆盖；audit_bridge.py增加完成标记与完整arm/layer验证，两个完成的2题数据复验通过。下一次有意义的续接由14组完成/失败里程碑或04:10周期检查触发。
+- 下一条动作：读取远端pipeline-status.json、bridge2-eager.log及pipeline.failed/done；核验2题两backend桥接，再取回14题完整结果。正式repair完成后下载repair124-eager.jsonl、.done.json、.manifest.json；命令 python3 experiments/mechanism_20261017/analyze.py experiments/mechanism_20261017/repair124-eager.jsonl --ids experiments/mechanism_20261017/ids-repair124.json --out-prefix figures/fig-mechanism-repair。正式结果用新analyze.py（新no-skill eligibility、完整共同分母、skill-cluster bootstrap、截断计数）分析后再写正文。
+
+## 最新续接入口：机制实验状态（2026-10-16 23:49核查）
+
+先读 **[实验交接快照](HANDOFF-EXPERIMENTS-20261016.md)**。2题/40条探针已于11:27成功结束；124题正式实验尚未启动，目前没有机制任务运行。完整/分段prefill存在输出差异，且一题旧/新S@L8正确性不同，下一步先做协议桥接。后台监控13:17因连续3次API失败退出。正式E1/E2粗估约20 GPU小时，4卡约6–10小时，尚未开始计时。新家族按用户要求后置，大下载批准仍待答。
+
+本轮启动说明、代码、论文改写和PDF在工作区，尚未commit/push（整体实验任务未完成）。完整输出JSONL仍在远端；本地已保存平台日志与耗时summary。用户原有howskill/data/cells.json.tmp不动。
+
 ## 新对话入口（2026-10-16）
 
 先读 **[当前完整快照](HANDOFF-20261016.md)**。它汇总截至已推送提交 `9a3c4ae` 的结果、贡献边界、正文取舍、热力图、关键mask混杂与未运行实验。下方同日多轮记录是历史，不应覆盖快照中的最终状态。2026-10-16本轮仅整理交接，未恢复学校资源或启动实验。
@@ -371,3 +443,22 @@ python3 ../whitebox/analysis/audit.py  # ALL CHECKS PASSED
 ### Open Ideas / 值得深挖的问题（2026-10-16增补）
 
 - 候选：完整执行状态是否决定skill transfer？观察为单层patch未覆盖旧source KV、reader历史，而transfer与来源依赖边界分离。最小验证S/C四臂；强结果需修复后仍有内容特异的来源依赖。已有缓存笔记和中介交互近邻，先判别后评估独立立项价值。详见本轮报告§6。
+
+## 2026-10-16 实验恢复与论文改写（进行中）
+
+- 用户已授权实际启动启智实验、周期检查、生成真实热力图并继续改写。启动前说明已放Windows桌面：`/mnt/c/Users/12970/Desktop/WWW论文实验启动说明与整体脉络_20261016.md`，仓库副本在reports/。
+- 平台live列表恢复正常；CPU文件入口wt-dev-cpu已请求start，仍在拉取自动保存镜像，尚未运行GPU实验。未下载新模型。
+- 新专用脚本`experiments/mechanism_20261016/run.py`实现边类型/phase拆分、S/C四臂、R可选、SC后下一层recut；缓存于最终提示token重算前替换，不把旧首token当作干预结果。样本固定124题/14组，顺序按组ID交错。
+- 本地`test_instruments.py`四项测试通过；py_compile通过。需要远端模型identity与split/full验证才能启动正式批量。
+- 论文暂只修正已知方法边界：source-attention dependence同时包括内部更新；单层残差替换不追溯更新低层KV。不写未经测量的机制结果。
+- 下一步：读取CPU启动事件，建立文件连接；核实共享盘已有模型和venv；上传唯一run目录，短GPU probe后再批量。
+
+### 2026-10-16 11:20附近：探针与追加任务状态
+
+- 用户追加新家族主实验（Llama/DeepSeek、4090可部署规模），随后明确优先新机制实验，成功后再跑新家族旧双曲线。已更新桌面说明。新权重>1GiB下载批准问题待答，不开始下载。
+- GPU环境探针`wt-mechanism-env-1016`成功，Qwen3-8B/0.6B/Mistral等已缓存，torch2.7.0a0、transformers4.57.6、CUDA正常。
+- CPU wt-dev-cpu已RUNNING，但7.1.8/临时7.1.12均建立SSH失败，xterm surface not ready。未删除缓存、未重复密码登录。新版CLI只安装于/tmp/inspire-cli-7.1.12，未替换全局。
+- 首次大命令被API拒绝（未创建）；缩小后的`wt-mechanism-probe-1016`因远端wb_spanpatch源码与本地不符在模型前中止，未产生数值。
+- 现任务`wt-mechanism-probe2-1016`已提交，1×H200，最长2h，独立路径`/inspire/ssd/project/project-public/czxs253130660/mechanism-20261016-v2`。使用本地最小Scorer/Engine+提示/评分依赖源码快照，数据复制前校验SHA256。2题、L8/16、900token、三类边和S/C四臂。
+- 远端run.py、probe.jsonl、probe.manifest.json、probe.exit.json、probe.done.json均在该v2目录，只有完成后才有done。当前尚待仪器验证成功。
+- 新增有限监控脚本monitor.py（只读，不自动重启），待正式任务启动后运行；当前本会话手动检查。论文已改方法/相关工作/引言/结论，删重复防御性措辞，构建脚本用新暂存目录避免删除旧构建。

@@ -1,0 +1,25 @@
+{
+  "notebook": "wt-mechanism-4090-1017",
+  "workspace": "可上网GPU资源",
+  "account": "me",
+  "root": "/inspire/ssd/project/project-public/czxs253130660/mechanism-20261017-v1",
+  "pipeline_pid": 35692,
+  "started_at": "2026-10-17T00:16:22+08:00",
+  "status": "completed, retrieved and audited; no inference running",
+  "source_bundle_sha256": "d40aade846230c960847b69b422ae0898f3972dce788a49fa4cef896cb0316fa",
+  "last_verified_at": "2026-10-17T14:18:00+08:00",
+  "serial_pipeline_superseded": true,
+  "parallel_coordinator_pid": 241223,
+  "jobs": [
+    "wt-mech-s4-1-1017",
+    "wt-mech-s4-2-1017",
+    "wt-mech-s4-3-1017"
+  ],
+  "bridge14_done": true,
+  "bridge14_records": 210,
+  "bridge14_identity_exact": 84,
+  "repair_records": 2356,
+  "edges_records": 1488,
+  "primary_n": 114,
+  "worker_identity_exact": 48
+}

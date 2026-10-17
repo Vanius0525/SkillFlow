@@ -1,27 +1,26 @@
 \section{Conclusion}
 \label{sec:discussion}
 
-Skill-state transfer can fail while the source still supports the model's
-original computation. Complementary state replacement and attention knockout
-reveal an intermediate depth interval of weak transfer and continued reading
-dependence. Its boundary ordering recurs across three models from two families and
-two task domains, including evaluation on common eligible items. These operational regimes do not identify separate internal
-algorithms: how transplanted content interacts with the receiver's other
-states remains unresolved.
+Successfully following a skill does not make its internal states an
+independently reusable substitute for the source. Our experiments reveal a
+depth interval in which skill-state transfer has weakened while the original
+computation continues to depend on skill attention. This separation recurs
+across three models and two task domains, including common-item evaluation.
+The model can still use a skill after its states have become ineffective at
+correcting another execution.
 
-The controls make this separation interpretable. Effective early transfer
-is content-sensitive, uses information shared across questions, and survives
-matching the receiver's state norm. Repeated late
-replacement does not restore early recovery. These controls support a
-distinction between correcting a receiver with transplanted skill states
-and retaining access to a skill in the original computation.
+Content and cross-question controls show that effective early transfer
+carries structured skill information. Matching state norms preserves that
+effect, while repeated late replacement does not restore it. Source-cache repair further shows that late residual-transfer failure is
+partly reversible: pairing states with their cached history raises layer-$16$
+accuracy from $3.5\%$ to $42.1\%$. Yet cutting subsequent source reading
+reduces it to $7.0\%$. Separating attention paths confirms that late
+source dependence is driven by continued reading. Useful skill information
+can therefore survive a failed residual transplant while requiring a richer
+execution state and further access to its source.
 
-For context representation and reuse, recovery in the intended receiver and
-tolerance to removing source access should be evaluated separately. Token
-count, state norm and single-format success are insufficient proxies. The
-present evidence concerns fixed contexts and screened subsets; it establishes
-evaluation criteria rather than demonstrated efficiency gains. Layer depth
-does not specify agent steps or determine when documents can be dropped
-during multi-turn execution. For Web agents that inject and share skills,
-this distinction motivates checking both successful reuse and continued
-source dependence before replacing skill documents with internal states.
+Contextual competence therefore has two distinct properties: the ability to
+support the current computation and the ability to be reused in another.
+For skill-sharing agents and context-reuse systems, both need to be tested.
+A representation that works within its original computation is not yet a
+portable replacement for the instructions that produced it.

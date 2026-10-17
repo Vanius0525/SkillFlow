@@ -7,18 +7,18 @@
 #   ./build.sh submission -- WWW 2027 build, extended appendix left out
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-STAGE="/mnt/c/Users/12970/Desktop/WWW2027/build-skillvector"
+STAGE_ROOT="/mnt/c/Users/12970/Desktop/WWW2027"
 BIN="/mnt/c/Users/12970/AppData/Local/Programs/MiKTeX/miktex/bin/x64"
 PDFLATEX="$BIN/pdflatex.exe"
 BIBTEX="$BIN/bibtex.exe"
 JOB=main
 MODE="${1:-full}"
 
-# The staging tree is rebuilt from scratch every time. A stale copy left behind
-# once let \input{tables/tab-battery} compile here while the file did not exist
-# in the repository, so the PDF showed an old table and Overleaf would have failed.
-rm -rf "$STAGE"
-mkdir -p "$STAGE"
+# A new staging directory prevents stale inputs without deleting previous
+# builds or their diagnostic logs.
+mkdir -p "$STAGE_ROOT"
+STAGE="$(mktemp -d "$STAGE_ROOT/build-skillvector.XXXXXXXX")"
+echo "Build stage: $STAGE"
 cp "$HERE"/main.tex "$HERE"/*.bib "$STAGE"/
 cp -r "$HERE"/sections "$HERE"/appendix "$HERE"/tables "$STAGE"/
 mkdir -p "$STAGE/figures" && cp "$HERE"/figures/*.pdf "$STAGE/figures/"

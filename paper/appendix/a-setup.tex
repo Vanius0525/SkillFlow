@@ -28,6 +28,17 @@ accuracy on the same items. It measures the fraction of the available gain,
 not raw accuracy or a percentage of information transferred. Values can exceed
 one. Comparisons across protocols must retain their own paired baselines.
 
+\paragraph{Focused mechanism protocol.}
+The Qwen3-8B/MedCalc mechanism experiments use BF16, eager attention and a
+$1{,}536$-token generation limit. A bridge on one fixed item from each of
+$14$ calculators compares full-prompt prefill with prefill split before the
+final prompt token. All $84$ own-state checks reproduce their corresponding
+receiver token sequences exactly. Changing the prefill protocol changes one
+donor's and one receiver's answer correctness. The formal repair and path
+comparisons therefore use the same split protocol and fresh no-skill, donor
+and receiver baselines. Truncation counts and sensitivity analyses are
+retained with the result records.
+
 \paragraph{The instrument's own noise floor, measured.} Every decoding run
 carries a \emph{null} arm: the receiver's own span states are captured and
 written back over themselves. With a length-matched receiver this is a
@@ -77,11 +88,9 @@ be sign-inverted relative to R.
 (36 layers, $d=4096$); \S\ref{sec:ladder} adds Qwen3-0.6B (28 layers, $d=1024$)
 and Mistral-7B-Instruct-v0.3 (32 layers, $d=4096$), whose chat template has no
 system role, so the system text is merged into the user turn. Greedy decoding throughout, \texttt{enable\_thinking}
-disabled and verified by a self-test on the rendered template. Eager attention
-wherever an attention mask is manipulated, because sdpa and flash silently
-ignore a 4D mask; layer-output hooks are implementation-independent, so the
-decode-heavy runs use sdpa, which is about $2.5\times$ faster on a 2k-token
-prompt. The 1.7B synthetic runs are fp32: bf16 costs $0.5$--$2.5$ nats on the
+disabled and verified by a self-test on the rendered template. Attention-mask interventions use eager attention with explicit mask checks;
+the earlier decode-heavy residual-replacement runs use sdpa, which was about
+$2.5\times$ faster on a 2k-token prompt in the original setup. The 1.7B synthetic runs are fp32: bf16 costs $0.5$--$2.5$ nats on the
 log-probability of a token deep in the tail, and every log-probability quantity
 here is a difference of such numbers. The 8B runs are bf16 and the gaps we
 report from them are $5$--$8$ nats, well outside that error; the accuracy

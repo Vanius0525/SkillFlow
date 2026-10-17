@@ -1,0 +1,10 @@
+# Reproducible transfer archives and local scheduler state.
+*.tar.gz
+thread-check.json
+thread-check-log.jsonl
+watch-state.json
+watch-observations.jsonl
+PAPER-TASK-COMPLETE
+*.lock
+# Full-token formal outputs remain remotely archived; compact audited summaries are tracked.
+mechanism_20261017/parallel/

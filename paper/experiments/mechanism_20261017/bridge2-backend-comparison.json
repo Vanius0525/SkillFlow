@@ -1,0 +1,41 @@
+{
+  "records": 30,
+  "backend_token_sequence_differences": 28,
+  "backend_correctness_flips": [
+    {
+      "instance_id": "medcalcbench_00987",
+      "arm": "donor",
+      "layer": -1,
+      "eager_correct": false,
+      "sdpa_correct": true
+    },
+    {
+      "instance_id": "medcalcbench_00266",
+      "arm": "receiver_full",
+      "layer": -1,
+      "eager_correct": true,
+      "sdpa_correct": false
+    },
+    {
+      "instance_id": "medcalcbench_00266",
+      "arm": "identity_S_full",
+      "layer": 8,
+      "eager_correct": true,
+      "sdpa_correct": false
+    },
+    {
+      "instance_id": "medcalcbench_00266",
+      "arm": "S_full",
+      "layer": 8,
+      "eager_correct": false,
+      "sdpa_correct": true
+    },
+    {
+      "instance_id": "medcalcbench_00266",
+      "arm": "identity_S_full",
+      "layer": 16,
+      "eager_correct": true,
+      "sdpa_correct": false
+    }
+  ]
+}

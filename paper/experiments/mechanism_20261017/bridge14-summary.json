@@ -1,0 +1,57 @@
+{
+  "items": 14,
+  "records": 210,
+  "identity_exact": 84,
+  "baseline_correct": {
+    "no_skill": 1,
+    "donor": 13,
+    "receiver": 0,
+    "donor_full": 14,
+    "receiver_full": 1
+  },
+  "baseline_truncated": {
+    "no_skill": 1,
+    "donor": 0,
+    "receiver": 1,
+    "donor_full": 0,
+    "receiver_full": 1
+  },
+  "truncated_by_arm": {
+    "no_skill": 1,
+    "receiver_full": 1,
+    "identity_S_full": 2,
+    "S_full": 1,
+    "receiver": 1,
+    "identity_S_split": 2,
+    "identity_SC": 2
+  },
+  "seconds_sum": 3614.1165480688214,
+  "mean_seconds": 17.21007880032772,
+  "donor_protocol_drift": {
+    "token_different": 10,
+    "score_flips": [
+      "medcalcbench_00987"
+    ]
+  },
+  "receiver_protocol_drift": {
+    "token_different": 12,
+    "score_flips": [
+      "medcalcbench_00266"
+    ]
+  },
+  "split_valid": 13,
+  "rescued": 12,
+  "full_split_common_valid": 12,
+  "early_S_split_correct": 12,
+  "S_scores": {
+    "full": {
+      "8": 12,
+      "16": 3
+    },
+    "split": {
+      "8": 11,
+      "16": 2
+    }
+  },
+  "rescued_untruncated_baselines": 10
+}

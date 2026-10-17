@@ -1,40 +1,8 @@
-% Appendix -- the full-dataset rerun (kept in the WWW submission build).
-% Queue the wide table before the heading to avoid a trailing float-only page.
-\begin{table*}[tbp]
-\caption{Full-dataset rerun against the subset the main text cites, Qwen3-8B on
-MedCalc, layer $8$. Recovery is Eq.~\ref{eq:rho}; entries show point estimates. \emph{per-calc} is the main text's restriction, \emph{per-item}
-the weaker one. Controls reach $0.12$ under the group screen and $0.25$ under
-the item screen; each arm uses its own matched baselines.}
-\label{tab:fullscale}
-\centering
-\small
-\begin{tabular}{lccc}
-\toprule
-\rowcolor{TableHeader}
-arm & full, per-calc ($n=135$) & subset ($n=60$) & full, per-item ($n=369$) \\
-\midrule
-transplant \texttt{real} & $\mathbf{0.89}$ & $0.87$ & $0.94$ \\
-same skill, matched prefix & $0.65$ & $0.73$ & $0.84$ \\
-\midrule
-half dose $\alpha=0.5$ & $0.04$ & $0.06$ & $0.11$ \\
-positions permuted & $0.05$ & $0.08$ & $0.21$ \\
-norm-matched noise & $0.02$ & $0.10$ & $0.18$ \\
-other calculator & $0.05$ & --- & $0.25$ \\
-other family, mean & $0.05$ & $0.06$ & $0.16$ \\
-same family, mean & $0.12$ & $0.05$ & $0.24$ \\
-identity patch & $0.00$ & $0.00$ & $0.00$ \\
-\midrule
-rank $128$ / $64$ / $32$ / $16$ & $0.77/0.63/0.12/0.05$ & $0.77/0.54/0.13/0.06$ & $0.88/0.70/0.22/0.18$ \\
-bottom-$64$ / bottom-$16$ & $0.03/0.04$ & $0.00/0.06$ & $0.11/0.12$ \\
-quarters $q_0/q_1/q_2/q_3$ & $0.09/\mathbf{0.56}/0.12/0.05$ & $0.12/0.56/0.12/0.12$ & $0.18/0.64/0.22/0.19$ \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
+% Full-data rerun; its wide table is queued at the appendix entrance.
 \section{The full-dataset rerun, and what reads the span}
 \label{app:fullscale}
 
-Every MedCalc $\times$ Qwen3-8B result in the main text was developed on the
+The original MedCalc $\times$ Qwen3-8B intervention battery was developed on the
 forty calculators with the most rescued items, sampling four each: $160$ of
 $467$ rescued items, and $60$ items over $15$ calculators after the
 receiver-never-solves restriction. We reran each of them with every rescued
@@ -91,7 +59,51 @@ heads costs $0.39$ of the skill's effect, versus $0.23$ for random heads at the
 same layers (held-out calculators; paired difference $0.154$, $95\%$ CI
 $[0.061,0.251]$). Reading is distributed rather than confined to a small
 circuit. After late span replacement, downstream readout remains
-$0.86$--$0.99$ of the donor's despite weak behavioural recovery. Earlier
-receiver question-state updates remain unchanged, motivating direct tests
-of their interaction with transplanted states. Full diagnostics appear in
-\extref{Appendix}{app:readerdiagnostics}{the extended version}.
+$0.86$--$0.99$ of the donor's despite weak behavioural recovery. Earlier receiver question-state updates remain unchanged, motivating
+interaction tests; see \extref{Appendix}{app:readerdiagnostics}{the extended version}
+for full diagnostics.
+
+
+\subsection{Focused source-history and path-specific experiments}
+\label{app:mechanism}
+
+The new Qwen3-8B/MedCalc experiments fix $124$ historical item IDs from $14$
+calculators before inference and partition them as every fourth ID across
+four RTX 4090 workers. They use bf16, eager attention, greedy decoding and
+$1{,}536$ new tokens. Fresh baselines retain $116$ donor-correct,
+receiver-incorrect items, of which $114$ also fail without a skill. Both
+experiments use these same $114$ items; all $372$ baseline generations agree
+token-for-token between the two suites. The complete repair grid contains
+$2{,}356$ generations, the path grid $1{,}488$, and worker identity checks
+$100$. All $48$ own-state writebacks are token-exact.
+
+S writes the donor source-span block output at layer $L$. C replaces only
+source-position keys and values at layers $0$ through $L$ after prefix
+prefill and before recomputing the final prompt token. SC combines them;
+SC recutting blocks reader queries to source keys from $L+1$ onward in that
+same run. Earlier reader history is unchanged. Reader queries are positions
+after the source span; source-self queries are positions within it. The
+path experiments cut the specified edges during both prefill and decoding,
+preserving the causal mask.
+
+We retain all intervention outcomes, including truncated outputs. For the
+prespecified SC-minus-S contrast at layer $16$, the gain is $38.6$ percentage
+points, with a skill-cluster bootstrap $95\%$ interval of $[26.6,46.5]$
+($10{,}000$ resamples of the $14$ calculators, retaining their items).
+The corresponding joint-minus-additive contrast is $31.6$ points
+$[14.1,41.6]$; SC-minus-recut is $35.1$ points $[23.2,43.0]$.
+On the $96$ items with all three baselines untruncated, SC-minus-S is
+$38.5$ points $[25.0,47.6]$.
+At layer $16$, S/SC/recut truncate $4/4/3$ of $114$ outputs;
+worst-case reassignment of all truncated S and SC outcomes leaves a
+$35.1$-point repair advantage. At layer $24$, SC and recut truncate $3/28$
+outputs and do not exhibit a reliable recutting loss; this depth is not
+used to claim independence after repair.
+
+At layer $24$, reader and source-self cuts retain $29/114$ and $110/114$
+correct answers. Their loss difference is $71.1$ points $[53.3,86.5]$.
+Reader cuts truncate $21$ outputs; counting all as correct still leaves
+retention at $50/114$, below source-self retention $110/114$ (no truncation).
+These checks support the central repair and reading contrasts without
+requiring longer-generation reruns. Full arm-wise counts, hashes, clustered
+intervals and truncation bounds accompany the analysis artifacts.
