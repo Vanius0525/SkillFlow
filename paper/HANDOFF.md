@@ -1,5 +1,15 @@
 # SkillVector 论文交接
 
+## 2026-10-17 重复注入升级为正文图（稿件与桌面交付完成）
+
+- 用户要求：把重复注入做成图，保持视觉风格一致，配套文字连贯，融入现有结构，不新建二级小节，不加入置信区间内容。本轮仅新增重复注入点估计图及邻近文字，保留其他既有图表内容。
+- 已验证 values/main-evidence-values.json 中五个窗口点估计与对应起始层单次替换完全一致，L16–35和L16单次均为0.0564516；所有层0–35为0.9758065。新图将直观比较替换窗口与L16单次条件，原始样本135题/14组，不启动推理。
+- 新增tools/fig_repeated_replacement.py及PDF/PNG/SVG；蓝/青绿/橙色与既有图一致，横条比较五个窗口与L16单次，右列为替换层数，浅色背景突出20次对1次；所有条宽已直接对照精确源值验证。没有增加误差条或置信区间。
+- 原4.3保留既有paragraph，文字改为“重复写能否维持skill→早晚起始差异→旧缓存问题”，不增subsection。新增为Figure3，机制图顺延Figure4，正文四图三表。
+- 构建build-skillvector.7vK0dUbq：正文6页、全文9页；图在2/4/4/5页，0error/undefined/overfull，字体全部嵌入。页4–6已目视检查。15份数值输入未改；check_main_data.py --numeric-only 132703检查/489源文件通过；新增图六个条宽/层数与源记录吻合；引用27项/11TeX无缺键重复标签。
+- **桌面最新入口：`/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v4-RepeatedReplacement-20261017/`**，含PDF、Overleaf ZIP、project源码与中文说明；说明源reports/重复注入图修订说明_20261017.md。ZIP17项，125305字节，SHA256 `ceea644e0294d66ac32546424a43d3697e0798df835651ad15d91f96ea5db1de`。独立编译build-overleaf.12p6renk通过；ZIP/桌面project/workspace源码逐字节一致，两PDF9页文字逐页一致，格式检查通过。审计audit/DESKTOP-REPEATED-REPLACEMENT-20261017.json、REPEATED-REPLACEMENT-20261017.json。
+- 下一步：master提交推送；结果以会话Git核验为准。既有howskill/data/cells.json.tmp不碰。
+
 ## 2026-10-17 桌面 v2 三图三表叙事修订（论文与桌面交付完成）
 
 - 目标：以桌面 WWW2027_v2_three_figures_three_tables 为重要参考，按有效探针→深度分离→历史修复重写；首页独立 Web relevance 段落；正文≤8页、全文≤12页；三图三表，Figure 3 改为便于干预比较的点图；最终桌面干净 Overleaf 包及 GitHub master 同步。

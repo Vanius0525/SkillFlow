@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import xml.etree.ElementTree as ET
 
 PAPER=Path(__file__).resolve().parents[1]
 root=Path(subprocess.check_output(['git','rev-parse','--show-toplevel'],cwd=PAPER,text=True).strip())
@@ -19,7 +20,7 @@ for path in inputs:
     assert original==path.read_bytes(),f'Numerical input changed: {relative}'
     hashes[relative]=hashlib.sha256(original).hexdigest()
 
-assert len(re.findall(r'\\begin\{figure\*?\}',text))==2
+assert len(re.findall(r'\\begin\{figure\*?\}',text))==3
 assert len(re.findall(r'\\begin\{table\*?\}',text))==3
 assert '\\begin{teaserfigure}' not in (PAPER/'main.tex').read_text()
 assert (PAPER/'sections/01-introduction.tex').read_text().count('Relevance to the Web and to this track.')==1
@@ -63,8 +64,33 @@ for key,label in [('SC_minus_S','L16: $SC-S$'),
 edges=json.loads((PAPER/'figures/fig-mechanism-edges.json').read_text())
 values=[edges['reader_minus_self_loss'][2],edges['reader_minus_self_loss_ci95'][0][2],edges['reader_minus_self_loss_ci95'][1][2]]
 assert f'L24: reader minus self loss & $+{100*values[0]:.1f}$ & $[{100*values[1]:.1f},{100*values[2]:.1f}]$' in text
+window_source=PAPER/'values/main-evidence-values.json'
+window_data=json.loads(window_source.read_text())
+window_report=json.loads((PAPER/'audit/REPEATED-REPLACEMENT-20261017.json').read_text())
+assert window_report['source_sha256']==hashlib.sha256(window_source.read_bytes()).hexdigest()
+assert (window_report['n'],window_report['groups'])==(135,14)
+svg=ET.parse(PAPER/'figures/fig-repeated-replacement.svg').getroot()
+ns={'s':'http://www.w3.org/2000/svg'}
+scale=[]
+for i,row in enumerate(window_report['rows']):
+    if row['layers']=='16 only':
+        expected=dict(window_data['sufficiency'])[16]
+        assert row['writes']==1
+    else:
+        lo,hi=map(int,row['layers'].split('–'))
+        expected=window_data['windows'][f'w{lo}_{hi}']
+        assert row['writes']==hi-lo+1
+    assert row['recovery']==expected
+    group=svg.find(f'.//s:g[@id="measured-window-{i}"]',ns)
+    assert group is not None
+    coordinates=[float(v) for v in re.findall(r'-?\d+(?:\.\d+)?',group.find('s:path',ns).attrib['d'])]
+    x=coordinates[::2]
+    scale.append((max(x)-min(x))/expected)
+assert max(scale)-min(scale)<1e-4,'Bar widths must match source recoveries'
+assert window_report['point_estimates_only']
 report={'numerical_inputs_unchanged':True,'input_sha256':hashes,
-        'main_figures':3,'main_tables':3,'appendix_tables':1,
-        'checked':'Table 1 exact point estimates, Table 2 common-item boundaries and threshold ordering, Table 3 contrasts and bootstrap intervals'}
+        'main_figures':4,'main_tables':3,'appendix_tables':1,
+        'checked':'Three main tables; repeated-replacement source values, write counts and rendered bar widths',
+        'repeated_replacement_conditions':len(window_report['rows'])}
 (PAPER/'audit/THREE-DISPLAY-REVISION-20261017.json').write_text(json.dumps(report,indent=2)+'\n')
-print(f'PASS: {len(inputs)} numerical inputs unchanged; all three main tables match source values.')
+print(f'PASS: {len(inputs)} numerical inputs unchanged; three main tables and six repeated-replacement bars match source values.')

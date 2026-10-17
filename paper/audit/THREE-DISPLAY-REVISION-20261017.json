@@ -17,8 +17,9 @@
     "paper/figures/fig-mechanism-edges.json": "5ad2bac4d982013a1f6afd7496ed0ea75764a06180c59a664ae2a59406eb4f24",
     "paper/figures/fig-mechanism-results-values.json": "22857e02345fdfff69316accfc3c5b3ae9e57a7b36b50e5191d333b6259b7426"
   },
-  "main_figures": 3,
+  "main_figures": 4,
   "main_tables": 3,
   "appendix_tables": 1,
-  "checked": "Table 1 exact point estimates, Table 2 common-item boundaries and threshold ordering, Table 3 contrasts and bootstrap intervals"
+  "checked": "Three main tables; repeated-replacement source values, write counts and rendered bar widths",
+  "repeated_replacement_conditions": 6
 }

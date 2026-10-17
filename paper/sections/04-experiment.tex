@@ -130,6 +130,21 @@ of the main skill span also reveals content structure: the formula quarter
 gives the largest standalone recovery, $0.56$. Appendix~\ref{app:fullscale}
 provides the additional content and prompt-order controls.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig-repeated-replacement.pdf}
+\caption{Repeated skill-state replacement on $135$ Qwen3-8B/MedCalc
+items from $14$ calculators. Each filled bar replaces the skill span at
+every layer in the indicated window. The outlined bar replaces it only
+at layer $16$. The final column gives the number of layers patched.
+Starting early supports strong recovery, while twenty late writes give
+the same recovery as one write at their starting layer.}
+\Description{Horizontal bars compare five replacement windows and a single
+layer-16 replacement. The layer-16-to-35 window and layer 16 alone both
+recover 0.06 of the donor's gain.}
+\label{fig:repeated}
+\end{figure}
+
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
@@ -195,16 +210,22 @@ respectively. $\Delta=R-T$ measures their separation in layers.}
 \end{table}
 
 \paragraph{Repeated late replacement leaves transfer weak.}
-A single write might be insufficient to sustain a transferred skill.
-We test this by replacing source-span states over consecutive layer
-windows on the same $135$ MedCalc items. Windows $8$--$11$, $12$--$15$,
-$14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and $0.06$,
-respectively. Replacing states at every layer from the start recovers
-$0.98$. Repetition is therefore effective when begun early, while starting
-at layer $16$ gives the same weak recovery as a single write there.
-A corresponding TheoremQA test also yields weak late-window recovery
-(Appendix~\ref{app:fullscale}). This directs attention to the execution
-history that residual replacement leaves in the receiver.
+The depth gap raises a practical question: can repeated replacement sustain
+the transferred skill after a single write becomes ineffective? We replace
+source-span states at every layer within consecutive windows, using the
+same $135$ MedCalc items and wrong-skill receiver as the depth sweep.
+Each layer receives the donor states captured at that layer.
+
+Figure~\ref{fig:repeated} shows that recovery depends strongly on where
+replacement begins. Windows starting in the early layers preserve much
+of the skill's benefit, while later windows recover little. Extending
+replacement from layer $16$ through the final layer gives $0.06$ recovery,
+equal to replacing layer $16$ alone. By comparison, replacing every layer
+from the start recovers $0.98$. Repeated writes therefore support effective
+transfer when begun early, but adding them after the transfer boundary
+does little to restore the skill's contribution. This shifts the next
+question from how often the states are replaced to what accompanies them:
+the receiver still retains its previously computed attention caches.
 
 
 

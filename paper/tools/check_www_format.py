@@ -35,7 +35,7 @@ def main():
     captions={}
     for j,page in enumerate(p):
         for n in re.findall(r'Figure ([1-4]):',page.get_text()):captions[int(n)]=j+1
-    assert set(captions)=={1,2,3} and max(captions.values())<=main_pages
+    assert set(captions)=={1,2,3,4} and max(captions.values())<=main_pages
     assert 'Relevance to the Web and to this track.' in first
     fonts={f[0]:f for page in p for f in page.get_fonts()}
     assert all(p.extract_font(x)[3] for x in fonts),'Unembedded font'

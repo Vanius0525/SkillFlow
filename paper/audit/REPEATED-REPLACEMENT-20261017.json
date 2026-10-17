@@ -1,0 +1,38 @@
+{
+  "source_sha256": "cbab059b9bc7775427eaf2f57289615b47bf0042fefe49631481d761fd42cbc1",
+  "n": 135,
+  "groups": 14,
+  "rows": [
+    {
+      "layers": "0\u201335",
+      "recovery": 0.9758064516129031,
+      "writes": 36
+    },
+    {
+      "layers": "8\u201311",
+      "recovery": 0.8870967741935484,
+      "writes": 4
+    },
+    {
+      "layers": "12\u201315",
+      "recovery": 0.7419354838709677,
+      "writes": 4
+    },
+    {
+      "layers": "14\u201319",
+      "recovery": 0.16129032258064516,
+      "writes": 6
+    },
+    {
+      "layers": "16\u201335",
+      "recovery": 0.056451612903225805,
+      "writes": 20
+    },
+    {
+      "layers": "16 only",
+      "recovery": 0.056451612903225805,
+      "writes": 1
+    }
+  ],
+  "point_estimates_only": true
+}

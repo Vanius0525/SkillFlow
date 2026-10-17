@@ -42,7 +42,7 @@ inference is Qwen3-8B/MedCalc; prior cross-model/task evidence is retained.
 The AI Use Statement was removed at the user's request.
 
 The latest Chinese reading guide is
-[Three-figure / three-table revision](reports/三图三表修订说明_20261017.md).
+[Repeated-replacement figure revision](reports/重复注入图修订说明_20261017.md).
 Nearest-neighbor distinctions and primary-source links are documented there.
 
 ## Figures, tables, and audits
@@ -52,6 +52,7 @@ MPLCONFIGDIR=/tmp/paper-mpl python3 tools/style_main_figures.py
 python3 tools/style_main_tables.py
 MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_two_probes.py
 MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_mechanism_results.py
+MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_repeated_replacement.py
 python3 tools/audit_citations.py
 python3 tools/check_main_data.py --numeric-only
 ```
@@ -61,7 +62,7 @@ uncertainty. The default style pass updates only submission figures and tables.
 It does not regenerate archived rank/position diagnostics or extended appendices.
 `check_main_data.py --numeric-only` checks the underlying numerical records
 and plots, including historical diagnostics. Its legacy exact-wording checks
-are skipped because the manuscript has been rewritten. The three-figure
+are skipped because the manuscript has been rewritten. The four-figure
 format is verified separately by `tools/check_www_format.py`.
 
 The formal full-token mechanism records remain in the remote archive under

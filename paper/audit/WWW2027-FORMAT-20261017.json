@@ -8,14 +8,15 @@
     "first_eight_pages_self_contained": true,
     "documentclass": "sigconf, anonymous, review; acmart"
   },
-  "pdf": "/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v3-ThreeFiguresThreeTables-20261017/StillNeeded-review.pdf",
-  "pdf_sha256": "b85b030a0744edcc1638912529029c60104d6f3e5d542040679ea4ec7615c5ff",
+  "pdf": "/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v4-RepeatedReplacement-20261017/StillNeeded-review.pdf",
+  "pdf_sha256": "b1d18f58bb69373127f45baec895640ee122efd94fda3123162318c69060d060",
   "main_pages": 6,
   "total_pages": 9,
   "main_figure_pages": {
     "1": 2,
     "2": 4,
-    "3": 5
+    "3": 4,
+    "4": 5
   },
   "first_page_web_relevance": true,
   "anonymous_review": true,
