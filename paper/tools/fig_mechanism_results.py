@@ -6,6 +6,7 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 
 PAPER=Path(__file__).resolve().parents[1]
@@ -22,6 +23,8 @@ def main():
         raise ValueError('Unexpected measured layer grid')
     if len(repair['manifests'])!=4 or len(edges['manifests'])!=4:
         raise ValueError('All four completed shards are required')
+    if set(primary['ids']) != set(edges['rescued_ids']):
+        raise ValueError('Mechanism panels must use identical primary item IDs')
     left=np.array(primary['accuracy'])[2:]
     right=np.array(edges['loss'])
     if left.shape!=(4,4) or right.shape!=(3,3):
@@ -36,10 +39,16 @@ def main():
            (axes[1],right,edges['layers'],['Reader → source','Source → source','Both paths'],
             'Oranges','(b) Which attention path matters?','Accuracy lost after the cut',
             edges['rescued_n'],len(edges['groups']))]
+    palettes={'Blues':LinearSegmentedColormap.from_list('repair',['#F4F8FC','#A8CEE4','#2866A0','#173C63']),
+              'Oranges':LinearSegmentedColormap.from_list('path',['#FFF8ED','#F3CA94','#D27A29','#8D3D13'])}
     for ax,matrix,layers,rows,cmap,title,cblabel,n,g in specs:
-        im=ax.imshow(matrix,vmin=0,vmax=1,cmap=cmap,aspect='auto',interpolation='nearest')
+        im=ax.imshow(matrix,vmin=0,vmax=1,cmap=palettes[cmap],aspect='auto',interpolation='nearest')
         ax.set_xticks(range(len(layers)),layers)
         ax.set_yticks(range(len(rows)),rows)
+        ax.set_xticks(np.arange(matrix.shape[1]+1)-.5,minor=True)
+        ax.set_yticks(np.arange(matrix.shape[0]+1)-.5,minor=True)
+        ax.grid(which='minor',color='white',linewidth=1.3)
+        ax.tick_params(which='minor',bottom=False,left=False)
         ax.set_xlabel('Intervention layer',fontsize=8)
         ax.set_title(title+f'\n(n={n}; {g} skills)',loc='left',fontsize=8,fontweight='bold',pad=8)
         ax.tick_params(length=0,labelsize=7)
@@ -53,6 +62,8 @@ def main():
         bar.outline.set_visible(False)
     for ext in ('pdf','png','svg'):
         fig.savefig(FIG/f'fig-mechanism-results.{ext}',dpi=240,facecolor='white')
+    svg=FIG/'fig-mechanism-results.svg'
+    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
     metadata=dict(repair_source_sha256=hashlib.sha256(repair_path.read_bytes()).hexdigest(),
                   edges_source_sha256=hashlib.sha256(edges_path.read_bytes()).hexdigest(),
                   repair_n=primary['n'],edges_n=edges['rescued_n'],

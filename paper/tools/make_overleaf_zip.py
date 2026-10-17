@@ -50,8 +50,8 @@ def write_project_zip(paper,out):
             '# Overleaf review draft\n\n'
             'Main file: main.tex. Compiler: pdfLaTeX. Bibliography: BibTeX.\n\n'
             'Upload this ZIP directly as a new Overleaf project. The default\n'
-            'build is the WWW manuscript. Change \\extendedappendixfalse to\n'
-            '\\extendedappendixtrue for the extended technical report.\n\n'
+            'build is the WWW submission manuscript. This project contains\n'
+            'only the submission and its references and compact appendix.\n\n'
             +phase_note+
             'This project contains only TeX inputs, referenced PDF figures,\n'
             'the bibliography and this README. No local absolute paths,\n'

@@ -1,14 +1,16 @@
 \begin{abstract}
-When a language model follows a newly supplied skill, has it acquired an
-internal ability that can be extracted and reused, or does that ability
-remain tied to the original source and computation? We investigate this
+Agent skills equip Web agents with task-specific capabilities by loading
+instructions and supporting resources into context. When a language model
+successfully uses a skill, can its internal states be extracted and reused,
+or does that ability remain tied to the original skill context and
+computation? We investigate this
 question through two interventions along model depth. We transplant
 correct-skill span states into a wrong-skill execution and measure recovered
 performance; separately, we block subsequent attention to the skill in the
 original execution and measure retained performance. Across three models
 from two families on MedCalc and TheoremQA, skill-state transfer weakens
-before source dependence subsides. The ordering persists on common eligible
-items. In this intermediate interval, the source remains important even
+before dependence on skill access subsides, including on common eligible
+items. In this intermediate interval, the skill remains important even
 though its states have little corrective effect in the receiver. Content,
 position and cross-question controls establish that early transfer carries
 structured skill information, while repeated late replacement does not

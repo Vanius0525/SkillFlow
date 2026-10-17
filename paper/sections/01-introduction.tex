@@ -1,16 +1,30 @@
 \section{Introduction}
 \label{sec:intro}
 
-When a language model successfully follows a newly supplied rule, what ability
-has it acquired? Has the context provided an internal skill that can be
-extracted and reused, or an ability that works only within the original
-instructions and computation? Formulas, procedures and step-by-step guides
-can improve answers without changing model weights. Yet successful use alone
-does not tell us how independently that ability can operate. This distinction
-matters for Web agents that inject and share skills and workflows
-\citep{wang2024awm, wang2026webxskill}, as well as retrieval systems that supply
-skill-bearing documents \citep{tan2025htmlrag}: reusing a document's internal
-states requires more than demonstrating that the model can follow it.
+Agent skills are becoming an important source of capability for Web agents.
+We use \emph{skill} in Anthropic's Agent Skills sense: a package of task
+instructions, scripts and supporting resources, organized around a
+\texttt{SKILL.md} entry point that an agent discovers and loads when relevant
+\citep{zhang2025agentskills}. The Web supplies procedural material for such
+skills---site instructions, worked examples, API documentation and
+step-by-step guides---that can enter an agent's context without changing its
+weights. Web retrieval brings external content into context
+\citep{tan2025htmlrag}, while Web-agent systems retrieve reusable
+workflows from past trajectories \citep{wang2024awm} and combine action
+programs with natural-language skill guidance \citep{wang2026webxskill}.
+Skills therefore turn external expertise into an operational source of agent
+capability. Understanding what the model acquires when it reads a skill is
+central to making that capability reusable.
+
+When a model successfully follows a newly supplied skill, what
+ability has it acquired? Has the context provided an internal skill that can
+be extracted and reused, or an ability sustained by the original instructions
+and computation? This question matters as agents retrieve, share and reuse
+skills across tasks: successful execution demonstrates that a skill can be
+used, but does not establish how independently its internal representation
+can operate. We study this distinction through the instruction content loaded from
+skills, asking how the ability to reuse their states relates to the
+ongoing need to access their source.
 
 A natural way to test an internal skill is to move its states to another
 execution and ask whether they recover the ability. Task and function
@@ -23,6 +37,12 @@ its states no longer work in a different computation. We distinguish these
 possibilities by asking two questions together: \emph{can the skill states
 correct another execution, and does the original execution still need access
 to the skill?} Figure~\ref{fig:teaser} illustrates the tests and their separation.
+
+Prior work demonstrates transferable task states, layer-wise subtask
+scheduling and composable skill caches
+\citep{hendel2023taskvectors,yang2025internalcot,li2026prefillnotes}.
+We ask a complementary question: \emph{when a source remains necessary, how
+far can its states be reused, and what restores reuse when it fails?}
 
 We answer these questions with complementary interventions along model
 depth. State replacement transplants the correct skill's span states into

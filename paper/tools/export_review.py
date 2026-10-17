@@ -21,6 +21,7 @@ def main():
     p.add_argument('--destination',required=True)
     p.add_argument('--final',action='store_true',help='Require measured mechanism results with no draft placeholders')
     p.add_argument('--note',default='reports/桌面版本阅读说明_20261017.md')
+    p.add_argument('--audit-output',default=None)
     a=p.parse_args()
     destination=Path(a.destination)
     if destination.exists():raise FileExistsError('Choose a fresh export; existing review is preserved')
@@ -65,6 +66,8 @@ def main():
     mechanism_pages=[j+1 for j,page in enumerate(pdf) if 'Which attention path matters?' in page.get_text()]
     if a.final and (len(mechanism_pages)!=1 or mechanism_pages[0]>int(endmain.group(1))):
         raise ValueError('Main mechanism figure falls outside the main-text boundary')
+    if a.final and 'AI Use Statement' in text:
+        raise ValueError('Final revision still contains the removed AI Use Statement')
     # Only create the user-facing directory after exact-ZIP compilation passes.
     destination.mkdir(parents=True,exist_ok=False)
     project=destination/'project';project.mkdir()
@@ -80,7 +83,7 @@ def main():
                overfull_hbox=log.count('Overfull \\hbox'),overfull_vbox=log.count('Overfull \\vbox'),
                compile_stage=str(stage),scope='Qwen3-8B + MedCalc for all new mechanism experiments',
                mechanism_results_pending=pending,mechanism_figure_pages=mechanism_pages)
-    (PAPER/('audit/DESKTOP-FINAL-20261017.json' if a.final else 'audit/DESKTOP-REVIEW-20261017.json')).write_text(json.dumps(facts,indent=2)+'\n')
+    (PAPER/(a.audit_output or ('audit/DESKTOP-FINAL-20261017.json' if a.final else 'audit/DESKTOP-REVIEW-20261017.json'))).write_text(json.dumps(facts,indent=2)+'\n')
     print(json.dumps(facts,indent=2))
 
 

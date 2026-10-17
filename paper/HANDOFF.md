@@ -1,5 +1,14 @@
 # SkillVector 论文交接
 
+## 2026-10-17 Web / Agent Skills / WWW格式修订（完成；后续只维护投稿版）
+
+- 用户最新偏好：**只维护一个投稿版，不再维护/编译/交付扩展版**。已移除main.tex扩展切换和C–H加载；旧扩展源和PDF保留归档、未改写。build.sh默认且仅支持submission，只复制实际依赖。主图style默认仅更新投稿图；table style仅更新可达表与A/B，历史扩展诊断不再生成。旧实验完成标记、停用的timer继续保持；没有新增推理或资源操作。
+- 本轮完成：摘要/引言先讲Agent Skills与Web agents；skill明确采用Anthropic SKILL.md＋指令/脚本/资源范式，方法分析载入的instruction body。最近邻准确介绍context masking/patching、mediator interaction和skill-cache composition，再强调depth gap→SC repair→reader recut贡献链，保留有力度主张。删除AI Use Statement。AWM引用更正ICML2025，新增Anthropic原文作者与日期；7项关键一手源复核，全部37项实际引用/58 bib/14 TeX无缺键重复标签。
+- 图表完成美化：主折线蓝橙真点、白底浅区间、轻网格无交叉箭头；teaser/热图同色系、热图白格线；主表分组线与关键行高亮。全部16份数值JSON逐字节不变；数值审计132731检查/489源文件通过，含8438机制检查。没有平滑、插值或改样本。
+- WWW2027官方live规则：正文<=8页，**不含参考文献/可选附录**；全部<=12页，前8页自洽；推荐sigconf,anonymous,review/acmart。最终默认投稿版**8/12页**，主图在1/5/6/6页，首页明确Web-agent skill相关性，字体全部嵌入；0error/undefined/overfull。无正文页边距/字号/行距修改。已去未分配DOI/ISBN与ACM reference strip、保留匿名。格式审计audit/WWW2027-FORMAT-20261017.json；精确ZIP独立编译stage build-overleaf.15db_4zy。
+- **请用桌面 /mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-Submission-20261017/**：20文件、143187字节Overleaf ZIP；唯一投稿PDF StillNeeded-review.pdf；project/必要源码；阅读说明.md。ZIP SHA256 effbf13fbd25da637c0abbd587c7b3c95c398e1e76f13760d55d51b200cc6848。项目逐项等于ZIP，ZIP依赖等于workspace，workspace PDF等于独立ZIP预览。无扩展版开关/附录/图片/脚本/缓存。先前所有审阅快照保留；WebSkills目录是本轮较早中间快照，以Submission目录为准。
+- 交付审计audit/DESKTOP-SUBMISSION-20261017.json；中文说明reports/Web-AgentSkills修订说明_20261017.md；引用/格式/数值未改动证据分别在audit/CITATIONS-WEB-REVISION-20261017.json、WWW2027-FORMAT-20261017.json、STYLE-NUMBERS-UNCHANGED-20261017.json。全部完成后仅本任务文件commit/push master；不提交用户howskill/data/cells.json.tmp。
+
 ## 2026-10-17 一天内完成论文：当前执行入口
 
 - **14:21论文与交付已完成验证；本段为最终提交入口，覆盖下方运行中记录**：四卡结果全部填入真实Fig4（正文第6页），无待填机制面板；正文重排为setup→有效可复用探针→主现象与稳健性→机制。标题Still Needed, Hard to Transfer: Using and Reusing Contextual Skills。新增推理仅Qwen3-8B/MedCalc，未追加实验、下载权重或删除数据。

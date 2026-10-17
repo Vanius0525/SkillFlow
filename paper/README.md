@@ -1,167 +1,69 @@
-# Still Needed, Hard to Transfer — LaTeX project (WWW 2027 research track)
+# Still Needed, Hard to Transfer — WWW 2027 submission
 
-Current title: **Still Needed, Hard to Transfer: Using and Reusing Contextual Skills**.
+Title: **Still Needed, Hard to Transfer: Using and Reusing Contextual Skills**.
 
-Result-integrated version (2026-10-17): all mechanism panels contain measured
-results. On 114 common eligible Qwen3-8B/MedCalc items, layer-16 accuracy is
-3.5% with residual-only transfer, 42.1% with residual-plus-source-cache repair,
-and 7.0% after subsequent reader recutting. Existing cross-model/task evidence
-is retained. See [the final Chinese reading guide](reports/最终版本阅读说明_20261017.md).
+Only the submission is maintained and exported. Historical extended sources
+and snapshots remain archived in the repository; they are not loaded by
+`main.tex`, regenerated, or included in the Overleaf ZIP.
 
-`main.tex` is the whole document. Everything else is either a piece of it or a
-generator that writes one of those pieces.
+## Build and upload
 
+```bash
+bash build.sh
+python3 tools/make_overleaf_zip.py
 ```
-main.tex                preamble, ACM metadata, and the \input skeleton
-sections/               main text, one file per section (00 abstract … 05 conclusion)
-appendix/               appendices, one file per theme (a … g)
-tables/                 tabulars, written by tools/ — do not edit by hand
-figures/                figures, written by tools/ — do not edit by hand
-skillvector.bib         bibliography
-build.sh                local build against the Windows MiKTeX
-tools/                  the generators and the data checker
-values/                 the JSON records the numbers are read back from
-audit/                  audit logs from earlier passes
-legacy/                 the ICLR one-column sources this replaced; safe to delete
-```
+
+The build writes `skillvector-www2027.pdf`. Upload `overleaf-skillvector.zip`
+to Overleaf, choose `main.tex`, and use pdfLaTeX with BibTeX. The ZIP includes
+only reachable TeX inputs, referenced PDF figures, the bibliography and README.
+It has no experiment logs, scripts, caches, local paths, or extended-build switch.
 
 ## Format
 
-The ACM Web Conference 2027 research track asks for
-`\documentclass[sigconf, anonymous, review]{acmart}` and caps a long paper at
-**8 pages of main content plus references and an optional appendix, 12 pages in
-total**, with the first 8 pages self-contained.
-See <https://www2027.thewebconf.org/research-track-papers/>.
+[WWW 2027 Research Track requirements](https://www2027.thewebconf.org/research-track-papers/):
+**at most 8 main-content pages excluding references and optional appendix;
+at most 12 pages including everything**. The first 8 pages must be self-contained.
+Use English, two columns, and `\documentclass[sigconf, anonymous, review]{acmart}`.
+The work's Web relevance must be explicit on page one.
 
-Three things in `main.tex` are placeholders and must be replaced before
-submission: the `\acmConference`/`\acmDOI`/`\acmISBN` block (the ACM rights form
-emails you the real one), the CCS concepts (regenerate at
-<https://dl.acm.org/ccs>), and the anonymous author block.
+The review build remains anonymous and omits unassigned publication DOI/ISBN
+and the ACM reference strip. Its standard text margins and font sizes are
+unchanged. Check `audit/WWW2027-FORMAT-20261017.json` for the current PDF audit.
+Assigned publication metadata belongs to the eventual camera-ready version.
 
-## The two builds
+## Current story
 
-`main.tex` carries one switch:
+Agent Skills follow Anthropic's instruction/script/resource paradigm. Our unit
+of analysis is the skill instruction content loaded into context, with skill
+selection held fixed. The paper moves from Web-agent skill use to a validated
+state-transfer probe, depth-wise separation of transfer and source dependence,
+and causal source-history repair and reader recutting. All new mechanism
+inference is Qwen3-8B/MedCalc; prior cross-model/task evidence is retained.
+The AI Use Statement was removed at the user's request.
 
-```latex
-\extendedappendixfalse   % WWW submission, 12 pages  — appendices A and B  (the default)
-\extendedappendixtrue    % technical report, 38 pages — appendices A–H
-```
+The latest Chinese reading guide is
+[Web / Agent Skills revision](reports/Web-AgentSkills修订说明_20261017.md).
+Nearest-neighbor distinctions and primary-source links are documented there.
 
-Nothing is deleted by the switch; the extended files simply are not `\input`.
-The default is the submission, so a fresh Overleaf upload compiles the version
-that has to fit the page limit. Flip the line in Overleaf to read the full one.
-
-```
-./build.sh              # technical report -> skillvector.pdf          (38 pages)
-./build.sh submission   # WWW submission   -> skillvector-www2027.pdf  (12 pages)
-```
-
-`build.sh` sets the switch in its staging copy for whichever target you ask
-for, so it does not matter which way the line is left in the repository.
-
-Both print the structure, the undefined references, the overfull boxes, the
-main-text page count and the total page count. The structure is printed on
-every build because a slice edit once deleted a whole section without changing
-the page count enough to notice.
-
-## Overleaf
-
-Upload `overleaf-skillvector.zip` (written by `tools/make_overleaf_zip.py`). It
-contains `main.tex`, `sections/`, `appendix/`, `tables/`, `figures/*.pdf` and the
-`.bib` — no Python, no PNGs, no audit logs. Overleaf resolves `acmart` itself.
-Set the compiler to pdfLaTeX.
-
-## Regenerating the numbers
-
-No model inference and no network; everything reads the local run records under
-`../howskill/results/` and `../whitebox/results/`.
-
-```
-cd paper
-MPLCONFIGDIR=/tmp/skillvector-mpl python3 tools/refresh_main_data.py
-```
-
-That runs, in order: `main_evidence.py`, `replication.py`, `replication_full.py`,
-`fig_channels_full.py`, `fig_rank_full.py`, `fig_posbudget.py`,
-`check_main_data.py` and `../whitebox/analysis/audit.py`. It does **not** cover
-three generators; run them by hand after changing what they read:
-
-```
-python3 tools/controls_table.py                       # tables/tab-controls.tex
-python3 tools/decomp_tables.py                        # tab-causal, tab-parperp, tab-geometry-tierA
-python3 tools/figs.py --e14 "tierA=../whitebox/results/fetched/tA/d17-neutral" --out figures
-```
-
-`tools/check_main_data.py` compares every main-text display against the records
-and fails loudly on a drift; `whitebox/analysis/audit.py` does the same for the
-historical results. Both must pass before a build is trusted.
-
-## Story and display revision (2026-10-14)
-
-The title at that revision was *When Skill Transfer Fails but Reading Continues*.
-The introduction follows problem → apparent paradox → complementary interventions
-→ discovery → validation and three contributions. The main depth comparison
-now follows the effective early-transfer probe. See
-[the Chinese storyline and evidence audit](reports/论文主线与改写说明_20261014.md).
-
-The four main figures and two evidence tables have a separate presentation pass:
+## Figures, tables, and audits
 
 ```bash
-MPLCONFIGDIR=/tmp/skillvector-mpl python3 tools/style_main_figures.py
+MPLCONFIGDIR=/tmp/paper-mpl python3 tools/style_main_figures.py
 python3 tools/style_main_tables.py
-```
-
-These read the audited JSON files under `values/` without changing numerical
-estimates. `refresh_main_data.py` runs them after its numerical generators.
-Transfer and attention-knockout sample sizes are shown separately in the
-replication table. Individual legacy generators alone do not apply the new style.
-
-A Linux build can use Tectonic with a writable cache and output directory:
-
-```bash
-XDG_CACHE_HOME=/tmp/skillflow-tectonic-cache tectonic -k --keep-logs -o /tmp/skillflow-tex-out main.tex
-```
-
-Create the output directory first. Initial use downloads TeX dependencies;
-subsequent builds can add `--only-cached`. The Windows `build.sh` is retained
-for its original environment. Always inspect the `endmain` page and the PDF's
-total page count before copying a build to a delivery filename.
-
-## Focused depth-gap manuscript (2026-10-15)
-
-The main text now keeps the validated span probe, transfer/source-attention
-depth separation, common-item checks, joint-failure heatmap, repeated late
-replacement and content-sharing controls. Synthetic probe development, rank
-and detailed position budgets are retained in the extended appendices.
-
-Figure 2 uses actual layer indices. All figure and table displays use point
-estimates; raw uncertainty records remain in `values/` and the numerical
-audit still checks them. `tools/point_estimates.py` is the idempotent table
-presentation pass. `tools/fig_joint_failure.py` recomputes the same-item
-heatmap from raw completed runs; no interpolation or model inference is used.
-
-The current knockout masks skill keys for all query rows, including the skill
-queries. Reader-only versus source-internal attention controls were subsequently completed
-in the 2026-10-17 experiments; the paragraph above records the older revision. See
-[audit/EXTRA-FAMILY-RESUME-20261015.md](audit/EXTRA-FAMILY-RESUME-20261015.md).
-
-
-## Reproducing the final mechanism figures
-
-The full-token formal records remain in the remote archive under
-`/inspire/ssd/project/project-public/czxs253130660/mechanism-20261017-v1/`.
-Retrieve the small completed-artifact archive once, verify the SHA256 in
-`experiments/mechanism_20261017/retrieval-audit.json`, and extract to that
-local experiment directory. Formal raw shards are ignored by Git; manifests,
-hashes, counts and uncertainty summaries are tracked. Then run:
-
-```bash
-MPLCONFIGDIR=/tmp/paper-mpl python3 experiments/mechanism_20261017/analyze.py experiments/mechanism_20261017/parallel/repair-s4-{0,1,2,3}.jsonl --ids experiments/mechanism_20261017/ids-repair124.json --out-prefix figures/fig-mechanism-repair
-MPLCONFIGDIR=/tmp/paper-mpl python3 experiments/mechanism_20261017/analyze_edges.py experiments/mechanism_20261017/parallel/edges-s4-{0,1,2,3}.jsonl --ids experiments/mechanism_20261017/ids-repair124.json --out-prefix figures/fig-mechanism-edges
+MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_teaser.py
 MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_mechanism_results.py
-python3 tools/audit_mechanism.py
+python3 tools/audit_citations.py
 python3 tools/check_main_data.py
 ```
 
-The final experiment order is setup → validated reusable-content probe →
-depth separation and robustness → source-history and reading-path mechanisms.
+Styling reads audited values and preserves point estimates, samples and raw
+uncertainty. The default style pass updates only submission figures and tables.
+It does not regenerate archived rank/position diagnostics or extended appendices.
+`check_main_data.py` additionally checks historical records without rewriting them.
+
+The formal full-token mechanism records remain in the remote archive under
+`/inspire/ssd/project/project-public/czxs253130660/mechanism-20261017-v1/`.
+Retrieve the small archive once, verify `experiments/mechanism_20261017/retrieval-audit.json`,
+and extract to that local experiment directory. Raw shards are ignored by Git;
+compact manifests, hashes, counts and clustered uncertainty are tracked.
+`tools/audit_mechanism.py` independently recounts raw results and figure cells.

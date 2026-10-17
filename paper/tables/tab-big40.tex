@@ -1,21 +1,21 @@
-\begin{tabular}{@{}lrcc@{}}
+\begin{tabular}{@{}lrrr@{}}
 \toprule
 \rowcolor{TableHeader}
 \textbf{Intervention} & $n$ & \textbf{Accuracy} & \textbf{Recovery} $\rho$ \\
 \midrule
 \emph{correct skill in context} & $135$ & $0.919$ & $+1.00$ \\
-\addlinespace[3pt]
+\midrule
 \rowcolor{TransferHighlight}
 $h_{\text{recv}}+\dvec$ \ (full span) & $135$ & $0.815$ & $+0.89$ \\
 correct content, shared prefix & $135$ & $0.593$ & $+0.65$ \\
-\addlinespace[3pt]
+\midrule
 half dose ($\alpha=0.5$) & $135$ & $0.037$ & $+0.04$ \\
 another skill (individual donor) & $135$ & $0.044$ & $+0.05$ \\
 mean from another skill family & $135$ & $0.044$ & $+0.05$ \\
 mean from the same skill family & $41$ & $0.122$ & $+0.12$ \\
 positions permuted & $135$ & $0.044$ & $+0.05$ \\
 norm-matched Gaussian noise & $135$ & $0.022$ & $+0.02$ \\
-\addlinespace[3pt]
+\midrule
 \emph{identity intervention} & $135$ & $0.000$ & $+0.00$ \\
 \emph{wrong skill, unpatched} & $135$ & $0.000$ & $+0.00$ \\
 \bottomrule

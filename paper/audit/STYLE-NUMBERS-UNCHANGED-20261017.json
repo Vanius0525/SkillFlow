@@ -1,0 +1,22 @@
+{
+  "baseline_commit": "c39669ad3f7978015fbd1500b9d1731e84ca7dfa",
+  "numeric_records_byte_identical": true,
+  "sha256": {
+    "values/posbudget.json": "d7d1ff65a5907e4d0112eb058f699f3901799b16bcafcf02b7316c342c1c68fa",
+    "values/answer-format-values.json": "d0d11adf17501c4e179d8181ac09e05d8a6f1a05602385e2651684323c08d4f9",
+    "values/fig-channels-values.json": "2a2c3ea072b6032350804be5210dcaab795c8ea30c90335be8fb779ddcee3685",
+    "values/controls-values.json": "0a3fe467c62bd35d02a6e5e069b811db285e2b4734a6aab11b7273a2a8ee5c8a",
+    "values/replication-values.json": "22deab12f18328253172fdf235c7533d09ef9e0a5c3777f1da88429718ff993c",
+    "values/fig-rank-values.json": "554123eed448bce4227fe0f515d59ccc828e12935a70f729977f1e5ac052bcde",
+    "values/main-evidence-values.json": "cbab059b9bc7775427eaf2f57289615b47bf0042fefe49631481d761fd42cbc1",
+    "values/decomp-values.json": "be48aa2fc206ed2a1008e4c323764ee66580c70f207ea9bf12a59754ba27386a",
+    "values/battery-values.json": "e3e7f06e2a9850f447eab78b56dd36e3125b22e78111614f91f9e05f126fda2c",
+    "values/joint-failure-values.json": "162346e76396a2768010922d9b1c8033b59e62885614748f6a15b0cacd84ca45",
+    "values/behaviour-values.json": "a327693e4733f28f95520c0aa4100a160d29802a4496b53d6f823895c46f7038",
+    "values/depth-crossmodel-values.json": "e1cf2b65d6b68266c2050f0c42219d40a76a1759d355ebfd4fad998c46ced2a6",
+    "figures/fig-mechanism-repair.json": "49515d7125c87b2986ddefb20465c47b910c26063da801454a29552e4a188572",
+    "figures/fig-mechanism-edges.json": "5ad2bac4d982013a1f6afd7496ed0ea75764a06180c59a664ae2a59406eb4f24",
+    "figures/fig-mechanism-results-values.json": "22857e02345fdfff69316accfc3c5b3ae9e57a7b36b50e5191d333b6259b7426",
+    "figures/fig-teaser-values.json": "a22a4fcd75e7b841d8380b5fcade5cfa1b3386ac8285582da2c6b7c3a3337d9c"
+  }
+}

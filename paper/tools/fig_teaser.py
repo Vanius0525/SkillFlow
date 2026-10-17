@@ -10,7 +10,7 @@ from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
 import numpy as np
 
 PAPER=Path(__file__).resolve().parents[1]
-INK='#20384B'; MUTED='#657889'; BLUE='#2864A5'; TEAL='#278577'; AMBER='#BD6D26'
+INK='#20384B'; MUTED='#657889'; BLUE='#2866A0'; TEAL='#268C82'; AMBER='#D27A29'
 plt.rcParams.update({'font.family':'DejaVu Sans','font.size':8,'text.color':INK,
                      'pdf.fonttype':42,'svg.fonttype':'none'})
 
@@ -82,8 +82,8 @@ def main():
     x=np.arange(36); transfer=np.array(cell['transfer']); dependence=1-np.array(cell['retention'])
     plot.axvspan(13,25,color='#F4D6AF',alpha=.8,lw=0)
     plot.axhline(.5,color='#C6B59E',ls=(0,(2,3)),lw=.55)
-    plot.plot(x,transfer,color=BLUE,lw=1.45)
-    plot.plot(x,dependence,color=TEAL,lw=1.45)
+    plot.plot(x,transfer,color=BLUE,lw=1.65)
+    plot.plot(x,dependence,color=TEAL,lw=1.65)
     plot.set_xlim(0,35);plot.set_ylim(-.035,1.07)
     plot.set_xticks([0,13,25,35]);plot.set_yticks([0,1])
     plot.tick_params(labelsize=6,length=2,pad=2,colors=MUTED)
@@ -99,6 +99,8 @@ def main():
 
     for ext in ('pdf','svg','png'):
         fig.savefig(PAPER/f'figures/fig-teaser.{ext}',dpi=240,facecolor='white')
+    svg=PAPER/'figures/fig-teaser.svg'
+    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
     evidence=dict(source=str(source.relative_to(PAPER)),source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                   model='Qwen3-8B',task='MedCalc',sample='common eligible items',n=cell['n'],
                   transfer=cell['transfer'],source_dependence=dependence.tolist(),

@@ -15,11 +15,11 @@ rows=[(r'\emph{correct skill in context}','gold_in_context'),
       ('norm-matched Gaussian noise','drand_L8'),
       (r'\emph{identity intervention}','self_L8'),
       (r'\emph{wrong skill, unpatched}','receiver')]
-out=[r'\begin{tabular}{@{}lrccc@{}}',r'\toprule',
+out=[r'\begin{tabular}{@{}lrrrr@{}}',r'\toprule',
      r'\textbf{Intervention} & $n$ & \textbf{Accuracy} & \textbf{95\% CI} & \textbf{Recovery} $\rho$ \\',r'\midrule']
 for label,key in rows:
     v=battery[key];lo,hi=v['ci']
-    if key in ('real_L8','a0.5_L8','self_L8'):out.append(r'\addlinespace[3pt]')
+    if key in ('real_L8','a0.5_L8','self_L8'):out.append(r'\midrule')
     if key=='real_L8':out.append(r'\rowcolor{TransferHighlight}')
     out.append(f'{label} & ${v["n"]}$ & ${v["accuracy"]:.3f}$ & $[{lo:.3f},\\,{hi:.3f}]$ & ${v["rho"]:+.2f}$ '+r'\\')
 out += [r'\bottomrule',r'\end{tabular}']
@@ -29,7 +29,7 @@ cells=json.loads((VALUES/'replication-values.json').read_text())
 out=[r'\begin{tabular}{@{}llrcccc@{}}',r'\toprule',
      r'\textbf{Task} & \textbf{Model} & $n_T/n_R$ (groups) & $\rho$ [95\% CI] & \textbf{Control} & \textbf{Transfer} $L$ & \textbf{Reading} $L$ \\',r'\midrule']
 for i,c in enumerate(cells):
-    if i and cells[i-1]['model']!=c['model']:out.append(r'\addlinespace[3pt]')
+    if i and cells[i-1]['model']!=c['model']:out.append(r'\midrule')
     ho,rd=c['handover'],c['reading']
     nl={'Qwen3-8B':36,'Qwen3-0.6B':28,'Mistral-7B':32}[c['model']]
     out.append(f'{c["task"]} & {c["model"]} & ${c["n"]}/{rd[1]}$ (${c["g"]}$) & '
@@ -56,11 +56,21 @@ out += [r'\bottomrule',r'\end{tabular}']
 # Keep number-bearing rows verbatim so independent numerical audits remain valid.
 from pathlib import Path
 from _paths import PAPER
-for path in list(TABLES.glob('*.tex')) + list((PAPER/'appendix').glob('*.tex')):
+from make_overleaf_zip import project_members
+active_tables=[p for p in project_members(PAPER) if p.suffix=='.tex' and p.parent.name in ('tables','appendix')]
+for path in active_tables:
     text=path.read_text()
     text=text.replace('\\toprule\n', '\\toprule\n\\rowcolor{TableHeader}\n') if '\\rowcolor{TableHeader}' not in text else text
     path.write_text(text)
 print('Styled all tables; added common-item boundary table.')
 from point_estimates import point_tables
-for path in list(TABLES.glob('*.tex')) + list((PAPER/'appendix').glob('*.tex')):
+for path in active_tables:
     path.write_text(point_tables(path.read_text()))
+
+# Highlight interpretable comparisons without altering number-bearing cells.
+p=TABLES/'tab-skill-content.tex'
+text=p.read_text()
+text=text.replace('\\rowcolor{TransferHighlight}\n','')
+for label in ['Formulas','Full span','Other instances of the same skill']:
+    text=text.replace('\n'+label+' &','\n\\rowcolor{TransferHighlight}\n'+label+' &')
+p.write_text(text)

@@ -1,0 +1,17 @@
+{
+  "export": "/mnt/c/Users/12970/Desktop/StillNeeded-Overleaf-20261017-WebSkills",
+  "time": "2026-10-17T14:52:19.583004+08:00",
+  "title": "Still Needed, Hard to Transfer: Using and Reusing Contextual Skills",
+  "zip_sha256": "f987450d0c36b756282d8290fc0f504786f67ab9758cc3828114e4c8fd606432",
+  "zip_entries": 51,
+  "main_pages": 8,
+  "total_pages": 12,
+  "overfull_hbox": 0,
+  "overfull_vbox": 0,
+  "compile_stage": "/mnt/c/Users/12970/Desktop/WWW2027/build-overleaf.ndlz_ttn",
+  "scope": "Qwen3-8B + MedCalc for all new mechanism experiments",
+  "mechanism_results_pending": false,
+  "mechanism_figure_pages": [
+    6
+  ]
+}

@@ -3,8 +3,8 @@
 # image; pdflatex.exe reads /mnt/c paths fine, so the source lives in the repo
 # and only the build staging is on C:.
 #
-#   ./build.sh            -- full technical report (extended appendix)
-#   ./build.sh submission -- WWW 2027 build, extended appendix left out
+#   ./build.sh            -- WWW 2027 submission only
+#   ./build.sh submission -- same submission build
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 STAGE_ROOT="/mnt/c/Users/12970/Desktop/WWW2027"
@@ -12,22 +12,25 @@ BIN="/mnt/c/Users/12970/AppData/Local/Programs/MiKTeX/miktex/bin/x64"
 PDFLATEX="$BIN/pdflatex.exe"
 BIBTEX="$BIN/bibtex.exe"
 JOB=main
-MODE="${1:-full}"
+MODE="${1:-submission}"
+if [ "$MODE" != submission ]; then echo "Only the submission build is maintained." >&2; exit 2; fi
 
 # A new staging directory prevents stale inputs without deleting previous
 # builds or their diagnostic logs.
 mkdir -p "$STAGE_ROOT"
 STAGE="$(mktemp -d "$STAGE_ROOT/build-skillvector.XXXXXXXX")"
 echo "Build stage: $STAGE"
-cp "$HERE"/main.tex "$HERE"/*.bib "$STAGE"/
-cp -r "$HERE"/sections "$HERE"/appendix "$HERE"/tables "$STAGE"/
-mkdir -p "$STAGE/figures" && cp "$HERE"/figures/*.pdf "$STAGE/figures/"
-
-# The switch is set here for whichever target was asked for, so the build does
-# not depend on which way main.tex happens to be left in the repository.
-if [ "$MODE" = submission ]; then WANT='\\extendedappendixfalse'; else WANT='\\extendedappendixtrue'; fi
-sed -i -E "s/^\\\\extendedappendix(true|false)$/$WANT/" "$STAGE/main.tex"
-grep -q "^$WANT\$" "$STAGE/main.tex" || { echo "could not set the appendix switch"; exit 1; }
+python3 - "$HERE" "$STAGE" <<'COPYPROJECT'
+from pathlib import Path
+import sys,shutil
+paper,stage=map(Path,sys.argv[1:])
+sys.path.insert(0,str(paper/'tools'))
+from make_overleaf_zip import project_members
+for path in project_members(paper):
+    target=stage/path.relative_to(paper)
+    target.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copy2(path,target)
+COPYPROJECT
 
 cd "$STAGE"
 "$PDFLATEX" -interaction=nonstopmode "$JOB.tex" > /dev/null 2>&1 || true
@@ -39,19 +42,19 @@ cd "$STAGE"
 "$PDFLATEX" -interaction=nonstopmode "$JOB.tex" > /dev/null 2>&1 || true
 "$PDFLATEX" -interaction=nonstopmode "$JOB.tex" > /dev/null 2>&1 || true
 
-# A slice edit once deleted an entire section, its figure and its table without
-# changing the page count enough to notice, and the build stayed clean because
-# LaTeX does not miss what is not there. So the structure is printed every time.
-echo "--- structure ($MODE) ---"
-grep -hnE '^\\(section|subsection)\{' "$HERE"/sections/*.tex "$HERE"/appendix/*.tex \
-  | sed 's/^[0-9]*:\\section{/  /; s/^[0-9]*:\\subsection{/    /; s/}$//' | sed 's/^/  /'
-echo "  paragraphs: $(cat "$HERE"/sections/*.tex "$HERE"/appendix/*.tex | grep -c '\\paragraph{')"
-echo "  floats: $(cat "$HERE"/sections/*.tex "$HERE"/appendix/*.tex | grep -c '\\begin{figure') figures,"\
-     "$(cat "$HERE"/sections/*.tex "$HERE"/appendix/*.tex | grep -c '\\begin{table') tables"
-dups=$(cat "$HERE"/sections/*.tex "$HERE"/appendix/*.tex | grep -oE '\\label\{[^}]+\}' | sort | uniq -d)
-[ -n "$dups" ] && echo "  DUPLICATE LABELS: $dups"
-echo "--- placeholders that must not survive submission ---"
-echo "  \\PEND markers: $(cat "$HERE"/sections/*.tex "$HERE"/appendix/*.tex | grep -c 'PEND' || true)"
+echo "--- active submission structure ---"
+python3 - "$STAGE" <<'CHECKSTRUCTURE'
+from pathlib import Path
+import re,sys,collections
+stage=Path(sys.argv[1]);text='\n'.join(p.read_text() for p in stage.rglob('*.tex'))
+for kind,title in re.findall(r'\\(section|subsection)\{([^}]+)\}',text):
+    print(('    ' if kind=='subsection' else '  ')+title)
+labels=collections.Counter(re.findall(r'\\label\{([^}]+)\}',text))
+assert not [k for k,n in labels.items() if n>1], 'Duplicate labels'
+print('  figures:',len(re.findall(r'\\begin\{(?:figure\*?|teaserfigure)\}',text)))
+print('  tables:',len(re.findall(r'\\begin\{table\*?\}',text)))
+assert not re.search(r'\\PEND\{',text) and '[Draft:' not in text, 'Pending results'
+CHECKSTRUCTURE
 echo "--- errors ---"
 grep -E "^! |^l\.[0-9]+" "$JOB.log" | head -20 || echo "  none"
 echo "--- undefined references / citations ---"
@@ -70,6 +73,6 @@ m=re.search(r'newlabel\{endmain\}\{\{[^}]*\}\{(\d+)\}', a)
 print('  '+(m.group(1) if m else '?'))"
 echo "--- total pages (WWW limit 12) ---"
 grep -oE "\([0-9]+ pages" "$JOB.log" | tail -1 | sed 's/(/  /' || true
-# the two builds keep separate PDFs so both are on disk at once
-if [ "$MODE" = submission ]; then DEST=skillvector-www2027.pdf; else DEST=skillvector.pdf; fi
+# Only the submission PDF is generated.
+DEST=skillvector-www2027.pdf
 cp "$JOB.pdf" "$HERE/$DEST" 2>/dev/null && echo "pdf -> $HERE/$DEST"

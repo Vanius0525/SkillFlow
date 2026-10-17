@@ -1,0 +1,24 @@
+{
+  "scope": "All reachable citation keys and labels; focused primary-source content/metadata review of seven Web/Agent Skills and closest-neighbor references. Existing references retain prior audits.",
+  "bib_entries": 58,
+  "cited_entries": 37,
+  "tex_files": 14,
+  "missing_citation_keys": [],
+  "duplicate_keys": [],
+  "duplicate_labels": [],
+  "ai_use_statement_removed": true,
+  "primary_sources": {
+    "zhang2025agentskills": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+    "wang2024awm": "https://proceedings.mlr.press/v267/wang25bx.html",
+    "wang2026webxskill": "https://arxiv.org/abs/2604.13318v2",
+    "tan2025htmlrag": "https://arxiv.org/abs/2411.02959",
+    "yang2025internalcot": "https://aclanthology.org/2025.emnlp-main.1147/",
+    "vaidyanathan2026mediators": "https://arxiv.org/html/2606.27510",
+    "li2026prefillnotes": "https://arxiv.org/html/2606.17107"
+  },
+  "corrections": [
+    "AWM updated to ICML 2025 / PMLR 267:63897–63911.",
+    "Cache-neighbor comparison includes precompiled skill-cache composition.",
+    "Agent Skills definition cites the original Anthropic article, with named authors and 2025 publication date."
+  ]
+}

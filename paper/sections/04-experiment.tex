@@ -86,7 +86,7 @@ matched to its own items in Eq.~\ref{eq:rho}. Entries show point estimates.}
 
 These results are conditional on the receiver screen. On excluded groups,
 other-skill and noise controls perform better, limiting extrapolation to the
-full benchmark. The extended version reports position-budget and synthetic probe diagnostics.
+full benchmark.
 
 \paragraph{Does the transferred information generalize across questions?}
 \label{sec:whose}
@@ -125,8 +125,7 @@ position preserves $0.87$ recovery, compared with $0.89$ without rescaling.
 In the corrected rerun, layer-$16$
 recovery is $0.49$ with the skill last ($151$ items, $17$ calculators) and
 $0.06$ with it first ($135$ items, $14$ calculators). These differently
-screened subsets do not identify a prompt-order effect
-(\extref{Appendix}{app:belongs}{extended version}).
+screened subsets do not identify a prompt-order effect.
 
 
 \subsection{Transfer fails before source dependence ends}
@@ -135,7 +134,7 @@ screened subsets do not identify a prompt-order effect
 
 The effective early span intervention gives us a probe with which to test
 the paradox: does losing the transfer effect at later layers mean
-the model no longer needs the document? Figure~\ref{fig:transferreading}
+the model no longer needs the skill? Figure~\ref{fig:transferreading}
 tests this inference directly.
 
 \paragraph{Transfer weakens while reading remains important.}
@@ -222,6 +221,24 @@ alone. Repeated late injection therefore does not restore early-layer
 recovery in these tests. This rules out a simple shortage-of-interventions explanation for the late
 transfer failure in these tests.
 
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
+\caption{Source history repairs transfer; continued reading supports its use.
+Qwen3-8B on the same $114$ rescued MedCalc items from $14$ calculators.
+Left: answer accuracy after residual (S), source-cache (C), joint (SC),
+and joint-plus-reader-recut interventions. SC pairs source states with their
+cached history; recutting begins at the next layer. Right: fraction of
+correct donor answers lost after reader-to-source, source-to-source, or
+combined cuts, during both prefill and decoding from the labelled layer.
+All cells are measured point estimates.}
+\Description{Two measured heatmaps. At layer 16 joint residual and source-cache
+repair raises accuracy from 0.035 to 0.421, falling to 0.070 after reader recutting.
+At layer 24 cutting reader access loses 0.746 of donor accuracy, while cutting
+source internal updates loses only 0.035.}
+\label{fig:mechanism}
+\end{figure*}
+
 \paragraph{Replication across models and task domains.}
 \label{sec:ladder}
 
@@ -232,8 +249,7 @@ separately to each run. Table~\ref{tab:replication} collects the transfer and re
 alongside early-transfer and content-control results. The two boundaries use the
 same screened groups but separately eligible items, so their ordering is a
 group-level comparison rather than a strictly paired per-item estimate; the common-item check in
-Table~\ref{tab:paireddepth} confirms the same ordering. Results for
-Qwen3-1.7B, where skills rescue only $8$--$11\%$ of items, appear in \extref{Appendix Table}{tab:laddermodels}{the extended version}.
+Table~\ref{tab:paireddepth} confirms the same ordering.
 
 \begin{table*}[tbp]
 \caption{Replication with the corrected implementation. Injection layers are
@@ -268,23 +284,7 @@ residual leaves its previously computed attention caches and reader history
 unchanged. We test whether repairing the source cache restores transfer,
 and whether the restored effect still requires access to the source.
 
-\begin{figure*}[tbp]
-\centering
-\includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
-\caption{Source history repairs transfer; continued reading supports its use.
-Qwen3-8B on the same $114$ rescued MedCalc items from $14$ calculators.
-Left: answer accuracy after residual (S), source-cache (C), joint (SC),
-and joint-plus-reader-recut interventions. SC pairs source states with their
-cached history; recutting begins at the next layer. Right: fraction of
-correct donor answers lost after reader-to-source, source-to-source, or
-combined cuts, during both prefill and decoding from the labelled layer.
-All cells are measured point estimates.}
-\Description{Two measured heatmaps. At layer 16 joint residual and source-cache
-repair raises accuracy from 0.035 to 0.421, falling to 0.070 after reader recutting.
-At layer 24 cutting reader access loses 0.746 of donor accuracy, while cutting
-source internal updates loses only 0.035.}
-\label{fig:mechanism}
-\end{figure*}
+
 
 \paragraph{Source-state and cache repair.}
 On Qwen3-8B and MedCalc, we compare source-residual replacement (S), source

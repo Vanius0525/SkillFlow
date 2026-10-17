@@ -20,14 +20,15 @@
 \documentclass[sigconf, anonymous, review]{acmart}
 
 %% ------------------------------------------------------------------ rights
-%% Placeholders. Replace with the block the ACM rights form emails you.
-\setcopyright{acmlicensed}
+%% Anonymous review metadata; assigned publication identifiers are omitted.
+\setcopyright{none}
 \copyrightyear{2027}
 \acmYear{2027}
-\acmDOI{XXXXXXX.XXXXXXX}
+\acmDOI{}
 \acmConference[WWW '27]{Proceedings of the ACM Web Conference 2027}%
   {May 10--14, 2027}{Dublin, Ireland}
-\acmISBN{978-X-XXXX-XXXX-X/27/04}
+\acmISBN{}
+\settopmatter{printacmref=false}
 
 %% -------------------------------------------------------------- packages
 %% acmart already loads graphicx, booktabs, xcolor, hyperref, url and natbib.
@@ -40,9 +41,9 @@
 \usetikzlibrary{arrows.meta,positioning,calc}
 % Shared table system: restrained blue headers, light row bands, readable rules.
 \definecolor{TableInk}{HTML}{284A63}
-\definecolor{TableHeader}{HTML}{E6EEF4}
-\definecolor{TransferHighlight}{HTML}{E2F0ED}
-\definecolor{ConflictHighlight}{HTML}{FCE8D5}
+\definecolor{TableHeader}{HTML}{EAF0F6}
+\definecolor{TransferHighlight}{HTML}{E4F1ED}
+\definecolor{ConflictHighlight}{HTML}{FFF0DD}
 \definecolor{TableStripe}{HTML}{F5F8FA}
 \usepackage{etoolbox}
 \AtBeginEnvironment{tabular}{%
@@ -86,22 +87,9 @@
 {\catcode`\,=\active \gdef,{\mathcommachar\discretionary{}{}{}}}
 \emergencystretch=1em
 
-%% ------------------------------------------------------- appendix switch
-%% A WWW submission has room for the appendices the main text points at and
-%% nothing more. \extendedappendixfalse builds that submission (12 pages);
-%% \extendedappendixtrue builds the full technical report (34 pages). Nothing
-%% is deleted either way -- the extended files are simply not \input.
-%% This default is the submission, so that a fresh Overleaf upload compiles
-%% the version that has to fit the page limit. build.sh sets it explicitly
-%% for whichever target you ask for and does not depend on this line.
-\newif\ifextendedappendix
-\extendedappendixfalse
-
-%% A pointer into an appendix only the extended build carries.
-%%   \extref{Appendix}{label}{what the submission build says instead}
-%% The extended build renders exactly what the text said before this switch
-%% existed; the submission build names the extended version instead of \ref's ??.
-\newcommand{\extref}[3]{\ifextendedappendix#1~\ref{#2}\else#3\fi}
+%% Submission only. Historical extended sources remain archived in the repo.
+%% References to those historical diagnostics use their descriptive fallback.
+\newcommand{\extref}[3]{#3}
 
 \begin{document}
 
@@ -135,7 +123,7 @@
 \ccsdesc[500]{Computing methodologies~Natural language processing}
 \ccsdesc[300]{Computing methodologies~Knowledge representation and reasoning}
 
-\keywords{large language models, skill documents, in-context learning,
+\keywords{agent skills, Web agents, large language models, in-context learning,
 activation patching, context reuse, mechanistic interpretability}
 
 \begin{teaserfigure}
@@ -164,30 +152,14 @@ highlighted gap between layers 13 and 25.}
 \input{sections/05-conclusion}
 \label{endmain}
 
-\section*{AI Use Statement}
-Generative AI tools assisted with manuscript restructuring and language editing,
-literature lookup and reference checks, consistency checks between reported
-results and local experiment records, and figure design. The authors
-are responsible for the final text, scientific claims and experimental artifacts.
-
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{skillvector}
 
 %% ================================================================= appendix
 \appendix
-%% Kept in both builds: what a reader needs to reproduce or scope the result.
+%% Compact appendix: what a reader needs to reproduce or scope the result.
 \input{tables/tab-fullscale-float}
 \input{appendix/a-setup}
 \input{appendix/b-full-dataset-rerun}
-%% The technical report only. A WWW submission has 12 pages in total and the
-%% main text takes 8 of them, so these do not fit; nothing here is deleted.
-\ifextendedappendix
-  \input{appendix/c-controls-and-traps}
-  \input{appendix/d-final-position}
-  \input{appendix/e-span}
-  \input{appendix/f-rank-and-replication}
-  \input{appendix/g-related-work}
-  \input{appendix/h-additional-tables}
-\fi
 
 \end{document}

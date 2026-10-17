@@ -14,18 +14,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from _paths import FIGURES, VALUES, AUDIT
 
-BLUE, TEAL, ORANGE, PURPLE, GRAY = '#2864A5', '#278577', '#C76B28', '#8963A9', '#778391'
+BLUE, TEAL, ORANGE, PURPLE, GRAY = '#2866A0', '#268C82', '#D27A29', '#8772AE', '#8693A0'
 plt.rcParams.update({
     'font.family': 'DejaVu Sans', 'font.size': 8, 'axes.titlesize': 9,
     'axes.labelsize': 8, 'xtick.labelsize': 7, 'ytick.labelsize': 7,
-    'legend.fontsize': 7, 'pdf.fonttype': 42, 'ps.fonttype': 42,
+    'legend.fontsize': 7, 'pdf.fonttype': 42, 'ps.fonttype': 42, 'svg.fonttype': 'none',
     'axes.edgecolor': '#AAB4BE', 'axes.labelcolor': '#263746',
     'text.color': '#263746', 'xtick.color': '#53616F', 'ytick.color': '#53616F',
     'axes.linewidth': .6, 'grid.color': '#E8EDF2', 'grid.linewidth': .55,
     'legend.frameon': False, 'savefig.facecolor': 'white',
 })
-INPUTS = ['fig-channels-values.json', 'main-evidence-values.json',
-          'fig-rank-values.json', 'posbudget.json', 'depth-crossmodel-values.json']
+INPUTS = ['fig-channels-values.json', 'depth-crossmodel-values.json']
 
 def data(name):
     return json.loads((VALUES/name).read_text())
@@ -34,7 +33,7 @@ def frame(ax, title=None):
     ax.spines[['top', 'right']].set_visible(False)
     ax.set_axisbelow(True)
     ax.grid(axis='y')
-    ax.set_facecolor('#F7F9FC')
+    ax.set_facecolor('white')
     ax.tick_params(length=3, width=.6)
     if title:
         ax.set_title(title, loc='left', fontweight='bold', pad=8)
@@ -42,6 +41,9 @@ def frame(ax, title=None):
 def save(fig, name):
     fig.savefig(FIGURES/f'{name}.pdf', bbox_inches='tight', pad_inches=.035)
     fig.savefig(FIGURES/f'{name}.png', bbox_inches='tight', pad_inches=.035, dpi=220)
+    fig.savefig(FIGURES/f'{name}.svg', bbox_inches='tight', pad_inches=.035)
+    svg=FIGURES/f'{name}.svg'
+    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
     plt.close(fig)
 
 def err(values):
@@ -78,39 +80,43 @@ def channels():
 
 def depth():
     cells=data('depth-crossmodel-values.json')
-    fig,axes=plt.subplots(2,3,figsize=(7.1,3.85),sharex=False,sharey=True,layout='constrained')
+    fig,axes=plt.subplots(2,3,figsize=(7.1,3.78),sharey=True,layout='constrained')
     for row,task in enumerate(['MedCalc','TheoremQA']):
         for col,model in enumerate(['Qwen3-8B','Qwen3-0.6B','Mistral-7B']):
             c=next(c for c in cells if c['task']==task and c['model']==model)
             ax=axes[row,col]; nl=c['n_layers']; x=np.arange(nl)
             tb,rb=c['transfer_boundary'],c['reading_boundary']
-            ax.axvspan(0,tb-.5,color=BLUE,alpha=.045,lw=0)
-            ax.axvspan(tb-.5,rb-.5,color=ORANGE,alpha=.14,lw=0)
-            ax.axvspan(rb-.5,nl-1,color=TEAL,alpha=.045,lw=0)
-            ax.plot(x,c['transfer'],color=BLUE,lw=1.35,marker='o',ms=1.8,label=r'Skill transfer $\rho$')
-            ax.plot(x,c['retention'],color=ORANGE,lw=1.35,marker='s',ms=1.8,label=r'Skill-attention knockout $q$')
-            # Thin dotted curves validate the ordering on identical item IDs.
-            ax.plot(x,c['common']['transfer'],color=BLUE,lw=.85,ls=':',alpha=.9)
-            ax.plot(x,c['common']['retention'],color=ORANGE,lw=.85,ls=':',alpha=.9)
-            for l in [tb,rb]:ax.axvline(l-.5,color='#9A846C',lw=.65,ls=':')
-            ax.axhline(.5,color=GRAY,ls=':',lw=.7)
-            ax.text(.96,.91,f'L{tb} / L{rb}',transform=ax.transAxes,ha='right',fontsize=7,color='#765330')
-            ax.scatter([tb],[c['transfer'][tb]],s=18,facecolors='white',edgecolors=ORANGE,linewidths=.9,zorder=4)
-            ax.annotate('Weak transfer;\nsource still needed', xy=(tb,c['transfer'][tb]), xytext=((tb+rb)/2,.70),
-                        ha='center',fontsize=6.2,fontweight='bold',color='#8A4A1D',
-                        arrowprops=dict(arrowstyle='->',color='#8A4A1D',lw=.7),
-                        bbox=dict(boxstyle='round,pad=.25',fc='#FFF4E6',ec='none',alpha=.9))
-            ax.set(xlim=(0,nl-1),ylim=(-.04,1.1),xticks=sorted(set([0,8,16,24,nl-1])),yticks=[0,.5,1])
             frame(ax,model if row==0 else None)
-            if col==0:ax.set_ylabel(task+'\nRecovery / retained')
-            if row==1:ax.set_xlabel('Intervention layer L')
+            ax.axvspan(tb-.5,rb-.5,color='#F5BE7E',alpha=.26,lw=0,zorder=0)
+            ax.axhline(.5,color='#A4AFBA',ls=(0,(2.5,2.5)),lw=.7,zorder=1)
+            for l in [tb,rb]:ax.axvline(l-.5,color='#C7A582',lw=.6,ls=(0,(2,3)),zorder=1)
+            ax.plot(x,c['transfer'],color=BLUE,lw=1.6,marker='o',ms=2.1,
+                    markeredgecolor='white',markeredgewidth=.35,zorder=3,label=r'Skill transfer $\rho$')
+            ax.plot(x,c['retention'],color=ORANGE,lw=1.6,marker='s',ms=1.9,
+                    markeredgecolor='white',markeredgewidth=.3,zorder=3,label=r'Skill-attention knockout $q$')
+            # Every point is measured; dotted overlays retain the common-ID check.
+            ax.plot(x,c['common']['transfer'],color=BLUE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
+            ax.plot(x,c['common']['retention'],color=ORANGE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
+            ax.text((tb+rb-1)/2,.78,'Weak transfer;\nsource still needed',ha='center',va='center',
+                    fontsize=6.4,fontweight='medium',color='#94551D',
+                    bbox=dict(boxstyle='round,pad=.3',fc='#FFF7EB',ec='none',alpha=.95))
+            ax.text(.97,.96,f'L{tb} / L{rb}',transform=ax.transAxes,ha='right',va='top',
+                    fontsize=6.6,color='#94551D')
+            ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),
+                   xticks=sorted(set([0,8,16,24,nl-1])),yticks=[0,.5,1])
+            ax.set_yticklabels(['0','.5','1.0'])
+            if col==0:ax.set_ylabel(task+'\nRecovery / retained',labelpad=6)
+            if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
     handles,labels=axes[0,0].get_legend_handles_labels()
-    handles.append(plt.Line2D([],[],color=GRAY,lw=1,ls=':'));labels.append('Common-item check')
-    fig.legend(handles,labels,loc='outside upper center',ncol=3,fontsize=7)
+    handles.append(plt.Line2D([],[],color=GRAY,lw=1,ls=(0,(1,2))))
+    labels.append('Common-item check')
+    fig.legend(handles,labels,loc='outside upper center',ncol=3,fontsize=7,
+               handlelength=2.4,columnspacing=1.8)
     save(fig,'fig-transfer-reading')
 
+
 def rank():
-    d=data(INPUTS[2]);fig,axes=plt.subplots(1,3,figsize=(7.1,2.4),sharey=True,layout='constrained')
+    d=data('fig-rank-values.json');fig,axes=plt.subplots(1,3,figsize=(7.1,2.4),sharey=True,layout='constrained')
     for ax,(name,color,marker) in zip(axes,[('Qwen3-8B',BLUE,'o'),('Qwen3-0.6B',TEAL,'^'),('Mistral-7B',PURPLE,'D')]):
         c=d[name]
         for key,ls in [('top','-'),('bottom','--')]:
@@ -135,7 +141,7 @@ def rank():
     save(fig,'fig-rank-medcalc')
 
 def position():
-    d=data(INPUTS[3]);A=d['arms'];full=A['evfull']['rho'];median=d['span_width']['median']
+    d=data('posbudget.json');A=d['arms'];full=A['evfull']['rho'];median=d['span_width']['median']
     fig,axes=plt.subplots(2,2,figsize=(7.1,4.5),layout='constrained')
     a,b,c,e=axes.flat
     def series(ax,pts,color,marker,label,ls='-'):
@@ -206,10 +212,9 @@ def position_main():
 
 if __name__=='__main__':
     before={f:hashlib.sha256((VALUES/f).read_bytes()).hexdigest() for f in INPUTS}
-    channels();depth();rank();position();position_main()
+    channels();depth()
     after={f:hashlib.sha256((VALUES/f).read_bytes()).hexdigest() for f in INPUTS}
     assert before==after
-    (AUDIT/'FIGURE-STYLE-20261015.json').write_text(json.dumps({'input_sha256':before,
-        'numeric_records_unchanged':True,'figures': ['fig-channels-medcalc','fig-transfer-reading',
-        'fig-rank-medcalc','fig-posbudget','fig-posbudget-full']},indent=2)+'\n')
-    print('Rendered point-estimate figures and supplements; numerical records unchanged.')
+    (AUDIT/'FIGURE-STYLE-WEBSKILLS-20261017.json').write_text(json.dumps({'input_sha256':before,
+        'numeric_records_unchanged':True,'figures': ['fig-channels-medcalc','fig-transfer-reading']},indent=2)+'\n')
+    print('Rendered submission point-estimate figures; numerical records unchanged.')
