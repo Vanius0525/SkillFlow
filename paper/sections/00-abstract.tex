@@ -1,26 +1,22 @@
 \begin{abstract}
-Agent skills equip Web agents with task-specific capabilities by loading
-instructions and supporting resources into context. When a language model
-successfully uses a skill, can its internal states be extracted and reused,
-or does that ability remain tied to the original skill context and
-computation? We investigate this
-question through two interventions along model depth. We transplant
-correct-skill span states into a wrong-skill execution and measure recovered
-performance; separately, we block subsequent attention to the skill in the
-original execution and measure retained performance. Across three models
-from two families on MedCalc and TheoremQA, skill-state transfer weakens
-before dependence on skill access subsides, including on common eligible
-items. In this intermediate interval, the skill remains important even
-though its states have little corrective effect in the receiver. Content,
+Agent skills provide task-specific capabilities by loading instructions and
+supporting resources into a language model's context. When a model applies
+a skill successfully, can its internal states be reused in another
+execution, and how does that ability relate to continued access to the
+skill? We study these questions with two interventions across model depth.
+We transplant correct-skill states into a wrong-skill execution and measure
+recovered performance. Separately, we block subsequent attention to the
+skill in the original execution and measure retained performance. Across
+three models from two families on MedCalc and TheoremQA, skill-state
+transfer weakens before dependence on source access subsides. Content,
 position and cross-question controls establish that early transfer carries
-structured skill information, while repeated late replacement does not
-restore its effect. Focused experiments on Qwen3-8B/MedCalc show that
-repairing source states together with their attention caches raises layer-$16$
-accuracy from $3.5\%$ to $42.1\%$, yet blocking subsequent source reading
-reduces it to $7.0\%$. Late transfer therefore depends on computational
-history, and recovering transfer need not remove source dependence.
-These findings separate using a contextual skill from
-reusing its internal states: successful application does not imply an
-independently reusable internal skill, and failed state transfer does not
-mean that the model has finished using the source.
+structured skill information. Repeated late replacement leaves transfer
+weak, motivating a test of the computational history surrounding those
+states. On Qwen3-8B/MedCalc, jointly replacing skill states and their
+attention-cache entries raises layer-$16$ accuracy from $3.5\%$ to $42.1\%$.
+Cutting subsequent source reading reduces it to $7.0\%$. These findings
+separate the ability to use a contextual skill from the ability to reuse
+its internal states. A skill can remain important to the original
+computation after its states become difficult to transfer, and recovering
+transfer can still require continued access to the source.
 \end{abstract}

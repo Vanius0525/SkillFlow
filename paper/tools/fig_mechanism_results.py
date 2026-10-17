@@ -6,7 +6,6 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 
 PAPER=Path(__file__).resolve().parents[1]
@@ -31,35 +30,43 @@ def main():
         raise ValueError('Unexpected measured arm grid')
     plt.rcParams.update({'font.family':'DejaVu Sans','font.size':8,'pdf.fonttype':42,
                          'svg.fonttype':'none','text.color':'#263746'})
-    fig,axes=plt.subplots(1,2,figsize=(7.1,2.55),layout='constrained',
-                          gridspec_kw={'width_ratios':[1.12,1]})
-    specs=[(axes[0],left,repair['layers'],['S: residual','C: cache','SC: joint','SC + recut'],
-            'Blues','(a) Source-state and cache repair','Answer accuracy',
-            primary['n'],len(primary['groups'])),
-           (axes[1],right,edges['layers'],['Reader → source','Source → source','Both paths'],
-            'Oranges','(b) Which attention path matters?','Accuracy lost after the cut',
-            edges['rescued_n'],len(edges['groups']))]
-    palettes={'Blues':LinearSegmentedColormap.from_list('repair',['#F4F8FC','#A8CEE4','#2866A0','#173C63']),
-              'Oranges':LinearSegmentedColormap.from_list('path',['#FFF8ED','#F3CA94','#D27A29','#8D3D13'])}
-    for ax,matrix,layers,rows,cmap,title,cblabel,n,g in specs:
-        im=ax.imshow(matrix,vmin=0,vmax=1,cmap=palettes[cmap],aspect='auto',interpolation='nearest')
-        ax.set_xticks(range(len(layers)),layers)
-        ax.set_yticks(range(len(rows)),rows)
-        ax.set_xticks(np.arange(matrix.shape[1]+1)-.5,minor=True)
-        ax.set_yticks(np.arange(matrix.shape[0]+1)-.5,minor=True)
-        ax.grid(which='minor',color='white',linewidth=1.3)
-        ax.tick_params(which='minor',bottom=False,left=False)
-        ax.set_xlabel('Intervention layer',fontsize=8)
-        ax.set_title(title+f'\n(n={n}; {g} skills)',loc='left',fontsize=8,fontweight='bold',pad=8)
-        ax.tick_params(length=0,labelsize=7)
-        ax.spines[:].set_visible(False)
-        for (r,c),value in np.ndenumerate(matrix):
-            ax.text(c,r,f'{value:.2f}',ha='center',va='center',fontsize=8,
-                    color='white' if value>.65 else '#253E50')
-        bar=fig.colorbar(im,ax=ax,orientation='horizontal',fraction=.085,pad=.16,shrink=.87)
-        bar.set_ticks([0,.5,1]);bar.ax.tick_params(labelsize=6,length=2)
-        bar.set_label(cblabel,fontsize=7,labelpad=2)
-        bar.outline.set_visible(False)
+    fig,axes=plt.subplots(1,2,figsize=(7.1,2.7),layout='constrained',
+                          gridspec_kw={'width_ratios':[1.16,1]})
+    colors=['#2866A0','#8494A4','#268C82','#D27A29']
+    markers=['o','s','D','v']
+    specs=[(axes[0],left,repair['layers'],
+            ['S: skill states','C: source cache','SC: joint repair','SC + reader recut'],
+            '(a) Source-state and cache repair','Answer accuracy'),
+           (axes[1],right,edges['layers'],
+            ['Reader to source','Source to source','Both paths'],
+            '(b) Which attention path matters?','Fraction of correct answers lost')]
+    for ax,matrix,layers,labels,title,ylabel in specs:
+        x=np.arange(len(layers))
+        offsets=np.linspace(-.24,.24,len(labels))
+        for i,(label,offset) in enumerate(zip(labels,offsets)):
+            vals=matrix[i]
+            color=colors[i] if ax is axes[0] else [colors[3],colors[0],colors[1]][i]
+            ax.vlines(x+offset,0,vals,color=color,alpha=.17,lw=2)
+            points=ax.scatter(x+offset,vals,color=color,marker=markers[i],s=31,
+                       edgecolors='white',linewidths=.55,zorder=4,label=label)
+            points.set_gid(f'measured-{"repair" if ax is axes[0] else "edges"}-{i}')
+        ax.set(xticks=x,xticklabels=layers,ylim=(-.025,1.04),
+               yticks=[0,.25,.5,.75,1],xlabel='Intervention layer',ylabel=ylabel)
+        ax.set_yticklabels(['0','.25','.50','.75','1.0'])
+        ax.set_title(title,loc='left',fontsize=8.5,fontweight='bold',pad=38)
+        ax.legend(loc='lower left',bbox_to_anchor=(-.02,1.005),
+                  ncol=2,fontsize=6.4,frameon=False,columnspacing=.7,
+                  handletextpad=.35,borderaxespad=0)
+        ax.spines[['top','right']].set_visible(False)
+        ax.spines[['bottom','left']].set_color('#AAB4BE')
+        ax.tick_params(labelsize=7,length=2.5,color='#AAB4BE')
+        ax.grid(axis='y',color='#E8EDF2',lw=.6)
+        ax.set_axisbelow(True)
+    # The central contrast is annotated without repeating the whole table.
+    axes[0].annotate('Joint repair',xy=(2+.08,left[2,2]),xytext=(1.1,.58),
+                     fontsize=7,color=colors[2],
+                     arrowprops={'arrowstyle':'-','color':colors[2],'lw':.7})
+    axes[1].text(2,.88,'Reader access dominates',ha='center',fontsize=6.5,color='#94551D')
     for ext in ('pdf','png','svg'):
         fig.savefig(FIG/f'fig-mechanism-results.{ext}',dpi=240,facecolor='white')
     svg=FIG/'fig-mechanism-results.svg'

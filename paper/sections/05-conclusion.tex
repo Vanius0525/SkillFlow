@@ -1,26 +1,23 @@
 \section{Conclusion}
 \label{sec:discussion}
 
-Successfully following a skill does not make its internal states an
-independently reusable substitute for the source. Our experiments reveal a
+Using a contextual skill and reusing its internal states are distinct
+abilities. Our experiments reveal a
 depth interval in which skill-state transfer has weakened while the original
 computation continues to depend on skill attention. This separation recurs
 across three models and two task domains, including common-item evaluation.
-The model can still use a skill after its states have become ineffective at
-correcting another execution.
 
-Content and cross-question controls show that effective early transfer
-carries structured skill information. Matching state norms preserves that
-effect, while repeated late replacement does not restore it. Source-cache repair further shows that late residual-transfer failure is
-partly reversible: pairing states with their cached history raises layer-$16$
-accuracy from $3.5\%$ to $42.1\%$. Yet cutting subsequent source reading
-reduces it to $7.0\%$. Separating attention paths confirms that late
-source dependence is driven by continued reading. Useful skill information
-can therefore survive a failed residual transplant while requiring a richer
-execution state and further access to its source.
+Content and cross-question controls establish an effective early probe.
+Late transfer can be partly restored by pairing source states with their
+cached history, and the recovered behaviour can still require continued
+source reading. This connects transferability to the computation surrounding
+the skill states. The mechanism study covers one model--task setting,
+leaving the roles of history and reading in larger models and interactive
+agent tasks for further study.
 
 Contextual competence therefore has two distinct properties: the ability to
 support the current computation and the ability to be reused in another.
 For skill-sharing agents and context-reuse systems, both need to be tested.
-A representation that works within its original computation is not yet a
-portable replacement for the instructions that produced it.
+Future skill-sharing systems can use paired transfer and source-access tests
+to evaluate when an internal representation can substitute for the skill
+that produced it.

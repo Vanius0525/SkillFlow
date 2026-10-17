@@ -1,5 +1,5 @@
 % Full-data rerun; its wide table is queued at the appendix entrance.
-\section{The full-dataset rerun, and what reads the span}
+\section{Additional transfer and source-reading analyses}
 \label{app:fullscale}
 
 The original MedCalc $\times$ Qwen3-8B intervention battery was developed on the
@@ -7,16 +7,22 @@ forty calculators with the most rescued items, sampling four each: $160$ of
 $467$ rescued items, and $60$ items over $15$ calculators after the
 receiver-never-solves restriction. We reran each of them with every rescued
 item of every calculator that has at least two ($467$ items, $48$ calculators),
-changing nothing else. The restriction is stricter on the larger set---a
-calculator now has to fail on up to twenty items rather than four---so it keeps
+keeping the intervention configuration fixed. The group screen is stricter
+on the larger set because a calculator must fail on up to twenty items
+rather than four, so it keeps
 $135$ items over $14$ calculators, and we also report the per-item restriction
 ($369$ items over $45$), which keeps the items whose own receiver fails.
 
 
 
-The transplant, the truncation knee between $32$ and $64$ directions, and the
-formula quarter's dominance all reproduce. The one arm that moves is the
-same-family donor, from $0.05$ to $0.12$, on the $41$ items where it is defined.
+Table~\ref{tab:fullscale} also includes a rank-truncation diagnostic.
+We decompose the injected state-difference matrix into ordered directions
+using singular value decomposition and retain only the leading $k$.
+Increasing $k$ from $32$ to $64$ restores much of the recovery.
+A bottom-$k$ control retains the least prominent directions instead.
+The formula quarter gives the largest standalone recovery in both samples.
+The same-family mean donor changes from $0.05$ to $0.12$, on the $41$
+full-rerun items where it is available.
 
 \paragraph{The depth sweep at one-layer resolution.} The subset sweep measured
 layers $0,4,8,12,14,15,16,20$ and placed the collapse somewhere after $12$.
@@ -25,35 +31,41 @@ recovery is $0.98,0.98,0.89,0.74$ at layers $0,4,8,12$, then
 $0.16,0.16,0.06,0.06,0.07,0.03,0.02,0.03$ at $13$ through $20$ (per-calc; the
 per-item restriction gives $1.00,0.98,0.94,0.79$ then
 $0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$). Layers $13$ and $14$ are
-indistinguishable under both restrictions, so the transition is a single layer
-between $12$ and $13$ and not the gradual decline a stride-$2$ sweep suggests.
+equal at the reported precision under both restrictions, locating the
+largest local change between layers $12$ and $13$.
 
-\paragraph{A continuous dependent variable at the same boundary.} Accuracy over
-a chain of thought is a threshold, and a smooth decline inside the model could
-present as a step in it. We therefore decode the with-document trajectory once
-per item and teacher-force that same trajectory under every other condition,
-reading its mean token log-probability: $q = (\ell_L - \ell_{\text{recv}}) /
-(\ell_{\text{gold}} - \ell_{\text{recv}})$ has the same two anchors as $\rho$
-with no decoding threshold anywhere in it ($n=442$ items on which the document
-run is correct, $48$ calculators). $q$ reads
-$0.999, 0.989, 0.960, 0.831$ at layers $0,4,8,12$, then $0.598$
-$[0.550,0.648]$ at $13$, $0.595$ at $14$, $0.340$ at $16$, $0.201$ at $20$ and
-$0.129$ at $24$. Expressed per layer as a fraction of its range, the step at
-$12\to13$ is $26.8\%$, against $3.7\%$ per layer over $8$--$12$ and $0.3\%$ from
-$13$ to $14$: the discontinuity is present in a readout that cannot be produced
-by grading. It is smaller than the behavioural step ($61\%$ of range), so the
-grader sharpens the boundary roughly twofold without creating it, and it is
-spread evenly across the four quarters of the trajectory ($0.20,0.26,0.31,0.21$)
-rather than concentrated at the answer, which is the opposite of what a grading
-artefact predicts. We also tried restricting $q$ to the tokens after the final
-answer marker and report that it carries no information here: once the full
-reasoning is teacher-forced, every condition predicts the final number almost
-perfectly (median $\ell$ between $-0.001$ and $-0.005$ for all of them, and the
-gold-minus-receiver denominator has median $0.0014$, below $0.01$ on $59\%$ of
-items).
+\paragraph{A continuous readout at the same boundary.}
+Accuracy thresholds a generated answer, so an internal change can appear
+sharper in this measure. We therefore generate the correct-skill reasoning
+once per item and score that fixed sequence under each intervention.
+This is teacher forcing: the model receives the recorded preceding tokens
+rather than generating a new sequence. The mean token log-probability
+measures how strongly it predicts that reasoning. Log-probabilities use
+natural logarithms, with units called nats. Higher values indicate that
+the recorded sequence is more likely.
+
+We normalize this score as
+$z=(\ell_L-\ell_{\mathrm{recv}})/(\ell_{\mathrm{gold}}-\ell_{\mathrm{recv}})$,
+where $\ell$ denotes the mean log-probability and the subscripts identify
+the patched, receiver and donor conditions. We use $z$ to distinguish this
+diagnostic from knockout retention $q$. On $442$ donor-correct items from
+$48$ calculators, $z$ is $0.999,0.989,0.960,0.831$ at layers $0,4,8,12$.
+It then falls to $0.598$ ($95\%$ interval $[0.550,0.648]$) at layer $13$,
+$0.595$ at $14$, $0.340$ at $16$, $0.201$ at $20$, and $0.129$ at $24$.
+The layer-$12$ to layer-$13$ decline spans $26.8\%$ of the score's range,
+compared with the $61\%$ behavioural decline. The continuous readout
+therefore also changes sharply at the accuracy boundary.
+
+The decline is distributed across the four quarters of the reasoning
+sequence ($0.20,0.26,0.31,0.21$). Scoring only tokens after the final answer
+marker is less useful here. Once the reasoning is supplied, all conditions
+predict the final number closely: median log-probabilities lie between
+$-0.001$ and $-0.005$, and the donor-minus-receiver denominator has median
+$0.0014$, below $0.01$ on $59\%$ of items.
 
 \paragraph{Distributed reading and receiver state.}
-Head-level readout from the skill span concentrates in layers $12$--$21$
+An attention head is one of the parallel attention components within a
+transformer block. Head-level readout from the skill span concentrates in layers $12$--$21$
 after normalisation by residual-stream norm. Blocking the $32$ highest-ranked
 heads costs $0.39$ of the skill's effect, versus $0.23$ for random heads at the
 same layers (held-out calculators; paired difference $0.154$, $95\%$ CI
@@ -66,9 +78,9 @@ the interaction tests in \S\ref{sec:mechanism}.
 \subsection{Focused source-history and path-specific experiments}
 \label{app:mechanism}
 
-The new Qwen3-8B/MedCalc experiments fix $124$ historical item IDs from $14$
+The focused Qwen3-8B/MedCalc experiments fix $124$ historical item IDs from $14$
 calculators before inference and partition them as every fourth ID across
-four RTX 4090 workers. They use bf16, eager attention, greedy decoding and
+four RTX 4090 workers. They use BF16, eager attention, greedy decoding and
 $1{,}536$ new tokens. Fresh baselines retain $116$ donor-correct,
 receiver-incorrect items, of which $114$ also fail without a skill. Both
 experiments use these same $114$ items; all $372$ baseline generations agree

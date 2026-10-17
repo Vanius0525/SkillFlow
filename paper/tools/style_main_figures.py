@@ -97,15 +97,12 @@ def depth():
             # Every point is measured; dotted overlays retain the common-ID check.
             ax.plot(x,c['common']['transfer'],color=BLUE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
             ax.plot(x,c['common']['retention'],color=ORANGE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
-            ax.text((tb+rb-1)/2,.78,'Weak transfer;\nsource still needed',ha='center',va='center',
-                    fontsize=6.4,fontweight='medium',color='#94551D',
-                    bbox=dict(boxstyle='round,pad=.3',fc='#FFF7EB',ec='none',alpha=.95))
-            ax.text(.97,.96,f'L{tb} / L{rb}',transform=ax.transAxes,ha='right',va='top',
-                    fontsize=6.6,color='#94551D')
+            ax.text((tb+rb-1)/2,1.03,f'L{tb}–L{rb}',ha='center',va='center',
+                    fontsize=6.8,color='#94551D')
             ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),
                    xticks=sorted(set([0,8,16,24,nl-1])),yticks=[0,.5,1])
             ax.set_yticklabels(['0','.5','1.0'])
-            if col==0:ax.set_ylabel(task+'\nRecovery / retained',labelpad=6)
+            if col==0:ax.set_ylabel(task+'\nRecovery / retention',labelpad=6)
             if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
     handles,labels=axes[0,0].get_legend_handles_labels()
     handles.append(plt.Line2D([],[],color=GRAY,lw=1,ls=(0,(1,2))))

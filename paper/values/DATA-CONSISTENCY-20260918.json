@@ -1,5 +1,5 @@
 {
-  "checks_passed": 132731,
+  "checks_passed": 132703,
   "source_sha256": {
     "paper/values/depth-crossmodel-values.json": "e1cf2b65d6b68266c2050f0c42219d40a76a1759d355ebfd4fad998c46ced2a6",
     "paper/experiments/mechanism_20261017/bridge14-eager.jsonl": "2d78b1c1a7c826371bb786a91b986a4de8f15898620b88eab0969ac06001aecc",
@@ -492,23 +492,23 @@
     "paper/experiments/mechanism_20261017/parallel/edges-s4-3.jsonl": "ccd67b1ed3745bb51665542ab696001cf14e77b899905e73355dac07dbbdf7c8"
   },
   "artifact_sha256": {
-    "00-abstract.tex": "abd73af333c1103abbc88baae7fc5a73b86d8f17a8f81557c4c56767e2e15e3e",
-    "01-introduction.tex": "c532b6102dc98a19f7bc0eea9e73d307521721b029264087473bb44d866e1b86",
-    "02-related-work.tex": "4389bde28416445c20e83c8e9093ce7bfc5759f98b84d20e54c9fbe8e5e6096a",
-    "03-problem-formulation.tex": "8e0b05883320e906b7d95d8f3f6e70a0a1e6f37bb386fdeb493e1acf290db54a",
-    "04-experiment.tex": "ab388c910ef04dae12ab50071f140d8c01c20f6326be3a63f1ff9b293f43cfc7",
-    "05-conclusion.tex": "f194d9bf9fe94ff12dd2e9eef7d1640e76b9c62f513e787a8423bf84c3a8264f",
+    "00-abstract.tex": "80af920f3ea0af117f36508421ca2b4865ff5a67e03a65f3e1ef66c9e875112a",
+    "01-introduction.tex": "d0f1a1f4a41d0b60382dcaae9a8a3e2eb3c7eafadd99fb9e7f2751f221800ab5",
+    "02-related-work.tex": "a6b21149cf13fb2917e80a5c42a0793320ab91b39d471909a49491c8fed93812",
+    "03-problem-formulation.tex": "1314f34efa1f40d9d2e796a3f024045b1f05573ea631f77d549df7ec76f0c235",
+    "04-experiment.tex": "4419d92f8c5d5d188171827f1a609a59eafb630c72c170b6a85dca11b1d57c85",
+    "05-conclusion.tex": "3a7324fac8b71d4a840cc3180ef0322a571090d773b6cc7bc109b24efa022a23",
     "h-additional-tables.tex": "656d24efaa28af227d101b839c21f0fade58efdb35c04b0888accc03197e3ea2",
     "tab-answer-format.tex": "e7de207754e592fa079e1a97b6139d3b05f743f5c7968f87ca092e84ab0bdcaf",
     "tab-big40.tex": "085b5a0af5fc3966444f9548e9d08679d9196f678da9aee6ab9e324c0440b96e",
     "tab-skill-content.tex": "040f152987871d52c1530cbf9d82aa7e1932cbc9907f29bc15189a60ddcf057d",
     "tab-replication.tex": "4884f9dffd1772a2f40f14d74fc77d3c39dd85b69b2c0d9d6635addefd87edac",
-    "fig-channels-medcalc.pdf": "244f7771dceafe7998498178fda7c26af087e1624192014e6eeb42904431d224",
+    "fig-channels-medcalc.pdf": "02dd53342d43f4ef46b3ab2a50326c46c13685f8273e92c06bb581a44cf604d9",
     "fig-rank-medcalc.pdf": "1f6383a57b6dc25d2f70f819a6f562fc9ccf74e62352e383534559e4884b4030",
-    "fig-transfer-reading.pdf": "70733ac3d38ae149abc975604592d1e53f412fb44ecee5395073122f099f3386",
+    "fig-transfer-reading.pdf": "cf372a7589251f1b2296db3fff2f09e0e3cdf8fcb4ee330309d56adf1c219e04",
     "fig-posbudget.pdf": "98e315bca02f802a68502f0bbf912ab9cf0af0a93b9bbd47987534a6d9f8bcd1",
     "fig-joint-failure.pdf": "79a4346714f7f16b7abcc44d49797f3aaefdc9c655404c6dc7eaab4c27614f25"
   },
   "selection_policy": "latest complete local measurement family; no partial curves or incompatible baseline merges",
-  "scope": "main displays and updated prose; historical diagnostics additionally checked by whitebox/analysis/audit.py"
+  "scope": "numeric records, raw source recounts and rendered plots; editorial wording checks skipped"
 }

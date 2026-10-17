@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import pymupdf
+import xml.etree.ElementTree as ET
 
 PAPER=Path(__file__).resolve().parents[1]
 EXP=PAPER/'experiments/mechanism_20261017'
@@ -67,12 +68,27 @@ def audit():
             matrix.append(vals);truncated.append(trunc);counts.append(ncorrect)
         summaries[suite]=dict(arms=arms,layers=layers,n_correct=counts,accuracy=matrix,truncated=truncated)
     text=' '.join(p.get_text() for p in pymupdf.open(FIG/'fig-mechanism-results.pdf'))
-    check('rendered measured n','n=114' in text and 'PENDING' not in text)
-    for suite in summaries:
-        matrix=summaries[suite]['accuracy']
-        for row in matrix:
-            for value in row:
-                check(f'rendered cell {suite}/{value}',f'{value if suite=="repair" else 1-value:.2f}' in text)
+    check('rendered measured panels','Source-state and cache repair' in text
+          and 'Which attention path matters?' in text and 'PENDING' not in text)
+    # Dot plots encode values by position, with one SVG marker per measured cell.
+    # Recount all dots and verify their vertical coordinates against the raw
+    # outcomes using the common linear axis transform across both panels.
+    svg=ET.parse(FIG/'fig-mechanism-results.svg').getroot()
+    ns={'s':'http://www.w3.org/2000/svg'}
+    plotted=[]
+    for suite,summary in summaries.items():
+        for i,row in enumerate(summary['accuracy']):
+            group=svg.find(f'.//s:g[@id="measured-{suite}-{i}"]',ns)
+            check(f'rendered series {suite}/{i}',group is not None)
+            markers=group.findall('.//s:use',ns)
+            check(f'rendered count {suite}/{i}',len(markers)==len(row))
+            for marker,value in zip(markers,row):
+                plotted.append((value if suite=='repair' else 1-value,float(marker.attrib['y'])))
+    import numpy as np
+    actual=np.array(plotted)
+    slope,intercept=np.polyfit(actual[:,0],actual[:,1],1)
+    check('rendered values use correct vertical scale',slope<0 and
+          np.max(np.abs(actual[:,1]-(slope*actual[:,0]+intercept)))<1e-4)
     for name,key in [('fig-mechanism-repair.json','repair_source_sha256'),('fig-mechanism-edges.json','edges_source_sha256')]:
         check('summary hash '+name,hashlib.sha256((FIG/name).read_bytes()).hexdigest()==values[key])
     check('all workers completed',all((EXP/f'parallel/worker-{j}.done.json').exists() for j in range(4)))

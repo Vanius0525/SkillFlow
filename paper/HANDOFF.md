@@ -1,5 +1,21 @@
 # SkillVector 论文交接
 
+## 2026-10-17 桌面 v2 三图三表叙事修订（论文与桌面交付完成）
+
+- 目标：以桌面 WWW2027_v2_three_figures_three_tables 为重要参考，按有效探针→深度分离→历史修复重写；首页独立 Web relevance 段落；正文≤8页、全文≤12页；三图三表，Figure 3 改为便于干预比较的点图；最终桌面干净 Overleaf 包及 GitHub master 同步。
+- 已读取当前正文、参考包及截图。参考包的逐层图是裁剪图，机制 CSV 是四舍五入值，因此重新绘图必须使用仓库已审计 JSON，不从 CSV 推断曲线。WWW 官方 research-track-papers 页面已核实首页 Web/track 相关性要求。
+- 保护既有未跟踪 ../howskill/data/cells.json.tmp；不启动新实验、不改原始数值、不删除历史交付。
+- 已完成：摘要、引言、相关工作、方法、实验、结论及可达附录重写和协调。首页独立斜体 Web relevance 段落；摘要围绕科研问题。正文按有效探针→深度分离→历史修复推进，三图三表，附录另有一张重测表。Figure 1 双探针，Figure 2 保留完整实测逐层曲线，Figure 3 改为分组点图；无平滑、补点或新推理。保留 L24 recut 异常及样本筛选等必要边界。
+- 最终正文 **6/8页，全文9/12页**，三图在第2/4/5页。标准 acmart sigconf,anonymous,review，未改正文版心、字号、行距。0编译错误、0未解析引用、0横向/纵向溢出、字体全部嵌入。工作稿构建 build-skillvector.Zl7pmkxP，精确ZIP独立构建 build-overleaf.o5hywdew。
+- 验证：`python3 tools/check_main_data.py --numeric-only` 132703检查/489源文件通过；`python3 tools/audit_mechanism.py` 8428检查、48精确自身控制通过；`python3 tools/audit_three_display_revision.py` 15份数值输入相对修订前逐字节不变，三张主表数值/共同样本边界/阈值检查/机制置信区间匹配源记录；引用审计27实际引用/58 bib/11 TeX无缺键重复标签。旧exact-wording检查针对旧teaser及反复数字，数值模式跳过此类编辑断言，未跳过底层数值重计数；机制绘图审计已改为检查SVG点数及相对原始结果的纵坐标映射。
+- **本轮桌面入口：`/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v3-ThreeFiguresThreeTables-20261017/`**，包含 StillNeeded-overleaf.zip、StillNeeded-review.pdf、project/与阅读说明.md。ZIP16项，105050字节，SHA256 `c9ab9b3359f47cb558ebc429d34c676bbd44e8cfd667680c816b097d66bca216`。独立编译9页；ZIP、桌面project和workspace可达源码逐字节一致，两个PDF逐页文字相同。旧桌面版本均保留。
+- 审计：audit/DESKTOP-THREE-DISPLAY-20261017.json、audit/THREE-DISPLAY-REVISION-20261017.json、audit/WWW2027-FORMAT-20261017.json；中文说明reports/三图三表修订说明_20261017.md。科学范围仍为受控skill问答，Web相关段落不等于浏览器任务评测或scope录用保证。
+- 下一步：仅提交本轮paper目录改动到master并push；不提交既有 ../howskill/data/cells.json.tmp。推送结果以会话最终Git核验为准。
+
+### Open Ideas / 值得深挖的问题
+
+- 本轮为叙事及可视化修订，暂无新增经验证的科研观察。已有 L24 recut 无额外损失的异常仍应保留，不能将 L16 机制泛化全层。
+
 ## 2026-10-17 Web / Agent Skills / WWW格式修订（完成；后续只维护投稿版）
 
 - 用户最新偏好：**只维护一个投稿版，不再维护/编译/交付扩展版**。已移除main.tex扩展切换和C–H加载；旧扩展源和PDF保留归档、未改写。build.sh默认且仅支持submission，只复制实际依赖。主图style默认仅更新投稿图；table style仅更新可达表与A/B，历史扩展诊断不再生成。旧实验完成标记、停用的timer继续保持；没有新增推理或资源操作。

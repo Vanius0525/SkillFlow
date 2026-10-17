@@ -8,15 +8,14 @@
     "first_eight_pages_self_contained": true,
     "documentclass": "sigconf, anonymous, review; acmart"
   },
-  "pdf": "/home/vanius/proj/agent-harness/paper/skillvector-www2027.pdf",
-  "pdf_sha256": "0f4352093b4142fe84873478455e7e1a8921e97dc66340205c81a4ec1daf4ffc",
-  "main_pages": 8,
-  "total_pages": 12,
+  "pdf": "/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v3-ThreeFiguresThreeTables-20261017/StillNeeded-review.pdf",
+  "pdf_sha256": "b85b030a0744edcc1638912529029c60104d6f3e5d542040679ea4ec7615c5ff",
+  "main_pages": 6,
+  "total_pages": 9,
   "main_figure_pages": {
-    "1": 1,
-    "2": 5,
-    "3": 6,
-    "4": 6
+    "1": 2,
+    "2": 4,
+    "3": 5
   },
   "first_page_web_relevance": true,
   "anonymous_review": true,

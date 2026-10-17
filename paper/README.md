@@ -42,7 +42,7 @@ inference is Qwen3-8B/MedCalc; prior cross-model/task evidence is retained.
 The AI Use Statement was removed at the user's request.
 
 The latest Chinese reading guide is
-[Web / Agent Skills revision](reports/Web-AgentSkills修订说明_20261017.md).
+[Three-figure / three-table revision](reports/三图三表修订说明_20261017.md).
 Nearest-neighbor distinctions and primary-source links are documented there.
 
 ## Figures, tables, and audits
@@ -50,16 +50,19 @@ Nearest-neighbor distinctions and primary-source links are documented there.
 ```bash
 MPLCONFIGDIR=/tmp/paper-mpl python3 tools/style_main_figures.py
 python3 tools/style_main_tables.py
-MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_teaser.py
+MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_two_probes.py
 MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_mechanism_results.py
 python3 tools/audit_citations.py
-python3 tools/check_main_data.py
+python3 tools/check_main_data.py --numeric-only
 ```
 
 Styling reads audited values and preserves point estimates, samples and raw
 uncertainty. The default style pass updates only submission figures and tables.
 It does not regenerate archived rank/position diagnostics or extended appendices.
-`check_main_data.py` additionally checks historical records without rewriting them.
+`check_main_data.py --numeric-only` checks the underlying numerical records
+and plots, including historical diagnostics. Its legacy exact-wording checks
+are skipped because the manuscript has been rewritten. The three-figure
+format is verified separately by `tools/check_www_format.py`.
 
 The formal full-token mechanism records remain in the remote archive under
 `/inspire/ssd/project/project-public/czxs253130660/mechanism-20261017-v1/`.

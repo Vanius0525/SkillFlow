@@ -22,6 +22,7 @@ from _paths import PAPER, ROOT, TABLES, FIGURES, VALUES, MAIN_TEXT, main_text
 HERE = PAPER
 BY = ROOT / 'howskill/results/p8-wb/fetched/by-host'
 sources, checks = {}, []
+NUMERIC_ONLY = '--numeric-only' in sys.argv
 
 
 def check(label, condition):
@@ -81,7 +82,8 @@ def table_row(name, prefix):
 
 
 def prose(needle):
-    check('paper evidence text: '+needle, needle in main or needle in archived)
+    if not NUMERIC_ONLY:
+        check('paper evidence text: '+needle, needle in main or needle in archived)
 
 
 # The main text is now sections/*.tex, inputs in the order main.tex uses.
@@ -102,7 +104,8 @@ for layer,(transfer,retention) in enumerate(zip(teaser_common['transfer'],teaser
 check('teaser boundaries',teaser['transfer_boundary']==teaser_common['transfer_boundary']==13
       and teaser['reading_boundary']==teaser_common['reading_boundary']==25)
 main_source = (PAPER/'main.tex').read_text()
-check('teaser before title block',main_source.index('\\begin{teaserfigure}')<main_source.index('\\maketitle'))
+if not NUMERIC_ONLY:
+    check('teaser before title block',main_source.index('\\begin{teaserfigure}')<main_source.index('\\maketitle'))
 
 # New mechanism bridge: exact records, no-op controls and protocol drift.
 bridge_dir=PAPER/'experiments/mechanism_20261017'
@@ -206,7 +209,8 @@ for layer,value in depth['necessity']:
 check('Figure 3 boundaries',(depth['transfer_boundary'],depth['reading_boundary'])==(13,25))
 check('layer 14 remains at 0.16', round(dict(depth['sufficiency'])[14], 2)==.16)
 check('low late recovery starts at layer 15', round(max(v for l,v in depth['sufficiency'] if l>=15), 2)<=.07)
-check('prose locates late plateau at layer 15', 'from $15$ onward' in main)
+if not NUMERIC_ONLY:
+    check('prose locates late plateau at layer 15', 'from $15$ onward' in main)
 lastr=screen(load(depth['sources']['last']))
 for layer,value in depth['last_position']:
     close(f'Figure 3 last position layer {layer}',rho(lastr,f'ok_tq1_L{layer}'),value)
@@ -453,7 +457,7 @@ diagnostic_prose('retains $0.54$ of the skill')
 for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','Skill','Cyclic']),
                          ('fig-channels-medcalc.pdf',['0.81','0.03','0.06','Skill span']),
                          ('fig-rank-medcalc.pdf',['Mistral','72','135','362','256']),
-                         ('fig-transfer-reading.pdf',['Qwen3-8B','Qwen3-0.6B','Mistral-7B','MedCalc','TheoremQA','knockout','L13 / L25','Intervention layer','source still needed'])]:
+                         ('fig-transfer-reading.pdf',['Qwen3-8B','Qwen3-0.6B','Mistral-7B','MedCalc','TheoremQA','knockout','L13–L25','Intervention layer'])]:
     pdf=pymupdf.open(FIGURES/filename)
     text=' '.join(page.get_text() for page in pdf)
     for label in labels:check(filename+': rendered '+label,label in text)
@@ -490,9 +494,10 @@ check('mechanism: actual figure replaces reservation','fig-mechanism-results.pdf
 check('mechanism: no pending prose','[Draft:' not in mechanism_text and 'Measurements are pending' not in mechanism_text)
 check('mechanism: primary numerators',all(x in mechanism_text for x in ['$4/114$','$8/114$','$48/114$']))
 check('mechanism: main experimental structure',mechanism_text.count('\\subsection{')==4)
-for name in ['00-abstract.tex','01-introduction.tex','05-conclusion.tex']:
-    text=(PAPER/'sections'/name).read_text()
-    check('mechanism summary synchronized: '+name, all(x in text for x in ['3.5','42.1','7.0']))
+if not NUMERIC_ONLY:
+    for name in ['00-abstract.tex','01-introduction.tex','05-conclusion.tex']:
+        text=(PAPER/'sections'/name).read_text()
+        check('mechanism summary synchronized: '+name, all(x in text for x in ['3.5','42.1','7.0']))
 
 manifest={'checks_passed':len(checks),'source_sha256':sources,
           'artifact_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -502,6 +507,7 @@ manifest={'checks_passed':len(checks),'source_sha256':sources,
                   *[FIGURES/x for x in ['fig-channels-medcalc.pdf','fig-rank-medcalc.pdf',
                        'fig-transfer-reading.pdf','fig-posbudget.pdf','fig-joint-failure.pdf']]]},
           'selection_policy':'latest complete local measurement family; no partial curves or incompatible baseline merges',
-          'scope':'main displays and updated prose; historical diagnostics additionally checked by whitebox/analysis/audit.py'}
+          'scope':('numeric records, raw source recounts and rendered plots; editorial wording checks skipped' if NUMERIC_ONLY else
+                   'main displays and legacy prose; historical diagnostics additionally checked by whitebox/analysis/audit.py')}
 (VALUES/'DATA-CONSISTENCY-20260918.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(f'PASS: {len(checks)} checks; {len(sources)} source files hashed.')

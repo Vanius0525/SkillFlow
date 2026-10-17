@@ -57,10 +57,7 @@
 }
 \graphicspath{{figures/}}
 
-%% This paper is float-dense: 11 figures and 26 tables, most of them full width.
-%% With LaTeX's defaults the appendix queue overflows and floats are dropped
-%% without an error, so the page is allowed to be mostly float and float-only
-%% pages are allowed to be less than full.
+%% Allow the three main figures and compact appendix table to float cleanly.
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\bottomfraction}{0.9}
 \renewcommand{\textfraction}{0.06}
@@ -125,22 +122,6 @@
 
 \keywords{agent skills, Web agents, large language models, in-context learning,
 activation patching, context reuse, mechanistic interpretability}
-
-\begin{teaserfigure}
-\centering
-\includegraphics[width=\textwidth]{fig-teaser.pdf}
-\caption{From successful skill use to internal skill reuse. We transplant
-correct-skill states into a wrong-skill execution and, separately, block
-subsequent skill attention in the original execution. The right panel shows
-measured curves on the same $134$ Qwen3-8B/MedCalc items: transfer recovery
-falls before source dependence, leaving an interval in which the skill
-states transfer poorly while the source still matters. Source dependence is
-$1-q(L)$, the fraction no longer solved after attention knockout.}
-\Description{Three panels show a model using a new rule, state transfer and
-source-attention knockout interventions, and measured depth curves with a
-highlighted gap between layers 13 and 25.}
-\label{fig:teaser}
-\end{teaserfigure}
 
 \maketitle
 

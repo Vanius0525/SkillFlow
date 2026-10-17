@@ -1,55 +1,47 @@
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Transfer interventions and source dependence.}
-Task and function vectors transfer behaviours from demonstrations
-\citep{hendel2023taskvectors, todd2024functionvectors}. Natural-language
-instructions can yield different function-vector components
-\citep{davidson2025prompting}, and instruction-vector patches can interact
-superadditively across layers \citep{bigoulaeva2026instructionvectors}.
-Transfer also depends on time and semantic scope \citep{jit2025taskrepr}.
-These results motivate testing continued source dependence separately:
-\citet{sia2024incontexttranslation} use cumulative context masking, and
-\citet{onset2025instruction} compare instruction-span and final-position
-patches. \citet{yang2025internalcot} combine layer-from context masking with cross-task
-patching to study subtask scheduling, reporting best-layer transfer strength.
-Our target is the depth interval where source-span transfer has weakened but
-cumulative skill-attention knockout still damages the original computation,
-under matched task and model conditions.
+\paragraph{Transferring task behaviour through internal states.}
+Task vectors summarize demonstrations as internal vectors that can steer
+a new example \citep{hendel2023taskvectors}. Function vectors identify
+attention-head outputs that transmit a task's behaviour across contexts
+\citep{todd2024functionvectors}. Natural-language instructions also yield
+transferable components \citep{davidson2025prompting}, and instruction
+patches can interact across layers \citep{bigoulaeva2026instructionvectors}.
+The effect of transfer varies with the task and intervention time
+\citep{jit2025taskrepr}. These results establish useful transfer settings.
+We examine how transfer changes across depth relative to the original
+execution's continued dependence on its skill source.
 
-\paragraph{What a transferred state measures.}
-A multiple-choice answer symbol \citep{wiegreffe2025mcq} and states from
-completed reasoning \citep{mehrafarin2026cothidden} differ from the skill
-context supplied before generation. Sequential patching
-\citep{dura2026sequentialpatching} and repeated activation steering
-\citep{panickssery2024caa, liu2024icv, stolfo2025instruction} also intervene
-beyond our one-time prefill protocol. Following activation-patching methodology
-\citep{zhang2023bestpractices, heimersheim2024patching}, we use matched
-controls, generated answers and identity checks to delimit what recovery
-establishes. Our depth comparison extends beyond tracing factual recall
-\citep{meng2022rome, geva2023dissecting} to the sustained use of skills.
-Patching effects can depend on interactions with other mediators
-\citep{vaidyanathan2026mediators}. \citet{li2026prefillnotes} locate cached
-conclusions downstream of source fields and show that precompiled skill
-caches can be repositioned and composed with a target context. These
-findings establish that execution history matters and that rich cached
-skills can be reusable. We identify how reuse and source use separate
-\emph{across depth}: a source can remain necessary after residual transfer
-weakens, joint source-state/cache repair restores part of that effect, and
-recutting reader access tests whether the recovered ability still relies
-on the source. This connects cache compatibility to the ongoing computation
-that makes a contextual skill useful.
+\paragraph{Tracing context use and execution history.}
+Cumulative context masking tests whether a model still needs source tokens
+at later layers \citep{sia2024incontexttranslation}.
+Instruction-span and final-position patches can reveal different effects
+\citep{onset2025instruction}. Combining masking and cross-task patching
+also identifies when models carry out particular subtasks
+\citep{yang2025internalcot}. Activation patching, the replacement of selected
+hidden states by states from another run, requires matched controls and
+careful implementation
+\citep{zhang2023bestpractices,heimersheim2024patching}.
+Effects can depend on interactions among the intervened components
+\citep{vaidyanathan2026mediators}. We pair full-depth transfer and masking
+profiles, then test source states together with their attention caches.
+This connects our work to PrefillNotes \citep{li2026prefillnotes}, which
+shows that precompiled skill caches can be repositioned and composed with
+a target context. Our focus is when residual-state reuse weakens while
+source access remains important, and how repairing cached history affects
+that separation.
 
-\paragraph{Skills and compact context representations.}
-Agent Skills package instructions and supporting resources for on-demand
-use \citep{zhang2025agentskills}. Skill benchmarks evaluate retrieval and application
-\citep{su2026srabench, skillsbench2026, sweskills2026}. Web-agent work supplies reusable workflows and skills to support browser
-tasks \citep{wang2024awm, wang2026webxskill}. Such gains depend on evaluation
-conditions: under a matched total token budget, online skill and memory
-modules can lose their aggregate advantage \citep{hajimiri2026budgetskills}.
-We hold skill selection fixed and study how injected content is used, rather
-than proposing a skill-learning or retrieval system. Learned compression uses aggregated
-activations \citep{ardoin2026promptcompression}, summary tokens
-\citep{mu2023gist}, compact states \citep{ge2024icae} or weight updates
-\citep{doc2lora2026, deepcontextdistill2025}. We intervene on naturally
-occurring states without training a compressor.
+\paragraph{Skills and reusable context.}
+Agent Skills organize instructions and resources for on-demand use
+\citep{zhang2025agentskills}. Benchmarks measure skill retrieval and
+application \citep{su2026srabench,skillsbench2026,sweskills2026}, while
+matched-budget evaluations show that their benefit depends on the available
+computation \citep{hajimiri2026budgetskills}. We fix the selected skill and
+study how its loaded content supports execution.
+A related direction compresses context into aggregated activations
+\citep{ardoin2026promptcompression}, learned summary tokens
+\citep{mu2023gist}, compact hidden states \citep{ge2024icae}, or weight
+updates \citep{doc2lora2026,deepcontextdistill2025}.
+We study naturally occurring states through interventions, providing tests
+of reuse and source dependence that complement trained compression methods.
