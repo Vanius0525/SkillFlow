@@ -27,8 +27,9 @@ questions and $320$ skills. Each question receives its designated skill,
 holding skill selection fixed. We test Qwen3-8B, Qwen3-0.6B
 \citep{yang2025qwen3} and Mistral-7B-Instruct-v0.3
 \citep{jiang2023mistral}, spanning two model families. Models generate
-step-by-step answers with greedy decoding and no tools, and we use the
-corresponding benchmark scorers. On the full MedCalc benchmark, Qwen3-8B
+step-by-step answers with greedy decoding, selecting the highest-probability
+next token at each step. We use no tools and apply the corresponding
+benchmark scorers. On the full MedCalc benchmark, Qwen3-8B
 achieves $74.2\%$ accuracy with the correct skill, $34.5\%$ without a skill,
 and $31.5\%$ with an unrelated skill.
 
@@ -41,7 +42,7 @@ gives $135$ questions from $14$ calculators. The depth sweeps use this
 group screen, with separately eligible transfer and knockout items.
 We also recompute both curves on their common item IDs. TheoremQA uses
 the same screen, becoming item-level for skills with one question.
-The history-repair study uses a separate fixed set described in
+The source-cache replacement study uses a separate fixed set described in
 \S\ref{sec:mechanism}. These populations estimate effects conditional on
 baseline skill benefit.
 
@@ -102,7 +103,8 @@ Identity patch & .000 & .00 \\
 
 \paragraph{The effect depends on skill content and position.}
 The unrelated-skill, permuted-position and noise controls in
-Table~\ref{tab:probe} all yield little recovery. For the content comparison,
+Table~\ref{tab:probe} all yield little recovery. The noise is scaled to match
+the size, measured by Euclidean norm, of the skill-state change. For the content comparison,
 the correct and unrelated skills are patched over a common prefix length.
 The correct prefix recovers $0.65$ of the available gain. A mean of
 same-family skill differences recovers $0.12$ on its smaller eligible set
@@ -130,25 +132,10 @@ of the main skill span also reveals content structure: the formula quarter
 gives the largest standalone recovery, $0.56$. Appendix~\ref{app:fullscale}
 provides the additional content and prompt-order controls.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig-repeated-replacement.pdf}
-\caption{Repeated skill-state replacement on $135$ Qwen3-8B/MedCalc
-items from $14$ calculators. Each filled bar replaces the skill span at
-every layer in the indicated window. The outlined bar replaces it only
-at layer $16$. The final column gives the number of layers patched.
-Starting early supports strong recovery, while twenty late writes give
-the same recovery as one write at their starting layer.}
-\Description{Horizontal bars compare five replacement windows and a single
-layer-16 replacement. The layer-16-to-35 window and layer 16 alone both
-recover 0.06 of the donor's gain.}
-\label{fig:repeated}
-\end{figure}
-
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
-\caption{History repair and attention-path tests on the same $114$
+\caption{Source-state/cache replacement and attention-path tests on the same $114$
 Qwen3-8B/MedCalc items from $14$ skills. (a) Accuracy following residual
 replacement ($S$), cache replacement ($C$), joint repair ($SC$), or joint
 repair followed by a reader cut from the next layer. (b) Fraction of
@@ -161,7 +148,7 @@ the main contrasts.}
 \label{fig:mechanism}
 \end{figure*}
 
-\subsection{Transfer fails before source dependence ends}
+\subsection{Residual-state transfer weakens before source dependence subsides}
 \label{sec:where}
 \label{sec:depth}
 \label{sec:ladder}
@@ -171,8 +158,9 @@ With an effective early probe established, we follow state transfer and
 source-attention knockout across every layer. Figure~\ref{fig:transferreading}
 shows the six model--task combinations. For Qwen3-8B/MedCalc, transfer
 recovery is $0.74$ at layer $12$, falls to $0.16$ at $13$, and is at most
-$0.07$ from layer $15$ onward. Yet cutting skill attention through layer
-$23$ leaves only $0.03$--$0.12$ of rescued questions correct. Retention
+$0.07$ from layer $15$ onward. For cuts beginning at $L\leq23$ and
+continuing through the final layer during prompt processing and answer
+generation, only $0.03$--$0.12$ of rescued questions remain correct. Retention
 reaches $0.25$ at layer $24$ and first crosses one half at layer $25$.
 Throughout layers $13$--$24$, transfer recovers less than half the gain,
 while removing further skill attention still loses more than half the
@@ -203,43 +191,37 @@ task domains under common-item evaluation.
 \centering
 \caption{Boundary layers on common eligible items. $T/R$ gives the
 first half-effect crossings for transfer and attention retention,
-respectively. $\Delta=R-T$ measures their separation in layers.}
+respectively. $\Delta=R-T$ measures their separation in layers. The last
+column gives its skill-group bootstrap $95\%$ confidence interval.}
 \label{tab:paireddepth}
-\small
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
 \input{tables/tab-paired-depth}
 \end{table}
 
 \paragraph{Repeated late replacement leaves transfer weak.}
-The depth gap raises a practical question: can repeated replacement sustain
-the transferred skill after a single write becomes ineffective? We replace
-source-span states at every layer within consecutive windows, using the
-same $135$ MedCalc items and wrong-skill receiver as the depth sweep.
-Each layer receives the donor states captured at that layer.
-
-Figure~\ref{fig:repeated} shows that recovery depends strongly on where
-replacement begins. Windows starting in the early layers preserve much
-of the skill's benefit, while later windows recover little. Extending
-replacement from layer $16$ through the final layer gives $0.06$ recovery,
-equal to replacing layer $16$ alone. By comparison, replacing every layer
-from the start recovers $0.98$. Repeated writes therefore support effective
-transfer when begun early, but adding them after the transfer boundary
-does little to restore the skill's contribution. This shifts the next
-question from how often the states are replaced to what accompanies them:
-the receiver still retains its previously computed attention caches.
+A single write might be insufficient to sustain a transferred skill.
+We test this by replacing source-span states over consecutive layer
+windows on the same $135$ MedCalc items. Windows $8$--$11$, $12$--$15$,
+$14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and $0.06$,
+respectively. Replacing states at every layer from the start recovers
+$0.98$. Repetition is therefore effective when begun early, while starting
+at layer $16$ gives the same weak recovery as a single write there.
+A corresponding TheoremQA test also yields weak late-window recovery
+(Appendix~\ref{app:fullscale}). This directs attention to the execution
+source-position cache entries that residual replacement leaves unchanged.
 
 
 
-\subsection{Testing why late skill states fail to transfer}
+\subsection{Testing source caches and continued reading}
 \label{sec:mechanism}
 
-\paragraph{Repairing source states and their cached history.}
+\paragraph{Replacing source states and source-position caches.}
 A residual-state patch changes a block output while leaving previously
 computed source-cache entries in place. To test whether these entries
 matter, we compare source residual replacement ($S$), source key/value-cache
 replacement ($C$), their joint replacement ($SC$), and $SC$ followed by
-cutting reader-to-source attention from the next layer. A reader is a token
-outside the skill span, such as a question or generated answer token.
-The cache condition replaces source entries through the intervention
+cutting reader-to-source attention from the next layer. The cache condition replaces source entries through the intervention
 layer, keeping earlier reader computation fixed.
 
 We evaluate layers $8,12,16,24$ on a fixed $124$-question set from
@@ -257,7 +239,7 @@ At layer $16$, residual replacement answers $4/114$ questions correctly,
 cache replacement answers $8/114$, and joint repair answers $48/114$.
 Table~\ref{tab:mechanism-contrasts} reports the repair gain and its
 uncertainty. The joint gain exceeds the sum of the individual gains
-relative to the receiver, showing that the states and their cached history
+relative to the receiver, showing that the states and their source caches
 contribute together. At layer $24$, joint repair still improves on residual
 replacement ($25.4\%$ versus $0.9\%$), although its advantage over cache
 replacement alone ($18.4\%$) is uncertain. Compatible source caches thus
@@ -304,6 +286,6 @@ depths. The main repair gain is stable to generation-length diagnostics:
 it remains $38.5$ points on the $96$ questions whose three baselines finish
 without truncation. An adverse reassignment of truncated outputs still
 leaves a $35.1$-point gain (Appendix~\ref{app:mechanism}).
-Taken together, the experiments show that source history can restore late
-transfer and that the recovered behaviour can still depend on reading
-the skill.
+Taken together, the experiments show that replacing source-position caches
+can restore part of late residual transfer, and that the recovered behaviour
+can still depend on reading the skill.

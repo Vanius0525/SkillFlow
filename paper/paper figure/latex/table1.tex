@@ -1,0 +1,27 @@
+\begin{table}[t]
+\centering
+\caption{Early transfer controls, Qwen3-8B/MedCalc, layer $8$:
+$135$ items from $14$ calculators. Accuracy and recovery $\rho$ are
+point estimates. Final-position patches replace fewer states than the
+skill-span patches.}
+\label{tab:probe}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\rowcolor{TableHeader}
+Intervention & Accuracy & $\rho$ \\
+\midrule
+Correct skill donor & .919 & 1.00 \\
+Wrong skill receiver & .000 & .00 \\
+\rowcolor{TransferHighlight}
+Correct skill span & .815 & .89 \\
+Last prompt position & .030 & .03 \\
+Last $16$ prompt positions & .059 & .06 \\
+Other skill content & .044 & .05 \\
+Correct span, permuted & .044 & .05 \\
+Norm-matched noise & .022 & .02 \\
+Identity patch & .000 & .00 \\
+\bottomrule
+\end{tabular}
+\end{table}

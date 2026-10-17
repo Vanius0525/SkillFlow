@@ -1,5 +1,20 @@
 # SkillVector 论文交接
 
+## 2026-10-18 按截图重构四图与机制叙事（稿件、图表包及交接交付完成）
+
+- 用户最新要求覆盖重复注入图版：以三图三表提交141c8fb为基线，Figure1 teaser呈现早期迁移/深度分离/源KV部分恢复，Figure2详细干预设计，Figure3六组深度，Figure4恢复机制；实验保持4.2→4.3→4.4，首页Web relevance独立段首。
+- 修改重点：区分残差状态迁移与源位置KV联合迁移，中心结论聚焦源缓存及后续读取，不归因全部计算历史；修正L≤23持续屏蔽表述与附录13/14层0.32/0.34错误；Table2增加已有bootstrap区间；补TheoremQA窗口已有结果。
+- 不新增推理。已找到TheoremQA corrected窗口的现有t8-win+tqa-span记录与campaign_numbers.py，先重计数再补附录；当前仅已知存在记录，不视为新实验。保留旧桌面版本与既有howskill/data/cells.json.tmp。
+- 已完成三图三表基线重构：新teaser、新干预设计、保留六组深度和机制结果，正文重复注入仅文字；摘要/引言/结论以源位置KV及继续读取为重点；4.3标题精确区分residual transfer。独立Web relevance仍在引言开头。4.4标题Testing source caches and continued reading。
+- 已修复用户所列细节：L≤23起始且持续到末层；组筛选13/14约0.16而逐题筛选0.32/0.34；Table2增加已存在的boundary bootstrap CI；TheoremQA t8-win+tqa-span重计数99题/75skill，窗口0.839/0.613/0.376/0.204，单L16同0.204，附录已补。
+- 数值验证：15份原数值输入逐字节不变，teaser SVG曲线/条宽与精确源值一致；check_main_data.py --numeric-only 132702检查/489源文件通过；引用27项/58bib/11TeX无缺键重复标签。新审计audit/FOUR-FIGURE-STORY-20261017.json。没有新增推理、远端资源或下载。
+- `paper figure/`已建立，含四图PDF/PNG/SVG、完整LaTeX浮动体、三主表及附录表、源码快照/数据/manifest，以及可编译figures.tex。独立合集编译9页，0error/undefined/overfull hbox，stage build-figure-collection.mbbsip3y；Figures-and-Tables.pdf已在目录。新增tools/build_boundary_table.py单独维护Table2，避免旧point-estimate脚本剥掉区间。
+- 最终构建build-skillvector.vMZtK0TQ与精确ZIP独立构建build-overleaf.8ughln0x均为正文6/全文9页，图在2/3/4/6页；0error/undefined/overfull，全部字体嵌入，已目视检查。ZIP/project/workspace源逐字节一致、两个PDF9页文字一致。
+- **最新桌面入口：`/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v5-SourceCaches-20261018/`**；PDF、17项Overleaf ZIP（128662字节，SHA256 `c634d89f30c6ca4194a01cf801e9c4cbcec9e984ad53d59664a112329dbe7400`）、project/、阅读说明、paper figure/及HANDOFF-NEXT-CONVERSATION.md齐全。旧交付不删。
+- 独立图表目录：仓库`paper figure/`、桌面`/mnt/c/Users/12970/Desktop/paper figure/`、v5交付内paper figure/，各38文件（含manifest），已按manifest逐项核验完全一致。含独立图表合集PDF、四图PDF/PNG/SVG、四表代码及说明、绘图快照及数据。审计audit/DESKTOP-FIGURE-BUNDLE-20261018.json。
+- 独立新对话文档`HANDOFF-NEXT-CONVERSATION.md`已完成并复制至桌面交付及图表目录。说明当前v5、原需求、修改项、关键数值、样本/机制边界、命令、实验状态和不自行新增实验约束。
+- 下一步仅master提交推送，结果以会话最后Git核验为准。既有howskill/data/cells.json.tmp不碰。本轮无新增推理或平台资源操作。
+
 ## 2026-10-17 重复注入升级为正文图（稿件与桌面交付完成）
 
 - 用户要求：把重复注入做成图，保持视觉风格一致，配套文字连贯，融入现有结构，不新建二级小节，不加入置信区间内容。本轮仅新增重复注入点估计图及邻近文字，保留其他既有图表内容。

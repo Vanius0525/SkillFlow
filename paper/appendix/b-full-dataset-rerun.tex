@@ -30,9 +30,21 @@ At full scale we added $13$ and $17$--$19$:
 recovery is $0.98,0.98,0.89,0.74$ at layers $0,4,8,12$, then
 $0.16,0.16,0.06,0.06,0.07,0.03,0.02,0.03$ at $13$ through $20$ (per-calc; the
 per-item restriction gives $1.00,0.98,0.94,0.79$ then
-$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$). Layers $13$ and $14$ are
-equal at the reported precision under both restrictions, locating the
-largest local change between layers $12$ and $13$.
+$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$). Under the group screen,
+layers $13$ and $14$ both round to $0.16$. Under the item screen, they
+differ at $0.32$ and $0.34$. Both screens show their largest local decline
+between layers $12$ and $13$.
+
+\paragraph{Repeated replacement on TheoremQA.}
+The corrected Qwen3-8B comparison uses $99$ eligible questions from $75$
+skills with matched donor and wrong-skill receiver baselines. Replacing
+source residual states at each layer of windows $8$--$11$, $12$--$15$,
+$14$--$19$ and $16$--$35$ recovers $0.839$, $0.613$, $0.376$ and $0.204$,
+respectively. Layer $16$ alone also recovers $0.204$. These values come
+from the completed \texttt{t8-win} and \texttt{tqa-span} runs, whose
+compatible baselines are merged before applying the receiver screen.
+As in MedCalc, extending replacement from layer $16$ through the final
+layer adds little recovery over the single-layer intervention.
 
 \paragraph{A continuous readout at the same boundary.}
 Accuracy thresholds a generated answer, so an internal change can appear

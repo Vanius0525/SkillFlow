@@ -1,23 +1,23 @@
 \section{Conclusion}
 \label{sec:discussion}
 
-Using a contextual skill and reusing its internal states are distinct
-abilities. Our experiments reveal a
-depth interval in which skill-state transfer has weakened while the original
-computation continues to depend on skill attention. This separation recurs
-across three models and two task domains, including common-item evaluation.
+Skill-state transfer is shaped by both the transferred component and the
+source access available afterward. Across three models and two task domains,
+residual-state transfer weakens before dependence on skill attention
+subsides. Content and cross-question controls establish that the effective
+early intervention carries structured skill information.
 
-Content and cross-question controls establish an effective early probe.
-Late transfer can be partly restored by pairing source states with their
-cached history, and the recovered behaviour can still require continued
-source reading. This connects transferability to the computation surrounding
-the skill states. The mechanism study covers one model--task setting,
-leaving the roles of history and reading in larger models and interactive
-agent tasks for further study.
+The focused Qwen3-8B/MedCalc study makes this separation more concrete.
+Replacing source-position KV caches together with residual states restores
+substantial late transfer at layer $16$, while cutting subsequent source
+reading removes most of the recovered effect. This identifies source
+caches and continued reading as two contributors to successful reuse.
+The intervention leaves earlier reader computation unchanged, and the
+recutting effect varies with depth, so these results characterize the tested
+source components rather than all of the receiver's computational history.
 
-Contextual competence therefore has two distinct properties: the ability to
-support the current computation and the ability to be reused in another.
-For skill-sharing agents and context-reuse systems, both need to be tested.
-Future skill-sharing systems can use paired transfer and source-access tests
-to evaluate when an internal representation can substitute for the skill
-that produced it.
+For systems that reuse contextual skills, residual-state recovery,
+source-cache compatibility and subsequent source access are therefore
+distinct properties to evaluate. Extending the joint interventions to
+additional models and interactive agent tasks can establish how broadly
+these conditions govern skill reuse.

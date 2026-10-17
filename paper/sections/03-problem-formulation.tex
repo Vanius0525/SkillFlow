@@ -10,6 +10,28 @@ and isolate how the model uses and reuses it internally.
 State transfer tests recovery in a wrong-skill receiver. Attention knockout
 tests source dependence in the correct-skill run. Both score generated
 answers while varying intervention depth.
+The model first processes the prompt, called prefill, and then generates
+answer tokens, called decoding. We call tokens outside the skill span
+readers, including question and answer tokens. Figure~\ref{fig:design}
+summarizes which source components are replaced and which attention paths
+are cut.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-intervention-design.pdf}
+\caption{Intervention design. (a) The correct-skill donor supplies source
+residual states ($S$), source-position KV entries through layer $L$ ($C$),
+or both ($SC$) to the wrong-skill receiver. Earlier reader computation
+is retained. (b) Attention cuts distinguish access by reader tokens
+from updates within the skill source. After $SC$, the reader cut begins
+at $L+1$. In the original correct-skill run, path cuts begin at $L$.
+All cuts continue through the remaining prompt processing and decoding.}
+\Description{A component-level diagram shows donor source states and caches
+replacing selected receiver components while earlier reader computation is
+retained. Three attention paths illustrate cumulative knockout, reader cuts
+and source-self cuts.}
+\label{fig:design}
+\end{figure*}
 
 \paragraph{Skill-span state transfer.}
 We call the loaded instruction text the skill source and its token positions

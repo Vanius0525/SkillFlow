@@ -8,15 +8,15 @@
     "first_eight_pages_self_contained": true,
     "documentclass": "sigconf, anonymous, review; acmart"
   },
-  "pdf": "/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v4-RepeatedReplacement-20261017/StillNeeded-review.pdf",
-  "pdf_sha256": "b1d18f58bb69373127f45baec895640ee122efd94fda3123162318c69060d060",
+  "pdf": "/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v5-SourceCaches-20261018/StillNeeded-review.pdf",
+  "pdf_sha256": "e7834bf19739f99730bf9d29541f3b3d932842052c8d123db59de66cfbb5f5f9",
   "main_pages": 6,
   "total_pages": 9,
   "main_figure_pages": {
     "1": 2,
-    "2": 4,
+    "2": 3,
     "3": 4,
-    "4": 5
+    "4": 6
   },
   "first_page_web_relevance": true,
   "anonymous_review": true,

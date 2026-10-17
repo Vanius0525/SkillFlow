@@ -37,28 +37,34 @@ Agent Skills follow Anthropic's instruction/script/resource paradigm. Our unit
 of analysis is the skill instruction content loaded into context, with skill
 selection held fixed. The paper moves from Web-agent skill use to a validated
 state-transfer probe, depth-wise separation of transfer and source dependence,
-and causal source-history repair and reader recutting. All new mechanism
+and source-state/cache replacement followed by reader recutting. All new mechanism
 inference is Qwen3-8B/MedCalc; prior cross-model/task evidence is retained.
 The AI Use Statement was removed at the user's request.
 
 The latest Chinese reading guide is
-[Repeated-replacement figure revision](reports/重复注入图修订说明_20261017.md).
-Nearest-neighbor distinctions and primary-source links are documented there.
+[Source-cache and reading revision](reports/源缓存与持续读取修订说明_20261018.md).
+The new-conversation entry point is [HANDOFF-NEXT-CONVERSATION.md](HANDOFF-NEXT-CONVERSATION.md).
+The maintained chart workspace is [paper figure/](<paper figure/README.md>).
 
 ## Figures, tables, and audits
 
 ```bash
 MPLCONFIGDIR=/tmp/paper-mpl python3 tools/style_main_figures.py
-python3 tools/style_main_tables.py
-MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_two_probes.py
+MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_teaser.py
+MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_intervention_design.py
 MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_mechanism_results.py
-MPLCONFIGDIR=/tmp/paper-mpl python3 tools/fig_repeated_replacement.py
+python3 tools/build_boundary_table.py
+python3 tools/audit_three_display_revision.py
+python3 tools/export_figure_bundle.py
 python3 tools/audit_citations.py
 python3 tools/check_main_data.py --numeric-only
 ```
 
 Styling reads audited values and preserves point estimates, samples and raw
-uncertainty. The default style pass updates only submission figures and tables.
+uncertainty. The default figure style pass retains the audited numerical records.
+Do not run legacy table generators to refresh the current tables: the
+current Table 2 includes boundary intervals that legacy point-estimate
+formatting would strip.
 It does not regenerate archived rank/position diagnostics or extended appendices.
 `check_main_data.py --numeric-only` checks the underlying numerical records
 and plots, including historical diagnostics. Its legacy exact-wording checks

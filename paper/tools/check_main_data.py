@@ -462,9 +462,12 @@ for filename, labels in [('fig-posbudget.pdf',['0.82','0.40','0.18','Skill','Cyc
     text=' '.join(page.get_text() for page in pdf)
     for label in labels:check(filename+': rendered '+label,label in text)
 
-# Point-estimate presentation must not discard raw uncertainty analyses.
+# Boundary intervals are now explicitly reported in the common-item table.
 for path in TABLES.glob('*.tex'):
     tex=path.read_text()
+    if path.name=='tab-paired-depth.tex':
+        check('paired boundary table reports uncertainty',r'$95\%$ CI' in tex)
+        continue
     check(path.name+': no displayed CI column',not re.search(r'\bCI\b|confidence interval',tex))
     check(path.name+': no displayed numeric CI',not re.search(r'\$\[[+-]?\d+(?:\.\d+)?,(?:\\,)?\s*[+-]?\d+(?:\.\d+)?\]\$',tex))
 figtext=' '.join(p.get_text() for p in pymupdf.open(FIGURES/'fig-transfer-reading.pdf'))

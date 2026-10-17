@@ -20,7 +20,9 @@ for path in inputs:
     assert original==path.read_bytes(),f'Numerical input changed: {relative}'
     hashes[relative]=hashlib.sha256(original).hexdigest()
 
-assert len(re.findall(r'\\begin\{figure\*?\}',text))==3
+assert len(re.findall(r'\\begin\{figure\*?\}',text))==2
+assert sum(len(re.findall(r'\\begin\{figure\*?\}',p.read_text()))
+           for p in (PAPER/'sections').glob('*.tex'))==4
 assert len(re.findall(r'\\begin\{table\*?\}',text))==3
 assert '\\begin{teaserfigure}' not in (PAPER/'main.tex').read_text()
 assert (PAPER/'sections/01-introduction.tex').read_text().count('Relevance to the Web and to this track.')==1
@@ -47,6 +49,8 @@ for cell in depth:
     common=cell['common'];t=common['transfer_boundary'];r=common['reading_boundary']
     assert f'{cell["task"]} & {cell["model"]} & ${common["n"]}$ & ${t}/{r}$' in table
     assert f'${r-t}$' in table
+    lo,hi=common['boundary_ci'][2]
+    assert f'$[{lo:.1f},{hi:.1f}]$' in table
     for threshold,predicate in [(.4,True),(.6,True)]:
         # Evaluate the first crossings from the original measured curves.
         transfer=next(i for i,v in enumerate(common['transfer']) if v<threshold)
@@ -64,33 +68,52 @@ for key,label in [('SC_minus_S','L16: $SC-S$'),
 edges=json.loads((PAPER/'figures/fig-mechanism-edges.json').read_text())
 values=[edges['reader_minus_self_loss'][2],edges['reader_minus_self_loss_ci95'][0][2],edges['reader_minus_self_loss_ci95'][1][2]]
 assert f'L24: reader minus self loss & $+{100*values[0]:.1f}$ & $[{100*values[1]:.1f},{100*values[2]:.1f}]$' in text
-window_source=PAPER/'values/main-evidence-values.json'
-window_data=json.loads(window_source.read_text())
-window_report=json.loads((PAPER/'audit/REPEATED-REPLACEMENT-20261017.json').read_text())
-assert window_report['source_sha256']==hashlib.sha256(window_source.read_bytes()).hexdigest()
-assert (window_report['n'],window_report['groups'])==(135,14)
-svg=ET.parse(PAPER/'figures/fig-repeated-replacement.svg').getroot()
+# Verify the new teaser's sources and rendered positions.
+import numpy as np
+teaser=json.loads((PAPER/'audit/TEASER-CACHE-READING-20261017.json').read_text())
+svg=ET.parse(PAPER/'figures/fig-teaser.svg').getroot()
 ns={'s':'http://www.w3.org/2000/svg'}
-scale=[]
-for i,row in enumerate(window_report['rows']):
-    if row['layers']=='16 only':
-        expected=dict(window_data['sufficiency'])[16]
-        assert row['writes']==1
-    else:
-        lo,hi=map(int,row['layers'].split('–'))
-        expected=window_data['windows'][f'w{lo}_{hi}']
-        assert row['writes']==hi-lo+1
-    assert row['recovery']==expected
-    group=svg.find(f'.//s:g[@id="measured-window-{i}"]',ns)
-    assert group is not None
-    coordinates=[float(v) for v in re.findall(r'-?\d+(?:\.\d+)?',group.find('s:path',ns).attrib['d'])]
-    x=coordinates[::2]
-    scale.append((max(x)-min(x))/expected)
-assert max(scale)-min(scale)<1e-4,'Bar widths must match source recoveries'
-assert window_report['point_estimates_only']
+for name,digest in teaser['input_sha256'].items():
+    assert hashlib.sha256((PAPER/name).read_bytes()).hexdigest()==digest
+assert (teaser['early_n'],teaser['depth_n'],teaser['repair_n'])==(135,134,114)
+common=next(c['common'] for c in depth if c['task']=='MedCalc' and c['model']=='Qwen3-8B')
+assert teaser['transfer']==common['transfer']
+assert np.allclose(teaser['source_dependence'],1-np.array(common['retention']))
+for label,expected in [('transfer',teaser['transfer']),('dependence',teaser['source_dependence'])]:
+    group=svg.find(f'.//s:g[@id="teaser-{label}"]',ns)
+    coords=np.array([float(x) for x in re.findall(r'-?\d+(?:\.\d+)?',
+                    group.find('s:path',ns).attrib['d'])]).reshape(-1,2)
+    assert len(coords)==len(expected)
+    slope,intercept=np.polyfit(expected,coords[:,1],1)
+    assert slope<0 and np.max(np.abs(coords[:,1]-(slope*np.array(expected)+intercept)))<1e-4
+raw_repair=json.loads((PAPER/'figures/fig-mechanism-repair.json').read_text())
+expected=np.array(raw_repair['samples']['rescued']['accuracy'])[2:,2]*100
+assert np.allclose(teaser['repair_accuracy_percent'],expected)
+scales=[]
+for i,value in enumerate(expected):
+    group=svg.find(f'.//s:g[@id="teaser-repair-{i}"]',ns)
+    coords=np.array([float(x) for x in re.findall(r'-?\d+(?:\.\d+)?',
+                    group.find('s:path',ns).attrib['d'])]).reshape(-1,2)
+    scales.append(np.ptp(coords[:,0])/value)
+assert max(scales)-min(scales)<1e-4
+
+# Recount the already completed TheoremQA windows; no model inference.
+import replication as rep
+groups=rep.restricted(rep.load(['t8-win','tqa-span']))
+rows=[r for group in groups.values() for r in group]
+windows={}
+for arm in ['w8_11','w12_15','w14_19','w16_35','L16']:
+    assert sum(f'ok_real_{arm}' in r for r in rows)==99
+    windows[arm]=rep.rho(groups,f'ok_real_{arm}')
+assert len(groups)==75
+assert windows['w16_35']==windows['L16']
+appendix=(PAPER/'appendix/b-full-dataset-rerun.tex').read_text()
+assert '$0.839$, $0.613$, $0.376$ and $0.204$' in appendix
+assert 'equal at the reported precision under both restrictions' not in appendix
 report={'numerical_inputs_unchanged':True,'input_sha256':hashes,
         'main_figures':4,'main_tables':3,'appendix_tables':1,
-        'checked':'Three main tables; repeated-replacement source values, write counts and rendered bar widths',
-        'repeated_replacement_conditions':len(window_report['rows'])}
-(PAPER/'audit/THREE-DISPLAY-REVISION-20261017.json').write_text(json.dumps(report,indent=2)+'\n')
-print(f'PASS: {len(inputs)} numerical inputs unchanged; three main tables and six repeated-replacement bars match source values.')
+        'baseline_commit':'141c8fb','new_inference':False,
+        'theoremqa_windows':windows,'theoremqa_n':99,'theoremqa_groups':75,
+        'checked':'Three main tables including boundary intervals; teaser source values, curves and bar widths; corrected TheoremQA windows'}
+(PAPER/'audit/FOUR-FIGURE-STORY-20261017.json').write_text(json.dumps(report,indent=2)+'\n')
+print(f'PASS: {len(inputs)} numerical inputs unchanged; revised displays and TheoremQA windows verified.')

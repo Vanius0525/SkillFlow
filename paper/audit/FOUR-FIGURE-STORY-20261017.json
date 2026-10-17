@@ -1,0 +1,35 @@
+{
+  "numerical_inputs_unchanged": true,
+  "input_sha256": {
+    "paper/values/posbudget.json": "d7d1ff65a5907e4d0112eb058f699f3901799b16bcafcf02b7316c342c1c68fa",
+    "paper/values/answer-format-values.json": "d0d11adf17501c4e179d8181ac09e05d8a6f1a05602385e2651684323c08d4f9",
+    "paper/values/fig-channels-values.json": "2a2c3ea072b6032350804be5210dcaab795c8ea30c90335be8fb779ddcee3685",
+    "paper/values/controls-values.json": "0a3fe467c62bd35d02a6e5e069b811db285e2b4734a6aab11b7273a2a8ee5c8a",
+    "paper/values/replication-values.json": "22deab12f18328253172fdf235c7533d09ef9e0a5c3777f1da88429718ff993c",
+    "paper/values/fig-rank-values.json": "554123eed448bce4227fe0f515d59ccc828e12935a70f729977f1e5ac052bcde",
+    "paper/values/main-evidence-values.json": "cbab059b9bc7775427eaf2f57289615b47bf0042fefe49631481d761fd42cbc1",
+    "paper/values/decomp-values.json": "be48aa2fc206ed2a1008e4c323764ee66580c70f207ea9bf12a59754ba27386a",
+    "paper/values/battery-values.json": "e3e7f06e2a9850f447eab78b56dd36e3125b22e78111614f91f9e05f126fda2c",
+    "paper/values/joint-failure-values.json": "162346e76396a2768010922d9b1c8033b59e62885614748f6a15b0cacd84ca45",
+    "paper/values/behaviour-values.json": "a327693e4733f28f95520c0aa4100a160d29802a4496b53d6f823895c46f7038",
+    "paper/values/depth-crossmodel-values.json": "e1cf2b65d6b68266c2050f0c42219d40a76a1759d355ebfd4fad998c46ced2a6",
+    "paper/figures/fig-mechanism-repair.json": "49515d7125c87b2986ddefb20465c47b910c26063da801454a29552e4a188572",
+    "paper/figures/fig-mechanism-edges.json": "5ad2bac4d982013a1f6afd7496ed0ea75764a06180c59a664ae2a59406eb4f24",
+    "paper/figures/fig-mechanism-results-values.json": "22857e02345fdfff69316accfc3c5b3ae9e57a7b36b50e5191d333b6259b7426"
+  },
+  "main_figures": 4,
+  "main_tables": 3,
+  "appendix_tables": 1,
+  "baseline_commit": "141c8fb",
+  "new_inference": false,
+  "theoremqa_windows": {
+    "w8_11": 0.8387096774193548,
+    "w12_15": 0.6129032258064516,
+    "w14_19": 0.3763440860215054,
+    "w16_35": 0.2043010752688172,
+    "L16": 0.2043010752688172
+  },
+  "theoremqa_n": 99,
+  "theoremqa_groups": 75,
+  "checked": "Three main tables including boundary intervals; teaser source values, curves and bar widths; corrected TheoremQA windows"
+}
