@@ -1,3 +1,49 @@
+
+## 2026-10-18 用户授权立即提交推送
+
+- 覆盖此前等待整个远端实验完成才提交的安排：现提交已完成论文、dependence图表与交接；family_depth_20261018未完成实验及cells.json.tmp留在工作区。
+- 当前显示审计通过：15份数值输入不变；论文/合集编译与dependence曲线审计已通过。额外尝试旧check_main_data.py在第108行因硬编码要求teaserfigure而中止，当前稿使用figure*；这是旧版结构检查不适配，不能报告该脚本通过。旧DATA-CONSISTENCY清单不作为本次最新验证，不随本次提交。
+
+
+## 2026-10-18 用户确认：后续统一dependence展示方案
+
+- Figure1/3橙线统一为source-attention dependence d(L)=1-q(L)，即筛选后原本答对的题中累计knockout后变错的比例；蓝线仍为恢复率rho。Problem Formulation正式定义d。
+- 后续新增模型/任务、主图和图表包均沿用此方案，勿恢复为橙线q。原始JSON和统计代码继续存retention=q，在展示层取1-q；不改变筛选、人群、分母或已有T/R与CI。R定义为d首次≤0.5，与旧q首次≥0.5等价。阈值敏感性中q的τ须对应d的1−τ。
+- 中间条件rho<0.5且d>0.5；阴影仅是首次边界之间，保留重新越阈。dependence包括reader访问与source自身更新，不能写成纯reader路径效应；d−rho不能当逐题比例。
+- 本轮只落实该展示与定义修改，既有新家族远端实验仍按原交接继续。
+
+- 本轮验证完成：24条绘制曲线逐条与rho/1-q核对，12套人群边界检查通过；原始depth JSON和Table2文件SHA256不变。审计`audit/DEPENDENCE-DISPLAY-20261018.json`。论文编译正文7/全文9页，0 error/undefined/overfull；图表合集9页，0 error/undefined/overfull。Figure3已目视检查。主PDF、图表包及Overleaf ZIP同步更新。
+
+## 01:24最新状态
+
+8张Figure3卡全通过预检并产生正式基线记录，共367条。DeepSeek/TheoremQA s1-r1已恢复，其他七卡未重启；GPU确实在正式工作。Figure3已全开这一事实已告知用户；其他正文suite尚在依赖队列，等它们也全实际开始后另行通知，不混同两个里程碑。最多8卡、每5小时检查、自动做到论文/GitHub闭环的授权继续。
+
+## 01:20补充
+
+用户明确后续本任务全部操作无需确认，直接自动完成。最终最多8卡。八个新任务中DeepSeek/TheoremQA s1预检失败（非有限logits），已换r1并排除gpu097，其他七卡继续；同任务s0过控制。以parallel-plan.json和launch-state.json当前映射为准，核验r1实际过控制，不把失败当开始。失败历史保留。
+
+# 当前入口覆盖说明（2026-10-18 01:17）
+
+先读HANDOFF.md顶部。最新上限是8卡，当前权威方案parallel-plan.json：8个新家族Figure3分片＋44个后续GPU任务（Qwen0.6同卡双进程），按依赖就绪排队，最多8占用。新八卡均已提交，尚需核验实际运行/正式生成；不要重复启动。最早四个无-s整池Job已停止，仅保留历史部分输出，不混入新分析。权重均已下载完成且下载获用户明确批准；旧“待下载确认”记载作废。
+
+协调器family-depth-launch-01a14a9e.service和每5小时timer继续；全部正式单元实际开始后单独通知用户，不能把排队当开始。新CPU wt-family-prep-1018已可用，23h自动停止；协调器20h后需核验续接。瞬态service停止后会被回收，必要时systemd-run重建。paper文字/排版v6已同步桌面，但新增结果尚未入稿。整个任务完成后再commit/push。
+
+---
+
+# 2026-10-18 当前续接覆盖入口
+
+最新任务仍在执行：用户已授权新增Llama/DeepSeek原生家族，先跑Figure3，启动后让同一批模型覆盖全部正文实验。只改Intro首段对齐Semantics and Knowledge，不为track改实验。Table3及后续所有图表不显示置信区间、误差条和相关说明，Table2原区间保留。
+
+先读HANDOFF.md顶部与experiments/family_depth_20261018/README.md、deployment.json。冻结候选MedCalc446、TheoremQA255；四个单卡Job配置已备；新的个人SSD源码快照已展开。用户随后已明确批准约30GB权重下载并要求预检通过直接正式实验。DeepSeek官方与Llama公开原版分发均已后台下载，coordinator负责done后自动提交Figure3/probe与基线screen后的全部正文后续任务（最多8单卡）。Llama四权重分片/配置/词表与官方哈希一致，但tokenizer_config.json为不同公开分发配置，已记录来源。先读launch-state.json与服务状态，不重复下载或提交。新CPU wt-family-prep-1018已连接且共享盘读取通过，23h自动停止，coordinator已切换；权重下载仍在旧wt-paper-fetch-1017，不提前停止。DeepSeek输入长度预检仅MedCalc00874不支持900生成预算，事先排除并记录，不能无说明截断。
+
+每5小时timer family-depth-progress-01a14a9e.timer已active，首轮2026-10-18 05:21 CST，最长14天；完成全部实验/论文/桌面/GitHub同步后才建TASK-COMPLETE停止。依赖本机WSL与Codex通道。旧机制timer不要恢复。
+
+本轮已修Related Work重叠、Table3区间、图4图注、Intro track首段；原始数值未变。cut/recut解释在reports/cut-recut实验说明_20261018.md。任务整体未完成，不commit/push；不碰既有howskill/data/cells.json.tmp。
+
+以下为此前完成版本历史，关于不新增实验的旧边界已被本轮用户授权覆盖。
+
+---
+
 # 新对话交接：WWW2027 源缓存与持续读取版
 
 更新日期：2026-10-18。工作目录：`/home/vanius/proj/agent-harness/paper`。
@@ -29,7 +75,7 @@
 ## 本轮修改完成了什么
 
 1. **中心认识收敛。** 摘要、引言和结论强调：残差状态迁移受配套源位置KV缓存和后续源读取影响。联合替换只替换源残差及源位置缓存，没有重放接收方全部计算历史。
-2. **Figure 1 teaser重画。** 展示早层0.89恢复、共同样本上的迁移/依赖分离、L16源缓存联合替换部分恢复与recut损失。三个panel样本分别135、134、114题，不能解读为同一批题的逐题过程。Figure 1画source dependence=1-q，Figure 3画retention=q，方向不同但标签和图注已说明。
+2. **Figure 1 teaser重画。** 展示早层0.89恢复、共同样本上的迁移/依赖分离、L16源缓存联合替换部分恢复与recut损失。三个panel样本分别135、134、114题，不能解读为同一批题的逐题过程。Figure 1与Figure 3现统一画source-attention dependence d=1-q；后续新增模型和绘图均沿用此方案，原始retention=q字段保留，展示时取补数。
 3. **Figure 2详细设计新增。** 正确skill donor向wrong-skill receiver提供源残差S、源位置KV缓存C（0至L层）或两者SC，保留早期reader计算；原donor从L开始切断，SC后reader recut从L+1开始。reader指skill span外的question/answer token。
 4. **Figure 3深度与Figure 4恢复结果保留。** 数值不变，图号顺延，配色/字体统一。重复注入保留正文说明和附录结果，不再单独占主图。
 5. **4.3标题改为** Residual-state transfer weakens before source dependence subsides。**4.4改为** Testing source caches and continued reading。

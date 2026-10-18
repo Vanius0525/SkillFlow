@@ -1,4 +1,99 @@
+
+## 2026-10-18 用户授权立即提交推送
+
+- 覆盖此前等待整个远端实验完成才提交的安排：现提交已完成论文、dependence图表与交接；family_depth_20261018未完成实验及cells.json.tmp留在工作区。
+- 当前显示审计通过：15份数值输入不变；论文/合集编译与dependence曲线审计已通过。额外尝试旧check_main_data.py在第108行因硬编码要求teaserfigure而中止，当前稿使用figure*；这是旧版结构检查不适配，不能报告该脚本通过。旧DATA-CONSISTENCY清单不作为本次最新验证，不随本次提交。
+
+
+## 2026-10-18 用户确认：后续统一dependence展示方案
+
+- Figure1/3橙线统一为source-attention dependence d(L)=1-q(L)，即筛选后原本答对的题中累计knockout后变错的比例；蓝线仍为恢复率rho。Problem Formulation正式定义d。
+- 后续新增模型/任务、主图和图表包均沿用此方案，勿恢复为橙线q。原始JSON和统计代码继续存retention=q，在展示层取1-q；不改变筛选、人群、分母或已有T/R与CI。R定义为d首次≤0.5，与旧q首次≥0.5等价。阈值敏感性中q的τ须对应d的1−τ。
+- 中间条件rho<0.5且d>0.5；阴影仅是首次边界之间，保留重新越阈。dependence包括reader访问与source自身更新，不能写成纯reader路径效应；d−rho不能当逐题比例。
+- 本轮只落实该展示与定义修改，既有新家族远端实验仍按原交接继续。
+
+- 本轮验证完成：24条绘制曲线逐条与rho/1-q核对，12套人群边界检查通过；原始depth JSON和Table2文件SHA256不变。审计`audit/DEPENDENCE-DISPLAY-20261018.json`。论文编译正文7/全文9页，0 error/undefined/overfull；图表合集9页，0 error/undefined/overfull。Figure3已目视检查。主PDF、图表包及Overleaf ZIP同步更新。
+
 # SkillVector 论文交接
+
+## 2026-10-18 14:40 周期巡检与新增审阅意见
+
+- 已读取reports/图表审阅与改进建议_20261018.md，后续整合以此为参考：Figure3共同ID主曲线、全样本附录，每panel n/G；Figure1/3统一指标方向；首次阈值阴影不称稳定阶段、保留反弹并报告阈值敏感性；Figure4实际层号、统一S/C/SC/cut颜色与独立路径图例；Fig2明确token×层、S与0..L缓存和L/L+1切断范围；表格统一精度/分母/组数、缺失不填0、正文说明加性交互的限定。采用建议前须逐项核对新数据和双栏字号，不机械缩图。报告中建议展示区间的部分与用户直接要求存在冲突，不据报告自行增加区间；全部图表不谈置信度的直接要求仍记录在顶部，timer旧模板保留Table2的例外需在最终展示时以用户实质最新偏好处理。
+- Live核验：8个深度分片全部done。22个计划任务done、30/62已提交，8个接续GPU Job均job_running；L2 battery已实际生成正式记录。其余模型补缺/机制尚未全启动，不能发送全任务开始通知；没有新增failed标记，只有旧DeepSeek s1预检失败历史。旧无-s任务不恢复。
+- 协调器service active，PID83926；5h timer active，下一轮15:58:50 CST（平台实际为准）。CPU通道仍可读共享盘。inspire update --check显示7.1.8可升级7.1.13，本轮未为此中断实验或升级。
+- 新评分审计：audit_scoring.py只读远端已done的8个TheoremQA文件，共14446条/9925唯一题目文本；同一远端依赖fresh-process统一评估有32条不同标签，涉及10题；2个完全相同文本组存在原标签冲突（00110/00426）。scoring-audit-20261018.json已取回，本审计是诊断而非已纠正数据。原始输出不改。远端确有latex2sympy2，fresh _number_it('False')=None；解析器含跨调用全局状态，正在追踪实际是否导致差异，尚未证实根因。统一重判也可能受顺序影响，不能直接当最终标签。
+- 下一步：完成parser-state诊断，建立稳定且忠于官方规则的评分协议，复核候选基线筛选与缺失干预是否需补跑；全4组深度独立审计后再入图。正文suite继续按62任务计划自动接续，始终最多8卡。整项未完成，不commit/push，不创建TASK-COMPLETE。
+
+### 评分根因已最小复现（本轮后续更新）
+
+- parser-state-minimal-20261018.json已取回。fresh latex2sympy2.var为dict，解析False为E*F*a*l*s，官方_number_it返回None；单独评分DeepSeek/TQA 00125 no_skill输出后，var变为Symbol，解析False抛TypeError，官方回退eval('False')得到布尔False，可当数值0；恢复初始解析器状态后重新返回None。此为实际跨样本状态污染，不再只是依赖差异猜测。
+- 不更改在跑生成脚本和原始JSONL；需要独立的逐样本状态隔离评分（忠于每题fresh-process官方行为），用顺序扰动与fresh subprocess对照验证，然后全量重评新旧TheoremQA并重建基线screen。若新eligible无全层/全部suite记录，安排同参数补跑，不能只修标签后继续使用旧分母。MedCalc评分器另行核对，不假设受同一问题影响。
+- 当前初审曲线继续暂定，不据存储标签直接入稿。diagnose_parser_state.py为只读长扫描，命令会话62627（若仍在应先核验远端进程/产物，避免重复）；最小复现已成功。
+
+## 最新用户补充：全部图表展示要求（2026-10-18）
+
+- 用户最新要求覆盖此前Table2例外：新结果整合时，论文全部正文/附录图表、图注、表注及对应正文说明都不展示或讨论95% CI、置信区间、置信度、误差条；Table2原区间也移除。原始统计产物保留作审计，不进入论文展示。同步检查绘图/制表生成脚本，避免重生成带回。
+- 当前正文确有重复注入实验：sections/04-experiment.tex中“Repeated late replacement leaves transfer weak.”段；附录b-full-dataset-rerun.tex也有TheoremQA对应段。当前正文无独立重复注入图的引用，不能把历史新增图的记录当成当前稿状态。整合时保留测值、修正为干预等价/实现检查，去掉独立机制证据的过强解释。
+- 评分异常诊断更新：TheoremQA 00426的depth/battery/windows三次输出token及text完全相同，但存储correct为False/True/False；本地统一重判均True。因此不能归因生成漂移。尚需定位远端评分环境/状态差异，并统一复核筛选及所有受影响记录，原始标签不可静默覆盖；初审边界在此审计完成前仍为暂定。
+
+## 2026-10-18 14:00 周期检查与独立初审（当前入口）
+
+- 原始目标/授权不变：最多8卡，新增家族后补齐所有正文实验，全部正式单元实际开始后另行通知；只在整项完成、验证/桌面同步后commit/push。周期timer保持，不建TASK-COMPLETE。
+- 本次已核对live：当前8卡工作，深度7/8分片完成，释放的卡已自动接续Llama内容/重复注入/doclast/bridge/repair/edges及DeepSeek/MedCalc诸suite；远端已见19个done，尚非全体开始/完成。旧failed标记仅首次s1预检失败，r1已通过并完成本分片，不重复恢复旧Job。
+- 已取回96文件已完成产物快照11,150,383字节，SHA256 c82a25ea4c00ee651295e845d8509054932654c7cfa8c56f82db7608d8c19e59，安全解包至experiments/family_depth_20261018/retrieved/snapshot-1400；无权重/大日志下载。analyze_depth.py新增--completed-only，未齐组合明确incomplete，不补曲线。
+- 三个已完成组合经原始记录独立审计：Llama/TheoremQA n92/71组，半效应T/R=6/18；DeepSeek/MedCalc n25/13组，6/21；DeepSeek/TheoremQA n51/44组，4/19。方向支持深度分离，但都是基线screen后的条件结果，DeepSeek/MedCalc样本小。Llama/MedCalc最后一片未齐，不提前报告其完整曲线。
+- **关键解释修正已告知用户：重复写的因果冗余。** Llama/TheoremQA92×4窗口与DeepSeek/MedCalc25×4窗口，共468配对，窗口与同起始层单次transfer输出token完全一致。完整source span被替换且其前缀相同，在因果网络中后续source状态由相同前缀决定；重复写是结构等价/实现检查，不能作为“反复维持状态仍失败”的独立机制证据。待正文整合时替换4.3该段过强解释，保留所有测值。详细推导/文献/命令在PRELIMINARY-20261018.md。
+- L8在新模型的L4–L6半效应之后，不能统一称早层正对照。已明确记录为**事后敏感性设计**：固定所有5模型×2任务的L2 battery，不找每模型最优层，保留L8。10个新增小GPU任务已写入parallel-plan（总62任务，最多8同时运行），独立新脚本followups_l2.py已上传，不修改在跑的数值脚本；等待卡释放自动接续。不是预注册证据。Qwen8/MedCalc补了冻结134题输入，其他人群与现有screen对应。
+- Llama/TheoremQA独立battery的no-skill为1/92，depth/windows为0/92（donor/receiver仍92/0）；需核对该ID和跨运行token差异，做固定集/稳定基线子集敏感性，不悄悄剔除。机制新组合未齐，不提前宣称SC/recut泛化。
+- 协调器和5h timer均active；live下一轮约15:56 CST（实际触发时间以systemctl为准）。观察CPU wt-family-prep-1018有23h运行限制，后续检查到期需恢复通道。当前无额外模型下载。
+- 下一步：核验最后深度分片和新接续任务，全部深度完成后全量analyze_depth审计并绘新增家族曲线；其余suite边完成边独立核验，修正文中重复写解释、L2事后性质与基线漂移，最后统一图表/全文/ZIP/桌面/GitHub闭环。
+
+### Open Ideas / 值得深挖的问题
+
+- 2026-10-18：自动识别干预等价类以排除无信息ablation。触发：468/468重复写与单次输出token一致，当前因果前缀条件可给出逐层归纳。潜在价值是避免把结构上冗余的对照当额外机制证据；新颖性尚未验证，不声称可独立发表。最小验证：构造满足/违反前缀同一性两组干预，检查等价预测与结果，再核查已有causal abstraction/patching方法是否已覆盖。
+
+
+## 2026-10-18 01:17 当前权威执行入口（覆盖以下旧进度）
+
+- 用户最新要求：最终**最多8张4090**，保证利用率、合理并行；不是无限增卡。实验全部正式开始后单独通知，继续每5小时检查。下载已明确批准，不再索取确认。
+- Paper当前修订已完成并告知用户：Intro首段对齐Semantics and Knowledge，后续实验不为track改写；Related Work重叠修复；Table3及图4不再包含区间相关信息，Table2原区间保留。7/9页、无error/undefined/overfull；新桌面v6、Overleaf精确ZIP独立编译及图表目录已同步。新实验结果尚未入稿，整个任务未完，不commit/push。
+- 两权重都下载完成：DeepSeek官方7B Chat、Llama3.1-8B-Instruct公开Nous原版分发；四权重/config/vocab与官方SHA一致，tokenizer_config为分发版差异有记录。新模型CPU span/context预检通过，DeepSeek MedCalc00874因4K上下文预先排除；不能静默截断。
+- 首轮四个不带-s分片号的整池Job已通过preflight并开始基线；因用户要求提效，已停止保留全部文件，**不要恢复或混进新分片分析**。状态归档launch-state-unsharded-superseded.json。
+- **当前正式方案：parallel-plan.json / parallel-jobs.json，8个Figure3深度Job（2家族×2任务×2整skill组分片）＋44个后续GPU Job，共52个任务计划，最多8个同时占用。** 每skill整个组只在一片，按题数平衡，防止分片改变group-screen。Qwen0.6两进程同卡，其余suite独立排队，依赖就绪才提交。已有完整旧模型Figure3复用；补齐Mistral/Qwen0.6两任务、Qwen8/TheoremQA缺失正文单元，Qwen8/MedCalc已完整结果复用。
+- **01:24最新核验：8张卡全部通过preflight并进入正式基线生成，共367条JSONL；每分片26/28/25/46/77/76/64/25条。DeepSeek/TheoremQA s1-r1已恢复，其余7卡未重启。Figure3八卡正式开跑已告知用户；其余正文suite尚未全启动，不发全任务启动通知。**
+- 新八个-s0/-s1深度Job已全部成功提交（s1失败例外由r1替代），后续继续live核验。名字在launch-state.json，前缀wt-f3-{llama,deepseek}-{medcalc,theoremqa}-s{0,1}-1018。不要把排队说成开跑，不重复提交。源码远端family-depth-20261018-v1已同步。
+- 运行后勿执行build_plan.py覆盖plan（会丢失r1映射）；parallel-jobs.json为初始快照，当前权威是parallel-plan.json与launch-state.json。
+- 后台协调器family-depth-launch-01a14a9e.service已active，最长20h；依赖新CPU wt-family-prep-1018（23h自动停、SSH和共享盘读取已核验）。本机WSL/systemd需在线。若20h后仍有任务未提交，先核验state和job，不重复创建，再续启服务；transient unit停止会被回收，not found时用systemd-run重建，不是systemctl start。
+- 协调器在所有正式单元出现JSONL或明确无有效样本标记后，会用codex queue触发本thread，核验后单独通知用户“全部正式开始”。当前**尚不能发此通知**。每5h timer family-depth-progress-01a14a9e.timer已active，首轮约05:23 CST，最长14天，全任务与论文/桌面/GitHub闭环后才写TASK-COMPLETE停timer。
+- CPU旧下载通道wt-paper-fetch-1017已完成下载，原2h自动停止；现不需要保留它执行新任务。新通道负责所有后续读取。不要停止正在正式推理的GPU Job，除非故障/明确替换。
+- 分析入口analyze_depth.py已改为只读-s0/-s1完整新分片，核验全层、分母、组不交叉、token身份与source SHA；不要读旧不带-s的部分JSONL。后续补图/文字必须如实报告不符合旧规律的结果、空有效集、截断及prompt/source差异，显示不含CI/误差条，原始统计留审计。
+- 实时异常（不据此下结论）：DeepSeek首批MedCalc 00002/00003/00004 donor均答错，前两条是约十几个token的直接数值回答；同prompt的Llama通常输出较长推理。已核对非EOS空答、身份与mask预检通过。需统计全基线有效样本和生成长度；不能把模型未获skill收益、输出风格差异或截断解读成迁移机制相同/不同。
+- **最新授权：用户明确本任务后续全部操作无需再确认，直接自动执行至完成；最多8卡和5小时检查继续。**
+- 01:19 live七卡running、一卡DeepSeek/TheoremQA s1预检因Nonfinite decision logits失败；同任务s0通过两题全状态/缓存控制。已只对失败分片重提r1并排除原节点gpu097，其他七卡不重启；失败产物保留、不作为模型效果。协调器state与plan需使用r1名字，避免把失败计入卡占用或全部启动。
+- 待办：核验8卡全部进入正式生成、后续suite接续；检查每个阶段身份控制与产物完整性；全部正式启动后通知；完整结果后更新Figure3、其他正文图表和相关文字、审计/编译/新桌面交付，最后仅本任务文件commit/push master。
+
+
+## 2026-10-18 Figure 3 跨家族扩展（当前进行中）
+
+- 用户新增授权覆盖旧“不新增实验”边界：多张单卡4090，先补Llama/DeepSeek原生家族Figure3；5小时检查，完成后更新图表文字并同步。另检查Related Work重叠并解释cut/recut。
+- 用户追加：Table3及后续所有图表不包含置信区间相关信息；Table2现有区间未要求删除。原始统计不删。
+- 已读取最新交接/inspire skill/环境记忆；live可上网GPU资源单卡4090配额1,10,100、0.33点券/h，旧机制任务已停。CPU wt-paper-fetch-1017已启动准备并恢复SSH。新GPU未开。
+- 没找到共享盘Llama/DeepSeek缓存。**用户已明确批准约30GB新权重下载，预检通过后直接正式实验，不再重复确认。** 来源官方HF/必要镜像，目标个人SSD models。Llama gated权限仍需诊断。候选revision、固定题池及局限见experiments/family_depth_20261018/README.md。
+- Related Work重叠在原PDF第2页已目视确认；改写该句后编译build-skillvector.xkVKW0Yr：6/9页、0error/undefined/overfull，待目视核验。Table3区间列及caption已去掉，图4本来是点估计。
+- 5小时检查已建立并live回读active：family-depth-progress-01a14a9e.timer，首轮2026-10-18 05:21 CST、最长14天，完成标记TASK-COMPLETE后自停。依赖本机WSL/systemd/Codex通道。
+- 用户继续扩展授权：Figure3先启动，其后同一批模型覆盖所有正文实验（内容/位置/跨题控制、重复注入、S/C/SC/recut与路径）。README已列完整矩阵，检查器已覆盖；其他suite仍需在Figure3启动后实现并运行，不能仅完成Figure3就标完成。
+- 首段已仅对齐Semantics and Knowledge；后续实验不为track改写。Related Work修复后目视通过。Table3与图4 caption已去区间相关信息，Table2保留。新编译JC3Ed4mT为正文7/全文9页，0error/undefined/overfull；最后caption编辑后还需最终重编译。
+- 新runner、冻结instrument与题池已上传2,009,464-byte快照到个人SSD family-depth-20261018-v1；所有依赖和两任务数据均齐。4个单卡Job配置jobs.json正在dry-run，未提交。fetch_models.py只允许明确下载批准后运行。
+- 数值审计132702项/489源、机制审计8428项/48自身控制通过；显示审计已适配Table3点估计且保留原始CI源，15份数值不变、引用27项通过。cut/recut单独说明已写reports/cut-recut实验说明_20261018.md。
+- 四个单卡Job dry-run全部通过，平台标注4090(48GB)。HEAD元数据：Llama权重16,060,556,376字节，DeepSeek13,820,824,960字节；总29,881,381,336字节。DeepSeek权重HEAD可访问；Llama HEAD403，提示fine-grained HF token未允许public gated repositories。需要用户修复远端HF权限，不索要明文token、不绕过许可。用户随后已批准下载；后台下载启动核验中，GPU尚未提交。
+- 最终本地编译7C9ymDk1为7/9页，0error/undefined/overfull；独立图表合集orns2o_7为9页、0error/undefined/overfull。四项instrument测试通过。
+- **用户已批准新权重下载且要求预检完直接正式实验。** DeepSeek官方约13.8GB已后台下载。Llama官方gated失败后使用NousResearch公开原版分发；4分片及config/generation/tokenizer.json等与官方SHA匹配，tokenizer_config.json不同明确记录；约16.1GB后台下载，未绕过需凭据的官方入口。
+- 后台协调器family-depth-launch-01a14a9e.service已active：权重done后自动提交对应2个Figure3 Job，screen就绪后自动提交对应followup Job，最多8张单卡、各48h上限；先跑probe.py全prefill自身状态和split状态+缓存身份及三路径mask检查，再进正式run.py。后续内容/末位/噪声/quarter/跨skill和同family/重复窗口/doclast跨题/repair/edges脚本均已实现上传，followup四Job dry-run通过。
+- 原CPU wt-paper-fetch-1017仅2h自动停（从本轮启动计），48h创建失败（stop_hour须0–23），已创建23h零GPU观测通道wt-family-prep-1018，连接及共享文件读取已核验成功。coordinator已改用新通道、最长20h；下载仍在旧CPU继续，下载结束前不停止旧CPU。
+- v6桌面交付已独立编译完成并同步：StillNeeded-WWW2027-v6-TrackLayout-20261018；7/9页、0error/undefined/overfull，ZIP17项SHA256 3c266bfad982d2b3494dd3885284b986e86a3c612e109be3fbf36051a4a3e9c1；单独cut/recut说明及图表包已同步。审计DESKTOP-TRACK-LAYOUT-20261018.json。
+- 00:44共享盘下载进度DeepSeek5.9GiB/Llama7.4GiB，进程正常；无新GPU提交、无新结果入稿。CPU tokenizer预检已通过：DeepSeek MedCalc00874因3427+900>4096预先排除，记录context.json，候选446/上下文支持445；TheoremQA255全支持；Llama两池均支持。doclast/1536机制另做输入长度门槛，不能静默截断或混同筛选。
+- 完整任务仍进行中，完成后再commit/push，既有cells.json.tmp不碰。
+
 
 ## 2026-10-18 按截图重构四图与机制叙事（稿件、图表包及交接交付完成）
 
@@ -512,3 +607,12 @@ python3 ../whitebox/analysis/audit.py  # ALL CHECKS PASSED
 - 现任务`wt-mechanism-probe2-1016`已提交，1×H200，最长2h，独立路径`/inspire/ssd/project/project-public/czxs253130660/mechanism-20261016-v2`。使用本地最小Scorer/Engine+提示/评分依赖源码快照，数据复制前校验SHA256。2题、L8/16、900token、三类边和S/C四臂。
 - 远端run.py、probe.jsonl、probe.manifest.json、probe.exit.json、probe.done.json均在该v2目录，只有完成后才有done。当前尚待仪器验证成功。
 - 新增有限监控脚本monitor.py（只读，不自动重启），待正式任务启动后运行；当前本会话手动检查。论文已改方法/相关工作/引言/结论，删重复防御性措辞，构建脚本用新暂存目录避免删除旧构建。
+
+## 2026-10-18 当前图表审阅建议
+
+- 已阅读并目视当前paper figure四图三表，核查绘图脚本、深度汇总及bootstrap逻辑。报告：`reports/图表审阅与改进建议_20261018.md`。仅建议，未修改图表或数据、未操作远端任务。
+- 已验证六组原始/共同样本T/R相同；Qwen8/MedCalc在L26重新越阈，q阈值.6时R由25变30；Figure4实际用分类等距横轴。
+- 优先建议：共同样本主曲线；统一q与1-q方向；阴影限定为首次交点间隔；Fig4横轴与颜色统一；主表显示组数与单位。遵循此前主图4/表3只显示点估计偏好，统计补充建议放附录。
+- 当前审阅已完成；下一步若实施，改权威脚本后刷新bundle并核验数值不变。未提交既有未完实验/论文改动。
+
+- 图表审阅续议：已通读当前正文定义与结果；建议正式定义d(L)=1-q(L)，Figure3统一使用source-attention dependence，与已有Figure1一致。边界改写为d≤.5，中间rho<.5且d>.5；强调累计mask同时影响source-self与reader路径，两条指标不同执行背景/分母。具体记录在同日图表审阅报告；尚未改稿或重绘。

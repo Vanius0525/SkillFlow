@@ -63,11 +63,16 @@ for key,label in [('SC_minus_S','L16: $SC-S$'),
                   ('SC_minus_SC_recut','L16: $SC-(SC+\\mathrm{recut})$')]:
     contrast=repair['contrasts'][key]
     values=[contrast['estimate'][2],contrast['cluster_ci95'][0][2],contrast['cluster_ci95'][1][2]]
-    expected=f'{label} & $+{100*values[0]:.1f}$ & $[{100*values[1]:.1f},{100*values[2]:.1f}]$'
+    expected=f'{label} & $+{100*values[0]:.1f}$'
     assert expected in text,expected
 edges=json.loads((PAPER/'figures/fig-mechanism-edges.json').read_text())
 values=[edges['reader_minus_self_loss'][2],edges['reader_minus_self_loss_ci95'][0][2],edges['reader_minus_self_loss_ci95'][1][2]]
-assert f'L24: reader minus self loss & $+{100*values[0]:.1f}$ & $[{100*values[1]:.1f},{100*values[2]:.1f}]$' in text
+assert f'L24: reader minus self loss & $+{100*values[0]:.1f}$' in text
+# Table 3 and Figure 4 display point estimates, per the current user request.
+for label in ('tab:mechanism-contrasts', 'fig:mechanism'):
+    blocks=re.findall(r'\\begin\{(?:table|figure\*?)\}.*?\\end\{(?:table|figure\*?)\}',text,re.S)
+    block=next(b for b in blocks if '\\label{'+label+'}' in b)
+    assert not re.search(r'confidence|bootstrap|uncertainty|95\\%|\bCI\b',block,re.I)
 # Verify the new teaser's sources and rendered positions.
 import numpy as np
 teaser=json.loads((PAPER/'audit/TEASER-CACHE-READING-20261017.json').read_text())

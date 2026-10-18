@@ -92,17 +92,17 @@ def depth():
             for l in [tb,rb]:ax.axvline(l-.5,color='#C7A582',lw=.6,ls=(0,(2,3)),zorder=1)
             ax.plot(x,c['transfer'],color=BLUE,lw=1.6,marker='o',ms=2.1,
                     markeredgecolor='white',markeredgewidth=.35,zorder=3,label=r'Skill transfer $\rho$')
-            ax.plot(x,c['retention'],color=ORANGE,lw=1.6,marker='s',ms=1.9,
-                    markeredgecolor='white',markeredgewidth=.3,zorder=3,label=r'Skill-attention knockout $q$')
+            ax.plot(x,1-np.asarray(c['retention']),color=ORANGE,lw=1.6,marker='s',ms=1.9,
+                    markeredgecolor='white',markeredgewidth=.3,zorder=3,label=r'Source-attention dependence $d$')
             # Every point is measured; dotted overlays retain the common-ID check.
             ax.plot(x,c['common']['transfer'],color=BLUE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
-            ax.plot(x,c['common']['retention'],color=ORANGE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
+            ax.plot(x,1-np.asarray(c['common']['retention']),color=ORANGE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
             ax.text((tb+rb-1)/2,1.03,f'L{tb}–L{rb}',ha='center',va='center',
                     fontsize=6.8,color='#94551D')
             ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),
                    xticks=sorted(set([0,8,16,24,nl-1])),yticks=[0,.5,1])
             ax.set_yticklabels(['0','.5','1.0'])
-            if col==0:ax.set_ylabel(task+'\nRecovery / retention',labelpad=6)
+            if col==0:ax.set_ylabel(task+'\nRecovery / dependence',labelpad=6)
             if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
     handles,labels=axes[0,0].get_legend_handles_labels()
     handles.append(plt.Line2D([],[],color=GRAY,lw=1,ls=(0,(1,2))))

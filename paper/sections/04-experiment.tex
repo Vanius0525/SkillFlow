@@ -6,12 +6,14 @@
 \includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
 \caption{Depth profiles across three models and two tasks. Blue shows
 skill-span transfer recovery $\rho(L)$ in a wrong-skill receiver.
-Orange shows the retained fraction $q(L)$ after cumulative attention
-knockout in the correct-skill execution. Dotted traces repeat the tests
+Orange shows source-attention dependence $d(L)=1-q(L)$: the fraction
+of originally correct answers lost after cumulative attention knockout
+in the correct-skill execution. Dotted traces repeat the tests
 on common eligible questions. Shading spans the first half-effect
-boundaries, with their layers marked above each panel.
+boundaries, highlighting weak transfer despite strong dependence; later
+recrossings remain visible. Boundary layers are marked above each panel.
 Every plotted layer is measured.}
-\Description{Six line plots show transfer recovery declining before attention-knockout retention rises, leaving a shaded intermediate interval for every model and task.}
+\Description{Six line plots show transfer recovery declining before source-attention dependence subsides, leaving a shaded intermediate interval for every model and task.}
 \label{fig:transferreading}
 \end{figure*}
 
@@ -142,8 +144,7 @@ repair followed by a reader cut from the next layer. (b) Fraction of
 donor-correct answers lost when reader-to-source, source-to-source, or
 both attention paths are cut from the indicated layer onward.
 Points are measured estimates, horizontally offset within each layer for
-legibility. Table~\ref{tab:mechanism-contrasts} reports uncertainty for
-the main contrasts.}
+legibility. Table~\ref{tab:mechanism-contrasts} reports the main contrasts.}
 \Description{Grouped dot plots compare four repair interventions at four layers and three attention-path cuts at three layers. At layer 16 joint repair is much more effective than either component, while a reader recut removes most of the gain.}
 \label{fig:mechanism}
 \end{figure*}
@@ -160,17 +161,18 @@ shows the six model--task combinations. For Qwen3-8B/MedCalc, transfer
 recovery is $0.74$ at layer $12$, falls to $0.16$ at $13$, and is at most
 $0.07$ from layer $15$ onward. For cuts beginning at $L\leq23$ and
 continuing through the final layer during prompt processing and answer
-generation, only $0.03$--$0.12$ of rescued questions remain correct. Retention
-reaches $0.25$ at layer $24$ and first crosses one half at layer $25$.
+generation, source-attention dependence is $0.88$--$0.97$: most originally
+correct answers are lost. Dependence is $0.75$ at layer $24$ and first falls
+to at most one half at layer $25$.
 Throughout layers $13$--$24$, transfer recovers less than half the gain,
 while removing further skill attention still loses more than half the
 rescued answers.
 
 
 
-The first crossing summarizes each curve. Qwen3-8B/MedCalc retention
-briefly falls below half again at layer $26$ before rising from $27$
-onward. We retain these fluctuations in the measured curves.
+The first crossing summarizes each curve. Qwen3-8B/MedCalc dependence
+briefly rises above half again at layer $26$ before falling below it from
+layer $27$ onward. We retain these fluctuations in the measured curves.
 The main finding is the separation of the two intervention effects:
 states become ineffective at correcting the receiving computation while
 source access still supports the original one.
@@ -181,16 +183,17 @@ We therefore recompute the curves over the intersection of their item IDs,
 using eligibility determined from unpatched baselines.
 Table~\ref{tab:paireddepth} reports the resulting boundaries.
 All six pairs match those from the original populations.
-Skill-group bootstrap $95\%$ intervals for the reading-minus-transfer
+Skill-group bootstrap $95\%$ intervals for the source-dependence-minus-transfer
 boundary difference exclude zero in all six settings.
-Changing the half-effect threshold to $0.4$ or $0.6$ also preserves the
-ordering. The gap thus recurs across the two model families and both
+Using transfer thresholds $\tau=0.4$ or $0.6$ and the corresponding
+dependence thresholds $1-\tau$ also preserves the ordering. The gap thus recurs across the two model families and both
 task domains under common-item evaluation.
 
 \begin{table}[t]
 \centering
 \caption{Boundary layers on common eligible items. $T/R$ gives the
-first half-effect crossings for transfer and attention retention,
+first half-effect crossings for transfer ($\rho<0.5$) and source
+dependence ($d\le0.5$),
 respectively. $\Delta=R-T$ measures their separation in layers. The last
 column gives its skill-group bootstrap $95\%$ confidence interval.}
 \label{tab:paireddepth}
@@ -237,8 +240,8 @@ details.
 \paragraph{Joint repair restores substantial late transfer.}
 At layer $16$, residual replacement answers $4/114$ questions correctly,
 cache replacement answers $8/114$, and joint repair answers $48/114$.
-Table~\ref{tab:mechanism-contrasts} reports the repair gain and its
-uncertainty. The joint gain exceeds the sum of the individual gains
+Table~\ref{tab:mechanism-contrasts} reports the repair gain.
+The joint gain exceeds the sum of the individual gains
 relative to the receiver, showing that the states and their source caches
 contribute together. At layer $24$, joint repair still improves on residual
 replacement ($25.4\%$ versus $0.9\%$), although its advantage over cache
@@ -248,21 +251,20 @@ recover part of the late transfer effect.
 \begin{table}[t]
 \centering
 \caption{Focused mechanism contrasts, $114$ items from $14$ skills.
-Differences are in percentage points (pp), with skill-group bootstrap
-$95\%$ confidence intervals. The additive interaction is
+Differences are in percentage points (pp). The additive interaction is
 $SC-S-C+\mathrm{receiver}$.}
 \label{tab:mechanism-contrasts}
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lrr@{}}
+\begin{tabular}{@{}lr@{}}
 \toprule
 \rowcolor{TableHeader}
-Contrast & Difference & $95\%$ CI \\
+Contrast & Difference \\
 \midrule
-L16: $SC-S$ & $+38.6$ & $[26.6,46.5]$ \\
-L16: additive interaction & $+31.6$ & $[14.1,41.6]$ \\
-L16: $SC-(SC+\mathrm{recut})$ & $+35.1$ & $[23.2,43.0]$ \\
-L24: reader minus self loss & $+71.1$ & $[53.3,86.5]$ \\
+L16: $SC-S$ & $+38.6$ \\
+L16: additive interaction & $+31.6$ \\
+L16: $SC-(SC+\mathrm{recut})$ & $+35.1$ \\
+L24: reader minus self loss & $+71.1$ \\
 \bottomrule
 \end{tabular}
 \end{table}

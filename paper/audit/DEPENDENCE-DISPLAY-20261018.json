@@ -1,0 +1,46 @@
+{
+  "input_hashes_unchanged": {
+    "values/depth-crossmodel-values.json": "e1cf2b65d6b68266c2050f0c42219d40a76a1759d355ebfd4fad998c46ced2a6",
+    "tables/tab-paired-depth.tex": "35c31a1a3a6e94265a21dde2d9f172fafaed1f84e18ad78f91690ca3f9c00adf"
+  },
+  "plotted_curves_checked": 24,
+  "boundaries_unchanged": [
+    {
+      "model": "Qwen3-8B",
+      "task": "MedCalc",
+      "T": 13,
+      "R": 25
+    },
+    {
+      "model": "Qwen3-0.6B",
+      "task": "MedCalc",
+      "T": 11,
+      "R": 22
+    },
+    {
+      "model": "Mistral-7B",
+      "task": "MedCalc",
+      "T": 7,
+      "R": 27
+    },
+    {
+      "model": "Qwen3-8B",
+      "task": "TheoremQA",
+      "T": 13,
+      "R": 21
+    },
+    {
+      "model": "Qwen3-0.6B",
+      "task": "TheoremQA",
+      "T": 11,
+      "R": 20
+    },
+    {
+      "model": "Mistral-7B",
+      "task": "TheoremQA",
+      "T": 7,
+      "R": 19
+    }
+  ],
+  "definition": "d(L)=1-q(L)"
+}

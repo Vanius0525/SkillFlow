@@ -64,6 +64,8 @@ This file collects the current manuscript displays. Recovery is defined as
 {\mathrm{acc}(\mathrm{donor})-\mathrm{acc}(\mathrm{receiver})}.
 \label{eq:rho}
 \end{equation}
+Source-attention dependence is $d(L)=1-q(L)$, the fraction of originally
+correct answers lost under cumulative source-attention knockout.
 '''
     for name in ['figure1','figure2','figure3','figure4','table1','table2','table3','tableA1']:
         project+=f'\\input{{latex/{name}}}\n\\clearpage\n'
@@ -89,17 +91,17 @@ Figure 1为结果teaser，Figure 2为详细干预设计，Figure 3为六组深�
 |---|---|---|
 | Figure 1 | 让读者先看到完整发现 | Qwen3-8B/MedCalc：早期状态迁移恢复0.89的skill增益，随后残差迁移下降但源仍被需要，L16联合替换部分恢复且后续读取仍重要。三panel分别135/134/114题，不能把它们当作同一组逐题追踪。 |
 | Figure 2 | 解释替换哪些组件、保留哪些计算、怎样切断读取 | 设计示意而非数据图。S为源残差状态，C为源位置KV缓存0至L层，SC为两者；接收方早期reader计算保留。SC后reader cut从L+1开始，原donor路径切断从L开始。 |
-| Figure 3 | 展示分离现象及其范围 | 3模型×2任务，每层实测；蓝为残差迁移恢复rho，橙为屏蔽后保留比例q，虚线是共同样本。浅色区为首次半效应边界之间的区间，存在重新越阈，不能称为严格单调阶段。 |
+| Figure 3 | 展示分离现象及其范围 | 3模型×2任务，每层实测；蓝为残差迁移恢复rho，橙为source-attention dependence d=1-q（原本答对、屏蔽后变错的比例），虚线是共同样本。浅色区为首次半效应边界之间的区间，存在重新越阈，不能称为严格单调阶段。 |
 | Figure 4 | 展示恢复和继续读取的机制证据 | 114题/14skill，S、C、SC及SC后recut准确率；右侧比较reader-to-source与source-to-source切断造成的准确率损失。L16恢复明显且recut损害；L24无同样额外recut损失。 |
 
-Figure 1的source dependence=1-q，Figure 3画的是q本身，两者方向相反，轴标签和说明已分别标明。
+Figure 1与Figure 3统一画source-attention dependence d=1-q。中间关注rho<0.5且d>0.5；边界为d首次≤0.5，等价于q首次≥0.5。后续新增模型与图表沿用这一方案；底层retention=q数据保留，展示时取补数。
 KV表示attention的key/value缓存，保存已处理token的注意力向量；reader指skill span以外的question/answer token。联合替换没有重放或修复全部接收方计算历史。
 
 ## 表格说明
 
 - Table 1：验证早期探针，正确内容、位置排列与噪声对照；末位置替换与整段替换容量不同。
 - Table 2：共同样本的边界T/R、差值Delta及按skill分组bootstrap的95%置信区间。区间端点由分位数计算，可以不是整数。
-- Table 3：114题机制对比的准确率差，单位为百分点，含已有95%区间；避免将恢复图的原始单元格再列一遍。
+- Table 3：114题机制对比的准确率差，单位为百分点，仅显示点估计；避免将恢复图的原始单元格再列一遍。
 - 附录表：全样本与开发子样本、不同筛选规则的对照。
 
 ## 重新生成

@@ -2,12 +2,15 @@
 \label{sec:intro}
 
 \paragraph{Relevance to the Web and to this track.}
-Web agents use retrieved skills and reusable workflows to act across sites
-and services \citep{wang2024awm,wang2026webxskill}. We ask when the internal
-states produced from a loaded skill can support another execution.
-This question concerns the reuse of external knowledge in agentic
-information access and connects our study to the Search, Recommendation,
-and Retrieval-Augmented AI track.
+Web agents rely on machine-readable instructions and descriptions of tools
+and services to understand how to act across sites
+\citep{wang2024awm,wang2026webxskill}. Agent Skills package such procedural
+knowledge for reuse. We ask how a model uses a loaded skill and when the
+internal states it produces can support another execution. This connects
+our study to the Semantics and Knowledge track's interest in
+machine-readable descriptions that help agents understand and use Web
+resources, and in knowledge representations that support intelligent
+agent behaviour.
 
 An Agent Skill packages task instructions, scripts and supporting resources
 around a \texttt{SKILL.md} entry point, which an agent loads when needed
@@ -31,7 +34,7 @@ vectors at skill-token positions in a wrong-skill execution with vectors
 from a correct-skill execution. These residual states are the vectors passed
 between successive model blocks. Second, we block attention to the skill
 from a chosen layer through the rest of the original correct-skill execution.
-This measures performance retained without further source access.
+The fraction of originally correct answers lost measures source-attention dependence.
 
 Figure~\ref{fig:teaser} previews the result. Early residual-state replacement
 recovers much of the skill's benefit. Deeper in the model, transfer becomes
@@ -47,7 +50,7 @@ effective early probe before interpreting this separation.
 \caption{From effective early transfer to source-cache repair.
 (a) Early skill states recover most of the donor's benefit on the screened
 Qwen3-8B/MedCalc set. (b) On common eligible items, residual transfer
-weakens while source dependence remains high. Dependence is $1-q(L)$,
+weakens while source dependence remains high. Dependence is $d(L)=1-q(L)$,
 the fraction of rescued answers lost after cutting source access.
 (c) At layer $16$, replacing source states together with their source
 cache recovers part of late transfer, and cutting subsequent reading removes

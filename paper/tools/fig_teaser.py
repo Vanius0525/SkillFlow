@@ -49,7 +49,7 @@ def main():
     frame(b)
     b.axvspan(13,25,color='#F5BE7E',alpha=.26,lw=0)
     b.plot(x,cell['transfer'],color=BLUE,lw=1.5,label='Residual transfer',gid='teaser-transfer')
-    b.plot(x,dependence,color=ORANGE,lw=1.5,label='Source dependence',gid='teaser-dependence')
+    b.plot(x,dependence,color=ORANGE,lw=1.5,label=r'Source dependence $d$',gid='teaser-dependence')
     b.axhline(.5,color='#A4AFBA',lw=.6,ls=(0,(2,3)))
     b.set(xlim=(0,35),ylim=(-.04,1.12),xticks=[0,13,25,35],
           yticks=[0,.5,1],xlabel='Intervention layer',ylabel='Recovery / dependence')
