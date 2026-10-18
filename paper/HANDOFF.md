@@ -1,3 +1,20 @@
+## 2026-10-19 续接巡检（当前入口）
+
+- 用户“继续”授权持续，最多8卡。读取顶部交接/README/deployment并核验live；wt-family-prep-1018因23h时限自动STOPPED，已start并connection refresh恢复共享盘观测，未新建CPU或GPU重复任务。
+- 逐项按parallel-plan/readiness核对：62/62已提交，59/62对应完成标记，所有正式单元均已有生成文件或完成标记（not_started_units=[]）。**已向用户单独通知全部正式开始**。剩余3个job_running：wt-fa-q8-medcalc-battery-l2-1018、wt-fa-mistral-theoremqa-repair-1018、wt-fa-q06-medcalc-bundle-1018。总done文件69不能当69个GPU任务，小模型bundle含多个单元。
+- 未新增failed标记；只有旧DeepSeek s1预检历史。旧无-s整池不恢复。coordinator PID83926仍active；此前last_observation_error是CPU停止导致，恢复后需让下一轮刷新清除。
+- 已上传并后台运行regrade_isolated.py，CPU PID18376；逐题恢复解析器初始globals，保留原始JSONL；输出isolated-grading-20261019/report.json和评分overlay。检验包含全部唯一输出逆序一致及最多16个fresh subprocess对照，审计完成/通过前不得用overlay做最终曲线。日志isolated-grading-20261019.log。不得重复启动，先看进程和report。
+- 正在打包completed-snapshot-20261019.tar.gz（exec session72075），只已done的raw及小型manifest/screen/context，不含权重；完成后核验size/SHA、安全解包，再核验全层/身份/截断。首轮3组初审曲线仍暂定，评分修复若改变人群需补缺失干预。
+- 最新用户要求：先查清新模型异常、修复已证实问题再整合paper并汇报，不为维持旧结论选择样本/层/指标；真实反例需如实限定。参考reports/图表审阅与改进建议_20261018.md，且新图统一橙线d=1-q。历史另一次立即提交授权已记录顶部，核验当前git状态再处理；本轮未完成实验不提前标完成，不创建TASK-COMPLETE。
+- 下一步：取回隔离评分报告，验证fresh-process等价与逆序一致；重建新旧TheoremQA baseline screens、核验新增eligible完整干预；缺失按原协议补跑并持续最多8卡。完成所有结果后更新正文/图表/独立ZIP编译/桌面同步/最终仅本次文件push master。
+
+## 2026-10-19 Problem Formulation与图文重构（当前任务）
+
+- 用户要求精简定义、可读公式、统一实验小标题及图文匹配检查。已按Setting→S/C→knockout→metrics→boundaries重构；source token集合mathcal I避免与干预S重名。新增cache/knockout/boundaries公式，dose和delta移附录。
+- 实验subsection/paragraph统一名词短语；压缩重复定义。四图三表保留：Fig1概览重复有明确用途，Table3展示派生差值而非重复原点值；Fig4说明等距层组和零点竖线；Table1补匹配前缀提示。
+- 重复注入降为一致性检查，保留测值，不再作为独立“维持状态失败”证据。详细报告`reports/ProblemFormulation与图文核查_20261019.md`。后续仍统一d=1-q；新家族结果尚未入当前稿，不混入未完实验。
+- 最终验证：audit_three_display_revision.py通过，15份数值输入不变；源数据/边界额外SHA检查通过。论文正文6/全文9页，图表合集9页，均0 error/undefined/overfull；第2–3页公式/图注已目视核查。PDF、图表包和ZIP已同步。审计`audit/FORMULATION-REVIEW-20261019.json`。本轮完成后提交推送；既有实验目录和旧DATA-CONSISTENCY改动不提交。
+
 
 ## 2026-10-18 用户授权立即提交推送
 

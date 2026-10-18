@@ -15,6 +15,11 @@ $135$ items over $14$ calculators, and we also report the per-item restriction
 
 
 
+For the dose and rank controls in Table~\ref{tab:fullscale}, the state
+difference is $\delta^L=H_D^L[\mathcal I]-H_R^L[\mathcal I]$.
+A dose $\alpha$ writes $H_R^L[\mathcal I]+\alpha\delta^L$;
+$\alpha=1$ is full replacement and $\alpha=0.5$ is half dose.
+
 Table~\ref{tab:fullscale} also includes a rank-truncation diagnostic.
 We decompose the injected state-difference matrix into ordered directions
 using singular value decomposition and retain only the leading $k$.
@@ -43,8 +48,10 @@ $14$--$19$ and $16$--$35$ recovers $0.839$, $0.613$, $0.376$ and $0.204$,
 respectively. Layer $16$ alone also recovers $0.204$. These values come
 from the completed \texttt{t8-win} and \texttt{tqa-span} runs, whose
 compatible baselines are merged before applying the receiver screen.
-As in MedCalc, extending replacement from layer $16$ through the final
-layer adds little recovery over the single-layer intervention.
+As in MedCalc, the repeated and single-layer writes have the same recovery.
+With a shared preceding context and full source-span replacement, causal
+attention can make the later source writes redundant; these results are
+not an independent test of maintaining a transferable state.
 
 \paragraph{A continuous readout at the same boundary.}
 Accuracy thresholds a generated answer, so an internal change can appear

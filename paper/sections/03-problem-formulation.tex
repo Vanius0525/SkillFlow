@@ -1,26 +1,22 @@
 \section{Problem Formulation}
 \label{sec:formulation}
 
-\paragraph{Skill context and intervention questions.}
-Our unit of analysis is a skill's instruction body once loaded into model
-context. We supply this content directly, holding skill selection fixed,
-and isolate how the model uses and reuses it internally.
-
-\noindent
-State transfer tests recovery in a wrong-skill receiver. Attention knockout
-tests source dependence in the correct-skill run. Both score generated
-answers while varying intervention depth.
-The model first processes the prompt, called prefill, and then generates
-answer tokens, called decoding. We call tokens outside the skill span
-readers, including question and answer tokens. Figure~\ref{fig:design}
-summarizes which source components are replaced and which attention paths
-are cut.
+\paragraph{Setting and notation.}
+We supply a skill's instructions directly and hold skill selection fixed.
+For the same question, the \emph{donor} uses the correct skill and the
+\emph{receiver} an unrelated skill of equal token length. Let $\mathcal I$
+be the skill's token positions, called the \emph{source span}; tokens
+outside it are \emph{readers}. Layers are indexed from zero.
+The model processes prompt tokens during \emph{prefill}, then generates
+answer tokens during \emph{decoding}. We compare transferring source
+states into the receiver with removing source access in the donor
+(Figure~\ref{fig:design}).
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-intervention-design.pdf}
 \caption{Intervention design. (a) The correct-skill donor supplies source
-residual states ($S$), source-position KV entries through layer $L$ ($C$),
+residual states ($S$), source-position key/value (KV) entries through layer $L$ ($C$),
 or both ($SC$) to the wrong-skill receiver. Earlier reader computation
 is retained. (b) Attention cuts distinguish access by reader tokens
 from updates within the skill source. After $SC$, the reader cut begins
@@ -33,77 +29,90 @@ and source-self cuts.}
 \label{fig:design}
 \end{figure*}
 
-\paragraph{Skill-span state transfer.}
-We call the loaded instruction text the skill source and its token positions
-the skill span. Residual-stream states are the hidden vectors passed from
-one transformer block to the next. Let $x$ be a question, $s$ its correct skill and $\tilde{s}$ an unrelated,
-equal-length skill. For hidden width $D$, let $H^L_{\mathrm{skill}}$ and
-$H^L_{\mathrm{wrong}}$ denote residual-stream states at layer $L$ under these
-two contexts.
-Across the skill's $m$ token positions $S$, the content-specific difference
-is a matrix $\dvec_S^L=H^L_{\mathrm{skill}}(S)-H^L_{\mathrm{wrong}}(S)
-\in\mathbb{R}^{m\times D}$. We use a run containing the wrong skill as the
-\emph{receiver}, and the correct-skill run as the \emph{donor}. Injection at dose
-$\alpha$ sets
+\paragraph{Residual-state and cache replacement.}
+Let $H^L$ be the residual states, the hidden vectors output by block $L$.
+Subscripts $D$ and $R$ denote donor and receiver. State replacement,
+labelled $S$, writes
 \begin{equation}
-H^L_{\mathrm{patched}}(S)=H^L_{\mathrm{wrong}}(S)+\alpha\dvec_S^L.
+S:\qquad H_R^L[\mathcal I]\leftarrow H_D^L[\mathcal I].
 \label{eq:inject}
 \end{equation}
-At $\alpha=1$, the donor's states replace the receiver's across the span.
-Other states remain unchanged at that layer. Computation then continues.
-Matching lengths preserves positions and their encodings. Span interventions
-change many more states than final-position interventions, which limits direct
-comparisons. Here the final position is the prompt's end, after the query. State patches
-are applied during prefill, after which decoding proceeds without further patches.
-The intervention replaces a block's output, not the complete execution state.
-Attention uses a query vector to select key vectors and read their associated
-value vectors. Key/value caches store these vectors for previously processed
-tokens. At the patched block and earlier blocks, these caches retain their
-receiver values. Later generated tokens can still read them. This distinction
-motivates the joint state-and-cache intervention in \S\ref{sec:mechanism}.
+This write occurs during prefill; the receiver then continues normally.
+Other positions at that layer are unchanged.
 
-\paragraph{Behavioural recovery and evaluation subsets.}
-We score generated answers and measure the fraction of the donor's accuracy
-gain recovered by an intervention. Higher recovery means more of the
-correct skill's benefit has been restored:
+Attention matches a query to keys and combines their associated values.
+The key/value (KV) cache stores these vectors for processed tokens.
+Let $K^\ell$ and $V^\ell$ be the cached keys and values at layer $\ell$.
+Cache replacement, labelled $C$, writes
 \begin{equation}
-\rho(\mathrm{arm})=
-\frac{\mathrm{acc}(\mathrm{arm})-\mathrm{acc}(\mathrm{receiver})}
-     {\mathrm{acc}(\mathrm{donor})-\mathrm{acc}(\mathrm{receiver})}.
+C:\quad
+\begin{aligned}
+K_R^\ell[\mathcal I]&\leftarrow K_D^\ell[\mathcal I],\\
+V_R^\ell[\mathcal I]&\leftarrow V_D^\ell[\mathcal I],
+\end{aligned}
+\qquad 0\le\ell\le L.
+\label{eq:cache}
+\end{equation}
+The combined intervention $SC$ performs both writes. $S$ alone leaves
+these earlier caches unchanged; neither write replays earlier reader
+computation. Cache writes precede processing the final prompt token
+(Appendix~\ref{app:detail}).
+
+\paragraph{Cumulative attention knockout.}
+Let $z^\ell_{ij}$ be the attention score from query position $i$ to key
+position $j$, including the causal mask that blocks future tokens.
+At every layer $\ell\ge L$, knockout replaces these scores by
+\begin{equation}
+\widetilde z^\ell_{ij}=
+\begin{cases}
+-\infty,&j\in\mathcal I,\\
+z^\ell_{ij},&j\notin\mathcal I.
+\end{cases}
+\label{eq:knockout}
+\end{equation}
+Softmax converts the modified scores into attention weights: blocked
+positions receive zero weight and the remaining weights sum to one.
+The cut applies to every query and attention head (a parallel attention
+component), during both prefill and decoding. It affects reader access
+and source-state updates. Path-specific cuts restrict $i$ to readers or
+to $\mathcal I$; a reader cut after $SC$ starts at $L+1$.
+
+\paragraph{Recovery and dependence.}
+Write $a_D$, $a_R$ and $a_I$ for answer accuracy under the donor,
+receiver and a specified intervention $I$. Recovery measures the
+fraction of the donor's gain restored:
+\begin{equation}
+\rho(I)=\frac{a_I-a_R}{a_D-a_R}.
 \label{eq:rho}
 \end{equation}
-Here, an arm is an intervention condition, and the donor baseline uses the
-correct skill in context. Thus $\rho=1$ recovers the donor's observed gain,
-and values above one indicate greater accuracy than the donor. We call
-questions answered incorrectly without a skill and correctly with it
-\emph{rescued items}. Main causal comparisons use these items. For
-span interventions, we further retain only skill groups for which the
-wrong-skill receiver solves none of the sampled items. We apply this screen
-separately within each run, model and task, without using intervention outcomes.
-The estimates are conditional on baseline failure in the sampled group, rather than recovery over the full benchmark.
+Thus $\rho=1$ restores that gain; $\rho>1$ exceeds donor accuracy.
+For state replacement at layer $L$, we write $\rho(L)$.
+We evaluate \emph{rescued items}, answered incorrectly without a skill
+and correctly with it, and retain skill groups whose receiver solves no
+sampled item. Screening uses only unmodified baselines, separately by
+run, model and task (\S\ref{sec:setup}).
 
-\paragraph{Measuring source-attention dependence.}
-Cumulative attention knockout masks the skill positions as attention keys at every
-layer from $L$ onward, during both prefill and decoding. On the knockout run's rescued items within the screened groups, let $q(L)$ be the fraction still solved after this
-intervention. We define \emph{source-attention dependence} as
+On the knockout's eligible items, let $q(L)$ be the fraction still correct.
+Their \emph{source-attention dependence} is
 \begin{equation}
 d(L)=1-q(L).
 \label{eq:dependence}
 \end{equation}
-Because these items are correct in the unmodified execution, $d(L)$ is the
-fraction that become incorrect under the knockout. Higher values indicate
-stronger behavioural dependence on source attention from layer $L$ onward.
-The mask applies to skill keys for all query positions, including skill
-queries during prefill. It therefore jointly intervenes on reading and
-source-state updates, rather than isolating a reader-to-source pathway.
-The transfer boundary is the first layer with $\rho(L)<0.5$ after early
-successful transfer. The source-dependence boundary is the first with
-$d(L)\le0.5$, equivalently $q(L)\ge0.5$.
-Layers with $\rho(L)<0.5$ and $d(L)>0.5$ exhibit weak residual-state
-transfer despite strong source-attention dependence. Shading marks the
-interval between the first half-effect boundaries.
-We report later recrossings directly in the curves.
-We also repeat both curves on the intersection of transfer items and the
-knockout run's rescued items within screened groups, retaining each
-intervention's own baselines. The curves describe the effects of the two
-interventions in their respective computational backgrounds.
+It is the fraction of originally correct answers lost under knockout.
+Higher values mean stronger dependence on subsequent source attention.
+We also compare both curves on common eligible items, retaining their
+own baselines and distinct donor/receiver execution backgrounds.
+
+\paragraph{Depth boundaries.}
+After establishing effective early transfer, define the first half-effect
+boundaries and their separation as
+\begin{equation}
+\begin{aligned}
+T&=\min\{L:\rho(L)<0.5\},\\
+R&=\min\{L:d(L)\le0.5\},\qquad \Delta=R-T.
+\end{aligned}
+\label{eq:boundaries}
+\end{equation}
+Layers with $\rho(L)<0.5$ and $d(L)>0.5$ show weak transfer despite
+strong dependence. Figure~\ref{fig:transferreading} shades the interval
+between the first boundaries and preserves later recrossings.

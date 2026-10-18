@@ -49,9 +49,7 @@ The source-cache replacement study uses a separate fixed set described in
 baseline skill benefit.
 
 \paragraph{Implementation and uncertainty.}
-State replacement occurs during prefill, the processing of prompt tokens
-before answer generation. Cumulative attention knockout applies during both
-prefill and decoding. An identity patch writes the receiver's own states
+An identity patch writes the receiver's own states
 back and should reproduce its output. Correcting an attention-mask mismatch
 between state capture and decoding restores exact agreement, including
 all $467$ MedCalc identity checks. All main results use the corrected
@@ -62,10 +60,10 @@ with replacement, preserving dependence among questions using the same
 skill. This skill-group bootstrap measures uncertainty across the sampled
 groups rather than treating their questions as independent.
 
-\subsection{Validating a probe of reusable skill content}
+\subsection{Validation of skill-state transfer}
 \label{sec:battery}
 
-\paragraph{Early span replacement recovers the skill's contribution.}
+\paragraph{Early transfer recovery.}
 Before comparing transfer across depth, we establish that the intervention
 transmits useful behaviour. At layer $8$ on the screened MedCalc set,
 replacing states at the skill's token positions recovers most of the
@@ -80,7 +78,7 @@ than the final-position alternatives.
 \caption{Early transfer controls, Qwen3-8B/MedCalc, layer $8$:
 $135$ items from $14$ calculators. Accuracy and recovery $\rho$ are
 point estimates. Final-position patches replace fewer states than the
-skill-span patches.}
+skill-span patches; other-skill content uses a matched prefix (see text).}
 \label{tab:probe}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -103,7 +101,7 @@ Identity patch & .000 & .00 \\
 \end{tabular}
 \end{table}
 
-\paragraph{The effect depends on skill content and position.}
+\paragraph{Content and position controls.}
 The unrelated-skill, permuted-position and noise controls in
 Table~\ref{tab:probe} all yield little recovery. The noise is scaled to match
 the size, measured by Euclidean norm, of the skill-state change. For the content comparison,
@@ -119,7 +117,7 @@ contrast describes the screened population.
 
 
 
-\paragraph{Early transfer generalizes across questions using the same skill.}
+\paragraph{Cross-question transfer.}
 \label{sec:whose}
 In the main prompt order, the skill precedes the question. Causal attention,
 which restricts a token to attending to earlier positions, prevents those
@@ -143,18 +141,18 @@ replacement ($S$), cache replacement ($C$), joint repair ($SC$), or joint
 repair followed by a reader cut from the next layer. (b) Fraction of
 donor-correct answers lost when reader-to-source, source-to-source, or
 both attention paths are cut from the indicated layer onward.
-Points are measured estimates, horizontally offset within each layer for
-legibility. Table~\ref{tab:mechanism-contrasts} reports the main contrasts.}
+Layer groups are equally spaced; points are horizontally offset within
+each group for legibility. Vertical stems connect estimates to zero. Table~\ref{tab:mechanism-contrasts} reports the main contrasts.}
 \Description{Grouped dot plots compare four repair interventions at four layers and three attention-path cuts at three layers. At layer 16 joint repair is much more effective than either component, while a reader recut removes most of the gain.}
 \label{fig:mechanism}
 \end{figure*}
 
-\subsection{Residual-state transfer weakens before source dependence subsides}
+\subsection{Depth separation of transfer and dependence}
 \label{sec:where}
 \label{sec:depth}
 \label{sec:ladder}
 
-\paragraph{The two depth profiles separate.}
+\paragraph{Transfer--dependence separation.}
 With an effective early probe established, we follow state transfer and
 source-attention knockout across every layer. Figure~\ref{fig:transferreading}
 shows the six model--task combinations. For Qwen3-8B/MedCalc, transfer
@@ -177,7 +175,7 @@ The main finding is the separation of the two intervention effects:
 states become ineffective at correcting the receiving computation while
 source access still supports the original one.
 
-\paragraph{The ordering holds on common questions across settings.}
+\paragraph{Common-item and threshold checks.}
 Original transfer and knockout runs can retain different eligible questions.
 We therefore recompute the curves over the intersection of their item IDs,
 using eligibility determined from unpatched baselines.
@@ -202,30 +200,27 @@ column gives its skill-group bootstrap $95\%$ confidence interval.}
 \input{tables/tab-paired-depth}
 \end{table}
 
-\paragraph{Repeated late replacement leaves transfer weak.}
-A single write might be insufficient to sustain a transferred skill.
-We test this by replacing source-span states over consecutive layer
-windows on the same $135$ MedCalc items. Windows $8$--$11$, $12$--$15$,
-$14$--$19$ and $16$--$35$ recover $0.89$, $0.74$, $0.16$ and $0.06$,
-respectively. Replacing states at every layer from the start recovers
-$0.98$. Repetition is therefore effective when begun early, while starting
-at layer $16$ gives the same weak recovery as a single write there.
-A corresponding TheoremQA test also yields weak late-window recovery
-(Appendix~\ref{app:fullscale}). This directs attention to the execution
-source-position cache entries that residual replacement leaves unchanged.
+\paragraph{Repeated state replacement.}
+On the same $135$ MedCalc items, replacing source states over layer
+windows $8$--$11$, $12$--$15$, $14$--$19$ and $16$--$35$ recovers
+$0.89$, $0.74$, $0.16$ and $0.06$, respectively. Replacement at every
+layer from the start recovers $0.98$. The corresponding TheoremQA results
+appear in Appendix~\ref{app:fullscale}. These are consistency checks:
+with identical preceding context, replacing the full source span once
+can already reproduce its later donor states under causal attention.
+Repeated writes therefore need not provide an independent intervention
+and do not establish that maintaining source states is insufficient.
 
 
-
-\subsection{Testing source caches and continued reading}
+\subsection{Effects of source caches and continued reading}
 \label{sec:mechanism}
 
-\paragraph{Replacing source states and source-position caches.}
-A residual-state patch changes a block output while leaving previously
-computed source-cache entries in place. To test whether these entries
-matter, we compare source residual replacement ($S$), source key/value-cache
-replacement ($C$), their joint replacement ($SC$), and $SC$ followed by
-cutting reader-to-source attention from the next layer. The cache condition replaces source entries through the intervention
-layer, keeping earlier reader computation fixed.
+\paragraph{Interventions and evaluation set.}
+We compare $S$, $C$ and $SC$ as defined in
+Eqs.~\ref{eq:inject}--\ref{eq:cache}, plus $SC$ followed by a reader cut
+from layer $L+1$, denoted $SC+\mathrm{recut}$. This tests source-cache
+contributions and subsequent reader access while retaining earlier
+reader computation.
 
 We evaluate layers $8,12,16,24$ on a fixed $124$-question set from
 $14$ calculators with fresh baselines. Of these, $114$ questions are correct
@@ -237,7 +232,7 @@ details.
 
 
 
-\paragraph{Joint repair restores substantial late transfer.}
+\paragraph{Joint replacement gains.}
 At layer $16$, residual replacement answers $4/114$ questions correctly,
 cache replacement answers $8/114$, and joint repair answers $48/114$.
 Table~\ref{tab:mechanism-contrasts} reports the repair gain.
@@ -251,8 +246,8 @@ recover part of the late transfer effect.
 \begin{table}[t]
 \centering
 \caption{Focused mechanism contrasts, $114$ items from $14$ skills.
-Differences are in percentage points (pp). The additive interaction is
-$SC-S-C+\mathrm{receiver}$.}
+Differences are in percentage points (pp). Writing $a_X$ for accuracy under condition $X$, the additive interaction
+is $a_{SC}-a_S-a_C+a_R$, where $a_R$ is receiver accuracy.}
 \label{tab:mechanism-contrasts}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -269,7 +264,7 @@ L24: reader minus self loss & $+71.1$ \\
 \end{tabular}
 \end{table}
 
-\paragraph{Recovered transfer still uses subsequent source reading.}
+\paragraph{Continued reading and attention paths.}
 Following joint repair at layer $16$, cutting reader-to-source attention
 reduces accuracy to $8/114$. Most of the repaired effect therefore relies
 on continued reading. To identify what the original cumulative knockout
@@ -280,7 +275,7 @@ correct, while a source-self-only cut leaves $110/114$ correct.
 Continued reader access accounts for the dominant tested dependence at
 this layer. Earlier cuts at layers $8$ and $16$ damage both paths.
 
-\paragraph{The repair effect varies with depth.}
+\paragraph{Depth variation and generation limits.}
 After joint repair at layer $24$, a reader recut yields $27.2\%$ accuracy,
 with no detected additional loss. The repaired-yet-reading-dependent
 result is therefore supported at layer $16$ and varies across the tested
