@@ -50,7 +50,7 @@ for cell in depth:
     assert f'{cell["task"]} & {cell["model"]} & ${common["n"]}$ & ${t}/{r}$' in table
     assert f'${r-t}$' in table
     lo,hi=common['boundary_ci'][2]
-    assert f'$[{lo:.1f},{hi:.1f}]$' in table
+    assert 'CI' not in table and 'cellcolor' not in table
     for threshold,predicate in [(.4,True),(.6,True)]:
         # Evaluate the first crossings from the original measured curves.
         transfer=next(i for i,v in enumerate(common['transfer']) if v<threshold)

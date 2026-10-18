@@ -1,3 +1,23 @@
+## 2026-10-19 图表美化完成验证
+
+- 四图字体均为LinLibertine常规/粗体/斜体，表格统一9pt及1.22行距、白底；Figure3只保留rho/d主曲线；Figure4为数值热力图＋横向分层点图。后续更新沿用当前集中字体配置和显示规则。
+- 论文正文7/全文9页，合集9页；均无error/undefined/overfull。已目视四图及正文/附录表格；PDF文本清理扫描通过，15份数值输入与原稿不变。审计`audit/DISPLAY-STYLE-20261019.json`。
+- PDF、Overleaf ZIP和图表包已同步；本轮只提交论文与图表改动，未完成实验目录及旧DATA-CONSISTENCY改动留本地。
+
+- 表格追加要求：正文/附录四张表统一正文Linux Libertine系列，表内9pt/11pt行基准，arraystretch=1.22；表头常规粗细区分但不换字体，保持白底。合集使用同一tabular字体钩子。
+
+- 字体追加要求：四图统一Linux Libertine（与acmart正文/表格同系列），含常规/粗体/斜体及数学符号；由tools/figure_fonts.py集中配置。PDF嵌入字体检查四图均仅LinLibertine，不再混用DejaVu Sans。复现需Linux Libertine或PAPER_FONT_DIR，缺失时报错。
+
+- Figure4追加可读性改进：左侧改为四干预×四层的带数值热力图（0–100%固定色阶），右侧按层分组的横向路径损失点图，去除棒棒糖竖线。原始16+9个数值及样本不变，Table3保留派生差值。热力图颜色编码数据，普通表格保持白底。
+
+- 追加要求已落实：Figure3去掉common-item check两条虚线和图例/图注，只保留rho与d主曲线；共同样本Table2和正文检查保留，半效应参考线保留。
+
+## 2026-10-19 图表展示与排版新约定（覆盖旧显示要求）
+
+- 用户要求当前全文和图表不再展示或讨论CI；已删除主文、当前附录、Table2中的对应数值和方法说明。源结果JSON保留，点估计与样本不变。
+- 后续所有正文、附录和图表包均沿用纯点估计展示，Table2也不例外；表格取消所有底色，使用三线表、较大字号和行距。图中表示深度区间的浅色区域保留，因为它不是表格底色或统计区间。
+- 四张主图字体与画布高度已适当增大，精简图例避免拥挤；d=1-q不变。正在重编译检查页数、文字碰撞和原始数值，随后同步PDF/ZIP/图表包并提交。
+
 ## 2026-10-19 Problem Formulation与图文重构（当前任务）
 
 - 用户要求精简定义、可读公式、统一实验小标题及图文匹配检查。已按Setting→S/C→knockout→metrics→boundaries重构；source token集合mathcal I避免与干预S重名。新增cache/knockout/boundaries公式，dose和delta移附录。

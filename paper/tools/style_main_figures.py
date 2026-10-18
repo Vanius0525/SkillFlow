@@ -16,14 +16,16 @@ from _paths import FIGURES, VALUES, AUDIT
 
 BLUE, TEAL, ORANGE, PURPLE, GRAY = '#2866A0', '#268C82', '#D27A29', '#8772AE', '#8693A0'
 plt.rcParams.update({
-    'font.family': 'DejaVu Sans', 'font.size': 8, 'axes.titlesize': 9,
-    'axes.labelsize': 8, 'xtick.labelsize': 7, 'ytick.labelsize': 7,
-    'legend.fontsize': 7, 'pdf.fonttype': 42, 'ps.fonttype': 42, 'svg.fonttype': 'none',
+    'font.size': 9, 'axes.titlesize': 10,
+    'axes.labelsize': 9, 'xtick.labelsize': 8, 'ytick.labelsize': 8,
+    'legend.fontsize': 8, 'pdf.fonttype': 42, 'ps.fonttype': 42, 'svg.fonttype': 'none',
     'axes.edgecolor': '#AAB4BE', 'axes.labelcolor': '#263746',
     'text.color': '#263746', 'xtick.color': '#53616F', 'ytick.color': '#53616F',
     'axes.linewidth': .6, 'grid.color': '#E8EDF2', 'grid.linewidth': .55,
     'legend.frameon': False, 'savefig.facecolor': 'white',
 })
+from figure_fonts import configure_fonts
+configure_fonts()
 INPUTS = ['fig-channels-values.json', 'depth-crossmodel-values.json']
 
 def data(name):
@@ -80,7 +82,7 @@ def channels():
 
 def depth():
     cells=data('depth-crossmodel-values.json')
-    fig,axes=plt.subplots(2,3,figsize=(7.1,3.78),sharey=True,layout='constrained')
+    fig,axes=plt.subplots(2,3,figsize=(7.1,4.25),sharey=True,layout='constrained')
     for row,task in enumerate(['MedCalc','TheoremQA']):
         for col,model in enumerate(['Qwen3-8B','Qwen3-0.6B','Mistral-7B']):
             c=next(c for c in cells if c['task']==task and c['model']==model)
@@ -93,22 +95,17 @@ def depth():
             ax.plot(x,c['transfer'],color=BLUE,lw=1.6,marker='o',ms=2.1,
                     markeredgecolor='white',markeredgewidth=.35,zorder=3,label=r'Skill transfer $\rho$')
             ax.plot(x,1-np.asarray(c['retention']),color=ORANGE,lw=1.6,marker='s',ms=1.9,
-                    markeredgecolor='white',markeredgewidth=.3,zorder=3,label=r'Source-attention dependence $d$')
-            # Every point is measured; dotted overlays retain the common-ID check.
-            ax.plot(x,c['common']['transfer'],color=BLUE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
-            ax.plot(x,1-np.asarray(c['common']['retention']),color=ORANGE,lw=.8,ls=(0,(1,2)),alpha=.8,zorder=4)
+                    markeredgecolor='white',markeredgewidth=.3,zorder=3,label=r'Source dependence $d$')
             ax.text((tb+rb-1)/2,1.03,f'L{tb}–L{rb}',ha='center',va='center',
-                    fontsize=6.8,color='#94551D')
+                    fontsize=8,color='#94551D')
             ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),
                    xticks=sorted(set([0,8,16,24,nl-1])),yticks=[0,.5,1])
             ax.set_yticklabels(['0','.5','1.0'])
             if col==0:ax.set_ylabel(task+'\nRecovery / dependence',labelpad=6)
             if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
     handles,labels=axes[0,0].get_legend_handles_labels()
-    handles.append(plt.Line2D([],[],color=GRAY,lw=1,ls=(0,(1,2))))
-    labels.append('Common-item check')
-    fig.legend(handles,labels,loc='outside upper center',ncol=3,fontsize=7,
-               handlelength=2.4,columnspacing=1.8)
+    fig.legend(handles,labels,loc='outside upper center',ncol=2,fontsize=8,
+               handlelength=2.4,columnspacing=2.0)
     save(fig,'fig-transfer-reading')
 
 

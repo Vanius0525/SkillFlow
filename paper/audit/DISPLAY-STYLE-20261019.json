@@ -1,0 +1,30 @@
+{
+  "figure_fonts": {
+    "fig-teaser": [
+      "CBWIQS+LinLibertineOI",
+      "CYKZIQ+LinLibertineO",
+      "CZUXUS+LinLibertineOB"
+    ],
+    "fig-intervention-design": [
+      "CYKZIQ+LinLibertineO",
+      "CZUXUS+LinLibertineOB"
+    ],
+    "fig-transfer-reading": [
+      "CBWIQS+LinLibertineOI",
+      "CYKZIQ+LinLibertineO",
+      "CZUXUS+LinLibertineOB"
+    ],
+    "fig-mechanism-results": [
+      "CYKZIQ+LinLibertineO",
+      "CZUXUS+LinLibertineOB"
+    ]
+  },
+  "figure3_common_curves_removed": true,
+  "table_font_pt": 9,
+  "table_arraystretch": 1.22,
+  "tables_unshaded": true,
+  "figure4_layout": "labelled heatmap and horizontal grouped dots",
+  "forbidden_display_terms_found": false,
+  "numerical_audit": "15 inputs unchanged",
+  "total_pages": 9
+}

@@ -69,7 +69,7 @@ where $\ell$ denotes the mean log-probability and the subscripts identify
 the patched, receiver and donor conditions. We use $z$ to distinguish this
 diagnostic from knockout retention $q$. On $442$ donor-correct items from
 $48$ calculators, $z$ is $0.999,0.989,0.960,0.831$ at layers $0,4,8,12$.
-It then falls to $0.598$ ($95\%$ interval $[0.550,0.648]$) at layer $13$,
+It then falls to $0.598$ at layer $13$,
 $0.595$ at $14$, $0.340$ at $16$, $0.201$ at $20$, and $0.129$ at $24$.
 The layer-$12$ to layer-$13$ decline spans $26.8\%$ of the score's range,
 compared with the $61\%$ behavioural decline. The continuous readout
@@ -87,8 +87,7 @@ An attention head is one of the parallel attention components within a
 transformer block. Head-level readout from the skill span concentrates in layers $12$--$21$
 after normalisation by residual-stream norm. Blocking the $32$ highest-ranked
 heads costs $0.39$ of the skill's effect, versus $0.23$ for random heads at the
-same layers (held-out calculators; paired difference $0.154$, $95\%$ CI
-$[0.061,0.251]$). Reading is distributed rather than confined to a small
+same layers (held-out calculators; paired difference $0.154$). Reading is distributed rather than confined to a small
 circuit. After late span replacement, downstream readout remains
 $0.86$--$0.99$ of the donor's despite weak behavioural recovery. Earlier receiver question-state updates remain unchanged, motivating
 the interaction tests in \S\ref{sec:mechanism}.
@@ -118,22 +117,19 @@ preserving the causal mask.
 
 We retain all intervention outcomes, including truncated outputs. For the
 prespecified SC-minus-S contrast at layer $16$, the gain is $38.6$ percentage
-points, with a skill-cluster bootstrap $95\%$ interval of $[26.6,46.5]$
-($10{,}000$ resamples of the $14$ calculators, retaining their items).
-The corresponding joint-minus-additive contrast is $31.6$ points
-$[14.1,41.6]$; SC-minus-recut is $35.1$ points $[23.2,43.0]$.
+points.
+The corresponding joint-minus-additive contrast is $31.6$ points; SC-minus-recut is $35.1$ points.
 On the $96$ items with all three baselines untruncated, SC-minus-S is
-$38.5$ points $[25.0,47.6]$.
+$38.5$ points.
 At layer $16$, S/SC/recut truncate $4/4/3$ of $114$ outputs;
 worst-case reassignment of all truncated S and SC outcomes leaves a
 $35.1$-point repair advantage. At layer $24$, SC and recut truncate $3/28$
-outputs and do not exhibit a reliable recutting loss; this depth is not
+outputs and show no additional loss in measured accuracy; this depth is not
 used to claim independence after repair.
 
 At layer $24$, reader and source-self cuts retain $29/114$ and $110/114$
-correct answers. Their loss difference is $71.1$ points $[53.3,86.5]$.
+correct answers. Their loss difference is $71.1$ points.
 Reader cuts truncate $21$ outputs; counting all as correct still leaves
 retention at $50/114$, below source-self retention $110/114$ (no truncation).
 Both contrasts survive worst-case reassignment of truncated outputs.
-Analysis artifacts retain arm-wise counts, hashes, clustered intervals
-and truncation bounds.
+Analysis artifacts retain arm-wise counts, hashes and truncation bounds.

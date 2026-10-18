@@ -8,8 +8,7 @@
 skill-span transfer recovery $\rho(L)$ in a wrong-skill receiver.
 Orange shows source-attention dependence $d(L)=1-q(L)$: the fraction
 of originally correct answers lost after cumulative attention knockout
-in the correct-skill execution. Dotted traces repeat the tests
-on common eligible questions. Shading spans the first half-effect
+in the correct-skill execution. Shading spans the first half-effect
 boundaries, highlighting weak transfer despite strong dependence; later
 recrossings remain visible. Boundary layers are marked above each panel.
 Every plotted layer is measured.}
@@ -48,17 +47,13 @@ The source-cache replacement study uses a separate fixed set described in
 \S\ref{sec:mechanism}. These populations estimate effects conditional on
 baseline skill benefit.
 
-\paragraph{Implementation and uncertainty.}
+\paragraph{Implementation checks.}
 An identity patch writes the receiver's own states
 back and should reproduce its output. Correcting an attention-mask mismatch
 between state capture and decoding restores exact agreement, including
 all $467$ MedCalc identity checks. All main results use the corrected
 implementation. Appendix~\ref{app:detail} specifies the intervention
 protocol, and Appendix~\ref{app:limits} records the correction.
-We estimate $95\%$ confidence intervals by resampling whole skill groups
-with replacement, preserving dependence among questions using the same
-skill. This skill-group bootstrap measures uncertainty across the sampled
-groups rather than treating their questions as independent.
 
 \subsection{Validation of skill-state transfer}
 \label{sec:battery}
@@ -81,15 +76,14 @@ point estimates. Final-position patches replace fewer states than the
 skill-span patches; other-skill content uses a matched prefix (see text).}
 \label{tab:probe}
 \small
+\renewcommand{\arraystretch}{1.18}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lrr@{}}
 \toprule
-\rowcolor{TableHeader}
 Intervention & Accuracy & $\rho$ \\
 \midrule
 Correct skill donor & .919 & 1.00 \\
 Wrong skill receiver & .000 & .00 \\
-\rowcolor{TransferHighlight}
 Correct skill span & .815 & .89 \\
 Last prompt position & .030 & .03 \\
 Last $16$ prompt positions & .059 & .06 \\
@@ -136,14 +130,14 @@ provides the additional content and prompt-order controls.
 \centering
 \includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
 \caption{Source-state/cache replacement and attention-path tests on the same $114$
-Qwen3-8B/MedCalc items from $14$ skills. (a) Accuracy following residual
+Qwen3-8B/MedCalc items from $14$ skills. (a) Accuracy (\%) following residual
 replacement ($S$), cache replacement ($C$), joint repair ($SC$), or joint
 repair followed by a reader cut from the next layer. (b) Fraction of
 donor-correct answers lost when reader-to-source, source-to-source, or
 both attention paths are cut from the indicated layer onward.
-Layer groups are equally spaced; points are horizontally offset within
-each group for legibility. Vertical stems connect estimates to zero. Table~\ref{tab:mechanism-contrasts} reports the main contrasts.}
-\Description{Grouped dot plots compare four repair interventions at four layers and three attention-path cuts at three layers. At layer 16 joint repair is much more effective than either component, while a reader recut removes most of the gain.}
+The heatmap uses a fixed $0$--$100\%$ scale with exact values in each cell.
+Path-cut estimates are offset vertically within each tested layer. Table~\ref{tab:mechanism-contrasts} reports the main contrasts.}
+\Description{A labelled heatmap compares four repair interventions at four layers. A horizontal dot plot compares three attention-path cuts at three layers. At layer 16 joint repair is much more effective than either component, while a reader recut removes most of the gain.}
 \label{fig:mechanism}
 \end{figure*}
 
@@ -181,8 +175,7 @@ We therefore recompute the curves over the intersection of their item IDs,
 using eligibility determined from unpatched baselines.
 Table~\ref{tab:paireddepth} reports the resulting boundaries.
 All six pairs match those from the original populations.
-Skill-group bootstrap $95\%$ intervals for the source-dependence-minus-transfer
-boundary difference exclude zero in all six settings.
+The source-dependence boundary follows the transfer boundary in all six settings.
 Using transfer thresholds $\tau=0.4$ or $0.6$ and the corresponding
 dependence thresholds $1-\tau$ also preserves the ordering. The gap thus recurs across the two model families and both
 task domains under common-item evaluation.
@@ -192,11 +185,11 @@ task domains under common-item evaluation.
 \caption{Boundary layers on common eligible items. $T/R$ gives the
 first half-effect crossings for transfer ($\rho<0.5$) and source
 dependence ($d\le0.5$),
-respectively. $\Delta=R-T$ measures their separation in layers. The last
-column gives its skill-group bootstrap $95\%$ confidence interval.}
+respectively. $\Delta=R-T$ measures their separation in layers. }
 \label{tab:paireddepth}
-\footnotesize
-\setlength{\tabcolsep}{2.5pt}
+\small
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{4pt}
 \input{tables/tab-paired-depth}
 \end{table}
 
@@ -239,8 +232,7 @@ Table~\ref{tab:mechanism-contrasts} reports the repair gain.
 The joint gain exceeds the sum of the individual gains
 relative to the receiver, showing that the states and their source caches
 contribute together. At layer $24$, joint repair still improves on residual
-replacement ($25.4\%$ versus $0.9\%$), although its advantage over cache
-replacement alone ($18.4\%$) is uncertain. Compatible source caches thus
+replacement ($25.4\%$ versus $0.9\%$), compared with $18.4\%$ for cache replacement alone. Compatible source caches thus
 recover part of the late transfer effect.
 
 \begin{table}[t]
@@ -250,10 +242,10 @@ Differences are in percentage points (pp). Writing $a_X$ for accuracy under cond
 is $a_{SC}-a_S-a_C+a_R$, where $a_R$ is receiver accuracy.}
 \label{tab:mechanism-contrasts}
 \small
-\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lr@{}}
 \toprule
-\rowcolor{TableHeader}
 Contrast & Difference \\
 \midrule
 L16: $SC-S$ & $+38.6$ \\
@@ -277,7 +269,7 @@ this layer. Earlier cuts at layers $8$ and $16$ damage both paths.
 
 \paragraph{Depth variation and generation limits.}
 After joint repair at layer $24$, a reader recut yields $27.2\%$ accuracy,
-with no detected additional loss. The repaired-yet-reading-dependent
+compared with $25.4\%$ without the recut. The repaired-yet-reading-dependent
 result is therefore supported at layer $16$ and varies across the tested
 depths. The main repair gain is stable to generation-length diagnostics:
 it remains $38.5$ points on the $96$ questions whose three baselines finish

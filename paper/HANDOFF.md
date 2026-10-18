@@ -1,3 +1,36 @@
+## 2026-10-19 图表美化完成验证
+
+- 四图字体均为LinLibertine常规/粗体/斜体，表格统一9pt及1.22行距、白底；Figure3只保留rho/d主曲线；Figure4为数值热力图＋横向分层点图。后续更新沿用当前集中字体配置和显示规则。
+- 论文正文7/全文9页，合集9页；均无error/undefined/overfull。已目视四图及正文/附录表格；PDF文本清理扫描通过，15份数值输入与原稿不变。审计`audit/DISPLAY-STYLE-20261019.json`。
+- PDF、Overleaf ZIP和图表包已同步；本轮只提交论文与图表改动，未完成实验目录及旧DATA-CONSISTENCY改动留本地。
+
+- 表格追加要求：正文/附录四张表统一正文Linux Libertine系列，表内9pt/11pt行基准，arraystretch=1.22；表头常规粗细区分但不换字体，保持白底。合集使用同一tabular字体钩子。
+
+- 字体追加要求：四图统一Linux Libertine（与acmart正文/表格同系列），含常规/粗体/斜体及数学符号；由tools/figure_fonts.py集中配置。PDF嵌入字体检查四图均仅LinLibertine，不再混用DejaVu Sans。复现需Linux Libertine或PAPER_FONT_DIR，缺失时报错。
+
+- Figure4追加可读性改进：左侧改为四干预×四层的带数值热力图（0–100%固定色阶），右侧按层分组的横向路径损失点图，去除棒棒糖竖线。原始16+9个数值及样本不变，Table3保留派生差值。热力图颜色编码数据，普通表格保持白底。
+
+- 追加要求已落实：Figure3去掉common-item check两条虚线和图例/图注，只保留rho与d主曲线；共同样本Table2和正文检查保留，半效应参考线保留。
+
+## 2026-10-19 01:14 启动里程碑live复核
+
+- 本次queue消息是原62任务里程碑，不能直接扩大到新增64任务。live：wt-f3-deepseek-theoremqa-scorefix-s0-1019和s1均job_queuing，未见JSONL、无日志、无done。故不宣布新增补跑已正式开始，用户已获通知的仅原62任务。检查*.done.json common_n字段未发现0，但这不等于已审计全部suite的有效人群，仍需逐suite核验。
+- 五小时timer active，下一轮02:30:36 CST。原state的all_started_notification_queued是原计划的历史标记；后续新增计划不能以此当正式开始证据，应以JSONL和done live核验。两新Job已提交，不重复创建。
+
+## 2026-10-19 图表展示与排版新约定（覆盖旧显示要求）
+
+- 用户要求当前全文和图表不再展示或讨论CI；已删除主文、当前附录、Table2中的对应数值和方法说明。源结果JSON保留，点估计与样本不变。
+- 后续所有正文、附录和图表包均沿用纯点估计展示，Table2也不例外；表格取消所有底色，使用三线表、较大字号和行距。图中表示深度区间的浅色区域保留，因为它不是表格底色或统计区间。
+- 四张主图字体与画布高度已适当增大，精简图例避免拥挤；d=1-q不变。正在重编译检查页数、文字碰撞和原始数值，随后同步PDF/ZIP/图表包并提交。
+
+### 本轮评分隔离验证通过与补跑安排
+
+- regrade_isolated.py完成：42927条/22468唯一文本，全量逆序重判一致、16个fresh subprocess对照一致；359条原标签变化。已取回isolated-grading-report-20261019.json，overlay远端isolated-grading-20261019/，原始JSONL不改。
+- Llama/TQA frozen eligibility仍92题/71组；DeepSeek/TQA由51题/44组变54题/45组，新增00296/00474/00513/00588/00686，移除00320/00321。新增5题没有depth干预，不能直接填曲线。
+- 独立supplement_depth.py沿用full-prefill/BF16/eager/900tokens/原模型prompt和engine，逐题隔离评分状态，使用全候选池重评后的冻结成员资格；不在这5题子集上重新做group screen。仍每任务两个完整skill分片，两Job wt-f3-deepseek-theoremqa-scorefix-s{0,1}-1019已dry-run通过，计划总64；协调器重启自动提交，live实际开始需看日志，不当作已经开始。其余原62任务已正式启动里程碑不撤回，但此后必要补跑不包含在原里程碑中。
+- 本地完整快照263文件26,080,882bytes，SHA256 ebcf73efce9c428a156d251d8114993b444b84283d375c935d576a994826f58d已核验并解包retrieved/snapshot-20261019。按原stored标签全四组合层网格/身份审计通过，输出provisional-depth-stored-labels-20261019.json，只作结构审计不可作为最终TheoremQA结果。
+- 后续还需：统一重判旧三模型Figure3原始输出及全部正文suite、重建各自新基线筛选；新增5题补充battery/windows/doclast/bridge/repair/edges所缺记录；检查其余模型是否也有新增eligible。不要只补depth即标完成。逐样本初始状态隔离是修复跨题污染，提取规则未改，官方extractor自身的substring/boolean缺陷应作为局限记录。
+
 ## 2026-10-19 续接巡检（当前入口）
 
 - 用户“继续”授权持续，最多8卡。读取顶部交接/README/deployment并核验live；wt-family-prep-1018因23h时限自动STOPPED，已start并connection refresh恢复共享盘观测，未新建CPU或GPU重复任务。
