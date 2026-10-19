@@ -1,3 +1,18 @@
+## 2026-10-19 已按授权删除Qwen14B，继续补跑与独立审计
+
+- 用户明确授权先删除Qwen3-14B内容。已删除准确目录/inspire/ssd/project/project-public/czxs253130660/models/Qwen3-14B（29个文件，7,599,691,435逻辑字节/7,599,721,984分配字节，约7.08GiB），包括旧未完成下载和少量配置；目录不存在已验证。未删除Mistral consolidated或任何其他数据。删除前文件清单与完成证据audit/QWEN14B-CLEANUP-20261019.json，远端HDD也保存qwen14b-deletion-audit.json。此前提议中的Mistral清理仍未获授权。
+- 清理后SSD个人目录du约92GiB（此前99GiB）。新增32MiB probe写入+fsync成功，耗时0.036s；probe保留在ROOT/ssd-after-q14-cleanup-probe-20261019.bin，不私自再删。CPU探针不等于已验证GPU节点写入，也不是完整磁盘基准。
+- 对SSD加速的判断：当前所有模型权重始终在SSD，GPU加载路径未迁移；HDD只接收小规模JSONL。Qwen8首块数小时约5MB raw，结果写入量很小，因此不预期仅把结果切回SSD会明显缩短生成。为保留四个现有排队任务、避免迁移路径/重复提交风险，本轮保留HDD输出；SSD已恢复可写供新审计使用。实际GPU耗时尚未做SSD/HDD配对测速，不声称测得加速比。
+- 四HDD任务最近仍queuing，未重复提交；原已完成块继续复用。30min watch保持并新增正式raw检查：四任务都有可解析text记录时才queue单独实际开始通知。5h timer保持，TASK-COMPLETE不存在。
+- 等GPU期间已启动已完成补跑的独立CPU审计：audit_completed_supplements.py，覆盖DeepSeek corrected54 battery/L2/windows/bridge/repair五suite＋Qwen0.6全部7层块和KO的raw（13文件）。输出ROOT/post-quota-audit-20261019/，日志同名.log，PID元数据同名.pid（timeout进程897054），20分钟上限，不覆盖旧overlay/raw。逐题parser重置、全量逆序一致性和16 fresh-process对照；完成标记AUDIT-COMPLETE。watch已补完成/异常提醒。已实际完成：13文件/13,845回答/changed_labels=0，全部逆序重判及16 fresh-process对照通过。仍须各suite独立baseline/eligible聚合，不把标签核验完成当论文所有实验完成。
+- 下一步：核验CPU审计日志/报告、4个HDD Job正式启动与写入；Qwen8/Mistral SSD完整块和HDD补块按manifest/raw哈希联合审计。继续Overleaf完整diff→本地修改→Overleaf/GitHub流程，尚不改论文数值，不导出桌面。反例暂不进paper。
+
+## 2026-10-19 存储只读盘点，待清理确认
+
+- SSD个人目录约99GiB，权重97GiB占主导；HDD个人目录58GiB。共享SSD使用99%且inode57%，df不能代表个人配额，精确fileset/user限额未查得。详情reports/存储占用与清理建议_20261019.md。
+- 可优先考虑的准确9文件清单audit/STORAGE-CLEANUP-PROPOSAL-20261019.json：Qwen14B 8个9月12日未完成下载片7.08GiB＋Mistral consolidated.safetensors 13.50GiB，合计20.58GiB。Mistral当前HF索引引用另3分片且均存在。CPU无相关下载进程；4个可见活跃GPU Job均当前HDD续接、仍排队。
+- 尚未删除或获准确目标删除确认；按用户AGENTS先报告范围/影响/不可回收再确认。删除前复核文件未改动，保留Mistral三HF分片、索引/tokenizer/config。其他旧模型、HDD的OPD训练产物不据年龄判断无用，不删本paper原始结果/overlay。清理HDD不直接释放SSD配额。无需因当前排队盲目重提Job。
+
 ## 2026-10-19 最新同步约定、术语与配额故障续接
 
 - 用户最新要求：**每次论文更新先运行olcli完整行级diff，纳入合理云端修改；本地修改和编译审计后同步Overleaf与GitHub，不再向桌面导出。** 该要求覆盖历史桌面交付步骤，旧交付保留。详细入口OVERLEAF.md；5h检查消息已同步改为新流程，反例仍只记录研究，暂不进paper。

@@ -1,0 +1,103 @@
+{
+  "files": [
+    {
+      "file": "deepseek-theoremqa-corrected54-battery.jsonl",
+      "sha256": "c0c66d026af9f30c78e8f18a8ed2f68012ea15aeb024b5a32b32bfcf1ef4484e",
+      "records": 920,
+      "changed_labels": [],
+      "truncated_records": 154
+    },
+    {
+      "file": "deepseek-theoremqa-corrected54-battery-l2.jsonl",
+      "sha256": "55c63ef1b5944a9054ec4fe17599869bf2fd73ee3b3fcaec158ae5df55806fb1",
+      "records": 920,
+      "changed_labels": [],
+      "truncated_records": 142
+    },
+    {
+      "file": "deepseek-theoremqa-corrected54-windows.jsonl",
+      "sha256": "0ce421c6b9031a7e90c906ceec5ab62dc7344ba6a7fb7780eb5f147eb2d6f3fc",
+      "records": 594,
+      "changed_labels": [],
+      "truncated_records": 91
+    },
+    {
+      "file": "deepseek-theoremqa-corrected54-bridge.jsonl",
+      "sha256": "2fd0cf48cec21c9f3b34f40500e21a4a725c156aed69c2f8ff72f0a8c2607609",
+      "records": 50,
+      "changed_labels": [],
+      "truncated_records": 14
+    },
+    {
+      "file": "deepseek-theoremqa-corrected54-repair.jsonl",
+      "sha256": "7912e8c0b96551b9b2a8a2a39e192625739af41adeda942827a976aa0e0b8341",
+      "records": 1026,
+      "changed_labels": [],
+      "truncated_records": 148
+    },
+    {
+      "file": "legacy-replay-20261019/q06-knockout.answers.jsonl",
+      "sha256": "90d515b73fa145a1b033dc79d47c5f5bdf79d1e77f6fba789c65c7f4883bc732",
+      "records": 3666,
+      "changed_labels": [],
+      "truncated_records": 5
+    },
+    {
+      "file": "legacy-replay-20261019/q06-transfer-00.answers.jsonl",
+      "sha256": "43850bd74243b722eeda6cac52566251d8b15c41633ee57b6fbe0097159c54c8",
+      "records": 1512,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    {
+      "file": "legacy-replay-20261019/q06-transfer-04.answers.jsonl",
+      "sha256": "25ee4d714127d25ddab2e49e7df4f89c8955dfc2f4f02c8ea8986c061fcf51a1",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    {
+      "file": "legacy-replay-20261019/q06-transfer-08.answers.jsonl",
+      "sha256": "4155f7a2a6d0cc6a5e1b6e74e7eaf59f4a15a9956e395c35f9ddd379a31c0923",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    {
+      "file": "legacy-replay-20261019/q06-transfer-12.answers.jsonl",
+      "sha256": "b5ff4a8c6c694a9eb49bca8ba6d233be31fb5a0fed943f187fc9c18d7a782490",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    {
+      "file": "legacy-replay-20261019/q06-transfer-16.answers.jsonl",
+      "sha256": "6870fab2158a192e47fe4ad7a8ca432506f3b4d28e621dcc17a89229b2937acd",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 2
+    },
+    {
+      "file": "legacy-replay-20261019/q06-transfer-20.answers.jsonl",
+      "sha256": "80b73b8506ec4806e4bebca5adc6fa1375e3ca6a2a2446ec80f0b4314b5245ad",
+      "records": 500,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    {
+      "file": "legacy-replay-20261019/q06-transfer-24.answers.jsonl",
+      "sha256": "27344b85472f34802bfd6b5c80dbd3d480f3995aa507075cef8d96702c2e2b18",
+      "records": 625,
+      "changed_labels": [],
+      "truncated_records": 0
+    }
+  ],
+  "records": 13845,
+  "unique_texts": 4138,
+  "changed_labels": 0,
+  "reverse_order_all_passed": true,
+  "fresh_process_checks": 16,
+  "seconds": 44.189319133758545,
+  "raw_retained": true,
+  "scope": "Five completed corrected54 DeepSeek suites and complete legacy Qwen0.6; suite populations and interventions still require separate aggregation."
+}

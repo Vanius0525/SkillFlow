@@ -37,11 +37,29 @@ from pathlib import Path
 p=Path(ROOT);d=p/'legacy-replay-20261019'
 h=Path('/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019')
 paths=list(p.glob('deepseek-theoremqa-corrected54*.jsonl'))+list(d.glob('*.answers.jsonl'))+list(h.glob('*.jsonl'))
-print('WATCH '+json.dumps({'first_done':(d/'q8-transfer-00.done.json').exists(),'ko_started':(d/'q8-knockout.answers.jsonl').exists(),'ko_done':(d/'q8-knockout.done.json').exists(),'legacy_done':[x.name for x in d.glob('*-replay.done.json')],'recovery_done':[x.name for x in h.glob('*.done.json')],'files':{str(x):{'bytes':x.stat().st_size,'mtime':x.stat().st_mtime} for x in paths},'time':time.time()}))
+audit=p/'post-quota-audit-20261019'
+pidfile=p/'post-quota-audit-20261019.pid'
+cpu={'submitted':pidfile.exists(),'done':(audit/'AUDIT-COMPLETE').exists()}
+if pidfile.exists():cpu['alive']=Path('/proc/'+str(json.loads(pidfile.read_text())['pid'])).exists()
+if cpu['done']:
+ report=json.loads((audit/'report.json').read_text());cpu.update({k:report[k] for k in ['records','changed_labels','fresh_process_checks','reverse_order_all_passed']})
+formal={}
+for key,name in {'q8-transfer':'q8-transfer-04.answers.jsonl','mistral-transfer':'mistral-transfer-28.answers.jsonl','q8-ko':'q8-knockout.answers.jsonl','ds-edges':'deepseek-theoremqa-corrected54-edges.jsonl'}.items():
+ f=h/name
+ try:
+  with f.open() as fh:first=json.loads(fh.readline())
+  formal[key]='text' in first
+ except (OSError,ValueError):formal[key]=False
+print('WATCH '+json.dumps({'cpu_audit':cpu,'recovery_formal_started':formal,'first_done':(d/'q8-transfer-00.done.json').exists(),'ko_started':(d/'q8-knockout.answers.jsonl').exists(),'ko_done':(d/'q8-knockout.done.json').exists(),'legacy_done':[x.name for x in d.glob('*-replay.done.json')],'recovery_done':[x.name for x in h.glob('*.done.json')],'files':{str(x):{'bytes':x.stat().st_size,'mtime':x.stat().st_mtime} for x in paths},'time':time.time()}))
 """.replace('Path(ROOT)','Path('+repr(ROOT)+')')
    output=remote(code);seen=json.loads(next(x.split(' ',1)[1] for x in output.splitlines() if x.startswith('WATCH ')));state['observed']=seen;save()
    for name,status in state['statuses'].items():
     if any(k in status.lower() for k in ['fail','error','cancel']):notify('failure:'+name+':'+status,name+'出现'+status+'；检查watch-progress-state.json和日志')
+   cpu=seen.get('cpu_audit',{})
+   if cpu.get('done'):notify('post-quota-audit-complete','补跑CPU隔离重判完成，核验ROOT/post-quota-audit-20261019/report.json后继续聚合；不重复生成')
+   elif cpu.get('submitted') and not cpu.get('alive'):notify('post-quota-audit-stopped','补跑CPU审计进程已结束但无完成标记，请查看post-quota-audit-20261019.log；不要盲目重启')
+   formal=seen.get('recovery_formal_started',{})
+   if len(formal)==4 and all(formal.values()):notify('hdd-recovery-all-formally-started','四个HDD续接任务均已有正式回答raw，已实际开始；单独向用户通知该里程碑，不把排队算开始')
    previous=state.get('last_sizes',{});sizes={k:v['bytes'] for k,v in seen['files'].items()};state['last_sizes']=sizes
    if sizes!=previous:state['last_progress_at']=time.time()
    elif state['statuses'] and any(x=='job_running' for x in state['statuses'].values()) and time.time()-state.get('last_progress_at',time.time())>7200:notify('stale:'+str(int(time.time()//7200)),'正式输出整体超过2小时无增长，请核对生成、捕获与平台状态')
