@@ -1,0 +1,2295 @@
+{
+  "source_audit": "post-quota-audit-20261019/report.json",
+  "sources": {
+    "deepseek-theoremqa-corrected54-battery.jsonl": {
+      "file": "deepseek-theoremqa-corrected54-battery.jsonl",
+      "sha256": "c0c66d026af9f30c78e8f18a8ed2f68012ea15aeb024b5a32b32bfcf1ef4484e",
+      "records": 920,
+      "changed_labels": [],
+      "truncated_records": 154
+    },
+    "deepseek-theoremqa-corrected54-battery-l2.jsonl": {
+      "file": "deepseek-theoremqa-corrected54-battery-l2.jsonl",
+      "sha256": "55c63ef1b5944a9054ec4fe17599869bf2fd73ee3b3fcaec158ae5df55806fb1",
+      "records": 920,
+      "changed_labels": [],
+      "truncated_records": 142
+    },
+    "deepseek-theoremqa-corrected54-windows.jsonl": {
+      "file": "deepseek-theoremqa-corrected54-windows.jsonl",
+      "sha256": "0ce421c6b9031a7e90c906ceec5ab62dc7344ba6a7fb7780eb5f147eb2d6f3fc",
+      "records": 594,
+      "changed_labels": [],
+      "truncated_records": 91
+    },
+    "deepseek-theoremqa-corrected54-bridge.jsonl": {
+      "file": "deepseek-theoremqa-corrected54-bridge.jsonl",
+      "sha256": "2fd0cf48cec21c9f3b34f40500e21a4a725c156aed69c2f8ff72f0a8c2607609",
+      "records": 50,
+      "changed_labels": [],
+      "truncated_records": 14
+    },
+    "deepseek-theoremqa-corrected54-repair.jsonl": {
+      "file": "deepseek-theoremqa-corrected54-repair.jsonl",
+      "sha256": "7912e8c0b96551b9b2a8a2a39e192625739af41adeda942827a976aa0e0b8341",
+      "records": 1026,
+      "changed_labels": [],
+      "truncated_records": 148
+    },
+    "legacy-replay-20261019/q06-knockout.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-knockout.answers.jsonl",
+      "sha256": "90d515b73fa145a1b033dc79d47c5f5bdf79d1e77f6fba789c65c7f4883bc732",
+      "records": 3666,
+      "changed_labels": [],
+      "truncated_records": 5
+    },
+    "legacy-replay-20261019/q06-transfer-00.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-transfer-00.answers.jsonl",
+      "sha256": "43850bd74243b722eeda6cac52566251d8b15c41633ee57b6fbe0097159c54c8",
+      "records": 1512,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    "legacy-replay-20261019/q06-transfer-04.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-transfer-04.answers.jsonl",
+      "sha256": "25ee4d714127d25ddab2e49e7df4f89c8955dfc2f4f02c8ea8986c061fcf51a1",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    "legacy-replay-20261019/q06-transfer-08.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-transfer-08.answers.jsonl",
+      "sha256": "4155f7a2a6d0cc6a5e1b6e74e7eaf59f4a15a9956e395c35f9ddd379a31c0923",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    "legacy-replay-20261019/q06-transfer-12.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-transfer-12.answers.jsonl",
+      "sha256": "b5ff4a8c6c694a9eb49bca8ba6d233be31fb5a0fed943f187fc9c18d7a782490",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    "legacy-replay-20261019/q06-transfer-16.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-transfer-16.answers.jsonl",
+      "sha256": "6870fab2158a192e47fe4ad7a8ca432506f3b4d28e621dcc17a89229b2937acd",
+      "records": 1008,
+      "changed_labels": [],
+      "truncated_records": 2
+    },
+    "legacy-replay-20261019/q06-transfer-20.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-transfer-20.answers.jsonl",
+      "sha256": "80b73b8506ec4806e4bebca5adc6fa1375e3ca6a2a2446ec80f0b4314b5245ad",
+      "records": 500,
+      "changed_labels": [],
+      "truncated_records": 0
+    },
+    "legacy-replay-20261019/q06-transfer-24.answers.jsonl": {
+      "file": "legacy-replay-20261019/q06-transfer-24.answers.jsonl",
+      "sha256": "27344b85472f34802bfd6b5c80dbd3d480f3995aa507075cef8d96702c2e2b18",
+      "records": 625,
+      "changed_labels": [],
+      "truncated_records": 0
+    }
+  },
+  "deepseek_suites": [
+    {
+      "suite": "battery",
+      "model": "DeepSeek-LLM-7B-Chat",
+      "task": "TheoremQA",
+      "observed_baseline_items": 54,
+      "eligible_ids": [
+        "theoremqa_00001",
+        "theoremqa_00296",
+        "theoremqa_00588",
+        "theoremqa_00686",
+        "theoremqa_00036",
+        "theoremqa_00526",
+        "theoremqa_00592",
+        "theoremqa_00051",
+        "theoremqa_00062",
+        "theoremqa_00068",
+        "theoremqa_00110",
+        "theoremqa_00112",
+        "theoremqa_00499",
+        "theoremqa_00188",
+        "theoremqa_00208",
+        "theoremqa_00223",
+        "theoremqa_00297",
+        "theoremqa_00474",
+        "theoremqa_00582",
+        "theoremqa_00688",
+        "theoremqa_00065",
+        "theoremqa_00083",
+        "theoremqa_00356",
+        "theoremqa_00368",
+        "theoremqa_00085",
+        "theoremqa_00086",
+        "theoremqa_00137",
+        "theoremqa_00231",
+        "theoremqa_00146",
+        "theoremqa_00723",
+        "theoremqa_00157",
+        "theoremqa_00171",
+        "theoremqa_00175",
+        "theoremqa_00180",
+        "theoremqa_00181",
+        "theoremqa_00220",
+        "theoremqa_00257",
+        "theoremqa_00270",
+        "theoremqa_00299",
+        "theoremqa_00383",
+        "theoremqa_00386",
+        "theoremqa_00391",
+        "theoremqa_00394",
+        "theoremqa_00470",
+        "theoremqa_00513",
+        "theoremqa_00539",
+        "theoremqa_00559",
+        "theoremqa_00568",
+        "theoremqa_00610",
+        "theoremqa_00613",
+        "theoremqa_00653",
+        "theoremqa_00659",
+        "theoremqa_00672",
+        "theoremqa_00714"
+      ],
+      "eligible_n": 54,
+      "eligible_groups": 45,
+      "missing_baselines": [],
+      "missing_observed_grid": [
+        [
+          "theoremqa_00296",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00588",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00686",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00036",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00526",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00592",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00051",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00062",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00068",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00110",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00112",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00499",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00188",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00208",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00223",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00297",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00474",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00582",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00688",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00065",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00083",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00356",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00368",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00085",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00086",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00137",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00231",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00146",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00723",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00171",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00175",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00180",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00181",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00220",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00257",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00270",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00299",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00383",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00386",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00391",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00394",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00470",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00513",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00539",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00559",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00568",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00610",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00613",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00653",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00659",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00672",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00714",
+          "same_family_mean",
+          8
+        ]
+      ],
+      "structurally_unavailable": [
+        [
+          "theoremqa_00296",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00588",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00686",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00036",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00526",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00592",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00051",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00062",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00068",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00110",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00112",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00499",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00188",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00208",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00223",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00297",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00474",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00582",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00688",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00065",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00083",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00356",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00368",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00085",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00086",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00137",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00231",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00146",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00723",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00171",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00175",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00180",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00181",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00220",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00257",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00270",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00299",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00383",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00386",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00391",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00394",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00470",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00513",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00539",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00559",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00568",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00610",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00613",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00653",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00659",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00672",
+          "same_family_mean",
+          8
+        ],
+        [
+          "theoremqa_00714",
+          "same_family_mean",
+          8
+        ]
+      ],
+      "unexpected_missing": [],
+      "identity_failures": [],
+      "estimates": [
+        {
+          "arm": "identity",
+          "layer": 8,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 14
+        },
+        {
+          "arm": "identity",
+          "layer": 16,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 14
+        },
+        {
+          "arm": "last_1",
+          "layer": 8,
+          "n": 54,
+          "correct": 1,
+          "accuracy": 0.018518518518518517,
+          "truncated": 12
+        },
+        {
+          "arm": "last_16",
+          "layer": 8,
+          "n": 54,
+          "correct": 6,
+          "accuracy": 0.1111111111111111,
+          "truncated": 8
+        },
+        {
+          "arm": "matched_prefix",
+          "layer": 8,
+          "n": 54,
+          "correct": 4,
+          "accuracy": 0.07407407407407407,
+          "truncated": 6
+        },
+        {
+          "arm": "noise",
+          "layer": 8,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 9
+        },
+        {
+          "arm": "normrecv",
+          "layer": 8,
+          "n": 54,
+          "correct": 8,
+          "accuracy": 0.14814814814814814,
+          "truncated": 7
+        },
+        {
+          "arm": "other_skill",
+          "layer": 8,
+          "n": 54,
+          "correct": 3,
+          "accuracy": 0.05555555555555555,
+          "truncated": 11
+        },
+        {
+          "arm": "permuted",
+          "layer": 8,
+          "n": 54,
+          "correct": 3,
+          "accuracy": 0.05555555555555555,
+          "truncated": 15
+        },
+        {
+          "arm": "quarter_0",
+          "layer": 8,
+          "n": 54,
+          "correct": 3,
+          "accuracy": 0.05555555555555555,
+          "truncated": 6
+        },
+        {
+          "arm": "quarter_1",
+          "layer": 8,
+          "n": 54,
+          "correct": 2,
+          "accuracy": 0.037037037037037035,
+          "truncated": 8
+        },
+        {
+          "arm": "quarter_2",
+          "layer": 8,
+          "n": 54,
+          "correct": 1,
+          "accuracy": 0.018518518518518517,
+          "truncated": 11
+        },
+        {
+          "arm": "quarter_3",
+          "layer": 8,
+          "n": 54,
+          "correct": 2,
+          "accuracy": 0.037037037037037035,
+          "truncated": 11
+        },
+        {
+          "arm": "real",
+          "layer": 8,
+          "n": 54,
+          "correct": 6,
+          "accuracy": 0.1111111111111111,
+          "truncated": 6
+        },
+        {
+          "arm": "same_family_mean",
+          "layer": 8,
+          "n": 2,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        }
+      ],
+      "scope": "Bridge limited to two candidates; variable donor controls can be structurally unavailable; never impute missing arms."
+    },
+    {
+      "suite": "battery-l2",
+      "model": "DeepSeek-LLM-7B-Chat",
+      "task": "TheoremQA",
+      "observed_baseline_items": 54,
+      "eligible_ids": [
+        "theoremqa_00001",
+        "theoremqa_00296",
+        "theoremqa_00588",
+        "theoremqa_00686",
+        "theoremqa_00036",
+        "theoremqa_00526",
+        "theoremqa_00592",
+        "theoremqa_00051",
+        "theoremqa_00062",
+        "theoremqa_00068",
+        "theoremqa_00110",
+        "theoremqa_00112",
+        "theoremqa_00499",
+        "theoremqa_00188",
+        "theoremqa_00208",
+        "theoremqa_00223",
+        "theoremqa_00297",
+        "theoremqa_00474",
+        "theoremqa_00582",
+        "theoremqa_00688",
+        "theoremqa_00065",
+        "theoremqa_00083",
+        "theoremqa_00356",
+        "theoremqa_00368",
+        "theoremqa_00085",
+        "theoremqa_00086",
+        "theoremqa_00137",
+        "theoremqa_00231",
+        "theoremqa_00146",
+        "theoremqa_00723",
+        "theoremqa_00157",
+        "theoremqa_00171",
+        "theoremqa_00175",
+        "theoremqa_00180",
+        "theoremqa_00181",
+        "theoremqa_00220",
+        "theoremqa_00257",
+        "theoremqa_00270",
+        "theoremqa_00299",
+        "theoremqa_00383",
+        "theoremqa_00386",
+        "theoremqa_00391",
+        "theoremqa_00394",
+        "theoremqa_00470",
+        "theoremqa_00513",
+        "theoremqa_00539",
+        "theoremqa_00559",
+        "theoremqa_00568",
+        "theoremqa_00610",
+        "theoremqa_00613",
+        "theoremqa_00653",
+        "theoremqa_00659",
+        "theoremqa_00672",
+        "theoremqa_00714"
+      ],
+      "eligible_n": 54,
+      "eligible_groups": 45,
+      "missing_baselines": [],
+      "missing_observed_grid": [
+        [
+          "theoremqa_00296",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00588",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00686",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00036",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00526",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00592",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00051",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00062",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00068",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00110",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00112",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00499",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00188",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00208",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00223",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00297",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00474",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00582",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00688",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00065",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00083",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00356",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00368",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00085",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00086",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00137",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00231",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00146",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00723",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00171",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00175",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00180",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00181",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00220",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00257",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00270",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00299",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00383",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00386",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00391",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00394",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00470",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00513",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00539",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00559",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00568",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00610",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00613",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00653",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00659",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00672",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00714",
+          "same_family_mean",
+          2
+        ]
+      ],
+      "structurally_unavailable": [
+        [
+          "theoremqa_00296",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00588",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00686",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00036",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00526",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00592",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00051",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00062",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00068",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00110",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00112",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00499",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00188",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00208",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00223",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00297",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00474",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00582",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00688",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00065",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00083",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00356",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00368",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00085",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00086",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00137",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00231",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00146",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00723",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00171",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00175",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00180",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00181",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00220",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00257",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00270",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00299",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00383",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00386",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00391",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00394",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00470",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00513",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00539",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00559",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00568",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00610",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00613",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00653",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00659",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00672",
+          "same_family_mean",
+          2
+        ],
+        [
+          "theoremqa_00714",
+          "same_family_mean",
+          2
+        ]
+      ],
+      "unexpected_missing": [],
+      "identity_failures": [],
+      "estimates": [
+        {
+          "arm": "identity",
+          "layer": 2,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 14
+        },
+        {
+          "arm": "identity",
+          "layer": 16,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 14
+        },
+        {
+          "arm": "last_1",
+          "layer": 2,
+          "n": 54,
+          "correct": 1,
+          "accuracy": 0.018518518518518517,
+          "truncated": 11
+        },
+        {
+          "arm": "last_16",
+          "layer": 2,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 14
+        },
+        {
+          "arm": "matched_prefix",
+          "layer": 2,
+          "n": 54,
+          "correct": 25,
+          "accuracy": 0.46296296296296297,
+          "truncated": 5
+        },
+        {
+          "arm": "noise",
+          "layer": 2,
+          "n": 54,
+          "correct": 1,
+          "accuracy": 0.018518518518518517,
+          "truncated": 9
+        },
+        {
+          "arm": "normrecv",
+          "layer": 2,
+          "n": 54,
+          "correct": 31,
+          "accuracy": 0.5740740740740741,
+          "truncated": 3
+        },
+        {
+          "arm": "other_skill",
+          "layer": 2,
+          "n": 54,
+          "correct": 7,
+          "accuracy": 0.12962962962962962,
+          "truncated": 8
+        },
+        {
+          "arm": "permuted",
+          "layer": 2,
+          "n": 54,
+          "correct": 1,
+          "accuracy": 0.018518518518518517,
+          "truncated": 18
+        },
+        {
+          "arm": "quarter_0",
+          "layer": 2,
+          "n": 54,
+          "correct": 8,
+          "accuracy": 0.14814814814814814,
+          "truncated": 8
+        },
+        {
+          "arm": "quarter_1",
+          "layer": 2,
+          "n": 54,
+          "correct": 11,
+          "accuracy": 0.2037037037037037,
+          "truncated": 8
+        },
+        {
+          "arm": "quarter_2",
+          "layer": 2,
+          "n": 54,
+          "correct": 8,
+          "accuracy": 0.14814814814814814,
+          "truncated": 6
+        },
+        {
+          "arm": "quarter_3",
+          "layer": 2,
+          "n": 54,
+          "correct": 10,
+          "accuracy": 0.18518518518518517,
+          "truncated": 6
+        },
+        {
+          "arm": "real",
+          "layer": 2,
+          "n": 54,
+          "correct": 31,
+          "accuracy": 0.5740740740740741,
+          "truncated": 2
+        },
+        {
+          "arm": "same_family_mean",
+          "layer": 2,
+          "n": 2,
+          "correct": 1,
+          "accuracy": 0.5,
+          "truncated": 1
+        }
+      ],
+      "scope": "Bridge limited to two candidates; variable donor controls can be structurally unavailable; never impute missing arms."
+    },
+    {
+      "suite": "windows",
+      "model": "DeepSeek-LLM-7B-Chat",
+      "task": "TheoremQA",
+      "observed_baseline_items": 54,
+      "eligible_ids": [
+        "theoremqa_00001",
+        "theoremqa_00296",
+        "theoremqa_00588",
+        "theoremqa_00686",
+        "theoremqa_00036",
+        "theoremqa_00526",
+        "theoremqa_00592",
+        "theoremqa_00051",
+        "theoremqa_00062",
+        "theoremqa_00068",
+        "theoremqa_00110",
+        "theoremqa_00112",
+        "theoremqa_00499",
+        "theoremqa_00188",
+        "theoremqa_00208",
+        "theoremqa_00223",
+        "theoremqa_00297",
+        "theoremqa_00474",
+        "theoremqa_00582",
+        "theoremqa_00688",
+        "theoremqa_00065",
+        "theoremqa_00083",
+        "theoremqa_00356",
+        "theoremqa_00368",
+        "theoremqa_00085",
+        "theoremqa_00086",
+        "theoremqa_00137",
+        "theoremqa_00231",
+        "theoremqa_00146",
+        "theoremqa_00723",
+        "theoremqa_00157",
+        "theoremqa_00171",
+        "theoremqa_00175",
+        "theoremqa_00180",
+        "theoremqa_00181",
+        "theoremqa_00220",
+        "theoremqa_00257",
+        "theoremqa_00270",
+        "theoremqa_00299",
+        "theoremqa_00383",
+        "theoremqa_00386",
+        "theoremqa_00391",
+        "theoremqa_00394",
+        "theoremqa_00470",
+        "theoremqa_00513",
+        "theoremqa_00539",
+        "theoremqa_00559",
+        "theoremqa_00568",
+        "theoremqa_00610",
+        "theoremqa_00613",
+        "theoremqa_00653",
+        "theoremqa_00659",
+        "theoremqa_00672",
+        "theoremqa_00714"
+      ],
+      "eligible_n": 54,
+      "eligible_groups": 45,
+      "missing_baselines": [],
+      "missing_observed_grid": [],
+      "structurally_unavailable": [],
+      "unexpected_missing": [],
+      "identity_failures": [],
+      "estimates": [
+        {
+          "arm": "identity",
+          "layer": 8,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 14
+        },
+        {
+          "arm": "identity",
+          "layer": 16,
+          "n": 54,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 14
+        },
+        {
+          "arm": "single",
+          "layer": 16,
+          "n": 54,
+          "correct": 1,
+          "accuracy": 0.018518518518518517,
+          "truncated": 10
+        },
+        {
+          "arm": "window_0_29",
+          "layer": 0,
+          "n": 54,
+          "correct": 38,
+          "accuracy": 0.7037037037037037,
+          "truncated": 2
+        },
+        {
+          "arm": "window_12_15",
+          "layer": 12,
+          "n": 54,
+          "correct": 2,
+          "accuracy": 0.037037037037037035,
+          "truncated": 7
+        },
+        {
+          "arm": "window_14_19",
+          "layer": 14,
+          "n": 54,
+          "correct": 2,
+          "accuracy": 0.037037037037037035,
+          "truncated": 13
+        },
+        {
+          "arm": "window_16_29",
+          "layer": 16,
+          "n": 54,
+          "correct": 1,
+          "accuracy": 0.018518518518518517,
+          "truncated": 10
+        },
+        {
+          "arm": "window_8_11",
+          "layer": 8,
+          "n": 54,
+          "correct": 6,
+          "accuracy": 0.1111111111111111,
+          "truncated": 6
+        }
+      ],
+      "scope": "Bridge limited to two candidates; variable donor controls can be structurally unavailable; never impute missing arms."
+    },
+    {
+      "suite": "bridge",
+      "model": "DeepSeek-LLM-7B-Chat",
+      "task": "TheoremQA",
+      "observed_baseline_items": 2,
+      "eligible_ids": [
+        "theoremqa_00001"
+      ],
+      "eligible_n": 1,
+      "eligible_groups": 1,
+      "missing_baselines": [],
+      "missing_observed_grid": [],
+      "structurally_unavailable": [],
+      "unexpected_missing": [],
+      "identity_failures": [],
+      "estimates": [
+        {
+          "arm": "S_full",
+          "layer": 8,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "S_full",
+          "layer": 12,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "S_full",
+          "layer": 16,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "S_full",
+          "layer": 24,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "S_split",
+          "layer": 8,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "S_split",
+          "layer": 12,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "S_split",
+          "layer": 16,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "S_split",
+          "layer": 24,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "identity_SC",
+          "layer": 8,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "identity_SC",
+          "layer": 12,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "identity_SC",
+          "layer": 16,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "identity_SC",
+          "layer": 24,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "identity_S_full",
+          "layer": 8,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "identity_S_full",
+          "layer": 12,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "identity_S_full",
+          "layer": 16,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "identity_S_full",
+          "layer": 24,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 0
+        },
+        {
+          "arm": "identity_S_split",
+          "layer": 8,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "identity_S_split",
+          "layer": 12,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "identity_S_split",
+          "layer": 16,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        },
+        {
+          "arm": "identity_S_split",
+          "layer": 24,
+          "n": 1,
+          "correct": 0,
+          "accuracy": 0.0,
+          "truncated": 1
+        }
+      ],
+      "scope": "Bridge limited to two candidates; variable donor controls can be structurally unavailable; never impute missing arms."
+    },
+    {
+      "suite": "repair",
+      "model": "DeepSeek-LLM-7B-Chat",
+      "task": "TheoremQA",
+      "observed_baseline_items": 54,
+      "eligible_ids": [
+        "theoremqa_00001",
+        "theoremqa_00588",
+        "theoremqa_00036",
+        "theoremqa_00526",
+        "theoremqa_00592",
+        "theoremqa_00051",
+        "theoremqa_00062",
+        "theoremqa_00068",
+        "theoremqa_00110",
+        "theoremqa_00112",
+        "theoremqa_00499",
+        "theoremqa_00188",
+        "theoremqa_00208",
+        "theoremqa_00223",
+        "theoremqa_00297",
+        "theoremqa_00474",
+        "theoremqa_00582",
+        "theoremqa_00688",
+        "theoremqa_00065",
+        "theoremqa_00083",
+        "theoremqa_00356",
+        "theoremqa_00368",
+        "theoremqa_00085",
+        "theoremqa_00086",
+        "theoremqa_00137",
+        "theoremqa_00231",
+        "theoremqa_00723",
+        "theoremqa_00157",
+        "theoremqa_00171",
+        "theoremqa_00175",
+        "theoremqa_00180",
+        "theoremqa_00270",
+        "theoremqa_00299",
+        "theoremqa_00383",
+        "theoremqa_00386",
+        "theoremqa_00391",
+        "theoremqa_00394",
+        "theoremqa_00513",
+        "theoremqa_00539",
+        "theoremqa_00559",
+        "theoremqa_00568",
+        "theoremqa_00610",
+        "theoremqa_00613",
+        "theoremqa_00659",
+        "theoremqa_00672",
+        "theoremqa_00714"
+      ],
+      "eligible_n": 46,
+      "eligible_groups": 40,
+      "missing_baselines": [],
+      "missing_observed_grid": [],
+      "structurally_unavailable": [],
+      "unexpected_missing": [],
+      "identity_failures": [],
+      "estimates": [
+        {
+          "arm": "C",
+          "layer": 8,
+          "n": 46,
+          "correct": 2,
+          "accuracy": 0.043478260869565216,
+          "truncated": 8
+        },
+        {
+          "arm": "C",
+          "layer": 12,
+          "n": 46,
+          "correct": 1,
+          "accuracy": 0.021739130434782608,
+          "truncated": 6
+        },
+        {
+          "arm": "C",
+          "layer": 16,
+          "n": 46,
+          "correct": 3,
+          "accuracy": 0.06521739130434782,
+          "truncated": 7
+        },
+        {
+          "arm": "C",
+          "layer": 24,
+          "n": 46,
+          "correct": 5,
+          "accuracy": 0.10869565217391304,
+          "truncated": 8
+        },
+        {
+          "arm": "S",
+          "layer": 8,
+          "n": 46,
+          "correct": 10,
+          "accuracy": 0.21739130434782608,
+          "truncated": 5
+        },
+        {
+          "arm": "S",
+          "layer": 12,
+          "n": 46,
+          "correct": 2,
+          "accuracy": 0.043478260869565216,
+          "truncated": 10
+        },
+        {
+          "arm": "S",
+          "layer": 16,
+          "n": 46,
+          "correct": 1,
+          "accuracy": 0.021739130434782608,
+          "truncated": 13
+        },
+        {
+          "arm": "S",
+          "layer": 24,
+          "n": 46,
+          "correct": 1,
+          "accuracy": 0.021739130434782608,
+          "truncated": 9
+        },
+        {
+          "arm": "SC",
+          "layer": 8,
+          "n": 46,
+          "correct": 12,
+          "accuracy": 0.2608695652173913,
+          "truncated": 8
+        },
+        {
+          "arm": "SC",
+          "layer": 12,
+          "n": 46,
+          "correct": 5,
+          "accuracy": 0.10869565217391304,
+          "truncated": 6
+        },
+        {
+          "arm": "SC",
+          "layer": 16,
+          "n": 46,
+          "correct": 5,
+          "accuracy": 0.10869565217391304,
+          "truncated": 4
+        },
+        {
+          "arm": "SC",
+          "layer": 24,
+          "n": 46,
+          "correct": 5,
+          "accuracy": 0.10869565217391304,
+          "truncated": 4
+        },
+        {
+          "arm": "SC_recut",
+          "layer": 8,
+          "n": 46,
+          "correct": 4,
+          "accuracy": 0.08695652173913043,
+          "truncated": 4
+        },
+        {
+          "arm": "SC_recut",
+          "layer": 12,
+          "n": 46,
+          "correct": 2,
+          "accuracy": 0.043478260869565216,
+          "truncated": 7
+        },
+        {
+          "arm": "SC_recut",
+          "layer": 16,
+          "n": 46,
+          "correct": 4,
+          "accuracy": 0.08695652173913043,
+          "truncated": 7
+        },
+        {
+          "arm": "SC_recut",
+          "layer": 24,
+          "n": 46,
+          "correct": 5,
+          "accuracy": 0.10869565217391304,
+          "truncated": 4
+        }
+      ],
+      "scope": "Bridge limited to two candidates; variable donor controls can be structurally unavailable; never impute missing arms."
+    }
+  ],
+  "legacy_q06": {
+    "model": "Qwen3-0.6B",
+    "task": "TheoremQA",
+    "candidate_n": 168,
+    "transfer_eligible_n": 125,
+    "common_n": 122,
+    "common_groups": 92,
+    "ids": [
+      "theoremqa_00001",
+      "theoremqa_00015",
+      "theoremqa_00025",
+      "theoremqa_00028",
+      "theoremqa_00034",
+      "theoremqa_00044",
+      "theoremqa_00051",
+      "theoremqa_00053",
+      "theoremqa_00062",
+      "theoremqa_00065",
+      "theoremqa_00078",
+      "theoremqa_00083",
+      "theoremqa_00085",
+      "theoremqa_00087",
+      "theoremqa_00091",
+      "theoremqa_00094",
+      "theoremqa_00100",
+      "theoremqa_00102",
+      "theoremqa_00104",
+      "theoremqa_00105",
+      "theoremqa_00112",
+      "theoremqa_00125",
+      "theoremqa_00135",
+      "theoremqa_00136",
+      "theoremqa_00139",
+      "theoremqa_00148",
+      "theoremqa_00150",
+      "theoremqa_00157",
+      "theoremqa_00159",
+      "theoremqa_00173",
+      "theoremqa_00180",
+      "theoremqa_00181",
+      "theoremqa_00191",
+      "theoremqa_00193",
+      "theoremqa_00208",
+      "theoremqa_00215",
+      "theoremqa_00219",
+      "theoremqa_00231",
+      "theoremqa_00235",
+      "theoremqa_00242",
+      "theoremqa_00251",
+      "theoremqa_00259",
+      "theoremqa_00268",
+      "theoremqa_00270",
+      "theoremqa_00273",
+      "theoremqa_00279",
+      "theoremqa_00296",
+      "theoremqa_00297",
+      "theoremqa_00309",
+      "theoremqa_00311",
+      "theoremqa_00313",
+      "theoremqa_00321",
+      "theoremqa_00326",
+      "theoremqa_00335",
+      "theoremqa_00341",
+      "theoremqa_00351",
+      "theoremqa_00356",
+      "theoremqa_00364",
+      "theoremqa_00366",
+      "theoremqa_00368",
+      "theoremqa_00386",
+      "theoremqa_00388",
+      "theoremqa_00391",
+      "theoremqa_00393",
+      "theoremqa_00411",
+      "theoremqa_00417",
+      "theoremqa_00422",
+      "theoremqa_00426",
+      "theoremqa_00438",
+      "theoremqa_00442",
+      "theoremqa_00445",
+      "theoremqa_00448",
+      "theoremqa_00451",
+      "theoremqa_00454",
+      "theoremqa_00457",
+      "theoremqa_00474",
+      "theoremqa_00475",
+      "theoremqa_00478",
+      "theoremqa_00480",
+      "theoremqa_00481",
+      "theoremqa_00484",
+      "theoremqa_00493",
+      "theoremqa_00499",
+      "theoremqa_00513",
+      "theoremqa_00514",
+      "theoremqa_00515",
+      "theoremqa_00520",
+      "theoremqa_00526",
+      "theoremqa_00530",
+      "theoremqa_00534",
+      "theoremqa_00539",
+      "theoremqa_00543",
+      "theoremqa_00556",
+      "theoremqa_00568",
+      "theoremqa_00569",
+      "theoremqa_00573",
+      "theoremqa_00580",
+      "theoremqa_00582",
+      "theoremqa_00585",
+      "theoremqa_00592",
+      "theoremqa_00594",
+      "theoremqa_00609",
+      "theoremqa_00613",
+      "theoremqa_00634",
+      "theoremqa_00639",
+      "theoremqa_00644",
+      "theoremqa_00646",
+      "theoremqa_00649",
+      "theoremqa_00653",
+      "theoremqa_00656",
+      "theoremqa_00659",
+      "theoremqa_00672",
+      "theoremqa_00686",
+      "theoremqa_00688",
+      "theoremqa_00692",
+      "theoremqa_00717",
+      "theoremqa_00720",
+      "theoremqa_00721",
+      "theoremqa_00723",
+      "theoremqa_00726",
+      "theoremqa_00737",
+      "theoremqa_00738"
+    ],
+    "raw_mapping_records": 10335,
+    "identity_failures": [],
+    "missing": [],
+    "transfer": [
+      0.9590163934426229,
+      0.9262295081967213,
+      0.9016393442622951,
+      0.860655737704918,
+      0.860655737704918,
+      0.8770491803278688,
+      0.7377049180327869,
+      0.7295081967213115,
+      0.6721311475409836,
+      0.639344262295082,
+      0.6229508196721312,
+      0.39344262295081966,
+      0.30327868852459017,
+      0.319672131147541,
+      0.29508196721311475,
+      0.2786885245901639,
+      0.27049180327868855,
+      0.1885245901639344,
+      0.21311475409836064,
+      0.13934426229508196,
+      0.11475409836065574,
+      0.04918032786885246,
+      0.05737704918032787,
+      0.05737704918032787,
+      0.02459016393442623,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "retention": [
+      0.09836065573770492,
+      0.10655737704918032,
+      0.09836065573770492,
+      0.09016393442622951,
+      0.09016393442622951,
+      0.05737704918032787,
+      0.05737704918032787,
+      0.14754098360655737,
+      0.1557377049180328,
+      0.12295081967213115,
+      0.12295081967213115,
+      0.10655737704918032,
+      0.18032786885245902,
+      0.1557377049180328,
+      0.18032786885245902,
+      0.19672131147540983,
+      0.26229508196721313,
+      0.23770491803278687,
+      0.3360655737704918,
+      0.319672131147541,
+      0.5327868852459017,
+      0.6639344262295082,
+      0.8524590163934426,
+      0.8770491803278688,
+      0.8934426229508197,
+      0.9590163934426229,
+      0.9672131147540983,
+      0.9918032786885246
+    ],
+    "transfer_boundary": 11,
+    "reading_boundary": 20,
+    "truncated": {
+      "transfer": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "knockout": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "scope": "Regeneration on frozen 168 candidates, not recovery of missing historical text; knockout budget 900 has historical-budget caveat. Full raw and narrow mapping verified; all layers and available self identities checked."
+  },
+  "raw_retained": true,
+  "paper_updated": false
+}

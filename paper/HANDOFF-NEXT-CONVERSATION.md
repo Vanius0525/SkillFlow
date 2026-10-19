@@ -1,3 +1,12 @@
+## 2026-10-19 最新指令：只排4090，5分钟监督，完成后同步论文
+
+- 用户取消H卡方案。此前仅阅读help/平台文档，**没有提交H100/H200任务或创建H卡实例**；parallel-plan和launch-state无H卡项，不新增第二套GPU队列。现有四个HDD续接任务均为4090单卡Job，合计最多4卡，仍服从8卡总上限。
+- 最新live仍4个job_queuing，表示平台待分配GPU，不是已占卡后的内部实验顺序。保留排队位置，不重提，不修改900/1536预算或attention实现。正式开始以可解析回答text写入为准。
+- 轻量监督现改为**每5分钟**：现有family-depth-watch-01a15016.timer的用户drop-in ~/.config/systemd/user/family-depth-watch-01a15016.timer.d/interval.conf，daemon-reload/restart通过，ActiveState=active，TimersMonotonic=OnUnitActiveUSec=5min。原5小时完整检查保留。watch新增各任务首次正式raw、全部正式开始和各done出现的去重queue通知；不把排队当开始，依赖WSL/Codex在线及原expiry，到TASK-COMPLETE停止。
+- CPU审计后聚合已实际完成，原始JSONL和报告SHA逐文件绑定、13,845条独立评分0变化。aggregate_completed_supplements.py进一步核对Qwen0.6宽表与raw共10,335条生成条件映射、历史prompt/span、所有28层及可用self-token身份一致。冻结168候选，transfer独立基线eligible125，交集122题/92skills，T/R=11/20。该交集不等于旧主图125，不沿用旧分母；900-token KO历史预算差异仍需说明。
+- DeepSeek corrected54 battery/L2/windows独立基线均54题/45groups，repair按1536/split-prefill基线为46题/40groups，不能借用Figure3的54作机制分母。bridge仅2候选中1eligible，不当完整机制样本。identity failures均0；battery和L2各52个缺格均same_family_mean，须按固定可用donor池确认结构不可用后归类，不盲目补。windows/repair有效样本的观测网格无缺失。
+- 小产物experiments/family_depth_20261018/aggregated-post-quota-20261019.json已取回。新核验结果本轮先落盘，尚不修改论文数值；等4090剩余任务完成、最终完整性/基线/身份/截断审计后，先olcli完整diff纳入云端修改，再更新正文及相关图表、独立编译、同步Overleaf/GitHub，不再导出桌面。反例继续仅保留研究记录。TASK-COMPLETE尚不创建。
+
 ## 2026-10-19 已按授权删除Qwen14B，继续补跑与独立审计
 
 - 用户明确授权先删除Qwen3-14B内容。已删除准确目录/inspire/ssd/project/project-public/czxs253130660/models/Qwen3-14B（29个文件，7,599,691,435逻辑字节/7,599,721,984分配字节，约7.08GiB），包括旧未完成下载和少量配置；目录不存在已验证。未删除Mistral consolidated或任何其他数据。删除前文件清单与完成证据audit/QWEN14B-CLEANUP-20261019.json，远端HDD也保存qwen14b-deletion-audit.json。此前提议中的Mistral清理仍未获授权。

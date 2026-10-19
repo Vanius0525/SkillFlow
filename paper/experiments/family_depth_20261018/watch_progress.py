@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded 30-minute supervision; notify on faults, launch one ready KO job."""
+"""Bounded 5-minute supervision; notify on faults, launch one ready KO job."""
 import datetime as dt,fcntl,json,shlex,subprocess,sys,time
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
@@ -59,6 +59,10 @@ print('WATCH '+json.dumps({'cpu_audit':cpu,'recovery_formal_started':formal,'fir
    if cpu.get('done'):notify('post-quota-audit-complete','补跑CPU隔离重判完成，核验ROOT/post-quota-audit-20261019/report.json后继续聚合；不重复生成')
    elif cpu.get('submitted') and not cpu.get('alive'):notify('post-quota-audit-stopped','补跑CPU审计进程已结束但无完成标记，请查看post-quota-audit-20261019.log；不要盲目重启')
    formal=seen.get('recovery_formal_started',{})
+   for key,started in formal.items():
+    if started:notify('hdd-formal-start:'+key,key+'续接已有可解析正式回答，已实际开始；单独通知用户')
+   for name in seen.get('recovery_done',[]):
+    notify('hdd-completed:'+name,'续接完成标记'+name+'已出现；核验网格、原始哈希和评分后继续聚合，不据done直接改论文')
    if len(formal)==4 and all(formal.values()):notify('hdd-recovery-all-formally-started','四个HDD续接任务均已有正式回答raw，已实际开始；单独向用户通知该里程碑，不把排队算开始')
    previous=state.get('last_sizes',{});sizes={k:v['bytes'] for k,v in seen['files'].items()};state['last_sizes']=sizes
    if sizes!=previous:state['last_progress_at']=time.time()
