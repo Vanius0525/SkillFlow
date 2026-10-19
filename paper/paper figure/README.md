@@ -1,7 +1,7 @@
 # 最新版 paper figure
 
 本目录对应截图要求的四图三表稿，基线为三图三表版141c8fb。
-Figure 1为结果teaser，Figure 2为详细干预设计，Figure 3为六组深度实验，Figure 4为源状态/缓存恢复及读取路径结果。重复注入保留在正文文字和附录，不作为主图。
+Figure 1为结果teaser，Figure 2为详细干预设计，Figure 3为五模型、四家族的七组已核验深度比较，Figure 4为源状态/缓存恢复及读取路径结果。重复注入保留在正文文字和附录，不作为主图。
 
 ## 文件使用
 
@@ -44,4 +44,4 @@ MPLCONFIGDIR=/tmp/paper-mpl python3 source/tools/fig_mechanism_results.py
 
 快照脚本输出至`source/figures/`，不覆盖本目录已交付的`figures/`。
 从完整仓库刷新本目录：`python3 tools/export_figure_bundle.py`。
-数据均来自既有完成实验；本轮不新增推理。详细核验见仓库audit/FOUR-FIGURE-STORY-20261017.json。
+深度扩展使用已完成并通过隔离评分审计的四组新增家族结果；旧三模型TheoremQA正在重生成，未纳入当前七组图。其他跨模型控制和机制实验继续，待审计后更新。见reports/阶段交付与待补清单_20261019.md与audit/VERIFIED-DEPTH-EXTENSION-20261019.json。

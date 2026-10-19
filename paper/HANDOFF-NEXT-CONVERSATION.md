@@ -1,3 +1,50 @@
+# 2026-10-19 当前交付与续接入口（覆盖下面历史）
+
+用户最新要求：先将已核验结果更新论文并同步桌面/Overleaf ZIP/GitHub，未完成项记下来继续；新发现机制反例先留研究记录不入稿。整项实验仍未完成，五小时timer保持，勿创建TASK-COMPLETE。
+
+当前稿为五模型/四家族七组已核验深度比较，Figure3/Table2及摘要/方法/结论已同步。原三模型MedCalc＋Llama/DeepSeek两任务；旧三模型TheoremQA在原协议重生成/隔离评分完成前不入当前图表。Figure4/Table1/Table3仍focused Qwen3-8B/MedCalc，其他已跑结果需统一审计后下一版整合。候选池偏差和25题DeepSeek/MedCalc范围已写入稿件。
+
+先读HANDOFF.md顶部、reports/阶段交付与待补清单_20261019.md及experiments/family_depth_20261018/README.md、parallel-plan.json/launch-state.json。总71任务中原64全完成，后7为DeepSeek/TQA corrected54四项与旧三模型TQA重生成三项；新任务最多7卡。最近Qwen8/Qwen0.6已正式生成并保存text/token_ids、prompt/span对齐通过，Mistral排队；不得据job_running/旧里程碑宣称全开始，勿重复提交。
+
+交付目标桌面StillNeeded-WWW2027-v8-VerifiedDepth-20261019，精确ZIP独立编译已通过（正文7/全文10页），正在最后同步与commit/push，先查audit/DESKTOP-VERIFIED-DEPTH-20261019.json确认是否已完成。本阶段用户已明确授权commit/push master，无须等所有后台实验完成；仅提交本次相关paper文件，不带旧DATA-CONSISTENCY修改、env或大实验产物，不碰../howskill/data/cells.json.tmp。
+
+# 下一对话续接入口（2026-10-19）
+
+## 先做什么
+
+继续当前已授权跨家族论文补跑与最终交付；先读HANDOFF.md顶部、experiments/family_depth_20261018/README.md、deployment.json、parallel-plan.json、launch-state.json，live核验后再操作，不依历史进度重复启动。最多8张单卡4090。用户已批准约30GB模型下载，现已完成，不需再下载。旧四个无-s整池已停止，勿恢复/混用。不要碰../howskill/data/cells.json.tmp。
+
+## 当前已核验进度
+
+- 计划已增至64个GPU任务，最近live 59完成、5未完成：Qwen8/MedCalc L2 battery，Mistral/TheoremQA repair，Qwen0.6/MedCalc bundle，以及两个DeepSeek/TheoremQA scorefix深度分片。各未完成单元已有正式生成记录；两个scorefix分片最近22/24行，已单独通知全部正式开始。仍须live核验是否已完成。
+- 原Figure3八深度分片全done，完整网格/身份控制审计通过；MedCalc：Llama112题/20组T/R7/18，DeepSeek25题/13组6/21。DeepSeek样本小，不外推benchmark。
+- **评分污染已修复验证，不能直接沿用原correct。** latex2sympy2.var会被某题解析从dict变为Symbol，后续TypeError触发official eval回退、False被当0。最小复现parser-state-minimal-20261018.json。独立regrade_isolated.py每题恢复解析器初始globals，42927条/22468唯一输出，逆序全通过、16 fresh subprocess一致，359标签变化。报告isolated-grading-report-20261019.json，远端overlay目录isolated-grading-20261019/；保留原始JSONL，不覆写。
+- Llama/TQA修复后仍92题/71组，T/R6/18。DeepSeek/TQA由51变54题/45组，新增00296/00474/00513/00588/00686，移除00320/00321；新增5题缺全层，supplement_depth.py按冻结完整候选池screen补跑两个整skill分片，勿在5题小池重新screen。jobs wt-f3-deepseek-theoremqa-scorefix-s0-1019和s1。
+- **还没做完的关键工作**：旧三模型TheoremQA Figure3原始输出也需隔离重判；全部正文suite重建各自protocol下baseline与eligible；必要补齐内容/位置/跨题、重复窗口、bridge/repair/edges。新增5题不能只补depth就结束。核验截断、context预排除、无donor/空样本，并如实报告反例。
+
+## 资源与恢复
+
+远端root=/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1；CPU wt-family-prep-1018，CPU资源空间，23h时限，已在本轮重启并refresh连接。模型在同个人SSD的models，venv在venvs/whitebox/bin/python。GPU workspace可上网GPU资源，project公共科研项目，group4090-2-cuda12.8，quota1,10,100，image ngc-pytorch:25.02-cuda12.8.0-py3。只用inspire skill并以--help为准。
+
+协调器family-depth-launch-01a14a9e.service：已重启用于两个补跑，可能在全部开始后正常退出；先查state/job，不重复提交。launch_when_ready.py最多8卡，20h bounded；原all_started_notification_queued属于旧计划，后续新增单元必须另live核验。五小时timer family-depth-progress-01a14a9e.timer保持，本机WSL/Codex需在线；完成全部实验、论文、交付与push后才创建paper/TASK-COMPLETE停timer。无无限重试。
+
+小结果快照retrieved/snapshot-20261019，263文件，tar26,080,882bytes，sha256 ebcf73efce9c428a156d251d8114993b444b84283d375c935d576a994826f58d。provisional-depth-stored-labels-20261019.json仅结构审计，TheoremQA不能当最终结果。
+
+## 论文展示与交付约束
+
+- 当前已核验稿仍是旧三模型结果；新家族数值未正式入稿。当前版本另存桌面v7，详见audit/DESKTOP-HANDOFF-20261019.json，保留所有旧交付。
+- 图1/3橙线统一d=1-q，蓝线rho；R=d首次≤.5。阴影只表示首次边界间隔，保留重新越阈，不称稳定阶段。Figure3当前仅两主线，共同样本检查在Table2/正文；新家族整合须解释人群。所有图表及正文不展示/讨论CI或置信度，Table2亦已取消，勿按旧timer模板恢复例外。原始统计保留。
+- 主图统一Linux Libertine O，表格使用正文衬线字体、白底三线表。Fig4左数值热力图、右分组路径损失点图，不恢复旧棒棒糖布局。
+- 重复注入已降为一致性检查：468/468与同起点单写token一致，完整source因果前缀下后续写入冗余，不能独立支持维持失败机制。SC/recut要独立验证，注意L24没有L16同样的recut损失。
+- Intro仅首段对齐Semantics and Knowledge机器可读skill/tool描述，后续实验不为track改写。参考reports/图表审阅与改进建议_20261018.md与reports/ProblemFormulation与图文核查_20261019.md。
+- 查清评分/筛选/实现问题后更新正文；不能为符合旧结论挑样本/层/指标，真实反例须限定结论。完成后向用户报告修复、结果和影响。
+- 用build.sh编译唯一投稿版；make_overleaf_zip.py生成精确包，export_review.py独立编译ZIP；export_figure_bundle.py+compile_figure_bundle.py更新合集。核验数值、字体、字号、碰撞、页数、引用与截断，再同步新桌面版本及图表目录。
+- 旧check_main_data.py有过时teaserfigure结构断言，不得声称全脚本通过；numeric-only或适配审计须说明。旧values/DATA-CONSISTENCY-20260918.json已有改动，不误提交。
+- 整体任务最终只提交本次相关文件并push master，不建PR，不force；当前未完成实验不要打包大结果/权重/凭据。此前其他对话已提交的稿件改动勿重做。
+
+---
+以下为历史交接，若冲突以上述入口与HANDOFF.md最新记录为准。
+
 ## 2026-10-19 图表美化完成验证
 
 - 四图字体均为LinLibertine常规/粗体/斜体，表格统一9pt及1.22行距、白底；Figure3只保留rho/d主曲线；Figure4为数值热力图＋横向分层点图。后续更新沿用当前集中字体配置和显示规则。

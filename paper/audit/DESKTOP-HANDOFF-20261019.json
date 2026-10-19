@@ -1,0 +1,15 @@
+{
+  "export": "/mnt/c/Users/12970/Desktop/StillNeeded-WWW2027-v7-Handoff-20261019",
+  "time": "2026-10-19T01:34:35.069757+08:00",
+  "title": "Still Needed, Hard to Transfer: Using and Reusing Contextual Skills",
+  "zip_sha256": "1f12b4938b2137c8eca539a909545b70aefc2e7401c45b712056fb043eb38a6f",
+  "zip_entries": 17,
+  "main_pages": 7,
+  "total_pages": 9,
+  "overfull_hbox": 0,
+  "overfull_vbox": 0,
+  "compile_stage": "/mnt/c/Users/12970/Desktop/WWW2027/build-overleaf.91g50ipt",
+  "scope": "Qwen3-8B + MedCalc for all new mechanism experiments",
+  "mechanism_results_pending": false,
+  "mechanism_figure_pages": []
+}

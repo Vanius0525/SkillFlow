@@ -1,0 +1,77 @@
+{
+  "scope": "intermediate verified-depth delivery requested by user; continuing experiments",
+  "comparisons": 7,
+  "models": 5,
+  "families": 4,
+  "panels": [
+    {
+      "model": "Qwen3-8B",
+      "task": "MedCalc",
+      "n": 134,
+      "groups": 14,
+      "T": 13,
+      "R": 25
+    },
+    {
+      "model": "Qwen3-0.6B",
+      "task": "MedCalc",
+      "n": 90,
+      "groups": 21,
+      "T": 11,
+      "R": 22
+    },
+    {
+      "model": "Mistral-7B",
+      "task": "MedCalc",
+      "n": 46,
+      "groups": 16,
+      "T": 7,
+      "R": 27
+    },
+    {
+      "model": "Llama-3.1-8B",
+      "task": "MedCalc",
+      "n": 112,
+      "groups": 20,
+      "T": 7,
+      "R": 18
+    },
+    {
+      "model": "DeepSeek-LLM-7B",
+      "task": "MedCalc",
+      "n": 25,
+      "groups": 13,
+      "T": 6,
+      "R": 21
+    },
+    {
+      "model": "Llama-3.1-8B",
+      "task": "TheoremQA",
+      "n": 92,
+      "groups": 71,
+      "T": 6,
+      "R": 18
+    },
+    {
+      "model": "DeepSeek-LLM-7B",
+      "task": "TheoremQA",
+      "n": 54,
+      "groups": 45,
+      "T": 4,
+      "R": 19
+    }
+  ],
+  "historical_numeric_inputs_unchanged": [
+    "values/depth-crossmodel-values.json",
+    "figures/fig-mechanism-repair.json",
+    "figures/fig-mechanism-edges.json"
+  ],
+  "pending_legacy_theoremqa_not_displayed": true,
+  "new_counterexample_not_in_manuscript": true,
+  "mechanism_scope": "Qwen3-8B/MedCalc only",
+  "sha256": {
+    "values/depth-verified-extension-20261019.json": "6678ecae6fc67bd86d35492efce47f0e2e542f6072f1d4e9164622af4b8bc1e5",
+    "tables/tab-paired-depth.tex": "bceada2f6b35619874e7d726908ff6e72abdcf560fc1886a40c9312dd38b7aaf",
+    "figures/fig-transfer-reading.pdf": "f85a914af8364a9101df27bc944ea5262f825716ca69a0a78b5bd418df28b764"
+  }
+}

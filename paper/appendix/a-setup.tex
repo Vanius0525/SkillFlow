@@ -30,6 +30,12 @@ restrictive screen that excludes only individually solved receiver items.
 The main models are Qwen3-8B ($36$ layers, hidden width $4096$),
 Qwen3-0.6B ($28$ layers, width $1024$), and
 Mistral-7B-Instruct-v0.3 ($32$ layers, width $4096$).
+The depth extension adds Llama-3.1-8B-Instruct ($32$ layers) and
+DeepSeek-LLM-7B-Chat ($30$ layers). Their full-prompt state capture and
+knockout both use BF16, eager attention and $900$ new tokens, without
+quantization. For DeepSeek, system instructions are merged into the user
+turn. The Llama weights, configuration and vocabulary match the original
+release; the public distribution supplies its tokenizer template.
 For Mistral, which has no system role in its chat template, system
 instructions are merged into the user turn. We use greedy decoding.
 Qwen thinking mode is disabled and checked on the rendered prompt.
@@ -79,8 +85,11 @@ with at least two, giving $467$ items from $48$ calculators.
 The main receiver screen then retains $135$ questions from $14$ calculators.
 Historical development results retain their original sample labels.
 Table~\ref{tab:fullscale} shows the corrected rerun alongside the earlier
-screened subset. Main depth comparisons cover all six model--task
-combinations, with common-item checks for their two intervention types.
+screened subset. Main depth comparisons cover seven verified model--task
+comparisons spanning five models and four families, with common eligible
+items for their two intervention types. The new-family candidate pools
+inherit the earlier models' selection, so their results are conditional
+rather than full-benchmark estimates.
 
 \paragraph{Scientific scope.}
 The experiments characterize supplied skill instructions under fixed

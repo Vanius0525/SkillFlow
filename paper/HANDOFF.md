@@ -1,3 +1,81 @@
+## 2026-10-19 v8阶段交付编译与桌面同步通过，提交检查点
+
+- 用户要求立即阶段交付已落实论文更新。export_review.py实际ZIP独立编译通过：正文7/全文10页，0error/undefined/hbox，1个尾页2.124pt vbox（目视无越界）。桌面新目录StillNeeded-WWW2027-v8-VerifiedDepth-20261019已创建；上传包17项，SHA256 ac49abd63ee5d479b334fa8074aa23b374b6931693a643219c4608d6ea0b29e1。audit/DESKTOP-VERIFIED-DEPTH-20261019.json。
+- 图表合集9页，4图4表，0error/undefined/hbox。Figure3与Table2 PDF页面均目视核验，14条曲线与7边界数值审计通过，原数值JSON未改。新PDF使用精确ZIP编译产物为权威交付。
+- 合集/交接/待补清单已同步桌面，PDF与实际ZIP逐字节一致检查通过。本次按用户授权commit/push相关paper文件，明确排除旧values/DATA-CONSISTENCY-20260918.json、整个未完成实验大目录和../howskill/data/cells.json.tmp。本阶段交付完成不代表研究任务完成，不建TASK-COMPLETE，不停timer。
+- 下阶段继续7个已提交补跑的live核验与审计，再更新其他跨模型控制/机制矩阵。固定99题长度敏感性尚未提交；代码、来源、配对观察与论文调研已落盘experiments/family_depth_20261018/RESEARCH-RECUT-20261019.md。用户要求反例不进当前paper，研究记录保留；不得把当前single-setting机制结论写成全模型全深度结论。
+
+## 2026-10-19 用户要求先交付已核验论文、继续后台补跑
+
+- 最新指令覆盖整项完成后才提交的时机：现在把已核验结果先更新paper，编译Overleaf包、同步新桌面版本并push GitHub；其余补充记下来继续。本轮不是实验全部完成，不创建TASK-COMPLETE，不停5h timer。新反例只保留研究记录，暂不进稿；稿件机制范围仍Qwen3-8B/MedCalc，不作全模型全深度机制断言。
+- 当前稿Figure3/Table2改为7个已核验共同样本比较：原3个MedCalc＋新增两家族×两任务。旧3个TheoremQA在隔离评分重测完成前不参与主图/边界/结论；对应旧TheoremQA重复窗口未审计数字暂退出当前附录。旧原始数值JSON不覆写。摘要/引言/方法/结果/结论统一5模型4家族7比较，新增候选池偏差/DeepSeek小样本/评分隔离及模型引用。
+- 新可复现数值values/depth-verified-extension-20261019.json，style_main_figures/build_boundary_table/export_figure_bundle已适配；14条曲线/7套边界和阈值.4/.5/.6方向检查通过。原depth-crossmodel及两mechanism JSON与HEAD字节一致。audit/VERIFIED-DEPTH-EXTENSION-20261019.json记录证据。
+- Figure3已目视检查，Libertine字体已通过PyMuPDF嵌入字体核验。build.sh最新stage cyQMKu6S：正文7/全文10页，0error/undefined/hbox，1个2.124pt尾页vbox警告（无可见越界，已目视Figure3页4、Table2页5及尾页10）。当前正在export_review精确ZIP独立编译并新建桌面v8-VerifiedDepth，不能在该步骤通过前声称桌面交付完成。
+- 交付/待补说明reports/阶段交付与待补清单_20261019.md。Table1/3与Figure4保持已核验focused范围；全模型控制/机制矩阵还需完成评分修复和审计后再整合，并非已经全部更新。
+- 后台状态最近：DeepSeek corrected54四任务均正式生成；Qwen8和Qwen0.6旧协议已通过全题prompt/span一致检查并捕获/生成，raw保存已核验：Qwen0.6首文件25条、Qwen8首文件7条，含完整text/token_ids；Mistral仍排队。故尚未发送新增所有任务已正式开始里程碑。
+- 固定99题Llama/MedCalc L24长度敏感性代码/ID/Job配置已准备并上传、dry-run步骤待核验，但没有正式提交；当前7任务≤7卡。按最新用户要求先完成桌面/GitHub阶段交付，再继续研究与必要补跑。新机制反例数据保存在experiments/family_depth_20261018/recut-counterfactual-medcalc-20261019.json，不加入paper。
+
+## 2026-10-19 新家族四组深度正式审计通过
+
+- analyze_isolated_depth.py已远端实际运行成功；输出ROOT/final-new-family-depth-20261019.json。验证raw SHA绑定隔离overlay、补跑5题基线token与原记录完全一致、全层网格无缺失、identity token一致。四组status=complete：Llama/MedCalc112题20组T/R7/18；Llama/TQA92题71组6/18；DeepSeek/MedCalc25题13组6/21；DeepSeek/TQA54题45组4/19。都无baseline_token_drift、missing、identity_failures。已向用户报告，仍不能外推小样本DeepSeek/MedCalc。
+- corrected54四任务已全部实际生成：battery日志新增00296 donor正确且进入other_skill/matched_prefix；L2日志00686进入位置与permuted控制；windows此前已核验；mechanism bridge日志identity_SC与S_split继续。未发现新失败，但未全部完成。旧三模型3任务live仍queuing，无日志，不能宣布所有新增正式开始。
+- 旧三模型batch提交已返回3名字成功，launch-state submitted/attempted均71；原64全done、后续7在跑/排队。仍≤7卡，不重复提交，五小时timer active（上次核验正触发service，需下一轮看排程）。
+- legacy replay caveat：历史KO原命令token预算尚需考证，本轮900tokens同时保留400前缀评分诊断；冻结原depth候选168/168/142，而不是原主图筛后99/132/115。原prompt/span长度不匹配则自动停止。最终需报告模型/硬件/协议差异及原值与重测值，不称恢复了当初未保存的答案。
+
+## 2026-10-19 旧三模型TheoremQA重生成已准备并提交
+
+- 在本地原始depth文件中找到完整候选输出，而不是仅主图筛后人群：Qwen8/Qwen0.6各168题、Mistral142题。legacy-{key}-theoremqa.cells.json冻结原始depth标签的全部ID；expected.json冻结各题n_prompt/n_patched/doc_start，生成前逐项断言一致，不按新干预结果选题。
+- legacy_text_entry.py沿用原wb_spanvec（SDPA、doc-first、fixedskill）和wb_knockout（eager）代码，恢复parser初态评分；截获tokenizer.decode保存每次完整text/token_ids及900-token正确性、400-token前缀诊断。历史KO预算尚未从原命令证明，不能不加说明当严格同预算复现；保留两种诊断供核对。重生成不是从旧bool恢复原回答。
+- legacy_replay_worker.py每次4层限制host capture内存，第一层块重跑完整baselines，随后所有层real与两端self；最后同冻结候选全层KO。旧span代码跨全部题capture，不能一次捕获全36层避免host OOM。每题prompt/span断言失败立即停止。py_compile通过，3任务dry-run通过，8个小文件打包上传解包独立legacy-replay-20261019/。
+- wt-legacy-{q8,q06,mistral}-tqa-1019已提交尝试（检查batch session41017结果和live status后补submitted，避免重复）；原四修正任务占4卡，本3合计最多7。parallel-plan总71，state attempted已登记。legacy done在子目录，launch_when_ready.observe已补递归该目录并返回相对path，避免完成后误判占卡。
+- DeepSeek corrected54 windows已正式生成；日志显示新增00296 donor正确、receiver/no_skill错误，identity两层通过后进入窗口。其余新任务尚需逐个日志核验；不把creating/queue当正式开始，不提前宣称新71任务全部开始。
+- 这些实验完成前不更新最终数值或交付；下一步核验首批旧模型prompt匹配和raw正确保存，必要排障；整合各suite基线、截断和donor分母，最后论文/桌面/GitHub全闭环。timer保持，TASK-COMPLETE不存在。
+
+## 2026-10-19 周期续接：原64任务全完成，修正池4任务已提交
+
+- live共享盘76个done、原q8/MedCalc L2已done；原64个GPU计划均完成。平台当前未见旧活跃Job。CPU wt-family-prep-1018仍RUNNING，最近核验剩余16h；五小时检查消息已实际送达当前会话，不重复设timer。
+- 新评分筛选DeepSeek/TQA 54题，原51新增5移除2，会改变cross-skill donor池；因此用冻结corrected54独立重跑L8 battery、固定L2 battery和windows，避免把不同donor池的控制拼接。corrected54-control-jobs.json已dry-run/正式提交成功；名字wt-fix-ds-tqa-{battery,battery-l2,windows}-1019。live两个running、battery creating，尚未核验全部正式生成。旧原始输出不覆写。
+- 另1卡wt-fix-ds-tqa-mechanism-1019已dry-run/提交成功；corrected_mechanism_worker.py串行bridge→repair→edges，bridge原limit2仅身份/协议控制，完整mechanism IDs来自54题先做1536预算context过滤；独立输出deepseek-theoremqa-corrected54-{bridge,repair,edges}，最终mechanism.done。总新卡4≤8。
+- isolated_entry.py包装未修改的followups/instrument入口，逐回答恢复latex2sympy2初始globals；新增.grading-protocol.json记录wrapper/script哈希及argv。仅新路径，已有raw直接拒绝（不盲目续跑）。isolated_suite_worker.py仅把机制子进程包在该入口。源码本地py_compile通过，远端上传完成。需实际检查首条JSONL与identity控制，失败先诊断。
+- parallel-plan总68，readiness含4新增；launch-state attempted和submitted已登记，不重复提交。旧coordinator不一定存活，不据state all-started旧标记通知新计划。旧raw/reports保留；修正54对应report在isolated-grading-refresh-report-20261019.json。
+- audit_suite_populations.py的missing_observed_arm_grid不是最终补跑清单：same-family donor不存在、doclast singleton组本来不产生干预；要分清结构不可用与评分改变造成真缺失。各protocol有效集需单独审计，不共用Figure3分母。初审截断在DeepSeek/Llama若干arm较多，需报告，不事后按干预结果删题。
+- 下一步：核验4新Job实际生成/控制，旧三模型TheoremQA按原wb_spanvec/wb_knockout协议重新生成的配置及raw保存尚未完成；不把这4任务完成当整个任务完成。继续查旧cells/配置与模型路径，先建完整协议匹配审计再启动。之后统一全suite数值、图表/正文、独立ZIP编译、桌面和master push。TASK-COMPLETE仍不存在。
+
+## 2026-10-19 最新实验待办核对
+
+- Live按parallel-plan/readiness映射核验63/64完成，仅wt-fa-q8-medcalc-battery-l2-1018无done；Qwen0.6/MedCalc bundle与DeepSeek/TQA scorefix-s0本轮已done。
+- 隔离重判refresh后台PID已退出、report.json存在。已执行audit_suite_populations.py远端成功：73份完成输出，跨协议eligible计数3869（非独立题目数），identity_failures=0。输出ROOT/suite-populations-20261019.json。后续须读取逐suite缺失/分母，不能据总数宣布全部有效。
+- 待办仍包括DeepSeek/TQA新增5题在正文各suite缺失补跑（先按各自protocol复核baseline/context/donor）；旧三模型TheoremQA缺文本问题的协议/环境核查与必要重新生成。并非只剩最后1个任务就能交付。
+
+## 2026-10-19 原始回答文本可恢复性复核
+
+- 用户问旧模型缺文本的重要性与能否找到。进一步live扫描个人SSD wbout旧TheoremQA文件：59个JSONL/18817行、59份log（含部分重复/part，不等于独立实验规模）。JSONL除ok_*外唯一候选字段是skill_tokens/task_tokens（各940条），无回答文本或生成token；59份日志未匹配ANSWER:/token_ids/JSON text/response标记。代码graded只返回bool，spanvec/knockout输出日志亦为分数。因此当前主要原始输出目录也未找回回答，不能声称仅本地漏同步。
+- 尚未穷尽其他目录/压缩备份；不能断言绝对不存在。若生成时未保存，无法由bool反推原答案，需同协议重新生成且保存文本/token_ids，重判基线及干预，不假定旧模型必然受污染。当前已证实污染来自新批次，旧批次是否受影响尚待验证。
+
+## 2026-10-19 01:50 本轮续接、五小时检查与评分审计
+
+- 原始目标：继续全部实验，评分/筛选/缺失补跑审计后更新唯一paper，最终独立编译ZIP、同步新桌面版本与GitHub master；最多8卡、不删除、不重复启动。任务尚未完成，未创建TASK-COMPLETE，未提前提交旧工作区改动。
+- 本轮发现timer配置仍指向旧对话01a14a9e；已改为当前CODEX_THREAD_ID=01a15016-1c41-7760-9668-87422444438d，保留原timer名与5h间隔，避免后续检查投递旧会话。
+- systemctl用户总线需沙箱外执行；已核验family-depth-progress-01a14a9e.timer active，OnUnitActiveSec=5h，下一轮02:31:09 CST；已有queue日志成功投递。check_thread.py已修复过时Table2例外，加入全量隔离重判和必要补齐要求。有效期仍至2026-11-01 00:21 CST，依赖WSL/Codex在线，不是云端保证。
+- Live已确认Mistral/TQA repair与DeepSeek/TQA scorefix-s1 done。剩余三个Job job_running：q8/MedCalc battery-l2，q06/MedCalc bundle（edges未done），DeepSeek/TQA scorefix-s0。未重复提交。CLI 7.1.8提示7.1.13更新，未中断实验升级。
+- 新发现旧Figure3三模型TheoremQA原始结果18文件/2034行仅保存ok_*，无回答文本/token_ids；代码wb_spanvec.py和wb_knockout.py也仅存bool。legacy-raw-availability-20261019.json记录路径/哈希。不能声称可直接重判；必须先搜索独立raw档案，确无输出则按原协议补跑，保持原筛选候选与protocol，不能把新prompt结果替代旧结果而不说明。
+- regrade_refresh_20261019.py已上传并以nohup启动，输出独立isolated-grading-refresh-20261019/，日志同名.log；逐题parser reset、逆序全检和16 fresh-process对照继承已验证实现，不覆写旧overlay。启动CLI session99337（后台shell等待导致CLI未返回，但远端PID217110已live确认运行，绝不重复启动）。只扫描已done的TheoremQA；如有后续完成文件需再做版本化增量审计。
+- audit_suite_populations.py已本地编译并上传。用raw SHA256与overlay绑定，重建各协议观测baseline的group screen，记录缺失干预/身份token不一致/截断/各arm分母；它明确不能替代原完整候选池screen，也不能把可变donor缺失当0。待新重判report通过后运行：python audit_suite_populations.py --root ROOT --overlay ROOT/isolated-grading-refresh-20261019 --out ROOT/suite-populations-20261019.json。
+- 下一步：核验新重判进程/报告，执行suite审计并取回小产物；补齐所有新增eligible跨suite，而不只depth；查旧三模型raw archive（当前已查local fetched结果，远端独立repo/旧结果尚待核查）；必要时准备忠于原协议的隔离评分重新生成。之后再整合论文，不能据stored correct直接填图。
+
+## 2026-10-19 01:35 交接与桌面v7交付
+
+- 用户要求新对话续接交接、当前稿桌面另存、统一图表字体。HANDOFF-NEXT-CONVERSATION.md顶部已新增完整权威入口：64任务状态、评分污染/隔离证据、新增eligible补跑、旧三模型与全部suite待审计、资源恢复/下一步。历史全文保留。
+- 四主图PDF嵌入字体逐一检查均Linux Libertine O（常规/粗体/斜体），表格显式normalfont+rmfamily；无意外字体回退。原始15份数值输入audit_three_display_revision.py通过，点估计/筛选不改。
+- 新桌面版本StillNeeded-WWW2027-v7-Handoff-20261019，保留旧交付；含独立精确ZIP编译的PDF、Overleaf ZIP、源码、图表合集和两份交接。正文7/全文9页，图表合集9页；0error/undefined/overfull。ZIP17项，SHA256 1f12b4938b2137c8eca539a909545b70aefc2e7401c45b712056fb043eb38a6f。审计audit/DESKTOP-HANDOFF-20261019.json及FIGURE-FONTS-20261019.json。
+- 本桌面稿尚未纳入新家族正式结果，阅读说明明确标注；补跑/评分审计与五小时检查继续。完整任务仍未完成，不创建TASK-COMPLETE，不把该桌面交付当最终新模型论文闭环。
+
+## 2026-10-19 当前状态问询核验
+
+- 两个DeepSeek/TQA scorefix分片已实际生成22/24条正式JSONL（当前live快照），均未done；已从排队进入正式实验，原“尚未开始”记录已过时。尚待全30层齐，不填DeepSeek/TQA最终曲线。
+- 隔离评分overlay重新计算Llama/TQA共同92题：迁移首次半效应L6，source dependence首次降至半效应L18，边界方向与旧stored结果一致。MedCalc两新模型已完成全层网格/身份审计：Llama112题/20组T/R7/18，DeepSeek25题/13组6/21；DeepSeek25题只支持该筛选人群，不能外推benchmark。
+- 正文内容/位置与SC/recut、路径等suite不能仅凭done宣称泛化。仍需统一评分、有效集/截断审计；重复注入仅一致性检查，不是独立维持失败证据。
+
 ## 2026-10-19 图表美化完成验证
 
 - 四图字体均为LinLibertine常规/粗体/斜体，表格统一9pt及1.22行距、白底；Figure3只保留rho/d主曲线；Figure4为数值热力图＋横向分层点图。后续更新沿用当前集中字体配置和显示规则。

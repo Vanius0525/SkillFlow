@@ -81,7 +81,7 @@ def main():
                zip_sha256=hashlib.sha256(archive.read_bytes()).hexdigest(),
                zip_entries=len(names),main_pages=int(endmain.group(1)),total_pages=len(pdf),
                overfull_hbox=log.count('Overfull \\hbox'),overfull_vbox=log.count('Overfull \\vbox'),
-               compile_stage=str(stage),scope='Qwen3-8B + MedCalc for all new mechanism experiments',
+               compile_stage=str(stage),scope='Seven verified depth comparisons across five models/four families; focused Qwen3-8B/MedCalc mechanisms',
                mechanism_results_pending=pending,mechanism_figure_pages=mechanism_pages)
     (PAPER/(a.audit_output or ('audit/DESKTOP-FINAL-20261017.json' if a.final else 'audit/DESKTOP-REVIEW-20261017.json'))).write_text(json.dumps(facts,indent=2)+'\n')
     print(json.dumps(facts,indent=2))

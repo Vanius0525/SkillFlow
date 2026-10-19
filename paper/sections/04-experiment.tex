@@ -4,15 +4,15 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
-\caption{Depth profiles across three models and two tasks. Blue shows
+\caption{Depth profiles for seven verified model--task comparisons across five models and two tasks. Blue shows
 skill-span transfer recovery $\rho(L)$ in a wrong-skill receiver.
 Orange shows source-attention dependence $d(L)=1-q(L)$: the fraction
 of originally correct answers lost after cumulative attention knockout
 in the correct-skill execution. Shading spans the first half-effect
 boundaries, highlighting weak transfer despite strong dependence; later
 recrossings remain visible. Boundary layers are marked above each panel.
-Every plotted layer is measured.}
-\Description{Six line plots show transfer recovery declining before source-attention dependence subsides, leaving a shaded intermediate interval for every model and task.}
+Each panel uses the same eligible items for both curves; $G$ denotes skill groups. Every plotted layer is measured.}
+\Description{Seven line plots show transfer recovery declining before source-attention dependence subsides on their common eligible populations.}
 \label{fig:transferreading}
 \end{figure*}
 
@@ -27,7 +27,9 @@ clinical calculators. We also use SRA-Bench's TheoremQA subset, with $747$
 questions and $320$ skills. Each question receives its designated skill,
 holding skill selection fixed. We test Qwen3-8B, Qwen3-0.6B
 \citep{yang2025qwen3} and Mistral-7B-Instruct-v0.3
-\citep{jiang2023mistral}, spanning two model families. Models generate
+\citep{jiang2023mistral}, and extend the depth study to Llama-3.1-8B-Instruct
+\citep{grattafiori2024llama3} and DeepSeek-LLM-7B-Chat
+\citep{deepseek2024llm}, spanning four model families. Models generate
 step-by-step answers with greedy decoding, selecting the highest-probability
 next token at each step. We use no tools and apply the corresponding
 benchmark scorers. On the full MedCalc benchmark, Qwen3-8B
@@ -45,14 +47,26 @@ We also recompute both curves on their common item IDs. TheoremQA uses
 the same screen, becoming item-level for skills with one question.
 The source-cache replacement study uses a separate fixed set described in
 \S\ref{sec:mechanism}. These populations estimate effects conditional on
-baseline skill benefit.
+baseline skill benefit. The added families use frozen candidate pools
+of $446$ MedCalc and $255$ TheoremQA questions, formed from the earlier
+models' eligible transfer items before the new runs. Each new model is
+screened on its own unpatched baselines; one DeepSeek/MedCalc candidate is
+excluded in advance because the input cannot reserve the $900$-token
+answer budget. These inherited pools are not representative samples of
+the full benchmarks. Figure~\ref{fig:transferreading} reports the seven
+completed, verified comparisons; the focused mechanism displays retain
+their Qwen3-8B/MedCalc population.
 
 \paragraph{Implementation checks.}
 An identity patch writes the receiver's own states
 back and should reproduce its output. Correcting an attention-mask mismatch
 between state capture and decoding restores exact agreement, including
 all $467$ MedCalc identity checks. All main results use the corrected
-implementation. Appendix~\ref{app:detail} specifies the intervention
+implementation. TheoremQA outputs for the added families are regraded
+with the official evaluation rules while restoring fresh parser state
+before every answer. We retain the original text, verify grading-order
+invariance and compare with fresh-process evaluations; eligibility is
+recomputed before merging the depth supplements. Appendix~\ref{app:detail} specifies the intervention
 protocol, and Appendix~\ref{app:limits} records the correction.
 
 \subsection{Validation of skill-state transfer}
@@ -149,7 +163,7 @@ Path-cut estimates are offset vertically within each tested layer. Table~\ref{ta
 \paragraph{Transfer--dependence separation.}
 With an effective early probe established, we follow state transfer and
 source-attention knockout across every layer. Figure~\ref{fig:transferreading}
-shows the six model--task combinations. For Qwen3-8B/MedCalc, transfer
+shows seven verified model--task comparisons. For Qwen3-8B/MedCalc, transfer
 recovery is $0.74$ at layer $12$, falls to $0.16$ at $13$, and is at most
 $0.07$ from layer $15$ onward. For cuts beginning at $L\leq23$ and
 continuing through the final layer during prompt processing and answer
@@ -174,11 +188,16 @@ Original transfer and knockout runs can retain different eligible questions.
 We therefore recompute the curves over the intersection of their item IDs,
 using eligibility determined from unpatched baselines.
 Table~\ref{tab:paireddepth} reports the resulting boundaries.
-All six pairs match those from the original populations.
-The source-dependence boundary follows the transfer boundary in all six settings.
-Using transfer thresholds $\tau=0.4$ or $0.6$ and the corresponding
-dependence thresholds $1-\tau$ also preserves the ordering. The gap thus recurs across the two model families and both
-task domains under common-item evaluation.
+The source-dependence boundary follows the transfer boundary in all seven
+reported comparisons. For Llama-3.1-8B, $T/R$ is $7/18$ on MedCalc
+($112$ items, $20$ skills) and $6/18$ on TheoremQA ($92$ items, $71$
+skills). For DeepSeek-LLM-7B, the corresponding boundaries are $6/21$
+($25$ items, $13$ skills) and $4/19$ ($54$ items, $45$ skills).
+Using transfer thresholds $\tau=0.4$ or $0.6$ and dependence thresholds
+$1-\tau$ preserves the ordering in all seven comparisons. This extends
+the observed separation to four model families, conditional on their
+respective baseline screens. The $25$-item DeepSeek/MedCalc result supports
+only that selected population.
 
 \begin{table}[t]
 \centering
@@ -197,8 +216,7 @@ respectively. $\Delta=R-T$ measures their separation in layers. }
 On the same $135$ MedCalc items, replacing source states over layer
 windows $8$--$11$, $12$--$15$, $14$--$19$ and $16$--$35$ recovers
 $0.89$, $0.74$, $0.16$ and $0.06$, respectively. Replacement at every
-layer from the start recovers $0.98$. The corresponding TheoremQA results
-appear in Appendix~\ref{app:fullscale}. These are consistency checks:
+layer from the start recovers $0.98$. These are consistency checks:
 with identical preceding context, replacing the full source span once
 can already reproduce its later donor states under causal attention.
 Repeated writes therefore need not provide an independent intervention

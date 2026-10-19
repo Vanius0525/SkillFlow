@@ -26,7 +26,7 @@ plt.rcParams.update({
 })
 from figure_fonts import configure_fonts
 configure_fonts()
-INPUTS = ['fig-channels-values.json', 'depth-crossmodel-values.json']
+INPUTS = ['fig-channels-values.json', 'depth-crossmodel-values.json', 'depth-verified-extension-20261019.json']
 
 def data(name):
     return json.loads((VALUES/name).read_text())
@@ -81,31 +81,26 @@ def channels():
     save(fig,'fig-channels-medcalc')
 
 def depth():
-    cells=data('depth-crossmodel-values.json')
-    fig,axes=plt.subplots(2,3,figsize=(7.1,4.25),sharey=True,layout='constrained')
-    for row,task in enumerate(['MedCalc','TheoremQA']):
-        for col,model in enumerate(['Qwen3-8B','Qwen3-0.6B','Mistral-7B']):
-            c=next(c for c in cells if c['task']==task and c['model']==model)
-            ax=axes[row,col]; nl=c['n_layers']; x=np.arange(nl)
-            tb,rb=c['transfer_boundary'],c['reading_boundary']
-            frame(ax,model if row==0 else None)
-            ax.axvspan(tb-.5,rb-.5,color='#F5BE7E',alpha=.26,lw=0,zorder=0)
-            ax.axhline(.5,color='#A4AFBA',ls=(0,(2.5,2.5)),lw=.7,zorder=1)
-            for l in [tb,rb]:ax.axvline(l-.5,color='#C7A582',lw=.6,ls=(0,(2,3)),zorder=1)
-            ax.plot(x,c['transfer'],color=BLUE,lw=1.6,marker='o',ms=2.1,
-                    markeredgecolor='white',markeredgewidth=.35,zorder=3,label=r'Skill transfer $\rho$')
-            ax.plot(x,1-np.asarray(c['retention']),color=ORANGE,lw=1.6,marker='s',ms=1.9,
-                    markeredgecolor='white',markeredgewidth=.3,zorder=3,label=r'Source dependence $d$')
-            ax.text((tb+rb-1)/2,1.03,f'L{tb}–L{rb}',ha='center',va='center',
-                    fontsize=8,color='#94551D')
-            ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),
-                   xticks=sorted(set([0,8,16,24,nl-1])),yticks=[0,.5,1])
-            ax.set_yticklabels(['0','.5','1.0'])
-            if col==0:ax.set_ylabel(task+'\nRecovery / dependence',labelpad=6)
-            if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
+    cells=data('depth-verified-extension-20261019.json')
+    fig,axes=plt.subplots(2,4,figsize=(7.1,4.3),sharey=True,layout='constrained')
+    names={'Llama-3.1-8B':'Llama-8B','DeepSeek-LLM-7B':'DeepSeek-7B'}
+    for index,c in enumerate(cells):
+        row,col=divmod(index,4);ax=axes[row,col];nl=c['n_layers'];x=np.arange(nl)
+        tb,rb=c['transfer_boundary'],c['reading_boundary'];pop=c['common']
+        frame(ax)
+        ax.set_title(names.get(c['model'],c['model'])+' / '+c['task']+'\n'+f"n={pop['n']}, G={pop['groups']}",fontsize=8.2,fontweight='bold',pad=7)
+        ax.axvspan(tb-.5,rb-.5,color='#F5BE7E',alpha=.26,lw=0,zorder=0)
+        ax.axhline(.5,color='#A4AFBA',ls=(0,(2.5,2.5)),lw=.7,zorder=1)
+        ax.plot(x,c['transfer'],color=BLUE,lw=1.5,marker='o',ms=1.8,markeredgecolor='white',markeredgewidth=.3,label=r'Skill transfer $\rho$')
+        ax.plot(x,1-np.asarray(c['retention']),color=ORANGE,lw=1.5,marker='s',ms=1.6,markeredgecolor='white',markeredgewidth=.3,label=r'Source dependence $d$')
+        ax.text(.98,.96,f'T/R = {tb}/{rb}',transform=ax.transAxes,ha='right',va='top',fontsize=7.3,color='#94551D')
+        ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),xticks=sorted(set([0,16,nl-1])),yticks=[0,.5,1])
+        ax.set_yticklabels(['0','.5','1.0'])
+        if col==0:ax.set_ylabel('Recovery / dependence',labelpad=4)
+        if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
+    axes[1,3].axis('off')
     handles,labels=axes[0,0].get_legend_handles_labels()
-    fig.legend(handles,labels,loc='outside upper center',ncol=2,fontsize=8,
-               handlelength=2.4,columnspacing=2.0)
+    fig.legend(handles,labels,loc='outside upper center',ncol=2,fontsize=8,handlelength=2.4,columnspacing=2)
     save(fig,'fig-transfer-reading')
 
 
