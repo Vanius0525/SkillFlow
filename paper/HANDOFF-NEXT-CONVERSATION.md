@@ -1,3 +1,14 @@
+## 2026-10-19 最新同步约定、术语与配额故障续接
+
+- 用户最新要求：**每次论文更新先运行olcli完整行级diff，纳入合理云端修改；本地修改和编译审计后同步Overleaf与GitHub，不再向桌面导出。** 该要求覆盖历史桌面交付步骤，旧交付保留。详细入口OVERLEAF.md；5h检查消息已同步改为新流程，反例仍只记录研究，暂不进paper。
+- 已核验关联Overleaf项目6a2cfd49b99635e8e968576a，虽然项目名仍是旧ICLR Skillflow，实际当前稿在overleaf-skillvector/。首次误用paper根作diff导致大量local-only，随后改为17项匹配暂存目录，保存并完整审阅998行真实diff。差异不能单独识别作者；采用云端更准确的历史筛选/重新评估、条件性结论、机制覆盖局限、四主模型+Qwen0.6补充检查等内容，保留用户要求的Intro首段Web语义关联。图3仍7个已核验panel（6主+1补充），不把未审计旧TheoremQA补入。Table2保留云端4模型×2任务矩阵、两Pending单元与归一化深度差；生成器已适配，原数值JSON未改。
+- source统一为skill span/skill-position states/skill-position KV cache；reader改为post-skill positions，明确是skill之后的提示词和生成推理/答案token，不是receiver模型。前置token因causal mask不能读skill。Figure2/4、Table3及正文/当前附录一致；切边不删除skill、不抹去已传播的信息。Table3前三行是干预结果对比，并非各有一个mask；路径切断行准确指向query→skill keys。
+- 本地编译改Windows Temp，首次通过正文8/全文11页，error/undefined/hbox/vbox均0；云端上传前再次diff核验自首次读取后无新增修改，17文件上传成功，指定nested main独立编译成功。云端PDF也核验正文8/全文11页，0error/undefined/hbox/vbox；ZIP与上传的所有TeX/Bib/PDF逐文件哈希一致，audit/OVERLEAF-TERMINOLOGY-20261019.json。没有新桌面输出。
+- 实验新故障：Qwen8原Job16:55于L4块输出写入Errno122 Disk quota exceeded；DeepSeek机制17:03已完成bridge与repair，但创建edges manifest（零字节）失败；Mistral17:14在L28块写入也失败。Qwen0.6重生成与DeepSeek battery/L2/windows已成功。原失败块全部保留，不重启整池，不删文件。SSD df余量不能代表用户配额；CPU小写可成功不等于GPU大写正常。
+- HDD新目录/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019，8MiB写入实测通过。仅复制Qwen8/Mistral完整首块基线和小脚本；quota_recovery_worker验证SSD完成块的条数、raw哈希（如有）、模块哈希和层网格后跳过，只在HDD重生成未完成块。原partial仍在SSD，不拼接残缺raw。Qwen8transfer与KO分成2卡；Mistral补L28块后KO；DeepSeek仅edges。四Job dry-run与提交均成功，最近4个job_queuing，**尚不能宣布实际开始**。名字wt-recover-{q8-tqa,mistral-tqa,q8-ko,ds-edges}-hdd-1019，详细quota-recovery-jobs.json；总卡最多4≤8，未下载权重。
+- parallel-plan/launch-state已登记新4任务（总75已提交，含被替代失败Job），quota_recovery注明旧3Job替代关系和HDD完成标记绝对路径。旧计划Qwen8 SSD并行KO从未提交，不能恢复它。watch_progress已改观察HDD与新4Job，旧失败Job由新任务取代；30min监督与5h检查均active。整项实验尚未完成，不建TASK-COMPLETE。
+- 下一步：先核验4个HDD任务正式raw/manifest和GPU写入；完成后按SSD完整块+HDD续接块联合审计网格、身份与逐题隔离评分，不混入SSD残缺块。DeepSeek repair独立重判/edges及全部suite人群仍待汇总，Qwen0.6已完成输出待独立审计。暂不承诺全部完成时间，排队和存储条件影响很大。固定99题Llama长度诊断仍未提交，反例只作研究记录。
+
 # 2026-10-19 当前交付与续接入口（覆盖下面历史）
 
 用户最新要求：先将已核验结果更新论文并同步桌面/Overleaf ZIP/GitHub，未完成项记下来继续；新发现机制反例先留研究记录不入稿。整项实验仍未完成，五小时timer保持，勿创建TASK-COMPLETE。

@@ -92,7 +92,7 @@ def depth():
         ax.axvspan(tb-.5,rb-.5,color='#F5BE7E',alpha=.26,lw=0,zorder=0)
         ax.axhline(.5,color='#A4AFBA',ls=(0,(2.5,2.5)),lw=.7,zorder=1)
         ax.plot(x,c['transfer'],color=BLUE,lw=1.5,marker='o',ms=1.8,markeredgecolor='white',markeredgewidth=.3,label=r'Skill transfer $\rho$')
-        ax.plot(x,1-np.asarray(c['retention']),color=ORANGE,lw=1.5,marker='s',ms=1.6,markeredgecolor='white',markeredgewidth=.3,label=r'Source dependence $d$')
+        ax.plot(x,1-np.asarray(c['retention']),color=ORANGE,lw=1.5,marker='s',ms=1.6,markeredgecolor='white',markeredgewidth=.3,label=r'Skill dependence $d$')
         ax.text(.98,.96,f'T/R = {tb}/{rb}',transform=ax.transAxes,ha='right',va='top',fontsize=7.3,color='#94551D')
         ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),xticks=sorted(set([0,16,nl-1])),yticks=[0,.5,1])
         ax.set_yticklabels(['0','.5','1.0'])

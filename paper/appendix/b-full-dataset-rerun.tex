@@ -1,10 +1,10 @@
 % Full-data rerun; its wide table is queued at the appendix entrance.
-\section{Additional transfer and source-reading analyses}
+\section{Additional transfer and skill-dependence analyses}
 \label{app:fullscale}
 
 The original MedCalc $\times$ Qwen3-8B intervention battery was developed on the
-forty calculators with the most rescued items, sampling four each: $160$ of
-$467$ rescued items, and $60$ items over $15$ calculators after the
+forty calculators with the most historically rescued items, sampling four each: $160$ of
+$467$ candidate items, and $60$ items over $15$ calculators after the
 receiver-never-solves restriction. We reran each of them with every rescued
 item of every calculator that has at least two ($467$ items, $48$ calculators),
 keeping the intervention configuration fixed. The group screen is stricter
@@ -39,6 +39,47 @@ $0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$). Under the group screen,
 layers $13$ and $14$ both round to $0.16$. Under the item screen, they
 differ at $0.32$ and $0.34$. Both screens show their largest local decline
 between layers $12$ and $13$.
+
+\paragraph{Supplementary model-scale check.}
+\label{app:scale-check}
+Qwen3-0.6B is retained as a supplementary within-family scale comparison,
+rather than a fifth model in the main comparison matrix. Its MedCalc
+common-item set contains $90$ questions from $21$ skills. The half-effect
+boundaries are $T=11$ and $R=22$, giving $\Delta=11$ layers, or $39.3\%$
+of its $28$-layer depth. Transfer/dependence boundary pairs are
+$11/21$ at threshold $0.4$ and $11/22$ at both $0.5$ and $0.6$.
+Together with the six main comparisons, this gives seven verified
+comparisons across five model sizes from four families; it does not fill
+any Pending cell in Table~\ref{tab:paireddepth}.
+
+\paragraph{Same-question joint failures.}
+\label{app:joint-failure}
+Stored per-skill paired-outcome summaries retain questions with a correct
+donor under both protocols, an incorrect transfer receiver and an
+incorrect no-skill baseline under knockout. Weighting each group's joint
+failure fraction by its item count gives $100/124$ ($80.6\%$) for
+Qwen3-8B at its transfer boundary $T=13$, $64/84$ ($76.2\%$) for
+Qwen3-0.6B at $T=11$, and $25/43$ ($58.1\%$) for Mistral-7B at $T=7$.
+These MedCalc sets contain $14$, $20$ and $15$ skill groups, respectively.
+Their stricter donor screen differs from the populations in
+Table~\ref{tab:paireddepth}. The diagnostic also retains protocol
+mismatch: $4$, $0$ and $4$ items, respectively, are correct under the
+transfer protocol's no-skill baseline despite failing that baseline under
+knockout. These are paired outcomes under two interventions, not a claim
+of identical baseline executions. Corresponding paired summaries for the
+four added-family comparisons are not available in the retained artifacts.
+
+\paragraph{Repeated replacement as a consistency check.}
+\label{app:repeated}
+On the $135$ historically screened MedCalc items, replacing skill states
+over windows $8$--$11$, $12$--$15$, $14$--$19$ and $16$--$35$ recovers
+$0.89$, $0.74$, $0.16$ and $0.06$, respectively. Replacement from the first
+layer onward recovers $0.98$. The recorded repeated-write and same-start
+single-write checks found identical output tokens. With
+identical preceding context and causal attention, a full skill-span
+write can already determine later skill states, making later writes
+redundant. These measurements do not independently rule out inadequate
+state maintenance or identify a cause of the late transfer deficit.
 
 \paragraph{A continuous readout at the same boundary.}
 Accuracy thresholds a generated answer, so an internal change can appear
@@ -80,7 +121,7 @@ $0.86$--$0.99$ of the donor's despite weak behavioural recovery. Earlier receive
 the interaction tests in \S\ref{sec:mechanism}.
 
 
-\subsection{Focused source-history and path-specific experiments}
+\subsection{Focused skill-cache and path-specific experiments}
 \label{app:mechanism}
 
 The focused Qwen3-8B/MedCalc experiments fix $124$ historical item IDs from $14$
@@ -93,14 +134,23 @@ token-for-token between the two suites. The complete repair grid contains
 $2{,}356$ generations, the path grid $1{,}488$, and worker identity checks
 $100$. All $48$ own-state writebacks are token-exact.
 
-S writes the donor source-span block output at layer $L$. C replaces only
-source-position keys and values at layers $0$ through $L$ after prefix
+S writes the donor skill-span block output at layer $L$. C replaces only
+skill-position keys and values at layers $0$ through $L$ after prefix
 prefill and before recomputing the final prompt token. SC combines them;
-SC recutting blocks reader queries to source keys from $L+1$ onward in that
-same run. Earlier reader history is unchanged. Reader queries are positions
-after the source span; source-self queries are positions within it. The
+SC recutting blocks post-skill queries to skill keys from $L+1$ onward in that
+same run. Earlier computation at post-skill positions is unchanged. Post-skill queries are positions
+after the skill span; within-skill queries are positions within it. The
 path experiments cut the specified edges during both prefill and decoding,
 preserving the causal mask.
+
+This timing matters for interpretation. State replacement can propagate
+into later skill-position caches and later computation at post-skill positions, while the explicit
+cache write covers layers $0$ through $L$. The joint intervention changes
+both components and their coverage, so its accuracy interaction does not
+uniquely identify a residual--history compatibility mechanism. An
+all-layer skill-KV-only condition, a later-layer KV-only condition and
+matched other-skill cache replacements are needed to distinguish these
+possibilities. These controls are not part of the reported grid.
 
 We retain all intervention outcomes, including truncated outputs. For the
 prespecified SC-minus-S contrast at layer $16$, the gain is $38.6$ percentage
@@ -114,9 +164,9 @@ $35.1$-point repair advantage. At layer $24$, SC and recut truncate $3/28$
 outputs and show no additional loss in measured accuracy; this depth is not
 used to claim independence after repair.
 
-At layer $24$, reader and source-self cuts retain $29/114$ and $110/114$
+At layer $24$, post-skill and skill-to-skill cuts retain $29/114$ and $110/114$
 correct answers. Their loss difference is $71.1$ points.
 Reader cuts truncate $21$ outputs; counting all as correct still leaves
-retention at $50/114$, below source-self retention $110/114$ (no truncation).
+retention at $50/114$, below skill-to-skill retention $110/114$ (no truncation).
 Both contrasts survive worst-case reassignment of truncated outputs.
 Analysis artifacts retain arm-wise counts, hashes and truncation bounds.

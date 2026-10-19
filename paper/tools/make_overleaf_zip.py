@@ -52,7 +52,7 @@ def write_project_zip(paper,out):
             'Upload this ZIP directly as a new Overleaf project. The default\n'
             'build is the WWW submission manuscript. This project contains\n'
             'only the submission and its references and compact appendix.\n\n'
-            +phase_note+'Depth displays report seven verified comparisons across five models.\n'
+            +phase_note+'Depth displays report six main comparisons across four model families, plus a supplementary Qwen3-0.6B scale check (seven verified comparisons total).\n'
             'Additional controls and legacy TheoremQA replays remain under audit;\n'
             'the current mechanism displays are restricted to Qwen3-8B/MedCalc.\n\n'+
             'This project contains only TeX inputs, referenced PDF figures,\n'

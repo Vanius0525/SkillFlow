@@ -7,7 +7,7 @@
 #   ./build.sh submission -- same submission build
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-STAGE_ROOT="/mnt/c/Users/12970/Desktop/WWW2027"
+STAGE_ROOT="${PAPER_BUILD_STAGE_ROOT:-/mnt/c/Users/12970/AppData/Local/Temp/WWW2027}"
 BIN="/mnt/c/Users/12970/AppData/Local/Programs/MiKTeX/miktex/bin/x64"
 PDFLATEX="$BIN/pdflatex.exe"
 BIBTEX="$BIN/bibtex.exe"

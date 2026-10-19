@@ -12,26 +12,54 @@ tool calls. MedCalc questions are grouped by calculator; TheoremQA questions are
 grouped by skill identity.
 
 \paragraph{Evaluation populations.}
-We distinguish four baseline outcomes: rescued items are incorrect without
-the skill and correct with it, persistent failures are incorrect in both
-conditions, kept items are correct in both, and broken items become
-incorrect with the skill. The main interventions focus on rescued items.
-The additional receiver screen retains skill groups in which the
-wrong-skill receiver solves no sampled question. This reduces recovery
-through disruption of an interfering wrong skill, concentrating the
-comparison on the contribution of the donor's content.
-Appendix~\ref{app:fullscale} compares this group screen with a less
-restrictive screen that excludes only individually solved receiver items.
+The original candidate pool uses historical without-skill and with-skill
+behavioural outcomes: rescued means wrong then right, persistent failure
+means wrong in both, kept means right in both, and broken means right then
+wrong. The stored MedCalc screen contains $470$ rescued IDs; the corrected
+transfer battery uses $467$ from $48$ calculators after its eligibility
+restrictions. The transfer code reads these frozen IDs and re-evaluates
+the donor, receiver and no-skill baselines under its own protocol.
+
+The group screen filters on the re-evaluated receiver only: every sampled
+receiver answer in a retained skill group must be incorrect. It does not
+filter out re-evaluated donor failures. This gives $135$ items in $14$
+groups, with $124$ correct donor answers and $110$ correct layer-$8$ span
+answers in Table~\ref{tab:probe}. The denominator for recovery is the
+re-evaluated donor-minus-receiver gain, not historical donor accuracy.
+Selection and re-evaluation are separate operations; the present evidence
+does not attribute each change in correctness to one particular prompt,
+backend or numerical detail.
+
+The depth comparison intersects this transfer population with the
+knockout run's own with-skill-correct, without-skill-incorrect IDs, retaining
+$134$ questions. Transfer still uses its own donor and receiver outcomes,
+whereas knockout retention is normalized by its own correct-baseline set.
+Matching question IDs does not match the two execution protocols or make
+their outcomes complements.
+
+The mechanism study freezes the same $124$ IDs as the paired-outcome
+diagnostic (Appendix~\ref{app:joint-failure}) before new inference. All
+belong to the $134$-item depth intersection, but their
+fresh split-prefill evaluation defines a separate population: $116$ are
+donor-correct and receiver-incorrect, and $114$ also fail without the skill.
+These $114$ are shared by the repair and path-cut suites. The candidate
+count $124$ and Table~\ref{tab:probe}'s $124$ correct donor answers refer
+to different selection stages and should not be treated as interchangeable
+denominators.
+
+The strict receiver screen selects a conditional effect; it does not
+eliminate interference from the wrong skill. Appendix~\ref{app:fullscale}
+reports the broader item-level receiver screen. Neither screen substitutes
+for a position-matched neutral receiver intervention.
 
 \subsection{Implementation details}
 \label{app:detail}
 
 \paragraph{Models and decoding.}
-The main models are Qwen3-8B ($36$ layers, hidden width $4096$),
-Qwen3-0.6B ($28$ layers, width $1024$), and
-Mistral-7B-Instruct-v0.3 ($32$ layers, width $4096$).
-The depth extension adds Llama-3.1-8B-Instruct ($32$ layers) and
-DeepSeek-LLM-7B-Chat ($30$ layers). Their full-prompt state capture and
+The four main models are Qwen3-8B ($36$ layers, hidden width $4096$),
+Mistral-7B-Instruct-v0.3 ($32$ layers, width $4096$),
+Llama-3.1-8B-Instruct ($32$ layers) and DeepSeek-LLM-7B-Chat ($30$ layers).
+The supplementary Qwen3-0.6B check uses $28$ layers and width $1024$. Their full-prompt state capture and
 knockout both use BF16, eager attention and $900$ new tokens, without
 quantization. For DeepSeek, system instructions are merged into the user
 turn. The Llama weights, configuration and vocabulary match the original
@@ -85,17 +113,26 @@ with at least two, giving $467$ items from $48$ calculators.
 The main receiver screen then retains $135$ questions from $14$ calculators.
 Historical development results retain their original sample labels.
 Table~\ref{tab:fullscale} shows the corrected rerun alongside the earlier
-screened subset. Main depth comparisons cover seven verified model--task
-comparisons spanning five models and four families, with common eligible
-items for their two intervention types. The new-family candidate pools
+screened subset. The main depth study currently covers six verified model--task
+comparisons across four models and families, with two TheoremQA cells
+pending. A seventh verified comparison uses Qwen3-0.6B on MedCalc as a
+supplementary scale check. Each comparison uses common eligible items
+for the two intervention types. The new-family candidate pools
 inherit the earlier models' selection, so their results are conditional
 rather than full-benchmark estimates.
 
 \paragraph{Scientific scope.}
 The experiments characterize supplied skill instructions under fixed
-selection and controlled generation. The depth ordering is replicated
-across the tested models and tasks. The source-history repair and
-path-specific tests provide a more focused result on Qwen3-8B/MedCalc.
+selection and controlled generation. The depth ordering holds for the
+reported conditional populations and protocols. Historical transfer and
+knockout differ in backend; the added families use matching eager-attention
+protocols. The cache-repair and path-specific tests provide a focused
+result on Qwen3-8B/MedCalc. All-query skill knockout combines access from post-skill tokens with
+skill-state updates; its full-depth profile cannot be interpreted as
+post-skill-only dependence. Prefill and decoding are jointly intervened on,
+so phase-specific claims require separate tests. The stored paired-outcome diagnostic supports same-question joint
+failures in three MedCalc settings; it does not extend that evidence to
+all completed comparisons.
 Interactive browser tasks, skill retrieval errors and learned state
 compression are natural settings in which to test how these findings
 extend to agent systems.

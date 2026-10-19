@@ -54,7 +54,7 @@ def main():
     a.set_title('(a) Replacement accuracy (%)',loc='left',fontsize=9.5,
                 fontweight='bold',pad=43)
     colors=['#D27A29','#2866A0','#8494A4']
-    labels=['Reader to source','Source to source','Both paths']
+    labels=['Post-skill to skill','Skill to skill','Both paths']
     for i,(color,label,marker) in enumerate(zip(colors,labels,['o','s','D'])):
         y=np.arange(3)+(i-1)*.19
         points=b.scatter(right[i]*100,y,color=color,marker=marker,s=35,
@@ -73,7 +73,7 @@ def main():
     b.grid(axis='x',color='#E8EDF2',lw=.6)
     b.set_axisbelow(True)
     for y in [.5,1.5]:b.axhline(y,color='#E8EDF2',lw=.6)
-    b.annotate('Reader access dominates',xy=(right[0,2]*100,1.81),
+    b.annotate('Post-skill access dominates',xy=(right[0,2]*100,1.81),
                xytext=(35,2.4),ha='center',fontsize=7.5,color='#94551D',
                arrowprops={'arrowstyle':'-','color':'#94551D','lw':.7})
     for ext in ('pdf','png','svg'):

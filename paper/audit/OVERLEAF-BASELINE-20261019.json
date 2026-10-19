@@ -1,0 +1,23 @@
+{
+  "project": "6a2cfd49b99635e8e968576a",
+  "remote_folder": "overleaf-skillvector",
+  "files": {
+    "overleaf-skillvector/main.tex": "e4cb871d716e8d2ba263b17a8e16f636d3e7088b53ba9d9679e25c460a751df0",
+    "overleaf-skillvector/skillvector.bib": "4967941bfd5707d4073a182863fdd05ffb9972afdcf71206d67f446a23bc3a77",
+    "overleaf-skillvector/README.md": "747f57b76227c24103444cfeac0b367bbf1cef570fce4708c2e9154d81c3129e",
+    "overleaf-skillvector/sections/05-conclusion.tex": "f46a77c642afd451d18730b224968e294ad0aaabc2087b51bb2b414bf815dd69",
+    "overleaf-skillvector/sections/03-problem-formulation.tex": "59c7a19d0284963e8f617c306e73cf3262ddb305166f8ab04607f41e6b5692c4",
+    "overleaf-skillvector/sections/00-abstract.tex": "9f64c29905a9fe352097e18012c96f294ecb0fce2dd225b97d53a8bed2076766",
+    "overleaf-skillvector/sections/01-introduction.tex": "6559beaf0177ead78cd5584a5464c75dc85542a7307cb03598465052321eff31",
+    "overleaf-skillvector/sections/02-related-work.tex": "cfd9e407660fba96d124ffeab2ec72e4010bf3b34699cfe1e5a39d8af3b0b3da",
+    "overleaf-skillvector/sections/04-experiment.tex": "5a8854c757a1df282c905677e2c792fa473c30f8cdcefb2a2f0f6c7b9238f64e",
+    "overleaf-skillvector/appendix/b-full-dataset-rerun.tex": "81a9bd4ceb5c689534f66e15ac4b7a2f4e52ea4b8b92c2a5b2949d2c6dadf5bf",
+    "overleaf-skillvector/appendix/a-setup.tex": "174283502909f79294323391e48c4cf205caabdbb11e60d01f54bda6d61937fb",
+    "overleaf-skillvector/tables/tab-paired-depth.tex": "af7f900bc340ceb47b58d4f3ddc245c9f8272aa80bccfae8a79991cc1be7b6b3",
+    "overleaf-skillvector/tables/tab-fullscale-float.tex": "38f56844e7b02ae053aacde49d0ca6aede87412871405a0d43974a45600ae808",
+    "overleaf-skillvector/figures/fig-mechanism-results.pdf": "1ad4e3110d44e5a01b5d47836b86c8fd486139365ec9bfa76fc026a1d6ce2385",
+    "overleaf-skillvector/figures/fig-intervention-design.pdf": "533a16ef11b88ef8eb099fc790aa3aa397e75b12765dcaf889b55b4405cb987f",
+    "overleaf-skillvector/figures/fig-transfer-reading.pdf": "42b8899a3f50c89d6af7b1ab767591cbf4fd507ccc777772153add7c2af8c2fc",
+    "overleaf-skillvector/figures/fig-teaser.pdf": "aeca3af4c2432ee8d3531c754def7859e019a0a404ecac83fcc9995de9e9bac8"
+  }
+}

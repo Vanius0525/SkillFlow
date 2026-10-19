@@ -1,23 +1,23 @@
 \section{Conclusion}
 \label{sec:discussion}
 
-Skill-state transfer is shaped by both the transferred component and the
-source access available afterward. Across seven verified comparisons spanning five models and two task domains,
-residual-state transfer weakens before dependence on skill attention
-subsides. Content and cross-question controls establish that the effective
-early intervention carries structured skill information.
+Weak skill-state transfer does not, by itself, show that the original
+execution has stopped depending on its skill text. Across six completed main
+comparisons, residual transfer crosses below half of the donor's gain
+before aggregate skill-attention dependence falls to half. Early controls
+validate the transfer probe; common-item and threshold checks delimit the
+observed depth ordering. The result remains conditional on the screened
+populations and the wrong-skill receiver background.
 
-The focused Qwen3-8B/MedCalc study makes this separation more concrete.
-Replacing source-position KV caches together with residual states restores
-substantial late transfer at layer $16$, while cutting subsequent source
-reading removes most of the recovered effect. This identifies source
-caches and continued reading as two contributors to successful reuse.
-The intervention leaves earlier reader computation unchanged, and the
-recutting effect varies with depth, so these results characterize the tested
-source components rather than all of the receiver's computational history.
+The focused Qwen3-8B/MedCalc study supplies a partial intervention result.
+Adding skill-cache replacement improves late transfer at layer $16$, and
+a post-skill-to-skill cut removes most of the recovered effect. This makes skill
+caches one concrete contributor to test, while leaving cache coverage,
+post-skill-state changes and other omitted components unresolved. The recovery
+is incomplete, and the recutting effect varies with depth.
 
-For systems that reuse contextual skills, residual-state recovery,
-source-cache compatibility and subsequent source access are therefore
-distinct properties to evaluate. Extending the joint interventions to
-additional models and interactive agent tasks can establish how broadly
-these conditions govern skill reuse.
+A stronger explanation requires all-layer and late-layer skill-cache
+controls, matched alternative-skill caches, and post-skill-only interventions
+that separate prompt processing from answer generation. Broader receiver
+backgrounds and model families can establish how far the present
+separation and partial repair extend to reusable skill systems.

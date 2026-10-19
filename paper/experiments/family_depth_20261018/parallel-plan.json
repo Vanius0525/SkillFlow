@@ -1,0 +1,1516 @@
+{
+  "jobs": [
+    {
+      "name": "wt-f3-llama-medcalc-s0-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc-s0.jsonl --shard 0 --shards 2"
+    },
+    {
+      "name": "wt-f3-llama-medcalc-s1-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc-s1.jsonl --shard 1 --shards 2"
+    },
+    {
+      "name": "wt-f3-llama-theoremqa-s0-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa-s0.jsonl --shard 0 --shards 2"
+    },
+    {
+      "name": "wt-f3-llama-theoremqa-s1-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa-s1.jsonl --shard 1 --shards 2"
+    },
+    {
+      "name": "wt-f3-deepseek-medcalc-s0-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc-s0.jsonl --shard 0 --shards 2"
+    },
+    {
+      "name": "wt-f3-deepseek-medcalc-s1-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc-s1.jsonl --shard 1 --shards 2"
+    },
+    {
+      "name": "wt-f3-deepseek-theoremqa-s0-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-s0.jsonl --shard 0 --shards 2"
+    },
+    {
+      "name": "wt-f3-deepseek-theoremqa-s1-r1-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-s1.jsonl --shard 1 --shards 2",
+      "exclude_nodes": [
+        "qb-prod-4090-gpu097"
+      ]
+    },
+    {
+      "name": "wt-fa-llama-medcalc-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-llama-theoremqa-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-deepseek-medcalc-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-deepseek-theoremqa-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-q8-theoremqa-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-ids.json --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-mistral-medcalc-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-ids.json --dataset medcalcbench --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-mistral-theoremqa-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-ids.json --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-q06-medcalc-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc-ids.json --dataset medcalcbench --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-q06-theoremqa-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa-ids.json --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-q8-medcalc-battery-l2-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-medcalc-ids.json --dataset medcalcbench --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-medcalc.screen.json --suite battery --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-medcalc-battery-l2.jsonl"
+    },
+    {
+      "name": "wt-fa-llama-medcalc-battery-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc.screen.json --suite battery"
+    },
+    {
+      "name": "wt-fa-llama-medcalc-windows-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc.screen.json --suite windows"
+    },
+    {
+      "name": "wt-fa-llama-medcalc-doclast-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc.screen.json --suite doclast"
+    },
+    {
+      "name": "wt-fa-llama-medcalc-bridge-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc.screen.json --suite bridge"
+    },
+    {
+      "name": "wt-fa-llama-medcalc-repair-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc.screen.json --suite repair"
+    },
+    {
+      "name": "wt-fa-llama-medcalc-edges-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc.screen.json --suite edges"
+    },
+    {
+      "name": "wt-fa-llama-theoremqa-battery-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa.screen.json --suite battery"
+    },
+    {
+      "name": "wt-fa-llama-theoremqa-windows-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa.screen.json --suite windows"
+    },
+    {
+      "name": "wt-fa-llama-theoremqa-doclast-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa.screen.json --suite doclast"
+    },
+    {
+      "name": "wt-fa-llama-theoremqa-bridge-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa.screen.json --suite bridge"
+    },
+    {
+      "name": "wt-fa-llama-theoremqa-repair-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa.screen.json --suite repair"
+    },
+    {
+      "name": "wt-fa-llama-theoremqa-edges-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Llama-3.1-8B-Instruct --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa.screen.json --suite edges"
+    },
+    {
+      "name": "wt-fa-deepseek-medcalc-battery-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc.screen.json --suite battery"
+    },
+    {
+      "name": "wt-fa-deepseek-medcalc-windows-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc.screen.json --suite windows"
+    },
+    {
+      "name": "wt-fa-deepseek-medcalc-doclast-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc.screen.json --suite doclast"
+    },
+    {
+      "name": "wt-fa-deepseek-medcalc-bridge-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc.screen.json --suite bridge"
+    },
+    {
+      "name": "wt-fa-deepseek-medcalc-repair-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc.screen.json --suite repair"
+    },
+    {
+      "name": "wt-fa-deepseek-medcalc-edges-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-medcalc.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc.screen.json --suite edges"
+    },
+    {
+      "name": "wt-fa-deepseek-theoremqa-battery-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa.screen.json --suite battery"
+    },
+    {
+      "name": "wt-fa-deepseek-theoremqa-windows-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa.screen.json --suite windows"
+    },
+    {
+      "name": "wt-fa-deepseek-theoremqa-doclast-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa.screen.json --suite doclast"
+    },
+    {
+      "name": "wt-fa-deepseek-theoremqa-bridge-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa.screen.json --suite bridge"
+    },
+    {
+      "name": "wt-fa-deepseek-theoremqa-repair-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa.screen.json --suite repair"
+    },
+    {
+      "name": "wt-fa-deepseek-theoremqa-edges-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa.screen.json --suite edges"
+    },
+    {
+      "name": "wt-fa-q8-theoremqa-battery-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa.screen.json --suite battery"
+    },
+    {
+      "name": "wt-fa-q8-theoremqa-windows-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa.screen.json --suite windows"
+    },
+    {
+      "name": "wt-fa-q8-theoremqa-doclast-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa.screen.json --suite doclast"
+    },
+    {
+      "name": "wt-fa-q8-theoremqa-bridge-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa.screen.json --suite bridge"
+    },
+    {
+      "name": "wt-fa-q8-theoremqa-repair-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa.screen.json --suite repair"
+    },
+    {
+      "name": "wt-fa-q8-theoremqa-edges-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa.screen.json --suite edges"
+    },
+    {
+      "name": "wt-fa-mistral-medcalc-battery-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-ids.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc.screen.json --suite battery"
+    },
+    {
+      "name": "wt-fa-mistral-medcalc-windows-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-ids.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc.screen.json --suite windows"
+    },
+    {
+      "name": "wt-fa-mistral-medcalc-doclast-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-ids.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc.screen.json --suite doclast"
+    },
+    {
+      "name": "wt-fa-mistral-medcalc-bridge-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-ids.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc.screen.json --suite bridge"
+    },
+    {
+      "name": "wt-fa-mistral-medcalc-repair-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-ids.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc.screen.json --suite repair"
+    },
+    {
+      "name": "wt-fa-mistral-medcalc-edges-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc-ids.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc.screen.json --suite edges"
+    },
+    {
+      "name": "wt-fa-mistral-theoremqa-battery-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa.screen.json --suite battery"
+    },
+    {
+      "name": "wt-fa-mistral-theoremqa-windows-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa.screen.json --suite windows"
+    },
+    {
+      "name": "wt-fa-mistral-theoremqa-doclast-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa.screen.json --suite doclast"
+    },
+    {
+      "name": "wt-fa-mistral-theoremqa-bridge-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa.screen.json --suite bridge"
+    },
+    {
+      "name": "wt-fa-mistral-theoremqa-repair-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa.screen.json --suite repair"
+    },
+    {
+      "name": "wt-fa-mistral-theoremqa-edges-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa.screen.json --suite edges"
+    },
+    {
+      "name": "wt-fa-q06-medcalc-bundle-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/small_model_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc-ids.json --dataset medcalcbench --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc.screen.json"
+    },
+    {
+      "name": "wt-fa-q06-theoremqa-bundle-1018",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/small_model_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa-ids.json --dataset theoremqa --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa.screen.json"
+    },
+    {
+      "name": "wt-f3-deepseek-theoremqa-scorefix-s0-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/supplement_depth.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-deepseek-theoremqa-scorefix.json --dataset theoremqa --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-scorefix-s0.jsonl --shard 0 --shards 2 --frozen-screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/isolated-grading-20261019/report.json"
+    },
+    {
+      "name": "wt-f3-deepseek-theoremqa-scorefix-s1-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/supplement_depth.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-deepseek-theoremqa-scorefix.json --dataset theoremqa --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-scorefix-s1.jsonl --shard 1 --shards 2 --frozen-screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/isolated-grading-20261019/report.json"
+    },
+    {
+      "name": "wt-fix-ds-tqa-battery-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/isolated_entry.py --script /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo -- --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54-battery.jsonl --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54.screen.json --dataset theoremqa --suite battery"
+    },
+    {
+      "name": "wt-fix-ds-tqa-battery-l2-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/isolated_entry.py --script /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups_l2.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo -- --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54-battery-l2.jsonl --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54.screen.json --dataset theoremqa --suite battery"
+    },
+    {
+      "name": "wt-fix-ds-tqa-windows-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/isolated_entry.py --script /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/followups.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo -- --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --out /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54-windows.jsonl --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54.screen.json --dataset theoremqa --suite windows"
+    },
+    {
+      "name": "wt-fix-ds-tqa-mechanism-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/corrected_mechanism_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54.screen.json --prefix /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54"
+    },
+    {
+      "name": "wt-legacy-q8-tqa-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/legacy_replay_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --key q8 --layers 36"
+    },
+    {
+      "name": "wt-legacy-q06-tqa-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/legacy_replay_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-0.6B --key q06 --layers 28"
+    },
+    {
+      "name": "wt-legacy-mistral-tqa-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/legacy_replay_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --key mistral --layers 32"
+    },
+    {
+      "name": "wt-recover-q8-tqa-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/quota_recovery_worker.py --key q8 --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --layers 36 --original /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019 --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo"
+    },
+    {
+      "name": "wt-recover-mistral-tqa-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/quota_recovery_worker.py --key mistral --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --layers 32 --original /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019 --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo"
+    },
+    {
+      "name": "wt-recover-q8-ko-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/legacy_text_entry.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --module wb_knockout --expected /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/legacy-q8-theoremqa.expected.json -- --dataset theoremqa --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --cells /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/legacy-q8-theoremqa.cells.json --cells-keep R --per-calc 10000 --max-calcs 10000 --min-group 1 --max-new 900 --sweep layers --attn eager --layers 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35 --out /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/q8-knockout.jsonl"
+    },
+    {
+      "name": "wt-recover-ds-edges-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/isolated_suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54.screen.json --prefix /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/deepseek-theoremqa-corrected54 --suite edges"
+    }
+  ],
+  "readiness": {
+    "wt-f3-llama-medcalc-s0-1018": {
+      "kind": "depth",
+      "model": "llama",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "shard": 0
+    },
+    "wt-f3-llama-medcalc-s1-1018": {
+      "kind": "depth",
+      "model": "llama",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "shard": 1
+    },
+    "wt-f3-llama-theoremqa-s0-1018": {
+      "kind": "depth",
+      "model": "llama",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "shard": 0
+    },
+    "wt-f3-llama-theoremqa-s1-1018": {
+      "kind": "depth",
+      "model": "llama",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "shard": 1
+    },
+    "wt-f3-deepseek-medcalc-s0-1018": {
+      "kind": "depth",
+      "model": "deepseek",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "shard": 0
+    },
+    "wt-f3-deepseek-medcalc-s1-1018": {
+      "kind": "depth",
+      "model": "deepseek",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "shard": 1
+    },
+    "wt-f3-deepseek-theoremqa-s0-1018": {
+      "kind": "depth",
+      "model": "deepseek",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "shard": 0
+    },
+    "wt-fa-llama-medcalc-battery-1018": {
+      "kind": "follow",
+      "suite": "battery",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "screen": "llama-medcalc.screen.json",
+      "old_model": false,
+      "done": "llama-medcalc-battery.done.json"
+    },
+    "wt-fa-llama-medcalc-windows-1018": {
+      "kind": "follow",
+      "suite": "windows",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "screen": "llama-medcalc.screen.json",
+      "old_model": false,
+      "done": "llama-medcalc-windows.done.json"
+    },
+    "wt-fa-llama-medcalc-doclast-1018": {
+      "kind": "follow",
+      "suite": "doclast",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "screen": "llama-medcalc.screen.json",
+      "old_model": false,
+      "done": "llama-medcalc-doclast.done.json"
+    },
+    "wt-fa-llama-medcalc-bridge-1018": {
+      "kind": "follow",
+      "suite": "bridge",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "screen": "llama-medcalc.screen.json",
+      "old_model": false,
+      "done": "llama-medcalc-bridge.done.json"
+    },
+    "wt-fa-llama-medcalc-repair-1018": {
+      "kind": "follow",
+      "suite": "repair",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "screen": "llama-medcalc.screen.json",
+      "old_model": false,
+      "done": "llama-medcalc-repair.done.json"
+    },
+    "wt-fa-llama-medcalc-edges-1018": {
+      "kind": "follow",
+      "suite": "edges",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "screen": "llama-medcalc.screen.json",
+      "old_model": false,
+      "done": "llama-medcalc-edges.done.json"
+    },
+    "wt-fa-llama-theoremqa-battery-1018": {
+      "kind": "follow",
+      "suite": "battery",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "screen": "llama-theoremqa.screen.json",
+      "old_model": false,
+      "done": "llama-theoremqa-battery.done.json"
+    },
+    "wt-fa-llama-theoremqa-windows-1018": {
+      "kind": "follow",
+      "suite": "windows",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "screen": "llama-theoremqa.screen.json",
+      "old_model": false,
+      "done": "llama-theoremqa-windows.done.json"
+    },
+    "wt-fa-llama-theoremqa-doclast-1018": {
+      "kind": "follow",
+      "suite": "doclast",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "screen": "llama-theoremqa.screen.json",
+      "old_model": false,
+      "done": "llama-theoremqa-doclast.done.json"
+    },
+    "wt-fa-llama-theoremqa-bridge-1018": {
+      "kind": "follow",
+      "suite": "bridge",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "screen": "llama-theoremqa.screen.json",
+      "old_model": false,
+      "done": "llama-theoremqa-bridge.done.json"
+    },
+    "wt-fa-llama-theoremqa-repair-1018": {
+      "kind": "follow",
+      "suite": "repair",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "screen": "llama-theoremqa.screen.json",
+      "old_model": false,
+      "done": "llama-theoremqa-repair.done.json"
+    },
+    "wt-fa-llama-theoremqa-edges-1018": {
+      "kind": "follow",
+      "suite": "edges",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "screen": "llama-theoremqa.screen.json",
+      "old_model": false,
+      "done": "llama-theoremqa-edges.done.json"
+    },
+    "wt-fa-deepseek-medcalc-battery-1018": {
+      "kind": "follow",
+      "suite": "battery",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "screen": "deepseek-medcalc.screen.json",
+      "old_model": false,
+      "done": "deepseek-medcalc-battery.done.json"
+    },
+    "wt-fa-deepseek-medcalc-windows-1018": {
+      "kind": "follow",
+      "suite": "windows",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "screen": "deepseek-medcalc.screen.json",
+      "old_model": false,
+      "done": "deepseek-medcalc-windows.done.json"
+    },
+    "wt-fa-deepseek-medcalc-doclast-1018": {
+      "kind": "follow",
+      "suite": "doclast",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "screen": "deepseek-medcalc.screen.json",
+      "old_model": false,
+      "done": "deepseek-medcalc-doclast.done.json"
+    },
+    "wt-fa-deepseek-medcalc-bridge-1018": {
+      "kind": "follow",
+      "suite": "bridge",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "screen": "deepseek-medcalc.screen.json",
+      "old_model": false,
+      "done": "deepseek-medcalc-bridge.done.json"
+    },
+    "wt-fa-deepseek-medcalc-repair-1018": {
+      "kind": "follow",
+      "suite": "repair",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "screen": "deepseek-medcalc.screen.json",
+      "old_model": false,
+      "done": "deepseek-medcalc-repair.done.json"
+    },
+    "wt-fa-deepseek-medcalc-edges-1018": {
+      "kind": "follow",
+      "suite": "edges",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "screen": "deepseek-medcalc.screen.json",
+      "old_model": false,
+      "done": "deepseek-medcalc-edges.done.json"
+    },
+    "wt-fa-deepseek-theoremqa-battery-1018": {
+      "kind": "follow",
+      "suite": "battery",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "screen": "deepseek-theoremqa.screen.json",
+      "old_model": false,
+      "done": "deepseek-theoremqa-battery.done.json"
+    },
+    "wt-fa-deepseek-theoremqa-windows-1018": {
+      "kind": "follow",
+      "suite": "windows",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "screen": "deepseek-theoremqa.screen.json",
+      "old_model": false,
+      "done": "deepseek-theoremqa-windows.done.json"
+    },
+    "wt-fa-deepseek-theoremqa-doclast-1018": {
+      "kind": "follow",
+      "suite": "doclast",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "screen": "deepseek-theoremqa.screen.json",
+      "old_model": false,
+      "done": "deepseek-theoremqa-doclast.done.json"
+    },
+    "wt-fa-deepseek-theoremqa-bridge-1018": {
+      "kind": "follow",
+      "suite": "bridge",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "screen": "deepseek-theoremqa.screen.json",
+      "old_model": false,
+      "done": "deepseek-theoremqa-bridge.done.json"
+    },
+    "wt-fa-deepseek-theoremqa-repair-1018": {
+      "kind": "follow",
+      "suite": "repair",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "screen": "deepseek-theoremqa.screen.json",
+      "old_model": false,
+      "done": "deepseek-theoremqa-repair.done.json"
+    },
+    "wt-fa-deepseek-theoremqa-edges-1018": {
+      "kind": "follow",
+      "suite": "edges",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "screen": "deepseek-theoremqa.screen.json",
+      "old_model": false,
+      "done": "deepseek-theoremqa-edges.done.json"
+    },
+    "wt-fa-q8-theoremqa-battery-1018": {
+      "kind": "follow",
+      "suite": "battery",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa",
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-theoremqa-battery.done.json"
+    },
+    "wt-fa-q8-theoremqa-windows-1018": {
+      "kind": "follow",
+      "suite": "windows",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa",
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-theoremqa-windows.done.json"
+    },
+    "wt-fa-q8-theoremqa-doclast-1018": {
+      "kind": "follow",
+      "suite": "doclast",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa",
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-theoremqa-doclast.done.json"
+    },
+    "wt-fa-q8-theoremqa-bridge-1018": {
+      "kind": "follow",
+      "suite": "bridge",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa",
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-theoremqa-bridge.done.json"
+    },
+    "wt-fa-q8-theoremqa-repair-1018": {
+      "kind": "follow",
+      "suite": "repair",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa",
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-theoremqa-repair.done.json"
+    },
+    "wt-fa-q8-theoremqa-edges-1018": {
+      "kind": "follow",
+      "suite": "edges",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa",
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-theoremqa-edges.done.json"
+    },
+    "wt-fa-mistral-medcalc-battery-1018": {
+      "kind": "follow",
+      "suite": "battery",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc",
+      "screen": "backfill-mistral-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-medcalc-battery.done.json"
+    },
+    "wt-fa-mistral-medcalc-windows-1018": {
+      "kind": "follow",
+      "suite": "windows",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc",
+      "screen": "backfill-mistral-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-medcalc-windows.done.json"
+    },
+    "wt-fa-mistral-medcalc-doclast-1018": {
+      "kind": "follow",
+      "suite": "doclast",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc",
+      "screen": "backfill-mistral-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-medcalc-doclast.done.json"
+    },
+    "wt-fa-mistral-medcalc-bridge-1018": {
+      "kind": "follow",
+      "suite": "bridge",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc",
+      "screen": "backfill-mistral-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-medcalc-bridge.done.json"
+    },
+    "wt-fa-mistral-medcalc-repair-1018": {
+      "kind": "follow",
+      "suite": "repair",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc",
+      "screen": "backfill-mistral-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-medcalc-repair.done.json"
+    },
+    "wt-fa-mistral-medcalc-edges-1018": {
+      "kind": "follow",
+      "suite": "edges",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc",
+      "screen": "backfill-mistral-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-medcalc-edges.done.json"
+    },
+    "wt-fa-mistral-theoremqa-battery-1018": {
+      "kind": "follow",
+      "suite": "battery",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa",
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-theoremqa-battery.done.json"
+    },
+    "wt-fa-mistral-theoremqa-windows-1018": {
+      "kind": "follow",
+      "suite": "windows",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa",
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-theoremqa-windows.done.json"
+    },
+    "wt-fa-mistral-theoremqa-doclast-1018": {
+      "kind": "follow",
+      "suite": "doclast",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa",
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-theoremqa-doclast.done.json"
+    },
+    "wt-fa-mistral-theoremqa-bridge-1018": {
+      "kind": "follow",
+      "suite": "bridge",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa",
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-theoremqa-bridge.done.json"
+    },
+    "wt-fa-mistral-theoremqa-repair-1018": {
+      "kind": "follow",
+      "suite": "repair",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa",
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-theoremqa-repair.done.json"
+    },
+    "wt-fa-mistral-theoremqa-edges-1018": {
+      "kind": "follow",
+      "suite": "edges",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa",
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-theoremqa-edges.done.json"
+    },
+    "wt-fa-q06-medcalc-bundle-1018": {
+      "kind": "follow",
+      "suite": "bundle",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc",
+      "screen": "backfill-q06-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-q06-medcalc-bundle.done.json"
+    },
+    "wt-fa-q06-theoremqa-bundle-1018": {
+      "kind": "follow",
+      "suite": "bundle",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa",
+      "screen": "backfill-q06-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q06-theoremqa-bundle.done.json"
+    },
+    "wt-f3-deepseek-theoremqa-s1-r1-1018": {
+      "kind": "depth",
+      "model": "deepseek",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "shard": 1
+    },
+    "wt-fa-llama-medcalc-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-medcalc",
+      "screen": "llama-medcalc.screen.json",
+      "old_model": false,
+      "done": "llama-medcalc-battery-l2.done.json"
+    },
+    "wt-fa-llama-theoremqa-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/llama-theoremqa",
+      "screen": "llama-theoremqa.screen.json",
+      "old_model": false,
+      "done": "llama-theoremqa-battery-l2.done.json"
+    },
+    "wt-fa-deepseek-medcalc-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-medcalc",
+      "screen": "deepseek-medcalc.screen.json",
+      "old_model": false,
+      "done": "deepseek-medcalc-battery-l2.done.json"
+    },
+    "wt-fa-deepseek-theoremqa-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa",
+      "screen": "deepseek-theoremqa.screen.json",
+      "old_model": false,
+      "done": "deepseek-theoremqa-battery-l2.done.json"
+    },
+    "wt-fa-q8-theoremqa-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-theoremqa",
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-theoremqa-battery-l2.done.json"
+    },
+    "wt-fa-mistral-medcalc-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-medcalc",
+      "screen": "backfill-mistral-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-medcalc-battery-l2.done.json"
+    },
+    "wt-fa-mistral-theoremqa-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-mistral-theoremqa",
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-mistral-theoremqa-battery-l2.done.json"
+    },
+    "wt-fa-q06-medcalc-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-medcalc",
+      "screen": "backfill-q06-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-q06-medcalc-battery-l2.done.json"
+    },
+    "wt-fa-q06-theoremqa-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q06-theoremqa",
+      "screen": "backfill-q06-theoremqa.screen.json",
+      "old_model": true,
+      "done": "backfill-q06-theoremqa-battery-l2.done.json"
+    },
+    "wt-fa-q8-medcalc-battery-l2-1018": {
+      "kind": "follow",
+      "suite": "battery-l2",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/backfill-q8-medcalc",
+      "screen": "backfill-q8-medcalc.screen.json",
+      "old_model": true,
+      "done": "backfill-q8-medcalc-battery-l2.done.json"
+    },
+    "wt-f3-deepseek-theoremqa-scorefix-s0-1019": {
+      "kind": "depth",
+      "model": "deepseek",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-scorefix",
+      "shard": 0
+    },
+    "wt-f3-deepseek-theoremqa-scorefix-s1-1019": {
+      "kind": "depth",
+      "model": "deepseek",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-scorefix",
+      "shard": 1
+    },
+    "wt-fix-ds-tqa-battery-1019": {
+      "kind": "followup",
+      "model": "deepseek",
+      "task": "theoremqa",
+      "suite": "battery",
+      "old_model": false,
+      "screen": "deepseek-theoremqa-corrected54.screen.json",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54",
+      "done": "deepseek-theoremqa-corrected54-battery.done.json"
+    },
+    "wt-fix-ds-tqa-battery-l2-1019": {
+      "kind": "followup",
+      "model": "deepseek",
+      "task": "theoremqa",
+      "suite": "battery-l2",
+      "old_model": false,
+      "screen": "deepseek-theoremqa-corrected54.screen.json",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54",
+      "done": "deepseek-theoremqa-corrected54-battery-l2.done.json"
+    },
+    "wt-fix-ds-tqa-windows-1019": {
+      "kind": "followup",
+      "model": "deepseek",
+      "task": "theoremqa",
+      "suite": "windows",
+      "old_model": false,
+      "screen": "deepseek-theoremqa-corrected54.screen.json",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54",
+      "done": "deepseek-theoremqa-corrected54-windows.done.json"
+    },
+    "wt-fix-ds-tqa-mechanism-1019": {
+      "kind": "followup",
+      "model": "deepseek",
+      "task": "theoremqa",
+      "suite": "mechanism",
+      "old_model": false,
+      "screen": "deepseek-theoremqa-corrected54.screen.json",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54",
+      "done": "deepseek-theoremqa-corrected54-mechanism.done.json"
+    },
+    "wt-legacy-q8-tqa-1019": {
+      "kind": "followup",
+      "model": "q8",
+      "task": "theoremqa",
+      "suite": "legacy-replay",
+      "old_model": true,
+      "screen": "backfill-q8-theoremqa.screen.json",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/q8",
+      "done": "legacy-replay-20261019/q8-replay.done.json"
+    },
+    "wt-legacy-q06-tqa-1019": {
+      "kind": "followup",
+      "model": "q06",
+      "task": "theoremqa",
+      "suite": "legacy-replay",
+      "old_model": true,
+      "screen": "backfill-q06-theoremqa.screen.json",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/q06",
+      "done": "legacy-replay-20261019/q06-replay.done.json"
+    },
+    "wt-legacy-mistral-tqa-1019": {
+      "kind": "followup",
+      "model": "mistral",
+      "task": "theoremqa",
+      "suite": "legacy-replay",
+      "old_model": true,
+      "screen": "backfill-mistral-theoremqa.screen.json",
+      "prefix": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/mistral",
+      "done": "legacy-replay-20261019/mistral-replay.done.json"
+    },
+    "wt-recover-q8-tqa-hdd-1019": {
+      "kind": "quota-recovery",
+      "prefix": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019",
+      "done_absolute": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/q8-transfer-recovery.done.json"
+    },
+    "wt-recover-mistral-tqa-hdd-1019": {
+      "kind": "quota-recovery",
+      "prefix": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019",
+      "done_absolute": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/mistral-knockout.done.json"
+    },
+    "wt-recover-q8-ko-hdd-1019": {
+      "kind": "quota-recovery",
+      "prefix": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019",
+      "done_absolute": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/q8-knockout.done.json"
+    },
+    "wt-recover-ds-edges-hdd-1019": {
+      "kind": "quota-recovery",
+      "prefix": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019",
+      "done_absolute": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/deepseek-theoremqa-corrected54-edges.done.json"
+    }
+  },
+  "depth_shards": 2,
+  "fixed_gpu_cap": 8,
+  "amendment_uniform_l2": {
+    "date": "2026-10-18",
+    "status": "post-hoc sensitivity, not preregistered",
+    "reason": "Observed first crossings at L4-L6 make L8 nonuniform as early positive control",
+    "fixed_layer": 2,
+    "original_L8_results_retained": true
+  },
+  "quota_recovery": {
+    "root": "/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019",
+    "reason": "SSD Errno122; original partial files retained",
+    "superseded": {
+      "wt-legacy-q8-tqa-1019": [
+        "wt-recover-q8-tqa-hdd-1019",
+        "wt-recover-q8-ko-hdd-1019"
+      ],
+      "wt-legacy-mistral-tqa-1019": [
+        "wt-recover-mistral-tqa-hdd-1019"
+      ],
+      "wt-fix-ds-tqa-mechanism-1019": [
+        "wt-recover-ds-edges-hdd-1019"
+      ]
+    }
+  }
+}

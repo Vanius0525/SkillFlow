@@ -1,0 +1,52 @@
+{
+  "jobs": [
+    {
+      "name": "wt-recover-q8-tqa-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/quota_recovery_worker.py --key q8 --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --layers 36 --original /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019 --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo"
+    },
+    {
+      "name": "wt-recover-mistral-tqa-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/quota_recovery_worker.py --key mistral --model /inspire/ssd/project/project-public/czxs253130660/models/Mistral-7B-Instruct-v0.3 --layers 32 --original /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019 --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo"
+    },
+    {
+      "name": "wt-recover-q8-ko-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/legacy_text_entry.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --module wb_knockout --expected /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/legacy-q8-theoremqa.expected.json -- --dataset theoremqa --model /inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B --cells /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/legacy-replay-20261019/legacy-q8-theoremqa.cells.json --cells-keep R --per-calc 10000 --max-calcs 10000 --min-group 1 --max-new 900 --sweep layers --attn eager --layers 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35 --out /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/q8-knockout.jsonl"
+    },
+    {
+      "name": "wt-recover-ds-edges-hdd-1019",
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/isolated_suite_worker.py --repo /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/repo --model /inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat --ids /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/ids-theoremqa.json --engine /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/instrument.py --dataset theoremqa --screen /inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1/deepseek-theoremqa-corrected54.screen.json --prefix /inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019/deepseek-theoremqa-corrected54 --suite edges"
+    }
+  ]
+}

@@ -1,22 +1,25 @@
 \begin{abstract}
-Agent skills provide task-specific capabilities by loading instructions and
-supporting resources into a language model's context. We investigate what
-allows the internal states produced from a skill to support another
-execution. Across model depth, we transplant correct-skill residual states,
-the hidden vectors passed between model blocks, into a wrong-skill
-execution. Separately, we block subsequent attention to the skill in the
-original execution. Across seven verified comparisons spanning five models from four families
-on MedCalc and TheoremQA, residual-state transfer weakens before dependence on source access
-subsides. Content, position and cross-question controls establish that early
-transfer carries structured skill information. To investigate the later
-separation, we jointly replace skill states and the source positions'
-key/value (KV) cache, which stores attention vectors for previously processed
-tokens. On Qwen3-8B/MedCalc, this raises layer-$16$ accuracy from $3.5\%$
-with residual replacement alone to $42.1\%$. Cutting subsequent reading of
-the repaired source reduces accuracy to $7.0\%$. Skill-state transfer thus
-depends on more than the replaced residual vectors: compatible source
-caches can restore part of the effect, while continued source access can
-remain necessary for the recovered behaviour. The mechanism evidence
-covers one model--task setting and identifies source caches and subsequent
-reading as concrete factors to test when reusing contextual skills.
+% Background (1 sentence).
+Contextual skills supply reusable instructions to language-model agents,
+motivating efforts to transfer the resulting internal representations
+across executions.
+% Gap / research question (1 sentence).
+When such transfer weakens at later layers, does the original execution
+also depend less on the skill text, or does the transfer omit components
+that still matter?
+% Approach (2 sentences).
+We pair skill-position residual replacement in a wrong-skill receiver with
+cumulative skill-attention knockout in the correct-skill execution,
+comparing both interventions on common eligible questions across depth.
+Early content and position controls validate the transfer probe, and a
+focused experiment adds skill-position key/value cache replacement.
+% Results / findings / insight (2 sentences).
+Across six verified model--benchmark comparisons involving four open-weight
+models on MedCalc-Bench and TheoremQA, transfer recovery falls below half
+of the donor's gain before skill-attention dependence falls to half,
+revealing a depth interval with weak transfer but persistent dependence.
+On Qwen3-8B/MedCalc at layer $16$, adding skill-cache replacement raises
+accuracy from $3.5\%$ to $42.1\%$, while a subsequent post-skill-to-skill cut
+reduces it to $7.0\%$; this identifies a partial repair in one setting,
+without uniquely explaining late transfer failure.
 \end{abstract}

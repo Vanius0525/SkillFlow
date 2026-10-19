@@ -1,47 +1,45 @@
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Transferring task behaviour through internal states.}
-Task vectors summarize demonstrations as internal vectors that can steer
-a new example \citep{hendel2023taskvectors}. Function vectors identify
-attention-head outputs that transmit a task's behaviour across contexts
-\citep{todd2024functionvectors}. Natural-language instructions also yield
-transferable components \citep{davidson2025prompting}, and instruction
-patches can interact across layers \citep{bigoulaeva2026instructionvectors}.
-The effect of transfer varies with the task and intervention time
-\citep{jit2025taskrepr}. These results establish useful transfer settings.
-We examine how transfer changes across depth relative to the original
-execution's continued dependence on its skill source.
+\paragraph{State transfer and its interpretation.}
+Task vectors summarize demonstrations as internal vectors
+\citep{hendel2023taskvectors}, and function vectors identify attention-head
+outputs that transmit task behaviour \citep{todd2024functionvectors}.
+Instructions also yield transferable components
+\citep{davidson2025prompting,bigoulaeva2026instructionvectors}, whose effects
+vary with intervention depth \citep{jit2025taskrepr}. Activation patching
+requires matched controls and careful implementation
+\citep{zhang2023bestpractices,heimersheim2024patching}. In particular,
+restoring behaviour and disrupting it need not reveal the same components.
+Interactions with other components can also affect a patching estimate
+\citep{vaidyanathan2026mediators}. We build on these methodological
+distinctions; the general difference between restoration and disruption is
+not itself our empirical contribution.
 
-\paragraph{Tracing context use and execution history.}
-Cumulative context masking tests whether a model still needs source tokens
-at later layers \citep{sia2024incontexttranslation}.
-Instruction-span and final-position patches can reveal different effects
-\citep{onset2025instruction}. Joint analyses of masking and state transfer
-locate subtask execution across layers \citep{yang2025internalcot}.
-Activation patching, the replacement of selected
-hidden states by states from another run, requires matched controls and
-careful implementation
-\citep{zhang2023bestpractices,heimersheim2024patching}.
-Effects can depend on interactions among the intervened components
-\citep{vaidyanathan2026mediators}. We pair full-depth transfer and masking
-profiles, then test source states together with their attention caches.
-This connects our work to PrefillNotes \citep{li2026prefillnotes}, which
-shows that precompiled skill caches can be repositioned and composed with
-a target context. Our focus is when residual-state reuse weakens while
-source access remains important, and how replacing source-position caches
-affects that separation.
+\paragraph{Depth, skill access and context caches.}
+Pola and Balasubramanian \citep{onset2025instruction} locate an onset beyond
+which selected residual patches largely cease to change answers in their
+instruction tasks. Sia et al.\ \citep{sia2024incontexttranslation} use
+layer-wise context masking to test when translation no longer requires
+attention to its context. Joint transfer and masking analyses also locate
+subtask computation \citep{yang2025internalcot}. We compare residual
+transfer with skill-attention knockout within skill-based settings, then
+test an omitted skill-position component. Differences in tasks, models and
+interventions prevent our results from directly refuting the earlier
+onset or translation findings. PrefillNotes \citep{li2026prefillnotes}
+studies reusable skill caches. Our focused cache intervention asks how
+extending skill replacement affects an observed late transfer deficit;
+it is not a full-cache reuse system or a unique test of history matching.
 
 \paragraph{Skills and reusable context.}
 Agent Skills organize instructions and resources for on-demand use
-\citep{zhang2025agentskills}. Benchmarks measure skill retrieval and
-application \citep{su2026srabench,skillsbench2026,sweskills2026}, while
-matched-budget evaluations show that their benefit depends on the available
-computation \citep{hajimiri2026budgetskills}. We fix the selected skill and
-study how its loaded content supports execution.
-A related direction compresses context into aggregated activations
+\citep{zhang2025agentskills}. Benchmarks study skill retrieval and application
+\citep{su2026srabench,skillsbench2026,sweskills2026}, while matched-budget
+evaluations expose their dependence on available computation
+\citep{hajimiri2026budgetskills}. We hold skill selection fixed.
+Other approaches compress context into aggregated activations
 \citep{ardoin2026promptcompression}, learned summary tokens
-\citep{mu2023gist}, compact hidden states \citep{ge2024icae}, or weight
-updates \citep{doc2lora2026,deepcontextdistill2025}.
-We study naturally occurring states through interventions, providing tests
-of reuse and source dependence that complement trained compression methods.
+\citep{mu2023gist}, hidden states \citep{ge2024icae}, or weight updates
+\citep{doc2lora2026,deepcontextdistill2025}. Our interventions characterize
+naturally occurring states and skill dependence without training a
+compression mechanism.

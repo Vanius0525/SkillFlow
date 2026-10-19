@@ -1,3 +1,33 @@
+## 2026-10-19 最新同步约定、术语与配额故障续接
+
+- 用户最新要求：**每次论文更新先运行olcli完整行级diff，纳入合理云端修改；本地修改和编译审计后同步Overleaf与GitHub，不再向桌面导出。** 该要求覆盖历史桌面交付步骤，旧交付保留。详细入口OVERLEAF.md；5h检查消息已同步改为新流程，反例仍只记录研究，暂不进paper。
+- 已核验关联Overleaf项目6a2cfd49b99635e8e968576a，虽然项目名仍是旧ICLR Skillflow，实际当前稿在overleaf-skillvector/。首次误用paper根作diff导致大量local-only，随后改为17项匹配暂存目录，保存并完整审阅998行真实diff。差异不能单独识别作者；采用云端更准确的历史筛选/重新评估、条件性结论、机制覆盖局限、四主模型+Qwen0.6补充检查等内容，保留用户要求的Intro首段Web语义关联。图3仍7个已核验panel（6主+1补充），不把未审计旧TheoremQA补入。Table2保留云端4模型×2任务矩阵、两Pending单元与归一化深度差；生成器已适配，原数值JSON未改。
+- source统一为skill span/skill-position states/skill-position KV cache；reader改为post-skill positions，明确是skill之后的提示词和生成推理/答案token，不是receiver模型。前置token因causal mask不能读skill。Figure2/4、Table3及正文/当前附录一致；切边不删除skill、不抹去已传播的信息。Table3前三行是干预结果对比，并非各有一个mask；路径切断行准确指向query→skill keys。
+- 本地编译改Windows Temp，首次通过正文8/全文11页，error/undefined/hbox/vbox均0；云端上传前再次diff核验自首次读取后无新增修改，17文件上传成功，指定nested main独立编译成功。云端PDF也核验正文8/全文11页，0error/undefined/hbox/vbox；ZIP与上传的所有TeX/Bib/PDF逐文件哈希一致，audit/OVERLEAF-TERMINOLOGY-20261019.json。没有新桌面输出。
+- 实验新故障：Qwen8原Job16:55于L4块输出写入Errno122 Disk quota exceeded；DeepSeek机制17:03已完成bridge与repair，但创建edges manifest（零字节）失败；Mistral17:14在L28块写入也失败。Qwen0.6重生成与DeepSeek battery/L2/windows已成功。原失败块全部保留，不重启整池，不删文件。SSD df余量不能代表用户配额；CPU小写可成功不等于GPU大写正常。
+- HDD新目录/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019，8MiB写入实测通过。仅复制Qwen8/Mistral完整首块基线和小脚本；quota_recovery_worker验证SSD完成块的条数、raw哈希（如有）、模块哈希和层网格后跳过，只在HDD重生成未完成块。原partial仍在SSD，不拼接残缺raw。Qwen8transfer与KO分成2卡；Mistral补L28块后KO；DeepSeek仅edges。四Job dry-run与提交均成功，最近4个job_queuing，**尚不能宣布实际开始**。名字wt-recover-{q8-tqa,mistral-tqa,q8-ko,ds-edges}-hdd-1019，详细quota-recovery-jobs.json；总卡最多4≤8，未下载权重。
+- parallel-plan/launch-state已登记新4任务（总75已提交，含被替代失败Job），quota_recovery注明旧3Job替代关系和HDD完成标记绝对路径。旧计划Qwen8 SSD并行KO从未提交，不能恢复它。watch_progress已改观察HDD与新4Job，旧失败Job由新任务取代；30min监督与5h检查均active。整项实验尚未完成，不建TASK-COMPLETE。
+- 下一步：先核验4个HDD任务正式raw/manifest和GPU写入；完成后按SSD完整块+HDD续接块联合审计网格、身份与逐题隔离评分，不混入SSD残缺块。DeepSeek repair独立重判/edges及全部suite人群仍待汇总，Qwen0.6已完成输出待独立审计。暂不承诺全部完成时间，排队和存储条件影响很大。固定99题Llama长度诊断仍未提交，反例只作研究记录。
+
+## 2026-10-19 14:22 授权自主监督与排程优化已落实
+
+- 最新用户指令：及时监督，无需逐项确认，采用更高效排程，并区分正文真正需要的证据。平台沙箱强制审批仍适用；没有让用户选择日常实验细节。
+- 增设30分钟轻量监督family-depth-watch-01a15016.timer（首轮14:04已成功，下一轮14:35，live核验active waiting）。原5小时family-depth-progress-01a14a9e.timer active，下一轮18:16。watch_progress.py只在失败/整体2h无输出/并行提交等异常或阶段变化queue当前thread；有效期同原14天，到TASK-COMPLETE/expiry停自身timer。无自动盲目重试。
+- watch-progress-state.json已保存首轮七Job running及12个正式raw文件的字节/mtime，无last_error。每30min只读小metadata，不下载大输出。
+- 已部署legacy_text_entry V2到远端原入口，用于后续新层块；正在生成的V1进程不受影响。原V1本地/远端均备份，V2哈希124146bde1f7f4e1df059e9f3efd30f4e29001bf70273abe24150a2f7b5432c2。完整首批基线done后，按全候选group receiver-zero＋donor-correct＋no-skill-wrong冻结有效ID，再计算后续transfer/KO。选择不读任何干预结果。baseline_admission.py通过group排除、donor/no-skill与干预字段无关性检查；V2每文件manifest含helper/source哈希和筛选ID。
+- 后续span层块不重复生成每个块两端的identity，仅保留原首块控制与全模型最终层控制。KO仍为所有入选题生成其独立eager基线，仅在该题donor-rescued时计算昂贵全层KO；不制造未生成的干预输出。数值规则/900预算/attention实现不变。原baseline不筛小池，不按干预结果挑题。
+- Qwen8 KO并行配置q8-knockout-parallel-job.json已dry-run通过。轻量监督将在完整首批168基线done、canonical KO尚未开始且活跃Job<8时记录attempted/owner并提交第8卡，复用同一个canonical KO路径。原worker之后验证完成标记/args/source/条数/哈希并跳过已完成KO，不重复生成；若KO尚在跑则有界等待24h并由监督查错。提交不确定不自动重试。任务实际提交时才增加parallel-plan和launch-state（当前仍71已提交）。
+- 实验优先级：若要完整五模型×两任务矩阵，旧3组TheoremQA深度/KO与基线评分审计必须完成；当前7组v8并不依赖这些未完数据。L2/content/path控制是结论支撑或附录证据，不必每项进正文。重复窗口是因果冗余的一致性检查，不再扩展新窗口。固定99题L24长度诊断未启动，降为后续研究，暂不占第8卡或改paper。
+- V2生效已live验证：Qwen0.6后续L20–23、24–27及KO三个manifest均显示baseline_screen_applied=true、eligible125/原168；新筛选只使用完整基线。Qwen8/Mistral仍待后续层块验证。
+- 下一步：核验V2实际被后续Qwen8/Mistral层块采用、监控first baseline→并行KO触发，按新吞吐更新ETA；审计后再改稿。v8已推5c05cdc并同步桌面；本轮ongoing实验代码/状态未提前打包提交，TASK-COMPLETE仍不存在。
+
+## 2026-10-19 13:43 七项补跑全部正式开始与耗时估计
+
+- 用户询问是否全部在跑及多久。Live七Job均running，且全部有正式raw：Mistral已有304条回答、Qwen8 169条；Qwen0.6已完成0–3、4–7两层块，正在8–11。DeepSeek L8/L2/windows分别12/18/27题已开始（不是完成题数），bridge done、repair到第5题。已向用户明确本轮7项均正式开始里程碑，不能沿用旧state旧里程碑。
+- 粗估剩余：DeepSeek controls1–3h、机制4–8h、Qwen0.6重生成2–4h、Mistral12–24h、Qwen8约30–60h。该估计只按首批实际吞吐与完整待跑层网格外推，后层回答可能更长；需5h后更新，不保证上界。Qwen8为瓶颈，可能超过单Job48h，必须在接近上限前保存/核验完成层块，制定不重跑已完成内容的分段续接；不盲目重启整个worker。
+- 原任务中额外固定99题Llama L24长度诊断未正式提交，另作研究，不谎称该项也在跑。当前7卡<8卡上限。
+- v8已同步桌面并push master 5c05cdc；后续实验/研究继续，反例暂不进paper。timer保持，TASK-COMPLETE不存在。
+
 ## 2026-10-19 v8阶段交付编译与桌面同步通过，提交检查点
 
 - 用户要求立即阶段交付已落实论文更新。export_review.py实际ZIP独立编译通过：正文7/全文10页，0error/undefined/hbox，1个尾页2.124pt vbox（目视无越界）。桌面新目录StillNeeded-WWW2027-v8-VerifiedDepth-20261019已创建；上传包17项，SHA256 ac49abd63ee5d479b334fa8074aa23b374b6931693a643219c4608d6ea0b29e1。audit/DESKTOP-VERIFIED-DEPTH-20261019.json。
