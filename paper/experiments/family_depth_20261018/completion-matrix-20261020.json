@@ -803,14 +803,24 @@
       "records": 469
     },
     {
-      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/hsw2/spanvec-doclast.jsonl",
-      "sha256": "29ef38472ac0fad782f772c0b04dc8e3dcfa2f95777563a01f228c27f48d4b78",
-      "records": 40
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/hsw3/full-dl-a.jsonl",
+      "sha256": "fba2810bb0c823cc13faccdc81aae2d26a344c6bbb90953712a1cf41dee4db15",
+      "records": 467
     },
     {
-      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/hsw2/spanvec-dl-ctrl.jsonl",
-      "sha256": "4064e72aa931d8a9969cb3d536559d24d71248811dcce7eeae7fec3669873176",
-      "records": 40
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/wb/full-dl-b.jsonl",
+      "sha256": "15fd83a32e4ce847a6bc86abcc7fd713bdad31f2ee49f2a1c07a95f0e45362e3",
+      "records": 467
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/sra2/full-quarters.jsonl",
+      "sha256": "34743fc4edc0799eefdf522aab55d89ebc25383d19f6fcf58363992369487278",
+      "records": 467
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/sra4/pb-tq.jsonl",
+      "sha256": "e3bc98685c50b319ee344ab97ba279801e0b5edcb5f3ebf2c448ecf4c46029c2",
+      "records": 135
     }
   ],
   "audited_family_files": 80,
@@ -828,5 +838,11 @@
     "Exact historical knockout budget equivalence for regenerated legacy TheoremQA remains unverified.",
     "Old DeepSeek depth missing records are resolved by merging scorefix supplements; do not double-count baselines.",
     "HDD quota remains unresolved for durable writes; audit reports were returned directly to local storage."
-  ]
+  ],
+  "historical_q8_medcalc_doclast_verified": {
+    "n": 151,
+    "groups": 17,
+    "L8_current_rho": 1.0168067226890756,
+    "L8_other_rho": 0.9831932773109243
+  }
 }
