@@ -1,3 +1,7 @@
+## 2026-10-20 当前状态（覆盖下方旧状态）
+
+剩余独立审计完成，正文4主模型×2 benchmark的8格深度均齐全；补充Qwen0.6两格也齐全。内容/位置、L2、跨题、windows、bridge、repair、edges均有各模型任务产物，结构性无donor按独立分母处理。详见[COMPLETION-20261020.md](COMPLETION-20261020.md)与completion-matrix-20261020.json。论文尚未整合，不能将数据齐全当交付完成。HDD个人配额受限，所有本轮审计报告已直接取回本地，原始数据未改、未删除。
+
 ## 2026-10-19 最新续接入口（覆盖下方旧状态）
 
 用户最新论文流程：先在正确关联暂存目录运行完整`olcli diff`、纳入云端合理修改；本地改完并验证后同步Overleaf与GitHub，不再导出桌面。见paper/OVERLEAF.md与HANDOFF.md顶部。

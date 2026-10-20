@@ -1,3 +1,14 @@
+## 2026-10-20 剩余审计完成，正文模型×benchmark矩阵齐全
+
+- 用户目标已处理：诊断HDD配额、完成剩余审计、判定正文所需结果是否齐全。本轮无GPU生成/重提，无删除/下载，无论文修改。
+- Mistral/TheoremQA：6332回答独立重判changed_labels=0；逆序＋16 fresh-process对照通过；142候选→73 transfer有效→72共同题/58组，32层完整，self身份无失败，T/R=7/19。报告mistral-independent-audit-20261020-r1.json；初次检查仅因模型层块计数残留9而在重判前失败，修正8块后通过。
+- 全suite最终审计completed-matrix-audit-20261020-r1.json：80文件/87915记录，绑定原始SHA与已验证评分overlay，新增独立重判24480个唯一回答（其中TheoremQA414），标签新变化0，逆序＋16 fresh-process对照通过；6024个已执行身份对照无失败。冻结候选覆盖、必需身份网格、跨题donor身份核验通过。结构性same-family/跨题无donor明确单列，不填0、不当漏跑。
+- DeepSeek corrected54 edges/repair：54题的donor/receiver/no-skill基线token逐题一致，各suite独立有效46题/40组，必需网格无缺失。深度原分片因评分修正新增5题对应300缺失键，已通过scorefix补跑合并消除；final-family-depth-audit-20261020.json确认4个新增家族组合全层无缺失、无基线token漂移、身份通过。
+- 完成度：正文4主模型×MedCalc/TheoremQA=8格深度齐全，Qwen0.6补充2格齐全。Qwen8/TQA82题66组、Mistral/TQA72题58组；其余见completion-matrix-20261020.json和COMPLETION-20261020.md。内容/位置、L2、doclast、windows、bridge、repair、edges共70个模型×任务×suite格有产物；Qwen8/MedCalc六格沿用原已验证实验，本轮另核对关键源文件，其他64格按协议核验。历史深度47份源文件及原Qwen8/MedCalc机制12份源文件SHA全部复核匹配。
+- 结论边界：完整指既定冻结候选集与各suite独立基线下的计划矩阵，不是每模型全量benchmark，也不是70格同题同协议重生成；bridge仅2候选预检、部分对照无donor，历史TheoremQA KO预算等价性未最终核实。当前稿件仍写6/8与两Pending，数据已齐不代表论文整合完成。
+- 存储：HDD整盘余约25TiB/inode充足、个人du约58GiB，Errno122为配额约束而非整盘满，精确限额未获得；SSD整盘余569GiB但个人约92GiB，也不能据df承诺可写。HDD大目录artifacts26GiB、support_opd_20261002约12GiB、models12GiB、wheelhouse3GiB；前两项为其他研究结果，不擅自清理。当前审计用纯内存＋stdout报告已全部完成，不需删数据。恢复长期持久写入需核对可再生缓存/旧checkpoint用途后用户确认删除，或申请调配额。
+- 本轮CPU审计/只读探针均退出，无后台审计待续接。未建TASK-COMPLETE，小时/5h监督保留。下一步是论文整合：先在正确Overleaf关联目录完整olcli diff，纳入协作者修改，再更新图3/深度表/分母与正文结论及所需机制说明，独立编译审计并按流程同步；不能直接将“所有实验完成”写成跨所有题/所有协议的机制泛化。
+
 ## 2026-10-20 13:17 Qwen8独立审计与聚合完成（论文未改）
 
 - 已完成本次q8-transfer-20事件对应的全Qwen8审计，不重跑GPU。9个transfer块＋KO共9828条原始回答，逐题parser重置后changed_labels=0，全量逆序一致，16个全新进程评分一致；生成顺序与窄表一一映射，prompt/span与冻结expected一致。

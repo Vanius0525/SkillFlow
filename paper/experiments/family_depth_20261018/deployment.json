@@ -1,8 +1,8 @@
 {
-  "status": "original64 complete; corrected54 four jobs plus legacy TheoremQA three jobs submitted",
+  "status": "Frozen conditional experiment matrix complete and audited; manuscript integration pending",
   "account": "me",
-  "workspace": "可上网GPU资源",
-  "project": "公共科研项目",
+  "workspace": "\u53ef\u4e0a\u7f51GPU\u8d44\u6e90",
+  "project": "\u516c\u5171\u79d1\u7814\u9879\u76ee",
   "root": "/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1",
   "cpu": "wt-family-prep-1018",
   "jobs_planned": [
@@ -23,7 +23,7 @@
   "llama_access": "HEAD 403: current fine-grained HF token does not allow public gated repositories",
   "deepseek_access": "HEAD success",
   "download_approved": true,
-  "approval": "User 2026-10-18: 新权重和新模型下载可以进行。预检等等前置工作完成后，直接进行正式实验。",
+  "approval": "User 2026-10-18: \u65b0\u6743\u91cd\u548c\u65b0\u6a21\u578b\u4e0b\u8f7d\u53ef\u4ee5\u8fdb\u884c\u3002\u9884\u68c0\u7b49\u7b49\u524d\u7f6e\u5de5\u4f5c\u5b8c\u6210\u540e\uff0c\u76f4\u63a5\u8fdb\u884c\u6b63\u5f0f\u5b9e\u9a8c\u3002",
   "coordinator": "family-depth-launch-01a14a9e.service",
   "llama_distribution": "NousResearch/Meta-Llama-3.1-8B-Instruct@d10aef7999a2b5ba950ab3974312feeedbfe0b77; weights/config/vocab match official; tokenizer_config differs",
   "download_cpu": "wt-paper-fetch-1017",
@@ -34,7 +34,7 @@
   "depth_jobs": 8,
   "followup_gpu_jobs": 44,
   "fixed_gpu_cap": 8,
-  "user_parallelism_authorization": "最终用户：或者还是8卡比较合适，不一定有这么多卡。",
+  "user_parallelism_authorization": "\u6700\u7ec8\u7528\u6237\uff1a\u6216\u8005\u8fd8\u662f8\u5361\u6bd4\u8f83\u5408\u9002\uff0c\u4e0d\u4e00\u5b9a\u6709\u8fd9\u4e48\u591a\u5361\u3002",
   "superseded_jobs": [
     "wt-f3-llama-medcalc-1018",
     "wt-f3-llama-theoremqa-1018",
@@ -54,7 +54,7 @@
   ],
   "all_main_text_experiments_started": true,
   "retry": "wt-f3-deepseek-theoremqa-s1-r1-1018 passed on gpu057; initial failed on gpu097",
-  "last_audit": "2026-10-19 live resume",
+  "last_audit": "2026-10-20T13:27:44.366947+08:00",
   "independently_audited_depth_cells": 3,
   "uniform_l2_posthoc_jobs": 10,
   "total_planned_jobs": 71,
@@ -71,5 +71,15 @@
     "jobs_file": "quota-recovery-jobs.json",
     "reason": "SSD Errno122; retain completed and partial originals; reuse validated complete blocks",
     "status_at_20261019_1734_CST": "four recovery jobs queued; no actual-start announcement yet"
-  }
+  },
+  "completed_recovery_jobs": [
+    "wt-recover-q8-tqa-c132-1019",
+    "wt-recover-mistral-tqa-c132-1019",
+    "wt-recover-q8-ko-c132-1019",
+    "wt-recover-ds-edges-c132-1019"
+  ],
+  "active_jobs": [],
+  "completion_audit": "completion-matrix-20261020.json",
+  "manuscript_integration_complete": false,
+  "storage_status": "HDD EDQUOT; filesystem has free space; exact personal quota unknown; audits completed without shared-disk writes"
 }

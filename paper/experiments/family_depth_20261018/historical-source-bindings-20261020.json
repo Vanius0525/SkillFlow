@@ -1,0 +1,307 @@
+[
+  {
+    "audit": "audit/DEPTH-CROSSMODEL-20261015.json",
+    "checks": [
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/full-depth-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb3/full-depth-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb4/full-depth-c13.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb4/full-depth-d.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw/full-battery-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb3/dep1-mc8-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb4/dep1-mc8-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb/dep1-mc8-c.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/dep1-mc8-d.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra3/full-ko.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw/ko1-mc8-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw2/ko1-mc8-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw3/ko1-mc8-c.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra1/ko1-mc8-d.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra2/ko1-mc8-e.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra3/ko1-mc8-f.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra3/tqa-depth.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw/dep1-tqa8-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw2/dep1-tqa8-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw3/dep1-tqa8-c.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra1/dep1-tqa8-d.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb/tqa-ko.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra2/ko1-tqa8-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra3/ko1-tqa8-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra4/ko1-tqa8-c.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/q06-depth-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/q06-depth-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/q06-bat-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw/dep1-mc06-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw2/dep1-mc06-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/q06-ko.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra1/ko1-mc06.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/tqa06-depth.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/hsw3/dep1-tqa06.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/t06-ko.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra2/ko1-tqa06.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb/mis-depth-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra4/mis-depth-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb/mis-bat-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra4/dep1-mcmis.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra4/mis-ko.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra4/ko1-mcmis.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb2/tqamis-depth.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb3/dep1-tqamis-a.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/wb4/dep1-tqamis-b.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra4/tqamis-ko.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "howskill/results/p8-wb/fetched/by-host/sra3/ko1-tqamis.jsonl",
+        "exists": true,
+        "matches": true
+      }
+    ]
+  },
+  {
+    "audit": "experiments/mechanism_20261017/formal-audit.json",
+    "checks": [
+      {
+        "file": "experiments/mechanism_20261017/parallel/identity-s4-0.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/identity-s4-1.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/identity-s4-2.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/identity-s4-3.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/repair-s4-0.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/repair-s4-1.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/repair-s4-2.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/repair-s4-3.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/edges-s4-0.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/edges-s4-1.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/edges-s4-2.jsonl",
+        "exists": true,
+        "matches": true
+      },
+      {
+        "file": "experiments/mechanism_20261017/parallel/edges-s4-3.jsonl",
+        "exists": true,
+        "matches": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-20",
+  "observed_error": "Errno122 EDQUOT writing grading overlay",
+  "hdd_filesystem_available_bytes": 26548434370560,
+  "hdd_filesystem_free_inodes": 14821502792,
+  "hdd_personal_allocated_approx_gib": 58,
+  "ssd_filesystem_available_bytes": 610501918720,
+  "ssd_personal_allocated_approx_gib": 92,
+  "exact_personal_quota": "not obtained; df does not report it",
+  "largest_hdd_subdirectories_approx_gib": {
+    "artifacts": 26,
+    "support_opd_20261002": 12,
+    "models": 12,
+    "wheelhouse": 3
+  },
+  "deletions_performed": false,
+  "audit_workaround": "Read raw in place; score in memory; return small reports directly to local project",
+  "permanent_fix": "Identify reusable package caches or obsolete checkpoints and obtain confirmation for exact deletions, or request a higher quota; other-project research outputs are retained."
+}
