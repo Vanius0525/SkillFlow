@@ -1,0 +1,47 @@
+{
+  "project": "6a2cfd49b99635e8e968576a",
+  "root": "overleaf-skillvector/main.tex",
+  "baseline_full_diff": "No differences; remote fetched 2026-10-20T07:09:41.678Z",
+  "prepush_full_diff": "No differences; remote fetched 2026-10-20T07:24:42.228Z",
+  "final_full_diff": {
+    "added": 0,
+    "modified": 0,
+    "remote_only": [
+      "overleaf-skillvector/figures/fig-depth-scale-check.pdf"
+    ],
+    "remote_fetched": "2026-10-20T07:26:41.215Z"
+  },
+  "note": "Unused historical small-model PDF remains unreferenced on remote; no deletion propagated. All active sources match.",
+  "cloud_pdf_pages": 12,
+  "cloud_pdf_text_identical_to_verified_local": true,
+  "main_pages": 8,
+  "cloud_pdf_sha256": "57e2372d2efa7aab79178243d9e5e2042136590ac0095d8b6a8a1a328b0e6456",
+  "uploaded_files": {
+    "overleaf-skillvector/main.tex": "e4cb871d716e8d2ba263b17a8e16f636d3e7088b53ba9d9679e25c460a751df0",
+    "overleaf-skillvector/skillvector.bib": "4967941bfd5707d4073a182863fdd05ffb9972afdcf71206d67f446a23bc3a77",
+    "overleaf-skillvector/README.md": "1e799a359870ff811faf01cbb07f869b63e0e266233ceba8ce7285b3723c8403",
+    "overleaf-skillvector/sections/05-conclusion.tex": "0da9112dc51f5a144319d6b52be625ad2b78202589329c694cdedb6f5e3aec7d",
+    "overleaf-skillvector/sections/03-problem-formulation.tex": "abf0be131348515bff87043f4b7dc1cc65045c1bba83a0a78bf0da5f1d136577",
+    "overleaf-skillvector/sections/00-abstract.tex": "ebd105e5baeecbcb3b613b951da68de940a76260a128e6cf00ad3799b9cb53ca",
+    "overleaf-skillvector/sections/01-introduction.tex": "52b1e0d2357c146eb68fb4da7fe86ad23f4a616ec3d5e037df88d0040f52a73c",
+    "overleaf-skillvector/sections/02-related-work.tex": "8e493c9a300d2c05a057c0374b526427a3bed5bc7304343676b8277bfb1e3ff8",
+    "overleaf-skillvector/sections/04-experiment.tex": "ddb5dfa7b00ee934c9faf27672c69cef53e0f579b56e5aa91472d5199b184cea",
+    "overleaf-skillvector/appendix/b-full-dataset-rerun.tex": "3ffc2ff2694308ef7ec1ab26a9da2a662dcc9d3734d9c1c5ca5ff1e04462c1fc",
+    "overleaf-skillvector/appendix/a-setup.tex": "0cadef9267a19f8dad48b0a2b95de7d7d2245113a932b457726935feebf560cd",
+    "overleaf-skillvector/tables/tab-mechanism-contrasts.tex": "c5c727cb972e86b87031263c87c808427da0c5be0090623376056350e4a159fc",
+    "overleaf-skillvector/tables/tab-paired-depth.tex": "64692ad4587721d76963c9729998f07c24e9affeb0f39ed4afdea392f5bb1765",
+    "overleaf-skillvector/tables/tab-control-matrix.tex": "0313bf8e75124c456570f77cce177b1a15fe7f97160ea6266c09a273b585e1f9",
+    "overleaf-skillvector/tables/tab-extension-populations.tex": "18426cc4926cecf7e5841cab492b99a725221aa6acbf19ae6ed30bc6fe915289",
+    "overleaf-skillvector/tables/tab-fullscale-float.tex": "59842fe3ba37bb0f54bf9f47de18a40d2545cec1a0e8255512f90c2df6b80454",
+    "overleaf-skillvector/tables/tab-additional-controls.tex": "957cbfe5190f9facbbfc89859774b0bbaedcfc2075a824d074eaf78ccfdcb905",
+    "overleaf-skillvector/tables/tab-repair-extension.tex": "30e3d47b94cdc4be276122a199e9820ab747d7df23fd2e1df37ea474c0174c52",
+    "overleaf-skillvector/figures/fig-mechanism-results.pdf": "796d411cc31f146ce1b34028eddf2ddc2801ce8915a82536f7cc6136f2289124",
+    "overleaf-skillvector/figures/fig-intervention-design.pdf": "5a966aedc9b25025b8d95fde4654190d62cb7b143fe58d8152e6414fad24719c",
+    "overleaf-skillvector/figures/fig-transfer-reading.pdf": "07195ffbc4f47841a5e5d0c80eaac78b9f8f1f9b3fd9b5c2729da773a6ef0102",
+    "overleaf-skillvector/figures/fig-teaser.pdf": "2fbde8b8e24659c1bb574ff064f2f69f77299e04af897621b2e4a1e1faa18624"
+  },
+  "cloud_log_sha256": "dfc65993e6e6d2bf51a6f3f554ebdd41ecf412692e8c5c9c1465c47586e25b3d",
+  "cloud_errors": 0,
+  "cloud_undefined": 0,
+  "cloud_overfull": 0
+}

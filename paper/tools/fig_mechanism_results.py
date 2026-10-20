@@ -1,92 +1,37 @@
 #!/usr/bin/env python3
-"""Render the two measured mechanism panels; never fill missing cells."""
-from pathlib import Path
-import hashlib
+"""Eight main model/benchmark cells, measured L16 repair and L24 path cuts."""
 import json
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import numpy as np
-
-PAPER=Path(__file__).resolve().parents[1]
-FIG=PAPER/'figures'
-
+from _paths import VALUES,FIGURES
+from figure_fonts import configure_fonts
 
 def main():
-    repair_path=FIG/'fig-mechanism-repair.json'
-    edges_path=FIG/'fig-mechanism-edges.json'
-    repair=json.loads(repair_path.read_text())
-    edges=json.loads(edges_path.read_text())
-    primary=repair['samples'][repair['primary']]
-    if repair['layers']!=[8,12,16,24] or edges['layers']!=[8,16,24]:
-        raise ValueError('Unexpected measured layer grid')
-    if len(repair['manifests'])!=4 or len(edges['manifests'])!=4:
-        raise ValueError('All four completed shards are required')
-    if set(primary['ids']) != set(edges['rescued_ids']):
-        raise ValueError('Mechanism panels must use identical primary item IDs')
-    left=np.array(primary['accuracy'])[2:]
-    right=np.array(edges['loss'])
-    if left.shape!=(4,4) or right.shape!=(3,3):
-        raise ValueError('Unexpected measured arm grid')
-    plt.rcParams.update({'font.size':9,'pdf.fonttype':42,
-                         'svg.fonttype':'none','text.color':'#263746'})
-    from figure_fonts import configure_fonts
-    configure_fonts()
-    from matplotlib.colors import LinearSegmentedColormap
-    fig,axes=plt.subplots(1,2,figsize=(7.1,3.35),layout='constrained',
-                          gridspec_kw={'width_ratios':[1.15,1]})
-    a,b=axes
-    cmap=LinearSegmentedColormap.from_list('recovery',['#F6F9FA','#A8D3CD','#176E68'])
-    heat=a.imshow(left*100,vmin=0,vmax=100,cmap=cmap,aspect='auto')
-    heat.set_gid('measured-repair-heatmap')
-    for row in range(4):
-        for col in range(4):
-            a.text(col,row,f'{left[row,col]*100:.1f}',ha='center',va='center',
-                   fontsize=9,color='white' if left[row,col]>.65 else '#263746')
-    a.set(xticks=range(4),xticklabels=[f'L{x}' for x in repair['layers']],
-          yticks=range(4),yticklabels=['S: states','C: cache','SC: both','SC + recut'],
-          xlabel='Replacement layer')
-    a.set_xticks(np.arange(-.5,4,1),minor=True)
-    a.set_yticks(np.arange(-.5,4,1),minor=True)
-    a.grid(which='minor',color='white',linewidth=2)
-    a.tick_params(which='both',length=0,pad=7,labelsize=8.5)
-    a.spines[['top','right','bottom','left']].set_visible(False)
-    a.set_title('(a) Replacement accuracy (%)',loc='left',fontsize=9.5,
-                fontweight='bold',pad=43)
-    colors=['#D27A29','#2866A0','#8494A4']
-    labels=['Post-skill to skill','Skill to skill','Both paths']
-    for i,(color,label,marker) in enumerate(zip(colors,labels,['o','s','D'])):
-        y=np.arange(3)+(i-1)*.19
-        points=b.scatter(right[i]*100,y,color=color,marker=marker,s=35,
-                         edgecolors='white',linewidths=.6,zorder=3,label=label)
-        points.set_gid(f'measured-edges-{i}')
-    b.set(yticks=range(3),yticklabels=[f'L{x}' for x in edges['layers']],
-          ylim=(2.5,-.5),xlim=(-3,103),xticks=[0,25,50,75,100],
-          xlabel='Originally correct answers lost (%)')
-    b.set_title('(b) Attention-path dependence',loc='left',fontsize=9.5,
-                fontweight='bold',pad=43)
-    b.legend(loc='lower left',bbox_to_anchor=(-.04,1.005),ncol=2,
-             fontsize=7.5,frameon=False,columnspacing=.6,handletextpad=.3)
-    b.spines[['top','right','left']].set_visible(False)
-    b.spines['bottom'].set_color('#AAB4BE')
-    b.tick_params(labelsize=8,length=0,pad=6)
-    b.grid(axis='x',color='#E8EDF2',lw=.6)
-    b.set_axisbelow(True)
-    for y in [.5,1.5]:b.axhline(y,color='#E8EDF2',lw=.6)
-    b.annotate('Post-skill access dominates',xy=(right[0,2]*100,1.81),
-               xytext=(35,2.4),ha='center',fontsize=7.5,color='#94551D',
-               arrowprops={'arrowstyle':'-','color':'#94551D','lw':.7})
-    for ext in ('pdf','png','svg'):
-        fig.savefig(FIG/f'fig-mechanism-results.{ext}',dpi=240,facecolor='white')
-    svg=FIG/'fig-mechanism-results.svg'
-    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
-    metadata=dict(repair_source_sha256=hashlib.sha256(repair_path.read_bytes()).hexdigest(),
-                  edges_source_sha256=hashlib.sha256(edges_path.read_bytes()).hexdigest(),
-                  repair_n=primary['n'],edges_n=edges['rescued_n'],
-                  repair_ids=primary['ids'],edges_ids=edges['rescued_ids'],
-                  repair_layers=repair['layers'],edges_layers=edges['layers'],
-                  repair_accuracy=left.tolist(),edge_loss=right.tolist())
-    (FIG/'fig-mechanism-results-values.json').write_text(json.dumps(metadata,indent=2)+'\n')
-
-
+ configure_fonts();rows=json.loads((VALUES/'eight-cell-display-values.json').read_text())['rows']
+ from matplotlib.colors import LinearSegmentedColormap
+ fig,axes=plt.subplots(1,2,figsize=(7.1,3.8),layout='constrained',gridspec_kw={'width_ratios':[1.5,1]})
+ a,b=axes;left=np.array([[r['repair'][arm]['16']['accuracy'] for arm in ['S','C','SC','SC_recut']] for r in rows])*100
+ a.imshow(left,vmin=0,vmax=100,aspect='auto',cmap=LinearSegmentedColormap.from_list('accuracy',['#F6F9FA','#A8D3CD','#176E68']))
+ for i,r in enumerate(rows):
+  for j in range(4):a.text(j,i,f'{left[i,j]:.1f}',ha='center',va='center',fontsize=8,color='white' if left[i,j]>65 else '#263746')
+ labels=[r['label'].replace('Llama-3.1-8B','Llama-8B')+' / '+('MC' if r['task']=='MedCalc' else 'TQA')+f"  ({r['n']}/{r['groups']})" for r in rows]
+ a.set(xticks=range(4),xticklabels=['S','C','SC','SC + recut'],yticks=range(8),yticklabels=labels)
+ a.set_title('(a) L16 repair accuracy (%)',loc='left',fontsize=10,fontweight='bold',pad=33)
+ a.tick_params(length=0,labelsize=8,pad=6);a.set_xlabel('Independent questions / skills in parentheses',fontsize=8)
+ for j,(arm,label,color,marker) in enumerate([('cut_reader_both','Post-skill to skill','#D27A29','o'),('cut_self_both','Skill to skill','#2866A0','s'),('cut_both_both','Both paths','#8494A4','D')]):
+  loss=[100*(1-r['edges'][arm]['24']['accuracy']) for r in rows]
+  b.scatter(loss,np.arange(8)+(j-1)*.19,label=label,color=color,marker=marker,s=23,edgecolors='white',linewidths=.4,zorder=3)
+ b.set(yticks=range(8),yticklabels=[],ylim=(7.5,-.5),xlim=(-3,103),xticks=[0,25,50,75,100],xlabel='Originally correct answers lost (%)')
+ b.set_title('(b) L24 path dependence',loc='left',fontsize=10,fontweight='bold',pad=33)
+ b.legend(loc='lower left',bbox_to_anchor=(-.03,1.005),fontsize=7,frameon=False,ncol=1,labelspacing=.2,handletextpad=.4)
+ b.grid(axis='x',color='#E8EDF2',lw=.6);b.set_axisbelow(True);b.tick_params(length=0,labelsize=8)
+ for ax in axes:
+  for k in [1.5,3.5,5.5]:ax.axhline(k,color='#CAD4DC',lw=.7)
+  ax.spines[['top','right','left','bottom']].set_visible(False)
+ for ext in ['pdf','png','svg']:fig.savefig(FIGURES/f'fig-mechanism-results.{ext}',dpi=240,facecolor='white')
+ svg=FIGURES/'fig-mechanism-results.svg';svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
+ (FIGURES/'fig-mechanism-results-values.json').write_text(json.dumps({'cells':8,'repair_layer':16,'path_layer':24,'rows':rows},indent=2)+'\n')
+ plt.close(fig)
 if __name__=='__main__':main()

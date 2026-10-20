@@ -1,0 +1,33 @@
+{
+  "cells": 8,
+  "gaps_percent_depth": [
+    33.333333333333336,
+    22.22222222222222,
+    62.5,
+    37.5,
+    34.375,
+    37.5,
+    50.0,
+    50.0
+  ],
+  "models": [
+    "Qwen3-8B",
+    "Qwen3-8B",
+    "Mistral-7B",
+    "Mistral-7B",
+    "Llama-3.1-8B",
+    "Llama-3.1-8B",
+    "DeepSeek-LLM-7B",
+    "DeepSeek-LLM-7B"
+  ],
+  "tasks": [
+    "MedCalc",
+    "TheoremQA",
+    "MedCalc",
+    "TheoremQA",
+    "MedCalc",
+    "TheoremQA",
+    "MedCalc",
+    "TheoremQA"
+  ]
+}

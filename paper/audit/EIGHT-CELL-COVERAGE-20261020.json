@@ -1,0 +1,16 @@
+{
+  "model_benchmark_cells": 8,
+  "empirical_figures": 3,
+  "schematic_figures": 1,
+  "tables": 6,
+  "mechanism_arm_layer_counts_verified": 200,
+  "source_hashes_verified": true,
+  "small_model_in_active_manuscript": false,
+  "main_pages": 8,
+  "total_pages": 12,
+  "errors": 0,
+  "undefined": 0,
+  "overfull": 0,
+  "raw_inference_run": false,
+  "pdf_sha256": "aed9adf8bb09dfc96529baa13f847449bc59fe5e45cc4ff1032387a8956fbc46"
+}

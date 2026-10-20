@@ -1,3 +1,13 @@
+## 2026-10-20 当前入口：仅4主模型×2benchmark，图表覆盖更新完成
+
+- 最新用户指令：放弃小模型相关论文结果，重点让4主模型×2benchmark覆盖所有表格和图表。用户称Qwen0.8B，当前实际小模型为Qwen3-0.6B；已从活跃正文/附录、当前深度JSON、图表与生成入口移除。原始实验、历史报告及未引用旧文件保留，不删除。
+- 当前论文4图6表：Figure1八组合概览；Figure2通用干预设计；Figure3八组合逐层深度；Figure4八组合L16修复和L24路径损失。Table1八组合L2/L8控制，Table2八组合边界，Table3八组合机制差值；附录跨题/窗口、修复和独立分母三表均为八组合。图表包四图六表已全刷新，合集11页；旧七格/Pending说明已纠正。
+- 科研口径：L8已在Mistral/Llama/DeepSeek迁移边界之后，不称统一早层；加入L2准确率56.0–93.4%。Mistral/MedCalc L16 additive interaction=-7.9pp，即使SC-S=+10.5pp，不能称统一正交互。历史Qwen8/MedCalc跨题/窗口行报告恢复率，其他行准确率，表中显式区分，不作排名。全部suite沿用r3独立筛选。
+- 验证：python tools/build_eight_cell_displays.py；python tools/audit_eight_cell_displays.py --stage /mnt/c/Users/12970/AppData/Local/Temp/WWW2027/build-skillvector.Pq5ZnFyY；python tools/audit_integrated_manuscript.py --pdf skillvector-www2027.pdf通过，200个机制arm×layer计数核验。论文正文8/全文12页，无error/undefined/overfull。python tools/compile_figure_bundle.py通过，四图六表11页，无error/undefined/overfull hbox。
+- Overleaf更新前基于当前稿件快照完整diff零差异（07:09:41Z），上传前与同一基线再完整diff零差异（07:24:42Z），未发现新增线上修改。非删除上传22文件，最终活跃源0新增/0修改差异；仅未引用历史fig-depth-scale-check.pdf为remote-only，未传播删除。云端PDF12页，每页提取文本与本地已审计PDF完全一致。证据audit/EIGHT-CELL-OVERLEAF-20261020.json及audit/EIGHT-CELL-COVERAGE-20261020.json；最终本地PDF SHA256 aed9adf8bb09dfc96529baa13f847449bc59fe5e45cc4ff1032387a8956fbc46。
+- 最终论文skillvector-www2027.pdf；图表合集paper figure/Figures-and-Tables.pdf；覆盖报告reports/图表八组合覆盖核查_20261020.md。CURRENT.json记录当前八组合论文范围及新交付收据，实验完成审计仍保留历史完整产物。无新推理/远端资源/定时器/数据下载，无待续接实验。
+- 后续修改论文前仍完整olcli diff，上传前再查并发。Git仅提交本次任务修改，不纳入原先的调度状态、旧DATA-CONSISTENCY和howskill临时文件；本轮提交推送完成后以git log为准。
+
 ## 2026-10-20 当前续接入口：论文交付完成，旧实验监督已关闭
 
 - 当前任务已完成，无待续接的实验、评分、聚合、论文编译或同步步骤。用户已再次确认论文更新与同步状态；后续若收到旧 done 或小时状态消息，只去重报告，不重提实验、不恢复旧队列或定时器。下方按日期记录的“运行中／待上传／保留监督”均为历史过程，不能覆盖本节最终状态。

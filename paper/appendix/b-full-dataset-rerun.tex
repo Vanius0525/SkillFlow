@@ -9,8 +9,10 @@ screen. The corrected rerun evaluates all $467$ candidates from $48$
 calculators and retains $135$ questions from $14$ calculators. A weaker
 item-level receiver screen retains $369$ questions from $45$ calculators.
 The group screen becomes stricter as more questions from each calculator
-are tested. Table~\ref{tab:fullscale} compares the fixed interventions
-under these screens.
+are tested. The historical rerun diagnoses screening sensitivity in this one setting.
+Table~\ref{tab:fullscale} instead reports the available cross-question and
+repeated-write controls for all eight main combinations, using each protocol's
+own denominator and explicitly distinguishing accuracy from recovery.
 
 For the dose controls, $\delta^L=H_D^L[\mathcal I]-H_R^L[\mathcal I]$ and
 the write is $H_R^L[\mathcal I]+\alpha\delta^L$. Rank truncation retains
@@ -27,49 +29,20 @@ $0.79$ and $0.32$. Both screens have their largest local decline at this
 same step, while Figure~\ref{fig:transferreading} retains the later
 fluctuations rather than imposing monotonicity.
 
-\paragraph{Supplementary model-scale check.}
-\label{app:scale-check}
-Qwen3-0.6B is retained as a supplementary within-family scale comparison,
-rather than a fifth model in the main comparison matrix. Its MedCalc
-common-item set contains $90$ questions from $21$ skills. The half-effect
-boundaries are $T=11$ and $R=22$, giving $\Delta=11$ layers, or $39.3\%$
-of its $28$-layer depth. Transfer/dependence boundary pairs are
-$11/21$ at threshold $0.4$ and $11/22$ at both $0.5$ and $0.6$.
-On TheoremQA, fresh isolated grading and independent baseline screening
-retain $122$ common questions from $92$ skills, with $T/R=11/20$
-($\Delta=9$, or $32.1\%$ of model depth). The corresponding threshold
-pairs are $11/20$, $11/20$ and $11/21$ at $0.4$, $0.5$ and $0.6$.
-Together with the eight main comparisons, these give ten measured
-comparisons across five model sizes from four families.
-Figure~\ref{fig:scale-depth} shows both supplementary curves.
-
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig-depth-scale-check.pdf}
-\caption{Supplementary Qwen3-0.6B depth profiles on both benchmarks.
-Each panel uses common eligible items for transfer and knockout, with
-each protocol's own baselines. Curves, first half-effect boundaries and
-skill-group counts use the same definitions as Figure~\ref{fig:transferreading}.}
-\Description{Two plots show Qwen3-0.6B transfer falling below half at layer 11 on both tasks, while skill dependence first falls to half at layer 22 on MedCalc and layer 20 on TheoremQA.}
-\label{fig:scale-depth}
-\end{figure}
-
 \paragraph{Same-question joint failures.}
 \label{app:joint-failure}
 Stored per-skill paired-outcome summaries retain questions with a correct
 donor under both protocols, an incorrect transfer receiver and an
 incorrect no-skill baseline under knockout. Weighting each group's joint
 failure fraction by its item count gives $100/124$ ($80.6\%$) for
-Qwen3-8B at its transfer boundary $T=13$, $64/84$ ($76.2\%$) for
-Qwen3-0.6B at $T=11$, and $25/43$ ($58.1\%$) for Mistral-7B at $T=7$.
-These MedCalc sets contain $14$, $20$ and $15$ skill groups, respectively.
+Qwen3-8B at its transfer boundary $T=13$ and $25/43$ ($58.1\%$) for
+Mistral-7B at $T=7$. These MedCalc sets contain $14$ and $15$ skill groups.
 Their stricter donor screen differs from the populations in
 Table~\ref{tab:paireddepth}. The diagnostic also retains protocol
-mismatch: $4$, $0$ and $4$ items, respectively, are correct under the
+mismatch: $4$ items in each setting are correct under the
 transfer protocol's no-skill baseline despite failing that baseline under
 knockout. These are paired outcomes under two interventions, not a claim
-of identical baseline executions. We report this stricter paired-outcome diagnostic for these three
+of identical baseline executions. We report this stricter paired-outcome diagnostic for these two
 historical MedCalc settings only; common IDs alone do not establish
 that every question fails both interventions elsewhere.
 

@@ -72,7 +72,7 @@ for a position-matched neutral receiver intervention.
 The four main models are Qwen3-8B ($36$ layers, hidden width $4096$),
 Mistral-7B-Instruct-v0.3 ($32$ layers, width $4096$),
 Llama-3.1-8B-Instruct ($32$ layers) and DeepSeek-LLM-7B-Chat ($30$ layers).
-The supplementary Qwen3-0.6B check uses $28$ layers and width $1024$. The added Llama and DeepSeek depth runs use BF16, matched eager
+The added Llama and DeepSeek depth runs use BF16, matched eager
 attention for full-prompt state capture and knockout, and $900$ new tokens,
 without quantization. Regenerated Qwen and Mistral TheoremQA runs retain
 scaled dot-product attention for residual transfer and eager attention for
@@ -131,8 +131,7 @@ The main receiver screen then retains $135$ questions from $14$ calculators.
 Historical development results retain their original sample labels.
 Table~\ref{tab:fullscale} shows the corrected rerun alongside the earlier
 screened subset. The main depth study covers all eight model--task comparisons across
-four models and families. Qwen3-0.6B supplies two supplementary
-comparisons, one per task. Each comparison uses common eligible items
+four models and families. Each comparison uses common eligible items
 for the two intervention types. The new-family candidate pools
 inherit the earlier models' selection, so their results are conditional
 rather than full-benchmark estimates.
@@ -179,7 +178,7 @@ generation-length sensitivity discussion focus on Qwen3-8B/MedCalc. All-query sk
 skill-state updates; its full-depth profile cannot be interpreted as
 post-skill-only dependence. Prefill and decoding are jointly intervened on,
 so phase-specific claims require separate tests. The stored paired-outcome diagnostic supports same-question joint
-failures in three MedCalc settings; it does not extend that evidence to
+failures in two MedCalc settings; it does not extend that evidence to
 all completed comparisons.
 Interactive browser tasks, skill retrieval errors and learned state
 compression are natural settings in which to test how these findings

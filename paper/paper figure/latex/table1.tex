@@ -1,26 +1,12 @@
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\caption{Early transfer controls, Qwen3-8B/MedCalc, layer $8$:
-$135$ items from $14$ calculators. Accuracy and recovery $\rho$ are
-point estimates. Final-position patches replace fewer states than the
-skill-span patches; other-skill content uses a matched prefix (see text).}
+\caption{State-transfer controls for all eight model--benchmark combinations.
+Entries are accuracy percentages. $n_2/n_8$ gives the independent layer-2/layer-8
+populations; the remaining controls are at layer 8. Other denotes matched-prefix
+other-skill content. Qwen3-8B/MedCalc retains its historical layer-8 screen
+(124/135 correct donor answers); other batteries require fresh correct donors.
+Layer 8 can already lie beyond a model's transfer boundary.}
 \label{tab:probe}
-\small
-\renewcommand{\arraystretch}{1.18}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lrr@{}}
-\toprule
-Intervention & Accuracy & $\rho$ \\
-\midrule
-Correct skill donor & .919 & 1.00 \\
-Wrong skill receiver & .000 & .00 \\
-Correct skill span & .815 & .89 \\
-Last prompt position & .030 & .03 \\
-Last $16$ prompt positions & .059 & .06 \\
-Other skill content & .044 & .05 \\
-Correct span, permuted & .044 & .05 \\
-Norm-matched noise & .022 & .02 \\
-Identity patch & .000 & .00 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-control-matrix}
+\end{table*}

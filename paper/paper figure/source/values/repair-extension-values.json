@@ -1,0 +1,178 @@
+[
+  {
+    "model": "Qwen3-8B",
+    "task": "MedCalc",
+    "n": 114,
+    "groups": 14,
+    "layer": 16,
+    "correct": {
+      "S": 4,
+      "C": 8,
+      "SC": 48,
+      "SC_recut": 8
+    },
+    "accuracy": {
+      "S": 0.03508771929824561,
+      "C": 0.07017543859649122,
+      "SC": 0.42105263157894735,
+      "SC_recut": 0.07017543859649122
+    },
+    "gain_pp": 38.59649122807018,
+    "recut_loss_pp": 35.08771929824562,
+    "source": "experiments/mechanism_20261017/formal-audit.json"
+  },
+  {
+    "model": "Qwen3-8B",
+    "task": "TheoremQA",
+    "n": 53,
+    "groups": 43,
+    "layer": 16,
+    "correct": {
+      "S": 10,
+      "C": 8,
+      "SC": 33,
+      "SC_recut": 13
+    },
+    "accuracy": {
+      "S": 0.18867924528301888,
+      "C": 0.1509433962264151,
+      "SC": 0.6226415094339622,
+      "SC_recut": 0.24528301886792453
+    },
+    "gain_pp": 43.39622641509434,
+    "recut_loss_pp": 37.735849056603776,
+    "source": "backfill-q8-theoremqa-repair.jsonl"
+  },
+  {
+    "model": "Mistral-7B",
+    "task": "MedCalc",
+    "n": 38,
+    "groups": 15,
+    "layer": 16,
+    "correct": {
+      "S": 3,
+      "C": 7,
+      "SC": 7,
+      "SC_recut": 2
+    },
+    "accuracy": {
+      "S": 0.07894736842105263,
+      "C": 0.18421052631578946,
+      "SC": 0.18421052631578946,
+      "SC_recut": 0.05263157894736842
+    },
+    "gain_pp": 10.526315789473685,
+    "recut_loss_pp": 13.157894736842104,
+    "source": "backfill-mistral-medcalc-repair.jsonl"
+  },
+  {
+    "model": "Mistral-7B",
+    "task": "TheoremQA",
+    "n": 59,
+    "groups": 49,
+    "layer": 16,
+    "correct": {
+      "S": 2,
+      "C": 3,
+      "SC": 6,
+      "SC_recut": 4
+    },
+    "accuracy": {
+      "S": 0.03389830508474576,
+      "C": 0.05084745762711865,
+      "SC": 0.1016949152542373,
+      "SC_recut": 0.06779661016949153
+    },
+    "gain_pp": 6.779661016949152,
+    "recut_loss_pp": 3.389830508474576,
+    "source": "backfill-mistral-theoremqa-repair.jsonl"
+  },
+  {
+    "model": "Llama-3.1-8B",
+    "task": "MedCalc",
+    "n": 104,
+    "groups": 20,
+    "layer": 16,
+    "correct": {
+      "S": 4,
+      "C": 6,
+      "SC": 19,
+      "SC_recut": 10
+    },
+    "accuracy": {
+      "S": 0.038461538461538464,
+      "C": 0.057692307692307696,
+      "SC": 0.18269230769230768,
+      "SC_recut": 0.09615384615384616
+    },
+    "gain_pp": 14.423076923076923,
+    "recut_loss_pp": 8.653846153846153,
+    "source": "llama-medcalc-repair.jsonl"
+  },
+  {
+    "model": "Llama-3.1-8B",
+    "task": "TheoremQA",
+    "n": 72,
+    "groups": 56,
+    "layer": 16,
+    "correct": {
+      "S": 3,
+      "C": 9,
+      "SC": 30,
+      "SC_recut": 9
+    },
+    "accuracy": {
+      "S": 0.041666666666666664,
+      "C": 0.125,
+      "SC": 0.4166666666666667,
+      "SC_recut": 0.125
+    },
+    "gain_pp": 37.5,
+    "recut_loss_pp": 29.166666666666668,
+    "source": "llama-theoremqa-repair.jsonl"
+  },
+  {
+    "model": "DeepSeek-LLM-7B",
+    "task": "MedCalc",
+    "n": 21,
+    "groups": 10,
+    "layer": 16,
+    "correct": {
+      "S": 0,
+      "C": 4,
+      "SC": 6,
+      "SC_recut": 4
+    },
+    "accuracy": {
+      "S": 0.0,
+      "C": 0.19047619047619047,
+      "SC": 0.2857142857142857,
+      "SC_recut": 0.19047619047619047
+    },
+    "gain_pp": 28.571428571428573,
+    "recut_loss_pp": 9.523809523809524,
+    "source": "deepseek-medcalc-repair.jsonl"
+  },
+  {
+    "model": "DeepSeek-LLM-7B",
+    "task": "TheoremQA",
+    "n": 46,
+    "groups": 40,
+    "layer": 16,
+    "correct": {
+      "S": 1,
+      "C": 3,
+      "SC": 5,
+      "SC_recut": 4
+    },
+    "accuracy": {
+      "S": 0.021739130434782608,
+      "C": 0.06521739130434782,
+      "SC": 0.10869565217391304,
+      "SC_recut": 0.08695652173913043
+    },
+    "gain_pp": 8.695652173913043,
+    "recut_loss_pp": 2.1739130434782608,
+    "source": "deepseek-theoremqa-corrected54-repair.jsonl"
+  }
+]

@@ -37,8 +37,7 @@ holding skill selection fixed. The main comparison uses four open-weight
 models from four families: Qwen3-8B \citep{yang2025qwen3},
 Mistral-7B-Instruct-v0.3 \citep{jiang2023mistral}, Llama-3.1-8B-Instruct
 \citep{grattafiori2024llama3} and DeepSeek-LLM-7B-Chat
-\citep{deepseek2024llm}. Qwen3-0.6B provides a supplementary scale check
-(Appendix~\ref{app:scale-check}). Models generate
+\citep{deepseek2024llm}. Models generate
 step-by-step answers with greedy decoding, selecting the highest-probability
 next token at each step. We use no tools and apply the corresponding
 benchmark scorers. On the full MedCalc benchmark, Qwen3-8B
@@ -82,7 +81,7 @@ An identity patch writes the receiver's own states
 back and should reproduce its output. Correcting an attention-mask mismatch
 between state capture and decoding restores exact agreement, including
 all $467$ MedCalc identity checks. All main results use the corrected
-implementation. TheoremQA outputs for all five model sizes are regraded
+implementation. TheoremQA outputs for all four main models are regraded
 with the official evaluation rules while restoring fresh parser state
 before every answer. We retain the original text, verify grading-order
 invariance and compare with fresh-process evaluations; eligibility is
@@ -93,8 +92,12 @@ protocol, and Appendix~\ref{app:limits} records the correction.
 \label{sec:battery}
 
 \paragraph{Early transfer recovery.}
-Before comparing transfer across depth, we establish that the intervention
-transmits useful behaviour. At layer $8$ on the historically screened MedCalc set,
+Before comparing transfer across depth, we check that the intervention
+transmits useful behaviour. Table~\ref{tab:probe} reports all eight combinations.
+At layer $2$, span-patch accuracy ranges from $56.0\%$ to $93.4\%$ under
+each battery's own baselines. Layer $8$ is already later than the transfer
+boundary for Mistral, Llama and DeepSeek, so it is not a universally early
+probe. On the historically screened Qwen3-8B/MedCalc set,
 replacing states at the skill's token positions recovers most of the
 correct skill's benefit (Table~\ref{tab:probe}). Patching the last prompt
 position or the final $16$ positions has a much smaller effect.
@@ -102,37 +105,24 @@ This locates an effective intervention in the skill span. Its larger
 number of replaced states also makes it a higher-capacity intervention
 than the final-position alternatives.
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\caption{Early transfer controls, Qwen3-8B/MedCalc, layer $8$:
-$135$ historically selected items from $14$ calculators. Donor and
-receiver are re-evaluated under the transfer protocol; recovery uses the
-donor's $124$ correct answers. Final-position patches replace fewer states
-than skill-span patches; other-skill content uses a matched prefix.}
+\caption{State-transfer controls for all eight model--benchmark combinations.
+Entries are accuracy percentages. $n_2/n_8$ gives the independent layer-2/layer-8
+populations; the remaining controls are at layer 8. Other denotes matched-prefix
+other-skill content. Qwen3-8B/MedCalc retains its historical layer-8 screen
+(124/135 correct donor answers); other batteries require fresh correct donors.
+Layer 8 can already lie beyond a model's transfer boundary.}
 \label{tab:probe}
-\small
-\renewcommand{\arraystretch}{1.18}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lrr@{}}
-\toprule
-Intervention & Accuracy & $\rho$ \\
-\midrule
-Correct skill donor & .919 & 1.00 \\
-Wrong skill receiver & .000 & .00 \\
-Correct skill span & .815 & .89 \\
-Last prompt position & .030 & .03 \\
-Last $16$ prompt positions & .059 & .06 \\
-Other skill content & .044 & .05 \\
-Correct span, permuted & .044 & .05 \\
-Norm-matched noise & .022 & .02 \\
-Identity patch & .000 & .00 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-control-matrix}
+\end{table*}
 
 \paragraph{Content and position controls.}
-The unrelated-skill, permuted-position and noise controls in
-Table~\ref{tab:probe} all yield little recovery. The noise is scaled to match
+For Qwen3-8B/MedCalc, the unrelated-skill, permuted-position and noise
+controls in Table~\ref{tab:probe} yield little recovery. Across the other
+combinations, the layer-8 span/control gap varies; these controls do not
+establish uniformly strong transfer at one absolute layer. The noise is scaled to match
 the size, measured by Euclidean norm, of the skill-state change. For the content comparison,
 the correct and unrelated skills are patched over a common prefix length.
 The correct prefix recovers $0.65$ of the available gain. A mean of
@@ -164,15 +154,15 @@ separation.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
-\caption{Skill-state/cache replacement and attention-path tests on the same $114$
-Qwen3-8B/MedCalc items from $14$ skills. (a) Accuracy (\%) following residual
-replacement ($S$), cache replacement ($C$), joint repair ($SC$), or joint
-repair followed by a post-skill-to-skill cut from the next layer. (b) Fraction of
-donor-correct answers lost when post-skill-to-skill, skill-to-skill, or
-both attention paths are cut from the indicated layer onward.
-The heatmap uses a fixed $0$--$100\%$ scale with exact values in each cell.
-Path-cut estimates are offset vertically within each tested layer. Table~\ref{tab:mechanism-contrasts} reports the main contrasts.}
-\Description{A labelled heatmap compares four repair interventions at four layers. A horizontal dot plot compares three attention-path cuts at three layers. At layer 16 joint repair is much more effective than either component, while a post-skill-to-skill recut removes most of the gain.}
+\caption{Repair and attention-path results for all eight main combinations.
+MC denotes MedCalc and TQA denotes TheoremQA. Each row uses its own fresh
+split-prefill population; parentheses give questions/skill groups.
+(a) Layer-16 accuracy after state ($S$), cache ($C$), joint ($SC$), or joint
+replacement followed by a next-layer post-skill-to-skill recut.
+(b) At layer 24, the fraction of donor-correct answers lost after cutting
+post-skill-to-skill, skill-to-skill, or both paths. Both prefill and decoding
+are intervened on. Table~\ref{tab:mechanism-contrasts} gives derived contrasts.}
+\Description{Eight rows compare four repair accuracies at layer 16 and three attention-path losses at layer 24 across four models and two benchmarks.}
 \label{fig:mechanism}
 \end{figure*}
 
@@ -231,8 +221,7 @@ only that selected population. Alongside sample and skill-group counts,
 Table~\ref{tab:paireddepth} reports raw boundary differences and their
 percentage of model depth, $100\Delta/D$, where $D$ is the number of
 layers. This normalization makes layer gaps comparable across model
-depths; it is not a benchmark-accuracy ranking. The supplementary
-Qwen3-0.6B comparisons on both tasks preserve the same ordering (Appendix~\ref{app:scale-check}).
+depths; it is not a benchmark-accuracy ranking.
 
 \begin{table*}[t]
 \centering
@@ -278,7 +267,8 @@ and of a subsequent post-skill-to-skill cut while retaining earlier computation 
 We evaluate layers $8,12,16,24$ on a fixed $124$-question set from
 $14$ calculators with fresh baselines. Of these, $114$ questions are correct
 with the donor and incorrect with both the wrong-skill and no-skill baselines.
-Both panels of Figure~\ref{fig:mechanism} use these same questions.
+The Qwen3-8B/MedCalc row of Figure~\ref{fig:mechanism} uses these questions;
+other rows use their own fresh-baseline populations.
 All $48$ own-state controls across four GPU shards reproduce output tokens
 exactly. Appendix~\ref{app:mechanism} gives implementation and eligibility
 details.
@@ -289,7 +279,9 @@ details.
 At layer $16$, residual replacement answers $4/114$ questions correctly,
 cache replacement answers $8/114$, and joint repair answers $48/114$.
 Table~\ref{tab:mechanism-contrasts} reports the repair gain.
-The joint-minus-additive contrast is positive on the accuracy scale.
+The Qwen3-8B/MedCalc joint-minus-additive contrast is positive on the accuracy scale.
+This is not universal: Mistral/MedCalc has a $-7.9$-point additive contrast
+despite a positive $SC-S$ gain (Table~\ref{tab:mechanism-contrasts}).
 It describes the tested conditions, but does not by itself identify a
 representation-level interaction or a unique computational mechanism
 \citep{vaidyanathan2026mediators}. At layer $24$, joint repair still improves on residual
@@ -297,26 +289,17 @@ replacement ($25.4\%$ versus $0.9\%$), compared with $18.4\%$ for cache replacem
 Even the layer-$16$ joint condition remains $57.9$ percentage points below
 the donor's $100\%$ accuracy on these freshly screened items.
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\caption{Focused mechanism contrasts, $114$ items from $14$ skills.
-Differences are in percentage points (pp). Writing $a_X$ for accuracy under condition $X$, the additive interaction
-is $a_{SC}-a_S-a_C+a_R$, where $a_R$ is receiver accuracy.}
+\caption{Mechanism contrasts for all eight main combinations, in percentage points.
+$n/G$ gives each row's questions/skills. With accuracy $a_X$, interaction is
+$a_{SC}-a_S-a_C+a_R$; recut loss is $a_{SC}-a_{SC+\mathrm{recut}}$.
+The L24 path gap is skill-to-skill-cut accuracy minus post-skill-to-skill-cut
+accuracy, equivalently the excess loss from cutting post-skill access.}
 \label{tab:mechanism-contrasts}
-\small
-\renewcommand{\arraystretch}{1.18}
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{@{}lr@{}}
-\toprule
-Contrast & Difference \\
-\midrule
-L16: $SC-S$ & $+38.6$ \\
-L16: additive interaction & $+31.6$ \\
-L16: $SC-(SC+\mathrm{recut})$ & $+35.1$ \\
-L24: reading minus within-skill loss & $+71.1$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-mechanism-contrasts}
+\end{table*}
 
 \paragraph{Continued reading and attention paths.}
 Following joint repair at layer $16$, cutting post-skill-to-skill attention
@@ -327,9 +310,10 @@ attention, or both in the unmodified donor, during prefill and decoding.
 At layer $24$, post-skill-only and combined cuts each leave $29/114$ questions
 correct, while a skill-to-skill-only cut leaves $110/114$ correct.
 Post-skill-to-skill cuts account for most of the tested loss at this layer.
-Earlier cuts at layers $8$ and $16$ damage both paths. This decomposition
-covers three depths in one model--task setting; it cannot identify the
-post-skill-only component of all eight main curves. Because these cuts affect
+Earlier cuts at layers $8$ and $16$ damage both paths. Figure~\ref{fig:mechanism} extends this layer-24 comparison to every
+main combination. The path gap varies across models and tasks
+(Table~\ref{tab:mechanism-contrasts}); it does not identify the
+post-skill-only component at every depth of the cumulative-knockout curves. Because these cuts affect
 both prefill and decoding, they also do not locate the effect in either
 phase separately.
 

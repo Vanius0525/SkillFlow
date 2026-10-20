@@ -1,6 +1,6 @@
 {
   "main_depth_cells": 8,
-  "supplementary_depth_cells": 2,
+  "supplementary_depth_cells": 0,
   "repair_rows": 8,
   "input_hashes_bound": true,
   "threshold_checks_passed": true,
@@ -8,14 +8,10 @@
   "figure_checks": {
     "fig-transfer-reading.pdf": {
       "panels": 8,
-      "sha256": "c37f615314e8be84f3c8f17a5027eda97d4024c9e0d85844e8ef882367d27973"
-    },
-    "fig-depth-scale-check.pdf": {
-      "panels": 2,
-      "sha256": "ec721c5ff132bb91b534e9a7b9c86eb69ef984f0258c00f77efecd8676e50c1c"
+      "sha256": "07195ffbc4f47841a5e5d0c80eaac78b9f8f1f9b3fd9b5c2729da773a6ef0102"
     }
   },
   "raw_inference_run": false,
   "total_pages": 12,
-  "pdf_sha256": "4aa84a30100be635e0c9e2399b4610eb13327c981a27e97e1bca08a832ac3293"
+  "pdf_sha256": "aed9adf8bb09dfc96529baa13f847449bc59fe5e45cc4ff1032387a8956fbc46"
 }

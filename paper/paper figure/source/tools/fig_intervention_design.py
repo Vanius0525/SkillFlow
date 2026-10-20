@@ -22,25 +22,25 @@ def cut(x,y):
     ax.plot([x-.10,x+.10],[y-.12,y+.12],color=ORANGE,lw=1.3)
     ax.plot([x-.10,x+.10],[y+.12,y-.12],color=ORANGE,lw=1.3)
 
-text(.1,5.8,'(a) Replace selected source components at layer L',9.2,fontweight='bold')
+text(.1,5.8,'(a) Replace selected skill components at layer L',9.2,fontweight='bold')
 text(1.6,5.28,'Correct-skill donor',8.2,ha='center',fontweight='bold')
 text(6.5,5.28,'Wrong-skill receiver',8.2,ha='center',fontweight='bold')
-box(.2,4.25,2.8,.60,'Source residual states',BLUE)
-box(.2,3.25,2.8,.60,'Source KV cache\nlayers 0 through L',TEAL,size=7.6)
-box(4.7,4.25,3.6,.60,'Replace source states at L',BLUE)
-box(4.7,3.25,3.6,.60,'Replace source KV entries',TEAL)
+box(.2,4.25,2.8,.60,'Skill-position states',BLUE)
+box(.2,3.25,2.8,.60,'Skill-position KV cache\nlayers 0 through L',TEAL,size=7.6)
+box(4.7,4.25,3.6,.60,'Replace skill states at L',BLUE)
+box(4.7,3.25,3.6,.60,'Replace skill KV entries',TEAL)
 arrow(3.08,4.55,4.6,4.55,BLUE);text(3.83,4.78,'S',7,BLUE,ha='center',fontweight='bold')
 arrow(3.08,3.55,4.6,3.55,TEAL);text(3.83,3.85,'C',7,TEAL,ha='center',fontweight='bold')
 text(6.5,2.89,'SC = both replacements',7.7,ha='center')
-box(9.2,3.25,4.4,1.60,'Continue the receiver\n\nEarlier reader computation\nretained',GRAY,size=7.7)
+box(9.2,3.25,4.4,1.60,'Continue the receiver\n\nEarlier post-skill computation\nretained',GRAY,size=7.7)
 arrow(8.4,4.55,9.1,4.55,BLUE);arrow(8.4,3.55,9.1,3.55,TEAL)
 ax.plot([.1,13.8],[2.56,2.56],color='#D8E0E7',lw=.65)
 
 text(.1,2.28,'(b) Test which attention access is needed afterward',9.2,fontweight='bold')
 for x,title,top,bottom,start in [
-    (.2,'All-source knockout','All query tokens','Skill-source keys','From L in the original run'),
-    (4.9,'Reader-to-source cut','Question / answer tokens','Skill-source keys','From L+1 after SC, or L in donor'),
-    (9.5,'Source-to-source cut','Skill-source tokens','Skill-source keys','From L in the original run')]:
+    (.2,'All-query skill knockout','All query tokens','Skill keys','From L in the original run'),
+    (4.9,'Post-skill-to-skill cut','Post-skill query tokens','Skill keys','From L+1 after SC, or L in donor'),
+    (9.5,'Skill-to-skill cut','Skill query tokens','Skill keys','From L in the original run')]:
     text(x+1.9,1.84,title,7.8,ha='center',fontweight='bold')
     box(x,1.12,3.8,.42,top,size=7.6)
     box(x,.24,3.8,.42,bottom,TEAL,size=7.6)

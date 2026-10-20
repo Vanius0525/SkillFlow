@@ -11,24 +11,23 @@ completion=audited('completion-matrix-20261020-r3.json');assert completion['cond
 original=read(VALUES/'depth-verified-extension-20261019.json')
 cells=[]
 for c in original[:3]:
+ if c['model']=='Qwen3-0.6B':continue
  pop=c['common'];cells.append({'model':c['model'],'task':c['task'],'n_layers':c['n_layers'],'transfer':pop['transfer'],'retention':pop['retention'],'common':{'n':pop['n'],'groups':pop['groups'],'ids':pop['ids']},'provenance':'Previously audited MedCalc; source checksums revalidated on 2026-10-20'})
 for name,model,nl in [('q8-independent-audit-20261020.json','Qwen3-8B',36),('mistral-independent-audit-20261020-r1.json','Mistral-7B',32)]:
  r=audited(name);assert not r['changed_labels'] and not r['missing_common_grid'] and not r['identity_failures'] and r['reverse_order_all_passed'] and r['fresh_process_checks']==16
  cells.append({'model':model,'task':'TheoremQA','n_layers':nl,'transfer':r['transfer'],'retention':r['retention'],'common':{'n':r['common_n'],'groups':r['common_groups'],'ids':r['common_ids']},'provenance':'Frozen candidate regeneration; transfer SDPA, knockout eager, both 900-token limit; isolated grading'})
-r=audited('aggregated-post-quota-20261019-v2.json')['legacy_q06'];assert not r['missing'] and not r['identity_failures']
-cells.append({'model':'Qwen3-0.6B','task':'TheoremQA','n_layers':28,'transfer':r['transfer'],'retention':r['retention'],'common':{'n':r['common_n'],'groups':r['common_groups'],'ids':r['ids']},'provenance':'Frozen candidate regeneration; transfer SDPA, knockout eager; isolated grading'})
 for r in audited('final-family-depth-audit-20261020.json')['comparisons']:
  assert r['status']=='complete' and not r['baseline_token_drift'] and not r['missing'] and not r['identity_failures']
  model={'llama':'Llama-3.1-8B','deepseek':'DeepSeek-LLM-7B'}[r['model']]
  cells.append({'model':model,'task':{'medcalc':'MedCalc','theoremqa':'TheoremQA'}[r['task']],'n_layers':len(r['transfer']),'transfer':r['transfer'],'retention':r['retention'],'common':{'n':r['n'],'groups':r['groups'],'ids':r['ids']},'provenance':'Matched eager-attention protocols; isolated TheoremQA grading and scorefix supplements'})
-assert len(cells)==10 and len({(c['model'],c['task']) for c in cells})==10
+assert len(cells)==8 and len({(c['model'],c['task']) for c in cells})==8
 for c in cells:
  t,q=c['transfer'],c['retention'];assert len(t)==len(q)==c['n_layers'] and len(c['common']['ids'])==c['common']['n']
  c['dependence']=[1-x for x in q];c['transfer_boundary']=next((l for l,x in enumerate(t) if x<.5),None);c['reading_boundary']=next((l for l,x in enumerate(q) if x>=.5),None)
  c['common'].update(transfer=t,retention=q,transfer_boundary=c['transfer_boundary'],reading_boundary=c['reading_boundary'])
  c['threshold_sensitivity']={str(tau):{'T':next((l for l,x in enumerate(t) if x<tau),None),'R':next((l for l,x in enumerate(q) if x>=tau),None)} for tau in [.4,.5,.6]}
  assert all(v['T'] is not None and v['R'] is not None and v['T']<v['R'] for v in c['threshold_sensitivity'].values()),c['model']
-model_order=['Qwen3-8B','Mistral-7B','Llama-3.1-8B','DeepSeek-LLM-7B','Qwen3-0.6B']
+model_order=['Qwen3-8B','Mistral-7B','Llama-3.1-8B','DeepSeek-LLM-7B']
 cells.sort(key=lambda c:(model_order.index(c['model']),['MedCalc','TheoremQA'].index(c['task'])))
 (VALUES/'depth-current-values.json').write_text(json.dumps(cells,indent=2)+'\n')
 matrix=audited('completed-matrix-audit-20261020-r3.json');assert not matrix['new_grading_changes']
@@ -68,5 +67,5 @@ for model in model_order[:4]:
     else:values.append(str(x['eligible_n']))
   lines.append(model.replace('DeepSeek-LLM-7B','DeepSeek-7B')+' & '+task+' & '+' & '.join('$'+v+'$' for v in values)+r' \\')
 lines += [r'\bottomrule',r'\end{tabular*}'];(TABLES/'tab-extension-populations.tex').write_text('\n'.join(lines)+'\n')
-(AUDIT/'INTEGRATION-20261020.json').write_text(json.dumps({'input_sha256':sources,'main_depth_cells':8,'supplementary_depth_cells':2,'threshold_ordering_all_passed':True,'repair_comparisons':8,'gain_range_pp':[min(x['gain_pp'] for x in repairs),max(x['gain_pp'] for x in repairs)],'recut_loss_range_pp':[min(x['recut_loss_pp'] for x in repairs),max(x['recut_loss_pp'] for x in repairs)],'raw_outputs_modified':False},indent=2)+'\n')
-print('Integrated 10 depth comparisons and 8 layer-16 repair comparisons')
+(AUDIT/'INTEGRATION-20261020.json').write_text(json.dumps({'input_sha256':sources,'main_depth_cells':8,'supplementary_depth_cells':0,'threshold_ordering_all_passed':True,'repair_comparisons':8,'gain_range_pp':[min(x['gain_pp'] for x in repairs),max(x['gain_pp'] for x in repairs)],'recut_loss_range_pp':[min(x['recut_loss_pp'] for x in repairs),max(x['recut_loss_pp'] for x in repairs)],'raw_outputs_modified':False},indent=2)+'\n')
+print('Integrated 8 depth comparisons and 8 layer-16 repair comparisons')

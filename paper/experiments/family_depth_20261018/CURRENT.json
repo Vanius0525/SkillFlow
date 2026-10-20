@@ -3,12 +3,27 @@
   "completion": "completion-matrix-20261020-r3.json",
   "suite_audit": "completed-matrix-audit-20261020-r3.json",
   "manuscript_values": "../../values/depth-current-values.json",
-  "delivery": "../../audit/OVERLEAF-DELIVERY-20261020.json",
+  "delivery": "../../audit/EIGHT-CELL-OVERLEAF-20261020.json",
   "note": "Mechanism bridge/repair/edges use per-item fresh baselines, matching original analyze.py; earlier r1/r2 generic group-screen summaries are superseded for manuscript use.",
-  "manuscript_commit": "001f752",
   "supervision": {
     "completion_marker": "TASK-COMPLETE",
     "hourly_timer": "inactive",
     "five_hour_timer": "inactive"
+  },
+  "previous_manuscript_commit": "001f752",
+  "manuscript_scope": {
+    "models": [
+      "Qwen3-8B",
+      "Mistral-7B",
+      "Llama-3.1-8B",
+      "DeepSeek-LLM-7B"
+    ],
+    "benchmarks": [
+      "MedCalc",
+      "TheoremQA"
+    ],
+    "cells": 8,
+    "supplementary_small_model_included": false,
+    "note": "Raw completion audits retain historical small-model experiments; active manuscript displays use only the eight main cells per user request."
   }
 }

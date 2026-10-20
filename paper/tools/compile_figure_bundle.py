@@ -26,9 +26,9 @@ assert 'Overfull \\hbox' not in log
 pdf=pymupdf.open(stage/'figures.pdf')
 text='\n'.join(p.get_text() for p in pdf)
 for i in range(1,5):assert f'Figure {i}:' in text
-for i in range(1,5):assert f'Table {i}:' in text
+for i in range(1,7):assert f'Table {i}:' in text
 shutil.copy2(stage/'figures.pdf',BUNDLE/'Figures-and-Tables.pdf')
-report={'stage':str(stage),'pages':len(pdf),'figures':4,'tables':4,
+report={'stage':str(stage),'pages':len(pdf),'figures':4,'tables':6,
         'errors':0,'undefined':0,'overfull_hbox':0}
-(PAPER/'audit/FIGURE-COLLECTION-20261018.json').write_text(json.dumps(report,indent=2)+'\n')
+(PAPER/'audit/FIGURE-COLLECTION-20261020.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report,indent=2))

@@ -1,20 +1,11 @@
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\caption{Focused mechanism contrasts, $114$ items from $14$ skills.
-Differences are in percentage points (pp). Writing $a_X$ for accuracy under condition $X$, the additive interaction
-is $a_{SC}-a_S-a_C+a_R$, where $a_R$ is receiver accuracy.}
+\caption{Mechanism contrasts for all eight main combinations, in percentage points.
+$n/G$ gives each row's questions/skills. With accuracy $a_X$, interaction is
+$a_{SC}-a_S-a_C+a_R$; recut loss is $a_{SC}-a_{SC+\mathrm{recut}}$.
+The L24 path gap is skill-to-skill-cut accuracy minus post-skill-to-skill-cut
+accuracy, equivalently the excess loss from cutting post-skill access.}
 \label{tab:mechanism-contrasts}
-\small
-\renewcommand{\arraystretch}{1.18}
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{@{}lr@{}}
-\toprule
-Contrast & Difference \\
-\midrule
-L16: $SC-S$ & $+38.6$ \\
-L16: additive interaction & $+31.6$ \\
-L16: $SC-(SC+\mathrm{recut})$ & $+35.1$ \\
-L24: reader minus self loss & $+71.1$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-mechanism-contrasts}
+\end{table*}

@@ -1,15 +1,13 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-teaser.pdf}
-\caption{From effective early transfer to source-cache repair.
-(a) Early skill states recover most of the donor's benefit on the screened
-Qwen3-8B/MedCalc set. (b) On common eligible items, residual transfer
-weakens while source dependence remains high. Dependence is $d(L)=1-q(L)$,
-the fraction of rescued answers lost after cutting source access.
-(c) At layer $16$, replacing source states together with their source
-cache recovers part of late transfer, and cutting subsequent reading removes
-most of that recovery. Panels use their indicated evaluation populations.}
-\Description{Three panels summarize early residual recovery, measured transfer
-and source-dependence curves, and layer-16 state/cache repair and reader recut.}
+\caption{Overview of all four main models on both benchmarks (MC: MedCalc;
+TQA: TheoremQA). (a) Skill-span replacement accuracy at layers 2 and 8,
+with each battery's own baseline-screened population. (b) The gap between
+first transfer and dependence boundaries, as a percentage of model depth,
+on common eligible items. (c) Fixed-layer-16 joint-repair gain over state
+replacement and the loss after a next-layer recut. Panels use separate
+protocol-specific populations, not a single item-level trajectory.}
+\Description{Eight model--benchmark rows show early versus later transfer, positive normalized boundary gaps, and partial repair followed by recut losses.}
 \label{fig:teaser}
 \end{figure*}

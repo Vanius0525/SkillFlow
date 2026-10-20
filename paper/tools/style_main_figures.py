@@ -105,16 +105,6 @@ def depth():
     handles,labels=axes[0,0].get_legend_handles_labels()
     fig.legend(handles,labels,loc='outside upper center',ncol=2,fontsize=8,handlelength=2.4,columnspacing=2)
     save(fig,'fig-transfer-reading')
-    fig,axes=plt.subplots(1,2,figsize=(3.45,2.15),sharey=True,layout='constrained')
-    for ax,task in zip(axes,['MedCalc','TheoremQA']):
-        c=lookup['Qwen3-0.6B',task];draw(ax,c)
-        ax.set_title(task+'\n'+f"n={c['common']['n']}, G={c['common']['groups']}",fontsize=7.4,fontweight='bold',pad=5)
-        ax.set_xlabel('Layer L',labelpad=3,fontsize=7)
-        ax.tick_params(labelsize=7)
-        for label in ax.texts:label.set_fontsize(6.5)
-    axes[0].set_ylabel('Recovery / dependence',labelpad=3,fontsize=7)
-    fig.legend(handles,labels,loc='outside upper center',ncol=2,fontsize=7)
-    save(fig,'fig-depth-scale-check')
 
 
 def rank():
@@ -218,5 +208,5 @@ if __name__=='__main__':
     after={f:hashlib.sha256((VALUES/f).read_bytes()).hexdigest() for f in INPUTS}
     assert before==after
     (AUDIT/'DEPTH-FIGURES-20261020.json').write_text(json.dumps({'input_sha256':before,
-        'numeric_records_unchanged':True,'figures': ['fig-transfer-reading','fig-depth-scale-check']},indent=2)+'\n')
+        'numeric_records_unchanged':True,'figures': ['fig-transfer-reading']},indent=2)+'\n')
     print('Rendered submission point-estimate figures; numerical records unchanged.')

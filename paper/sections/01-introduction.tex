@@ -44,25 +44,21 @@ Figure~\ref{fig:teaser} previews the two levels of evidence. The main
 finding is a depth interval in which residual transfer is weak while
 skill dependence remains high. The ordering of their first half-effect
 crossings recurs in all eight comparisons across four main models,
-using common eligible question IDs within each comparison; a smaller-model
-scale check is reported in Appendix~\ref{app:scale-check}. These are
+using common eligible question IDs within each comparison. These are
 conditional effects on screened populations, and matching IDs does not
 make the donor and receiver execution backgrounds identical.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-teaser.pdf}
-\caption{A depth separation and a partial repair.
-(a) Early residual replacement recovers most of the re-evaluated donor's
-gain on a historically screened Qwen3-8B/MedCalc population.
-(b) Residual transfer weakens while aggregate skill-attention dependence
-$d=1-q$ remains high on common eligible items.
-(c) At layer $16$, adding skill-cache replacement partially restores
-transfer; a subsequent post-skill-to-skill cut removes most of that gain.
-The panels use distinct evaluation populations, indicated below each panel.}
-\Description{Three panels show an effective early transfer probe, a measured
-depth interval with weak transfer and strong skill dependence, and partial
-layer-16 repair through a joint state and cache intervention.}
+\caption{Overview of all four main models on both benchmarks (MC: MedCalc;
+TQA: TheoremQA). (a) Skill-span replacement accuracy at layers 2 and 8,
+with each battery's own baseline-screened population. (b) The gap between
+first transfer and dependence boundaries, as a percentage of model depth,
+on common eligible items. (c) Fixed-layer-16 joint-repair gain over state
+replacement and the loss after a next-layer recut. Panels use separate
+protocol-specific populations, not a single item-level trajectory.}
+\Description{Eight model--benchmark rows show early versus later transfer, positive normalized boundary gaps, and partial repair followed by recut losses.}
 \label{fig:teaser}
 \end{figure*}
 

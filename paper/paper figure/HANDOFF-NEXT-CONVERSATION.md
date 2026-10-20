@@ -1,3 +1,117 @@
+## 2026-10-20 当前入口：仅4主模型×2benchmark，图表覆盖更新完成
+
+- 最新用户指令：放弃小模型相关论文结果，重点让4主模型×2benchmark覆盖所有表格和图表。用户称Qwen0.8B，当前实际小模型为Qwen3-0.6B；已从活跃正文/附录、当前深度JSON、图表与生成入口移除。原始实验、历史报告及未引用旧文件保留，不删除。
+- 当前论文4图6表：Figure1八组合概览；Figure2通用干预设计；Figure3八组合逐层深度；Figure4八组合L16修复和L24路径损失。Table1八组合L2/L8控制，Table2八组合边界，Table3八组合机制差值；附录跨题/窗口、修复和独立分母三表均为八组合。图表包四图六表已全刷新，合集11页；旧七格/Pending说明已纠正。
+- 科研口径：L8已在Mistral/Llama/DeepSeek迁移边界之后，不称统一早层；加入L2准确率56.0–93.4%。Mistral/MedCalc L16 additive interaction=-7.9pp，即使SC-S=+10.5pp，不能称统一正交互。历史Qwen8/MedCalc跨题/窗口行报告恢复率，其他行准确率，表中显式区分，不作排名。全部suite沿用r3独立筛选。
+- 验证：python tools/build_eight_cell_displays.py；python tools/audit_eight_cell_displays.py --stage /mnt/c/Users/12970/AppData/Local/Temp/WWW2027/build-skillvector.Pq5ZnFyY；python tools/audit_integrated_manuscript.py --pdf skillvector-www2027.pdf通过，200个机制arm×layer计数核验。论文正文8/全文12页，无error/undefined/overfull。python tools/compile_figure_bundle.py通过，四图六表11页，无error/undefined/overfull hbox。
+- Overleaf更新前基于当前稿件快照完整diff零差异（07:09:41Z），上传前与同一基线再完整diff零差异（07:24:42Z），未发现新增线上修改。非删除上传22文件，最终活跃源0新增/0修改差异；仅未引用历史fig-depth-scale-check.pdf为remote-only，未传播删除。云端PDF12页，每页提取文本与本地已审计PDF完全一致。证据audit/EIGHT-CELL-OVERLEAF-20261020.json及audit/EIGHT-CELL-COVERAGE-20261020.json；最终本地PDF SHA256 aed9adf8bb09dfc96529baa13f847449bc59fe5e45cc4ff1032387a8956fbc46。
+- 最终论文skillvector-www2027.pdf；图表合集paper figure/Figures-and-Tables.pdf；覆盖报告reports/图表八组合覆盖核查_20261020.md。CURRENT.json记录当前八组合论文范围及新交付收据，实验完成审计仍保留历史完整产物。无新推理/远端资源/定时器/数据下载，无待续接实验。
+- 后续修改论文前仍完整olcli diff，上传前再查并发。Git仅提交本次任务修改，不纳入原先的调度状态、旧DATA-CONSISTENCY和howskill临时文件；本轮提交推送完成后以git log为准。
+
+## 2026-10-20 当前续接入口：论文交付完成，旧实验监督已关闭
+
+- 当前任务已完成，无待续接的实验、评分、聚合、论文编译或同步步骤。用户已再次确认论文更新与同步状态；后续若收到旧 done 或小时状态消息，只去重报告，不重提实验、不恢复旧队列或定时器。下方按日期记录的“运行中／待上传／保留监督”均为历史过程，不能覆盖本节最终状态。
+- 论文提交 `001f752`、收尾提交 `f6aca98` 均已推送 `origin/master`。正文、摘要、附录、表格及图表已更新；Overleaf 项目 https://www.overleaf.com/project/6a2cfd49b99635e8e968576a ，根文件 `overleaf-skillvector/main.tex`。上次交付已核验20个源文件完整 diff 零差异；云端编译正文8页、总12页，无错误、未定义引用或溢出。本次仅更新交接，不声称重新检查了线上协作修改。
+- 最终 PDF：`skillvector-www2027.pdf`；SHA256 `4aa84a30100be635e0c9e2399b4610eb13327c981a27e97e1bca08a832ac3293`。交付证据：`audit/OVERLEAF-DELIVERY-20261020.json`、`audit/MANUSCRIPT-INTEGRATED-20261020.json`。下次修改论文前仍须重新完整执行 `olcli diff`，上传前再次检查。
+- 实验唯一权威入口：`experiments/family_depth_20261018/CURRENT.json`，引用 r3 完成矩阵与套件审计；旧 r1/r2 不用于论文。既定冻结候选上的8个主模型×任务深度组合和2个小模型补充组合均齐全；这不等同所有模型的全量 benchmark。repair/edges/bridge 必须按原协议逐题新基线筛选，不得再套用深度实验的整组规则。
+- 当前结论边界：10个条件深度组合均迁移边界早于保留边界；固定L16的8个主组合均有部分修复，SC-S提升6.8–43.4个百分点、recut后下降2.2–37.7个百分点。不能外推所有层、全量任务或统一充分机制；历史KO预算精确等价性仍有限制。
+- `TASK-COMPLETE` 已存在；小时 `family-depth-watch-01a15016.timer` 和5小时 `family-depth-progress-01a14a9e.timer` 在收尾时均已实测 inactive。本次回读 CURRENT 与完成标记确认关闭记录，不重新连接平台或启动资源。
+- HDD 的 Errno122 配额问题未通过清理或调额解决，审计通过纯内存计算与本地小报告绕开，未影响本次交付；精确个人配额仍未知。任何后续删除或大于1GiB下载仍需单独授权。保留原始数据、模型和历史审计。
+- 仓库仍有先前遗留修改及未跟踪文件；本次只提交交接新增段，不纳入其他改动。若用户启动新的科研或审稿任务，再制定新步骤；当前没有自动续接动作。
+
+## 2026-10-19 19:14 本轮周期核查完成，观察CPU到期待维护
+
+- 按最新HANDOFF/README/deployment/plan/state核验：81计划/81attempted/81submitted（含已替代与预检），当前4个c132正式Job均running，无新done、无watch错误，原始回答文件字节和mtime持续增长。Qwen8当前L4–7块、Mistral当前L28–31块、两KO/edges均持续计算；不据running当完成，不重复提交，不改稿。采样报告periodic-check-20261019-1906.json。
+- 原wt-family-prep-1018 CPU RUNNING，查得Auto-stop In4h53m；GPU Job独立，不受该CPU停机影响，但共享盘观察/审计通道会受影响。已有wt-dev-cpu RUNNING（无auto-stop显示）同project/image，但连接校验未成功：cached target unavailable反复重发现，已准确停止本轮可选探针PID149876（不涉及实验进程）；忽略target-cache仅做一次timeout60s重试，exit124，无更多盲目重试。没有切换到未验证通道或创建新资源，原观察CPU仍可用。
+- watch显式NOTEBOOK='wt-family-prep-1018'，新增22:00后下一次**小时**检查的一次去重CPU维护提醒，须在原实例到期前校验/恢复观察通道；不增加检查频率，不因维护重启GPU。每小时timer active（下次20:03左右）、5h full active（下次00:05左右），因此不能只等下次5h才处理CPU到期。
+- 观察脚本已移除废弃的自动提交旧SSD Qwen8并行KO分支；现在仅观察并去重通知，不会恢复旧队列。保留本轮原始数据、全部已完成审计与论文输入；原始JSONL/无关values文件和howskill/data/cells.json.tmp不动。TASK-COMPLETE不创建。
+- 下一步：20:03小时检查评估输出/完成标记并按更多样本重估ETA；若DeepSeek edges先done，版本化独立重判并按edges自己的baseline筛选，核对与repair基线token一致性；repair当前46题/40组也不能未经验证直接沿用，更不强用54分母。旧模型最终联合审计必须允许Qwen8 KO/Mistral末块的全候选生成、按冻结基线过滤，不误报为重复或空样本。全部结果齐后先Overleaf完整diff再更文/图表、独立编译审计并同步Overleaf/GitHub，不导出桌面，反例只留研究记录。
+
+## 2026-10-19 最新监督频率：每小时轻量检查，每5小时完整检查
+
+- 用户明确要求降低频率。现有family-depth-watch-01a15016.timer drop-in已改OnActiveSec=1h、OnUnitActiveSec=1h、AccuracySec=1min，daemon-reload/restart后核验；不保留5分钟触发，不新增timer。原family-depth-progress-01a14a9e.timer保持5h。两者仍依赖WSL/systemd/Codex在线，原expiry和TASK-COMPLETE停止条件保留。
+- 四项续接此前已全部正式开始并已通知；本条q8-transfer启动通知是排队的旧事件，不再为它额外访问远端或提交Job。watch取消重复逐项/全部启动通知，保留小时检查中的真正新done/故障提醒、一次吞吐重估；复制的两份首块done仍排除。已处理通知若继续延迟送达，只参考本地已核验状态，合并到下一小时检查，不立即重复远端轮询。
+- 不改变正在运行的4个4090任务、计算协议或输出，不发起H卡、下载或删除。下一小时核验原始文件增长、done和异常，5h做完整审计与必要续接。全部结果完成并审计后按Overleaf完整diff→本地修改→Overleaf/GitHub同步，不导出桌面；当前不标完成。
+
+## 2026-10-19 18:55 实际设备与连续生成证据、首轮ETA
+
+- 19:03延迟Mistral首块done提醒已复核：SSD/HDD窄表、raw、manifest和done四SHA一致，142条窄表/1278条回答，与done吻合；属于复制旧首块，不是新结果，未改论文或重跑。定时watch正在持锁时手动检查遇到nonblocking锁冲突，现已改为CHECK_ALREADY_RUNNING正常返回，避免重叠检查误报；原定时检查继续，最近无error/无新done。
+- 四个Job节点：Qwen8 transfer qb-prod-4090-gpu085；Mistral qb-prod-4090-gpu163；Qwen8 KO qb-prod-4090-gpu087；DeepSeek edges qb-prod-4090-gpu076。四份hardware均实际RTX4090/driver595.71.05，容器PyTorch CUDA12.8（不是因组名13.2而改用CUDA13.2），torch2.7.0a0+ecf3bae40a.nv25.02，transformers4.57.6。
+- 已用两次远端读取证明确实持续生成：相隔131.2s，q8-transfer L4块回答27→42，Mistral L28块44→56，Qwen8 KO47→53，DeepSeek edges40→61，四文件字节和mtime同步增长。样本行数不是完成题数：首快照DS完成3题、Mistral完成7题、Q8KO完成1题、Q8transfer当前4层块完成6题；其余题在计算。无新done。首次详细快照audit/RECOVERY-LIVE-PROGRESS-20261019.json（不含回答正文）。
+- 当前仅运行首约10分钟，粗估剩余：DeepSeek2–4h；Mistral补L28+KO6–12h；Qwen8 transfer约8–24h；Qwen8 KO约18–36h，整体约1–2天再加最终审计/编译同步。Qwen8 KO从首快照约10.5s/回答变化到短窗约21.9s/回答，长答案/900token截断及独立基线筛选都影响吞吐，不能用前两题承诺完成时刻。watch增加一次去重运行首小时吞吐提醒（19:45后检查触发），到时重估而不重启Job。
+- 仍维持4张4090、5分钟监督/5小时完整检查。全部正式开始已告知，不因旧启动通知重复提交；全部结果完成后审计并按Overleaf diff流程更新正文及相关图表、同步云端/GitHub，不导出桌面。
+
+## 2026-10-19 18:50 四项4090续接全部正式开始（已单独通知用户）
+
+- 启动后硬件核验通过：4个hardware.json均实际RTX4090、CUDA12.8、PyTorch2.7.0a0+ecf3bae40a.nv25.02、Transformers4.57.6。Qwen8 transfer L4 manifest确认V2 admission=true，冻结168→88；已先启动的Mistral L28和Qwen8 KO admission=false（表示未预筛，并非eligible=0），保留其全候选结果，最后按完整原始基线重建eligible；Mistral后续KO应见已补done并启用筛选。
+- 对延迟预检完成通知已复核本地报告：passed=true，20/20生成token与标签一致，软件CUDA12.8/PyTorch2.7.0a0 nv25.02/Transformers4.57.6；迁移已在上一轮完成，不再次迁移或提交。
+- 最新watch核验四新Job均job_running，q8-transfer、mistral-transfer、q8-ko、ds-edges四个canonical raw均已有可解析text。已单独向用户通知全部实际开始，超越排队/容器启动里程碑。新GPU完成标记尚无，运行与完成不可混淆。
+- HDD新增的q8-transfer-00.done.json和mistral-transfer-00.done.json是从SSD复制的已完成基线标记，**不是本轮新完成GPU层块**。watch recovery_done已明确排除这两个复制标记，避免误报；原始标记和数据仍保留。已排队的旧完成提醒如到达应按此处理，不重复实验。
+- 保持5分钟监督、5小时完整检查，现有4卡≤8。接下来核验各新硬件manifest、日志增长与实际admission是否生效；完成后独立评分+各suite人群+完整层网格/身份/截断审计再更新paper。尚不创建TASK-COMPLETE，不删除任何其他权重或原始输出。
+
+## 2026-10-19 18:45 同镜像4090迁移已提交，旧四队列已停
+
+- 18:49新live：4个替代Job均job_running，Mistral/Qwen8KO/DeepSeekedges三项已正式text，Qwen8transfer尚待首答（捕获阶段）；watch无error。新availability快照：13.2组967/968、Available1，12.8组432/432、Available0，12.4组48/48、Available0。不能把早先13.2余额12当持续可用量，现已成功拿到4张卡。尚未通知“全部正式开始”。
+- 迁移后补查发现HDD首块只有窄表而缺done，V2据此不会启用admission。已核验首块SHA/条数并复制原raw、manifest及done（无覆盖/删除），后续新进程恢复冻结筛选。已启动的Qwen8 KO和Mistral L28可能保留全候选计算，结果不作伪造/删除；最终聚合按原冻结基线筛选并单独报告manifest差别，不把额外候选当共同分母。Qwen8 transfer尚在creating，后续块应直接见完整done。该修复避免后续块重复无效计算，不修改attention/生成预算。
+- 18:46首次正式进展：新组Qwen8 KO与DeepSeek edges已有可解析text正式raw，已实际开始；Mistral job_running但尚未见首答，Qwen8 transfer job_creating。尚不能通知全部正式开始。watch无last_error，预检已成功终态释放。
+- 原因已核验：原4090-2-cuda12.8组保障余额-1、另一4090-2-cuda13.2组余额12，任务不会跨组自动排队。用户仍只用4090，不使用H卡。
+- 修正后的预检wt-probe-4090-c132-r1-1019已job_succeeded，实际NVIDIA GeForce RTX4090，PyTorch2.7.0a0+ecf3bae40a.nv25.02/CUDA12.8/Transformers4.57.6。2个按baseline+prompt长度选定样本、20项SDPA/eager baseline/identity/transfer/KO比较，token_equal和label_equal全true。报告ROOT/cuda132-compat-20261019-r1/report.json，本地cuda132-compatibility-report-20261019.json。预检卡已结束释放；不将少量样本等价视为所有题目证明，正式输出仍需完整审计。
+- 旧4个*-hdd-1019任务停止前再次live全部job_queuing，HDD四正式raw均不存在；stop全部成功并核验job_stopped，停止后再次确认无raw，再提交新4个*-c132-1019任务。没有删除/丢弃结果，没有两套正式同时计算。
+- 新任务配置recovery-cuda132-jobs.json dry-run通过，4个均提交成功，名字wt-recover-{q8-tqa,mistral-tqa,q8-ko,ds-edges}-c132-1019，group4090-2-cuda13.2，仍同一个ngc-pytorch:25.02-cuda12.8.0-py3镜像，1卡/10CPU/100GiB/32GiBshm，各48h上限，总4≤8。包装器record_hardware_and_run.py仅校验4090/CUDA12.8/Transformers版本并留GPU UUID/driver/runtime记录，随后执行原命令；prompt/attention/900或1536预算/输出路径不改。所有模型权重和原始数据路径不变。
+- parallel-plan/launch-state已记录81attempted/submitted（含原64、补跑、已替代失败/停止Job和2次预检），旧四readiness注明superseded_by，quota_recovery.active_jobs为新4任务。deployment与5min watcher已指向新任务。原5h检查保留，不重启旧队列。不能把新任务提交成功当实际开始，下一步核验live状态/manifest及第一条可解析正式raw；全部实际开始后单独通知。
+- 此轮排障推进未改论文数值；待全部结果齐后仍先Overleaf完整diff，重新隔离评分/人群/网格/身份/截断核验再改稿同步。反例不进当前paper，TASK-COMPLETE未建，其他文件不删。
+
+## 2026-10-19 4090另一组预检首轮错误已修正（不影响正式实验）
+
+- wt-probe-4090-c132-1019在另一组很快分配到卡，但模型加载前因我生成cells格式为iid→R而原代码要求R→[iid]而退出；不是GPU数值差异或模型计算失败。首轮输出保留，GPU已终态释放，不能把该失败当13.2组不可用。
+- 已对照原legacy-q06-theoremqa.cells.json验证正确schema，保存probe_4090_cuda132_v1.py备份，修正主预检脚本为cells={'R':chosen}，另用全新ROOT/cuda132-compat-20261019-r1目录。仅作一次明确修复后的retry：wt-probe-4090-c132-r1-1019已提交，相同4090/同镜像/同quota/0.5h上限。plan/state均记录77尝试/提交；原4正式queued任务未停、未改、无重复生成。
+- watch已改观察r1状态及其PROBE-COMPLETE，报告通过后才讨论正式队列迁移。预检失败不修改论文或旧数值，无删除/下载操作。
+
+## 2026-10-19 4090分区占用排障与同硬件兼容性预检
+
+- 用户问为何排不到，live availability快照：4090-2-cuda12.8 Used433/Total432、Available-1；4090-2-cuda12.4 48/48、Available0；4090-2-cuda13.2 956/968、Available12（HighPri17）。这是平台调度/保障口径，可超余额，不解释为物理多一张。任务固定12.8组，不会自动利用13.2组空余额。18:19 FailedScheduling仍报CPU/memory/GPU组合不足，当前申请1GPU/10CPU/100GiB/32GiB shm。
+- 已核查13.2组live合法quota1,10,100（any priority，0.33点/小时），同一个ngc-pytorch:25.02-cuda12.8.0-py3官方镜像SUCCESS，dry-run通过。仍是4090(48GB)，没有启用H卡。为了继续已授权的高效排程，已提交单卡wt-probe-4090-c132-1019，最长0.5h，无成功/失败容器保留，结束自动释放。原4个正式Job保留，不抢跑迁移；总最多5卡≤8。
+- probe_4090_cuda132.py只用Qwen0.6共同eligible中按prompt最短/最长固定选2题，比较同镜像的SDPA baseline/identity/L0 transfer和eager baseline/KO L0/20/27原始token与标签；900预算不改。输出ROOT/cuda132-compat-20261019/report.json与PROBE-COMPLETE。这是小样本兼容性预检，不证明所有模型/题完全一致，不混入正式论文数据；passed=false不得直接拼接。
+- parallel-plan/launch-state记录新增probe（76attempted/submitted）；watch每5min检查该Job状态和PROBE-COMPLETE，完成去重queue本会话供后续决策。没有提交第二套正式GPU重复计算。新probe已提交，不把提交当实际开始。
+- 下一步：核验probe是否正式启动及比较报告。若通过，再在不重复计算、不改变attention/预算且保留节点/版本记录的前提下，制定原queued任务迁移到同4090另一组；旧队列只有确定替代方案后才停止，未使用资源及时释放。若原4任务已开始，优先保留已产生结果，不因可用量快照盲目迁移。其余原始输出和模型不删。
+
+## 2026-10-19 18:12 周期核查：调度等待，未重复实验
+
+- 已读HANDOFF/README/deployment并核对parallel-plan与launch-state：计划75、attempted75、submitted75（含被替代的旧失败Job）。现有4个4090 HDD续接Job均job_queuing，formal_started四项false，recovery_done为空，watch无last_error；未新增Job，不恢复旧失败整池。
+- 排障事件：Qwen8 18:09 Unschedulable/FailedScheduling，平台报Insufficient cpu/memory/GPU及其他不匹配节点；不能把它解释为程序或磁盘再次出错。相同组availability快照432卡用429、Available3、Free Nodes0；Available不保证恰好能满足单Job的CPU/内存/GPU组合，不据此改协议或降低资源稳定性。保留当前排队位置。
+- 5分钟watch和5小时完整timer均active；下一完整检查23:04左右，watch18:12继续。用户已明确只用4090，H卡未提交。正式生成和done出现有去重通知，不把job_queuing当开始。
+- 完成CPU审计与v2聚合无需重跑：Qwen0.6 122共同题/92skills、全28层T/R11/20、身份一致；DeepSeek五suite独立基线已重建，battery/L2的52个same_family_mean缺格均固定donor不可用，unexpected_missing0。论文仍等待剩余Qwen8/Mistral与DeepSeek edges；本轮没有新增可填图的GPU结果，不提前改稿或创建TASK-COMPLETE。
+- deployment.json增加本轮current状态与资源/评分入口，历史字段保留。下一步：GPU启动后核验节点、协议manifest、第一条正式raw与HDD写入，再在完成时逐题隔离评分/联合完整网格审计，汇总正文矩阵；先Overleaf完整diff再改稿并同步Overleaf/GitHub。原始文件、其他权重不动，无下载或删除。
+
+## 2026-10-19 最新指令：只排4090，5分钟监督，完成后同步论文
+
+- 用户取消H卡方案。此前仅阅读help/平台文档，**没有提交H100/H200任务或创建H卡实例**；parallel-plan和launch-state无H卡项，不新增第二套GPU队列。现有四个HDD续接任务均为4090单卡Job，合计最多4卡，仍服从8卡总上限。
+- 最新live仍4个job_queuing，表示平台待分配GPU，不是已占卡后的内部实验顺序。保留排队位置，不重提，不修改900/1536预算或attention实现。正式开始以可解析回答text写入为准。
+- 轻量监督现改为**每5分钟**：现有family-depth-watch-01a15016.timer的用户drop-in ~/.config/systemd/user/family-depth-watch-01a15016.timer.d/interval.conf，daemon-reload/restart通过，ActiveState=active，TimersMonotonic=OnUnitActiveUSec=5min。原5小时完整检查保留。watch新增各任务首次正式raw、全部正式开始和各done出现的去重queue通知；不把排队当开始，依赖WSL/Codex在线及原expiry，到TASK-COMPLETE停止。
+- CPU审计后聚合已实际完成，原始JSONL和报告SHA逐文件绑定、13,845条独立评分0变化。aggregate_completed_supplements.py进一步核对Qwen0.6宽表与raw共10,335条生成条件映射、历史prompt/span、所有28层及可用self-token身份一致。冻结168候选，transfer独立基线eligible125，交集122题/92skills，T/R=11/20。该交集不等于旧主图125，不沿用旧分母；900-token KO历史预算差异仍需说明。
+- DeepSeek corrected54 battery/L2/windows独立基线均54题/45groups，repair按1536/split-prefill基线为46题/40groups，不能借用Figure3的54作机制分母。bridge仅2候选中1eligible，不当完整机制样本。identity failures均0；battery和L2各52个缺格均same_family_mean；v2已逐题根据skill标题family和冻结donor池验证全部为结构不可用，unexpected_missing=0，不补不存在的donor。windows/repair有效样本的观测网格无缺失。
+- 小产物experiments/family_depth_20261018/aggregated-post-quota-20261019.json与v2分类报告均已取回。新核验结果本轮先落盘，尚不修改论文数值；等4090剩余任务完成、最终完整性/基线/身份/截断审计后，先olcli完整diff纳入云端修改，再更新正文及相关图表、独立编译、同步Overleaf/GitHub，不再导出桌面。反例继续仅保留研究记录。TASK-COMPLETE尚不创建。
+
+## 2026-10-19 已按授权删除Qwen14B，继续补跑与独立审计
+
+- 用户明确授权先删除Qwen3-14B内容。已删除准确目录/inspire/ssd/project/project-public/czxs253130660/models/Qwen3-14B（29个文件，7,599,691,435逻辑字节/7,599,721,984分配字节，约7.08GiB），包括旧未完成下载和少量配置；目录不存在已验证。未删除Mistral consolidated或任何其他数据。删除前文件清单与完成证据audit/QWEN14B-CLEANUP-20261019.json，远端HDD也保存qwen14b-deletion-audit.json。此前提议中的Mistral清理仍未获授权。
+- 清理后SSD个人目录du约92GiB（此前99GiB）。新增32MiB probe写入+fsync成功，耗时0.036s；probe保留在ROOT/ssd-after-q14-cleanup-probe-20261019.bin，不私自再删。CPU探针不等于已验证GPU节点写入，也不是完整磁盘基准。
+- 对SSD加速的判断：当前所有模型权重始终在SSD，GPU加载路径未迁移；HDD只接收小规模JSONL。Qwen8首块数小时约5MB raw，结果写入量很小，因此不预期仅把结果切回SSD会明显缩短生成。为保留四个现有排队任务、避免迁移路径/重复提交风险，本轮保留HDD输出；SSD已恢复可写供新审计使用。实际GPU耗时尚未做SSD/HDD配对测速，不声称测得加速比。
+- 四HDD任务最近仍queuing，未重复提交；原已完成块继续复用。30min watch保持并新增正式raw检查：四任务都有可解析text记录时才queue单独实际开始通知。5h timer保持，TASK-COMPLETE不存在。
+- 等GPU期间已启动已完成补跑的独立CPU审计：audit_completed_supplements.py，覆盖DeepSeek corrected54 battery/L2/windows/bridge/repair五suite＋Qwen0.6全部7层块和KO的raw（13文件）。输出ROOT/post-quota-audit-20261019/，日志同名.log，PID元数据同名.pid（timeout进程897054），20分钟上限，不覆盖旧overlay/raw。逐题parser重置、全量逆序一致性和16 fresh-process对照；完成标记AUDIT-COMPLETE。watch已补完成/异常提醒。已实际完成：13文件/13,845回答/changed_labels=0，全部逆序重判及16 fresh-process对照通过。仍须各suite独立baseline/eligible聚合，不把标签核验完成当论文所有实验完成。
+- 下一步：核验CPU审计日志/报告、4个HDD Job正式启动与写入；Qwen8/Mistral SSD完整块和HDD补块按manifest/raw哈希联合审计。继续Overleaf完整diff→本地修改→Overleaf/GitHub流程，尚不改论文数值，不导出桌面。反例暂不进paper。
+
+## 2026-10-19 最新同步约定、术语与配额故障续接
+
+- 用户最新要求：**每次论文更新先运行olcli完整行级diff，纳入合理云端修改；本地修改和编译审计后同步Overleaf与GitHub，不再向桌面导出。** 该要求覆盖历史桌面交付步骤，旧交付保留。详细入口OVERLEAF.md；5h检查消息已同步改为新流程，反例仍只记录研究，暂不进paper。
+- 已核验关联Overleaf项目6a2cfd49b99635e8e968576a，虽然项目名仍是旧ICLR Skillflow，实际当前稿在overleaf-skillvector/。首次误用paper根作diff导致大量local-only，随后改为17项匹配暂存目录，保存并完整审阅998行真实diff。差异不能单独识别作者；采用云端更准确的历史筛选/重新评估、条件性结论、机制覆盖局限、四主模型+Qwen0.6补充检查等内容，保留用户要求的Intro首段Web语义关联。图3仍7个已核验panel（6主+1补充），不把未审计旧TheoremQA补入。Table2保留云端4模型×2任务矩阵、两Pending单元与归一化深度差；生成器已适配，原数值JSON未改。
+- source统一为skill span/skill-position states/skill-position KV cache；reader改为post-skill positions，明确是skill之后的提示词和生成推理/答案token，不是receiver模型。前置token因causal mask不能读skill。Figure2/4、Table3及正文/当前附录一致；切边不删除skill、不抹去已传播的信息。Table3前三行是干预结果对比，并非各有一个mask；路径切断行准确指向query→skill keys。
+- 本地编译改Windows Temp，首次通过正文8/全文11页，error/undefined/hbox/vbox均0；云端上传前再次diff核验自首次读取后无新增修改，17文件上传成功，指定nested main独立编译成功。云端PDF也核验正文8/全文11页，0error/undefined/hbox/vbox；ZIP与上传的所有TeX/Bib/PDF逐文件哈希一致，audit/OVERLEAF-TERMINOLOGY-20261019.json。没有新桌面输出。
+- 实验新故障：Qwen8原Job16:55于L4块输出写入Errno122 Disk quota exceeded；DeepSeek机制17:03已完成bridge与repair，但创建edges manifest（零字节）失败；Mistral17:14在L28块写入也失败。Qwen0.6重生成与DeepSeek battery/L2/windows已成功。原失败块全部保留，不重启整池，不删文件。SSD df余量不能代表用户配额；CPU小写可成功不等于GPU大写正常。
+- HDD新目录/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019，8MiB写入实测通过。仅复制Qwen8/Mistral完整首块基线和小脚本；quota_recovery_worker验证SSD完成块的条数、raw哈希（如有）、模块哈希和层网格后跳过，只在HDD重生成未完成块。原partial仍在SSD，不拼接残缺raw。Qwen8transfer与KO分成2卡；Mistral补L28块后KO；DeepSeek仅edges。四Job dry-run与提交均成功，最近4个job_queuing，**尚不能宣布实际开始**。名字wt-recover-{q8-tqa,mistral-tqa,q8-ko,ds-edges}-hdd-1019，详细quota-recovery-jobs.json；总卡最多4≤8，未下载权重。
+- parallel-plan/launch-state已登记新4任务（总75已提交，含被替代失败Job），quota_recovery注明旧3Job替代关系和HDD完成标记绝对路径。旧计划Qwen8 SSD并行KO从未提交，不能恢复它。watch_progress已改观察HDD与新4Job，旧失败Job由新任务取代；30min监督与5h检查均active。整项实验尚未完成，不建TASK-COMPLETE。
+- 下一步：先核验4个HDD任务正式raw/manifest和GPU写入；完成后按SSD完整块+HDD续接块联合审计网格、身份与逐题隔离评分，不混入SSD残缺块。DeepSeek repair独立重判/edges及全部suite人群仍待汇总，Qwen0.6已完成输出待独立审计。暂不承诺全部完成时间，排队和存储条件影响很大。固定99题Llama长度诊断仍未提交，反例只作研究记录。
+
 # 2026-10-19 当前交付与续接入口（覆盖下面历史）
 
 用户最新要求：先将已核验结果更新论文并同步桌面/Overleaf ZIP/GitHub，未完成项记下来继续；新发现机制反例先留研究记录不入稿。整项实验仍未完成，五小时timer保持，勿创建TASK-COMPLETE。

@@ -1,14 +1,14 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
-\caption{Source-state/cache replacement and attention-path tests on the same $114$
-Qwen3-8B/MedCalc items from $14$ skills. (a) Accuracy (\%) following residual
-replacement ($S$), cache replacement ($C$), joint repair ($SC$), or joint
-repair followed by a reader cut from the next layer. (b) Fraction of
-donor-correct answers lost when reader-to-source, source-to-source, or
-both attention paths are cut from the indicated layer onward.
-The heatmap uses a fixed $0$--$100\%$ scale with exact values in each cell.
-Path-cut estimates are offset vertically within each tested layer. Table~\ref{tab:mechanism-contrasts} reports the main contrasts.}
-\Description{A labelled heatmap compares four repair interventions at four layers. A horizontal dot plot compares three attention-path cuts at three layers. At layer 16 joint repair is much more effective than either component, while a reader recut removes most of the gain.}
+\caption{Repair and attention-path results for all eight main combinations.
+MC denotes MedCalc and TQA denotes TheoremQA. Each row uses its own fresh
+split-prefill population; parentheses give questions/skill groups.
+(a) Layer-16 accuracy after state ($S$), cache ($C$), joint ($SC$), or joint
+replacement followed by a next-layer post-skill-to-skill recut.
+(b) At layer 24, the fraction of donor-correct answers lost after cutting
+post-skill-to-skill, skill-to-skill, or both paths. Both prefill and decoding
+are intervened on. Table~\ref{tab:mechanism-contrasts} gives derived contrasts.}
+\Description{Eight rows compare four repair accuracies at layer 16 and three attention-path losses at layer 24 across four models and two benchmarks.}
 \label{fig:mechanism}
 \end{figure*}
