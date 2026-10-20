@@ -9,7 +9,7 @@ the late deficit. Each step supports a different level of inference.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
-\caption{Depth profiles for six main model--task comparisons and the supplementary Qwen3-0.6B scale check (seven verified comparisons in total). Blue shows
+\caption{Depth profiles for all eight main model--benchmark comparisons. Blue shows
 skill-span transfer recovery $\rho(L)$ in a wrong-skill receiver.
 Orange shows aggregate skill-attention dependence $d(L)=1-q(L)$: the fraction
 of originally correct answers lost after cumulative attention knockout
@@ -20,7 +20,7 @@ Each panel uses common eligible item IDs for both curves, with each run's
 own baselines and execution protocol; $G$ denotes skill groups. The
 knockout affects both access from post-skill tokens and skill-state updates. Every plotted
 layer is measured.}
-\Description{Seven line plots show transfer recovery declining before skill-attention dependence subsides on their common eligible populations.}
+\Description{Eight line plots show transfer recovery declining before skill-attention dependence subsides on their common eligible populations.}
 \label{fig:transferreading}
 \end{figure*}
 
@@ -82,7 +82,7 @@ An identity patch writes the receiver's own states
 back and should reproduce its output. Correcting an attention-mask mismatch
 between state capture and decoding restores exact agreement, including
 all $467$ MedCalc identity checks. All main results use the corrected
-implementation. TheoremQA outputs for the added families are regraded
+implementation. TheoremQA outputs for all five model sizes are regraded
 with the official evaluation rules while restoring fresh parser state
 before every answer. We retain the original text, verify grading-order
 invariance and compare with fresh-process evaluations; eligibility is
@@ -216,23 +216,23 @@ Original transfer and knockout runs can retain different eligible questions.
 We therefore recompute the curves over the intersection of their item IDs,
 using eligibility determined from unpatched baselines.
 Table~\ref{tab:paireddepth} organizes four models by two benchmarks.
-Six model--benchmark cells have verified depth results; Qwen3-8B and
-Mistral-7B on TheoremQA remain pending. The skill-dependence boundary
-follows the transfer boundary in all six completed main comparisons. For Llama-3.1-8B, $T/R$ is $7/18$ on MedCalc
+All eight model--benchmark cells have verified depth results. On
+TheoremQA, Qwen3-8B has $T/R=13/21$ ($82$ items, $66$ skills), and
+Mistral-7B has $7/19$ ($72$ items, $58$ skills). The skill-dependence
+boundary follows the transfer boundary in every main comparison. For Llama-3.1-8B, $T/R$ is $7/18$ on MedCalc
 ($112$ items, $20$ skills) and $6/18$ on TheoremQA ($92$ items, $71$
 skills). For DeepSeek-LLM-7B, the corresponding boundaries are $6/21$
 ($25$ items, $13$ skills) and $4/19$ ($54$ items, $45$ skills).
 Using transfer thresholds $\tau=0.4$ or $0.6$ and dependence thresholds
-$1-\tau$ preserves the ordering in all six completed main comparisons. This extends
+$1-\tau$ preserves the ordering in all eight main comparisons. This extends
 the observed separation to four model families, conditional on their
 respective baseline screens. The $25$-item DeepSeek/MedCalc result supports
 only that selected population. Alongside sample and skill-group counts,
 Table~\ref{tab:paireddepth} reports raw boundary differences and their
 percentage of model depth, $100\Delta/D$, where $D$ is the number of
 layers. This normalization makes layer gaps comparable across model
-depths; it is not a benchmark-accuracy ranking. Unavailable model--benchmark
-comparisons are explicitly marked Pending. The supplementary Qwen3-0.6B
-comparison preserves the same ordering (Appendix~\ref{app:scale-check}).
+depths; it is not a benchmark-accuracy ranking. The supplementary
+Qwen3-0.6B comparisons on both tasks preserve the same ordering (Appendix~\ref{app:scale-check}).
 
 \begin{table*}[t]
 \centering
@@ -240,8 +240,8 @@ comparison preserves the same ordering (Appendix~\ref{app:scale-check}).
 $n/G$ gives common eligible questions/skill groups; $T$ and $R$ are the first
 half-effect crossings for transfer ($\rho<0.5$) and aggregate skill dependence
 ($d\le0.5$). $\Delta=R-T$ is in layers; $\Delta/D$ normalizes the gap
-by the model's layer count. Pending marks an unverified model--benchmark
-cell, not a zero effect.}
+by the model's layer count. All eight cells are measured on their own
+baseline-screened, common-item populations.}
 \label{tab:paireddepth}
 \normalfont\rmfamily\fontsize{9}{11}\selectfont
 \renewcommand{\arraystretch}{1.18}
@@ -329,7 +329,7 @@ correct, while a skill-to-skill-only cut leaves $110/114$ correct.
 Post-skill-to-skill cuts account for most of the tested loss at this layer.
 Earlier cuts at layers $8$ and $16$ damage both paths. This decomposition
 covers three depths in one model--task setting; it cannot identify the
-post-skill-only component of all six main curves. Because these cuts affect
+post-skill-only component of all eight main curves. Because these cuts affect
 both prefill and decoding, they also do not locate the effect in either
 phase separately.
 
@@ -341,6 +341,17 @@ depths. The main repair gain is stable to generation-length diagnostics:
 it remains $38.5$ points on the $96$ questions whose three baselines finish
 without truncation. An adverse reassignment of truncated outputs still
 leaves a $35.1$-point gain (Appendix~\ref{app:mechanism}).
+\paragraph{Extension across models and tasks.}
+Using the same split-prefill repair definitions and fresh baselines,
+we also evaluate the other seven main model--benchmark combinations.
+At the fixed layer $16$, adding cache replacement to residual replacement
+improves accuracy in all eight settings, by $6.8$--$43.4$ percentage points.
+A next-layer post-skill-to-skill recut lowers joint-repair accuracy by
+$2.2$--$37.7$ points. Table~\ref{tab:repair-extension} reports every
+combination and its own denominator. These measurements extend the
+partial-repair observation, while their different effect sizes and
+remaining deficits do not establish a shared, sufficient mechanism.
+
 \paragraph{What the repair does and does not identify.}
 $S$ changes a block's skill-position output and can thereby alter later skill
 states and caches; $C$ writes skill-position caches at layers $0$ through $L$.

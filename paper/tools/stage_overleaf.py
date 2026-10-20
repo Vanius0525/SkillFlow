@@ -11,5 +11,7 @@ target=a.directory/'overleaf-skillvector';target.mkdir()
 for source in project_members(paper):
     dest=target/source.relative_to(paper);dest.parent.mkdir(parents=True,exist_ok=True)
     shutil.copy2(source,dest)
+readme=paper/'overleaf-readme.md'
+if readme.exists():shutil.copy2(readme,target/'README.md')
 print(a.directory.resolve())
 print('Run full olcli diff before editing and again immediately before push; preserve remote-only files.')

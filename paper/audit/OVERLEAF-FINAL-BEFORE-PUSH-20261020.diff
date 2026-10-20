@@ -1,0 +1,492 @@
+diff --olcli a/overleaf-skillvector/README.md b/overleaf-skillvector/README.md
+--- a/overleaf-skillvector/README.md
++++ b/overleaf-skillvector/README.md
+@@ -2,18 +2,6 @@
+ 
+ Main file: main.tex. Compiler: pdfLaTeX. Bibliography: BibTeX.
+ 
+-Upload this ZIP directly as a new Overleaf project. The default
+-build is the WWW submission manuscript. This project contains
+-only the submission and its references and compact appendix.
++This WWW submission includes eight audited main model--benchmark depth comparisons across four model families and two benchmarks. Qwen3-0.6B provides two supplementary scale comparisons. The extended control populations and layer-16 skill-state/cache repair results are reported with their own baselines and denominators.
+ 
+-The mechanism section includes measured Qwen3-8B/MedCalc results.
+-
+-The main matrix covers four models and two benchmarks: six verified cells,
+-and two Pending cells.
+-A Qwen3-0.6B scale check is retained in the appendix.
+-Additional controls and legacy TheoremQA replays remain under audit;
+-the current mechanism displays are restricted to Qwen3-8B/MedCalc.
+-
+-This project contains only TeX inputs, referenced PDF figures,
+-the bibliography and this README. No local absolute paths,
+-experiment scripts, raw logs or build caches are needed.
++The source package contains only the submission TeX, referenced PDF figures, bibliography, compact appendix and this README. Raw experiments and local build paths are not required.
+diff --olcli a/overleaf-skillvector/appendix/a-setup.tex b/overleaf-skillvector/appendix/a-setup.tex
+--- a/overleaf-skillvector/appendix/a-setup.tex
++++ b/overleaf-skillvector/appendix/a-setup.tex
+@@ -1,4 +1,17 @@
+ % Appendix A: protocol, implementation and scope.
++\begin{table*}[t]
++\centering
++\caption{State/cache repair at the fixed layer $16$ on all main model--task
++combinations. Accuracies are percentages. Gain is $a_{SC}-a_S$;
++recut loss is $a_{SC}-a_{SC+\mathrm{recut}}$, both in percentage points.
++Each row uses its own $n$ questions from $G$ skill groups.}
++\label{tab:repair-extension}
++\small
++\renewcommand{\arraystretch}{1.12}
++\setlength{\tabcolsep}{3pt}
++\input{tables/tab-repair-extension}
++\end{table*}
++
+ \section{Experimental protocols and provenance}
+ \label{app:setup}
+ 
+@@ -59,9 +72,13 @@
+ The four main models are Qwen3-8B ($36$ layers, hidden width $4096$),
+ Mistral-7B-Instruct-v0.3 ($32$ layers, width $4096$),
+ Llama-3.1-8B-Instruct ($32$ layers) and DeepSeek-LLM-7B-Chat ($30$ layers).
+-The supplementary Qwen3-0.6B check uses $28$ layers and width $1024$. Their full-prompt state capture and
+-knockout both use BF16, eager attention and $900$ new tokens, without
+-quantization. For DeepSeek, system instructions are merged into the user
++The supplementary Qwen3-0.6B check uses $28$ layers and width $1024$. The added Llama and DeepSeek depth runs use BF16, matched eager
++attention for full-prompt state capture and knockout, and $900$ new tokens,
++without quantization. Regenerated Qwen and Mistral TheoremQA runs retain
++scaled dot-product attention for residual transfer and eager attention for
++knockout, with a $900$-token limit for both. This is a fresh evaluation of
++frozen historical candidates; exact equivalence to the original knockout
++generation budget is not established. For DeepSeek, system instructions are merged into the user
+ turn. The Llama weights, configuration and vocabulary match the original
+ release; the public distribution supplies its tokenizer template.
+ For Mistral, which has no system role in its chat template, system
+@@ -113,21 +130,52 @@
+ The main receiver screen then retains $135$ questions from $14$ calculators.
+ Historical development results retain their original sample labels.
+ Table~\ref{tab:fullscale} shows the corrected rerun alongside the earlier
+-screened subset. The main depth study currently covers six verified model--task
+-comparisons across four models and families, with two TheoremQA cells
+-pending. A seventh verified comparison uses Qwen3-0.6B on MedCalc as a
+-supplementary scale check. Each comparison uses common eligible items
++screened subset. The main depth study covers all eight model--task comparisons across
++four models and families. Qwen3-0.6B supplies two supplementary
++comparisons, one per task. Each comparison uses common eligible items
+ for the two intervention types. The new-family candidate pools
+ inherit the earlier models' selection, so their results are conditional
+ rather than full-benchmark estimates.
+ 
++\paragraph{Extended control populations.}
++Table~\ref{tab:extension-populations} records the independent populations
++for content/position, fixed layer-$2$ sensitivity, skill-after-question,
++repeated-write, cache-repair and attention-path experiments. We do not
++transfer the depth comparison's denominator to another protocol.
++For TheoremQA, all retained text is scored with fresh symbolic-parser
++state per answer, checked in reverse order and against fresh processes.
++The corrected DeepSeek depth population contains $54$ items; repair and
++path-cut protocols independently retain $46$ of those candidates from
++$40$ skills. Their three baseline token sequences agree on all $54$
++candidates. Cross-question tests require another question using the same
++skill, and same-family controls require another available skill in that
++family. Unavailable donors are excluded from the corresponding arm's
++population rather than assigned zero effect. The two-candidate bridge
++checks validate execution timing and are not effect estimates over an
++entire model--benchmark population.
++
++\begin{table*}[t]
++\centering
++\caption{Independent eligible question counts for the four main models.
++Cross-question counts require an available other-question donor.
++The Qwen3-8B/MedCalc layer-$8$ battery retains its historical group screen;
++other rows apply their own unpatched baselines. Within a battery,
++variable-donor controls can have smaller populations.}
++\label{tab:extension-populations}
++\small
++\renewcommand{\arraystretch}{1.12}
++\setlength{\tabcolsep}{3pt}
++\input{tables/tab-extension-populations}
++\end{table*}
++
+ \paragraph{Scientific scope.}
+ The experiments characterize supplied skill instructions under fixed
+ selection and controlled generation. The depth ordering holds for the
+ reported conditional populations and protocols. Historical transfer and
+ knockout differ in backend; the added families use matching eager-attention
+-protocols. The cache-repair and path-specific tests provide a focused
+-result on Qwen3-8B/MedCalc. All-query skill knockout combines access from post-skill tokens with
++protocols. The cache-repair tests include all eight main combinations, with
++independently screened populations. The detailed path decomposition and
++generation-length sensitivity discussion focus on Qwen3-8B/MedCalc. All-query skill knockout combines access from post-skill tokens with
+ skill-state updates; its full-depth profile cannot be interpreted as
+ post-skill-only dependence. Prefill and decoding are jointly intervened on,
+ so phase-specific claims require separate tests. The stored paired-outcome diagnostic supports same-question joint
+diff --olcli a/overleaf-skillvector/appendix/b-full-dataset-rerun.tex b/overleaf-skillvector/appendix/b-full-dataset-rerun.tex
+--- a/overleaf-skillvector/appendix/b-full-dataset-rerun.tex
++++ b/overleaf-skillvector/appendix/b-full-dataset-rerun.tex
+@@ -2,44 +2,31 @@
+ \section{Additional transfer and skill-dependence analyses}
+ \label{app:fullscale}
+ 
+-The original MedCalc $\times$ Qwen3-8B intervention battery was developed on the
+-forty calculators with the most historically rescued items, sampling four each: $160$ of
+-$467$ candidate items, and $60$ items over $15$ calculators after the
+-receiver-never-solves restriction. We reran each of them with every rescued
+-item of every calculator that has at least two ($467$ items, $48$ calculators),
+-keeping the intervention configuration fixed. The group screen is stricter
+-on the larger set because a calculator must fail on up to twenty items
+-rather than four, so it keeps
+-$135$ items over $14$ calculators, and we also report the per-item restriction
+-($369$ items over $45$), which keeps the items whose own receiver fails.
++The initial Qwen3-8B/MedCalc battery sampled four historically rescued
++questions from each of $40$ calculators ($160$ candidates), retaining
++$60$ questions from $15$ calculators under the receiver-never-solves
++screen. The corrected rerun evaluates all $467$ candidates from $48$
++calculators and retains $135$ questions from $14$ calculators. A weaker
++item-level receiver screen retains $369$ questions from $45$ calculators.
++The group screen becomes stricter as more questions from each calculator
++are tested. Table~\ref{tab:fullscale} compares the fixed interventions
++under these screens.
+ 
++For the dose controls, $\delta^L=H_D^L[\mathcal I]-H_R^L[\mathcal I]$ and
++the write is $H_R^L[\mathcal I]+\alpha\delta^L$. Rank truncation retains
++the leading $k$ singular directions of this difference; bottom-$k$ retains
++the least prominent. The formula quarter provides the largest standalone
++recovery in both samples. Same-family means use their available-donor
++population ($41$ items in the full rerun).
+ 
++\paragraph{One-layer resolution.}
++The initial depth grid could only place the decline after layer $12$.
++The completed grid measures every layer. Under the group screen,
++recovery falls from $0.74$ at $12$ to $0.16$ at $13$; the item screen gives
++$0.79$ and $0.32$. Both screens have their largest local decline at this
++same step, while Figure~\ref{fig:transferreading} retains the later
++fluctuations rather than imposing monotonicity.
+ 
+-For the dose and rank controls in Table~\ref{tab:fullscale}, the state
+-difference is $\delta^L=H_D^L[\mathcal I]-H_R^L[\mathcal I]$.
+-A dose $\alpha$ writes $H_R^L[\mathcal I]+\alpha\delta^L$;
+-$\alpha=1$ is full replacement and $\alpha=0.5$ is half dose.
+-
+-Table~\ref{tab:fullscale} also includes a rank-truncation diagnostic.
+-We decompose the injected state-difference matrix into ordered directions
+-using singular value decomposition and retain only the leading $k$.
+-Increasing $k$ from $32$ to $64$ restores much of the recovery.
+-A bottom-$k$ control retains the least prominent directions instead.
+-The formula quarter gives the largest standalone recovery in both samples.
+-The same-family mean donor changes from $0.05$ to $0.12$, on the $41$
+-full-rerun items where it is available.
+-
+-\paragraph{The depth sweep at one-layer resolution.} The subset sweep measured
+-layers $0,4,8,12,14,15,16,20$ and placed the collapse somewhere after $12$.
+-At full scale we added $13$ and $17$--$19$:
+-recovery is $0.98,0.98,0.89,0.74$ at layers $0,4,8,12$, then
+-$0.16,0.16,0.06,0.06,0.07,0.03,0.02,0.03$ at $13$ through $20$ (per-calc; the
+-per-item restriction gives $1.00,0.98,0.94,0.79$ then
+-$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$). Under the group screen,
+-layers $13$ and $14$ both round to $0.16$. Under the item screen, they
+-differ at $0.32$ and $0.34$. Both screens show their largest local decline
+-between layers $12$ and $13$.
+-
+ \paragraph{Supplementary model-scale check.}
+ \label{app:scale-check}
+ Qwen3-0.6B is retained as a supplementary within-family scale comparison,
+@@ -48,10 +35,26 @@
+ boundaries are $T=11$ and $R=22$, giving $\Delta=11$ layers, or $39.3\%$
+ of its $28$-layer depth. Transfer/dependence boundary pairs are
+ $11/21$ at threshold $0.4$ and $11/22$ at both $0.5$ and $0.6$.
+-Together with the six main comparisons, this gives seven verified
+-comparisons across five model sizes from four families; it does not fill
+-any Pending cell in Table~\ref{tab:paireddepth}.
++On TheoremQA, fresh isolated grading and independent baseline screening
++retain $122$ common questions from $92$ skills, with $T/R=11/20$
++($\Delta=9$, or $32.1\%$ of model depth). The corresponding threshold
++pairs are $11/20$, $11/20$ and $11/21$ at $0.4$, $0.5$ and $0.6$.
++Together with the eight main comparisons, these give ten measured
++comparisons across five model sizes from four families.
++Figure~\ref{fig:scale-depth} shows both supplementary curves.
+ 
++
++\begin{figure}[t]
++\centering
++\includegraphics[width=\columnwidth]{fig-depth-scale-check.pdf}
++\caption{Supplementary Qwen3-0.6B depth profiles on both benchmarks.
++Each panel uses common eligible items for transfer and knockout, with
++each protocol's own baselines. Curves, first half-effect boundaries and
++skill-group counts use the same definitions as Figure~\ref{fig:transferreading}.}
++\Description{Two plots show Qwen3-0.6B transfer falling below half at layer 11 on both tasks, while skill dependence first falls to half at layer 22 on MedCalc and layer 20 on TheoremQA.}
++\label{fig:scale-depth}
++\end{figure}
++
+ \paragraph{Same-question joint failures.}
+ \label{app:joint-failure}
+ Stored per-skill paired-outcome summaries retain questions with a correct
+@@ -66,8 +69,9 @@
+ mismatch: $4$, $0$ and $4$ items, respectively, are correct under the
+ transfer protocol's no-skill baseline despite failing that baseline under
+ knockout. These are paired outcomes under two interventions, not a claim
+-of identical baseline executions. Corresponding paired summaries for the
+-four added-family comparisons are not available in the retained artifacts.
++of identical baseline executions. We report this stricter paired-outcome diagnostic for these three
++historical MedCalc settings only; common IDs alone do not establish
++that every question fails both interventions elsewhere.
+ 
+ \paragraph{Repeated replacement as a consistency check.}
+ \label{app:repeated}
+@@ -121,6 +125,8 @@
+ the interaction tests in \S\ref{sec:mechanism}.
+ 
+ 
++
++
+ \subsection{Focused skill-cache and path-specific experiments}
+ \label{app:mechanism}
+ 
+@@ -170,3 +176,19 @@
+ retention at $50/114$, below skill-to-skill retention $110/114$ (no truncation).
+ Both contrasts survive worst-case reassignment of truncated outputs.
+ Analysis artifacts retain arm-wise counts, hashes and truncation bounds.
++
++
++\paragraph{Repair extension across families and benchmarks.}
++Table~\ref{tab:repair-extension} reports the same fixed layer-$16$
++contrast on all eight main combinations. Every row uses its own fresh
++split-prefill baselines, retaining donor-correct questions that both the
++wrong-skill receiver and no-skill execution answer incorrectly. Repair
++and path-cut baseline token sequences match within each model--task
++combination. The extension keeps the $1{,}536$-token limit and includes
++truncated generations in the accuracy denominator. The control and
++mechanism populations differ from the full-prefill depth populations;
++for example, Qwen3-8B/TheoremQA has $82$ depth items and $53$ repair items.
++The main text's truncation sensitivity bounds apply to the focused
++Qwen3-8B/MedCalc study, not automatically to every extension row.
++
++
+diff --olcli a/overleaf-skillvector/figures/fig-depth-scale-check.pdf b/overleaf-skillvector/figures/fig-depth-scale-check.pdf
+Binary files /dev/null and b/overleaf-skillvector/figures/fig-depth-scale-check.pdf differ
+diff --olcli a/overleaf-skillvector/figures/fig-transfer-reading.pdf b/overleaf-skillvector/figures/fig-transfer-reading.pdf
+Binary files a/overleaf-skillvector/figures/fig-transfer-reading.pdf and b/overleaf-skillvector/figures/fig-transfer-reading.pdf differ
+diff --olcli a/overleaf-skillvector/sections/00-abstract.tex b/overleaf-skillvector/sections/00-abstract.tex
+--- a/overleaf-skillvector/sections/00-abstract.tex
++++ b/overleaf-skillvector/sections/00-abstract.tex
+@@ -14,12 +14,13 @@
+ Early content and position controls validate the transfer probe, and a
+ focused experiment adds skill-position key/value cache replacement.
+ % Results / findings / insight (2 sentences).
+-Across six verified model--benchmark comparisons involving four open-weight
++Across eight verified model--benchmark comparisons involving four open-weight
+ models on MedCalc-Bench and TheoremQA, transfer recovery falls below half
+ of the donor's gain before skill-attention dependence falls to half,
+ revealing a depth interval with weak transfer but persistent dependence.
+ On Qwen3-8B/MedCalc at layer $16$, adding skill-cache replacement raises
+ accuracy from $3.5\%$ to $42.1\%$, while a subsequent post-skill-to-skill cut
+-reduces it to $7.0\%$; this identifies a partial repair in one setting,
+-without uniquely explaining late transfer failure.
++reduces it to $7.0\%$; the same layer-$16$ comparison yields a $6.8$--$43.4$-point gain across
++all eight settings. This supports partial repair without uniquely
++explaining late transfer failure.
+ \end{abstract}
+diff --olcli a/overleaf-skillvector/sections/01-introduction.tex b/overleaf-skillvector/sections/01-introduction.tex
+--- a/overleaf-skillvector/sections/01-introduction.tex
++++ b/overleaf-skillvector/sections/01-introduction.tex
+@@ -43,7 +43,7 @@
+ Figure~\ref{fig:teaser} previews the two levels of evidence. The main
+ finding is a depth interval in which residual transfer is weak while
+ skill dependence remains high. The ordering of their first half-effect
+-crossings recurs in six completed comparisons across four main models,
++crossings recurs in all eight comparisons across four main models,
+ using common eligible question IDs within each comparison; a smaller-model
+ scale check is reported in Appendix~\ref{app:scale-check}. These are
+ conditional effects on screened populations, and matching IDs does not
+@@ -74,7 +74,10 @@
+ not a complete account of the failure. The intervention changes which
+ skill-position caches are available across layers, does not replay earlier post-skill
+ computation, and remains far below the donor's $100\%$ accuracy on this
+-freshly screened set. Distinguishing cache coverage from more specific
++freshly screened set. The same layer-$16$ comparison shows positive
++repair and recutting effects across all eight main model--task settings,
++with different effect sizes and independent baseline screens.
++Distinguishing cache coverage from more specific
+ state--history interactions requires additional controls.
+ 
+ The experiments follow this evidential progression: validate the early
+diff --olcli a/overleaf-skillvector/sections/04-experiment.tex b/overleaf-skillvector/sections/04-experiment.tex
+--- a/overleaf-skillvector/sections/04-experiment.tex
++++ b/overleaf-skillvector/sections/04-experiment.tex
+@@ -9,7 +9,7 @@
+ \begin{figure*}[t]
+ \centering
+ \includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
+-\caption{Depth profiles for six main model--task comparisons and the supplementary Qwen3-0.6B scale check (seven verified comparisons in total). Blue shows
++\caption{Depth profiles for all eight main model--benchmark comparisons. Blue shows
+ skill-span transfer recovery $\rho(L)$ in a wrong-skill receiver.
+ Orange shows aggregate skill-attention dependence $d(L)=1-q(L)$: the fraction
+ of originally correct answers lost after cumulative attention knockout
+@@ -20,7 +20,7 @@
+ own baselines and execution protocol; $G$ denotes skill groups. The
+ knockout affects both access from post-skill tokens and skill-state updates. Every plotted
+ layer is measured.}
+-\Description{Seven line plots show transfer recovery declining before skill-attention dependence subsides on their common eligible populations.}
++\Description{Eight line plots show transfer recovery declining before skill-attention dependence subsides on their common eligible populations.}
+ \label{fig:transferreading}
+ \end{figure*}
+ 
+@@ -82,7 +82,7 @@
+ back and should reproduce its output. Correcting an attention-mask mismatch
+ between state capture and decoding restores exact agreement, including
+ all $467$ MedCalc identity checks. All main results use the corrected
+-implementation. TheoremQA outputs for the added families are regraded
++implementation. TheoremQA outputs for all five model sizes are regraded
+ with the official evaluation rules while restoring fresh parser state
+ before every answer. We retain the original text, verify grading-order
+ invariance and compare with fresh-process evaluations; eligibility is
+@@ -216,23 +216,23 @@
+ We therefore recompute the curves over the intersection of their item IDs,
+ using eligibility determined from unpatched baselines.
+ Table~\ref{tab:paireddepth} organizes four models by two benchmarks.
+-Six model--benchmark cells have verified depth results; Qwen3-8B and
+-Mistral-7B on TheoremQA remain pending. The skill-dependence boundary
+-follows the transfer boundary in all six completed main comparisons. For Llama-3.1-8B, $T/R$ is $7/18$ on MedCalc
++All eight model--benchmark cells have verified depth results. On
++TheoremQA, Qwen3-8B has $T/R=13/21$ ($82$ items, $66$ skills), and
++Mistral-7B has $7/19$ ($72$ items, $58$ skills). The skill-dependence
++boundary follows the transfer boundary in every main comparison. For Llama-3.1-8B, $T/R$ is $7/18$ on MedCalc
+ ($112$ items, $20$ skills) and $6/18$ on TheoremQA ($92$ items, $71$
+ skills). For DeepSeek-LLM-7B, the corresponding boundaries are $6/21$
+ ($25$ items, $13$ skills) and $4/19$ ($54$ items, $45$ skills).
+ Using transfer thresholds $\tau=0.4$ or $0.6$ and dependence thresholds
+-$1-\tau$ preserves the ordering in all six completed main comparisons. This extends
++$1-\tau$ preserves the ordering in all eight main comparisons. This extends
+ the observed separation to four model families, conditional on their
+ respective baseline screens. The $25$-item DeepSeek/MedCalc result supports
+ only that selected population. Alongside sample and skill-group counts,
+ Table~\ref{tab:paireddepth} reports raw boundary differences and their
+ percentage of model depth, $100\Delta/D$, where $D$ is the number of
+ layers. This normalization makes layer gaps comparable across model
+-depths; it is not a benchmark-accuracy ranking. Unavailable model--benchmark
+-comparisons are explicitly marked Pending. The supplementary Qwen3-0.6B
+-comparison preserves the same ordering (Appendix~\ref{app:scale-check}).
++depths; it is not a benchmark-accuracy ranking. The supplementary
++Qwen3-0.6B comparisons on both tasks preserve the same ordering (Appendix~\ref{app:scale-check}).
+ 
+ \begin{table*}[t]
+ \centering
+@@ -240,8 +240,8 @@
+ $n/G$ gives common eligible questions/skill groups; $T$ and $R$ are the first
+ half-effect crossings for transfer ($\rho<0.5$) and aggregate skill dependence
+ ($d\le0.5$). $\Delta=R-T$ is in layers; $\Delta/D$ normalizes the gap
+-by the model's layer count. Pending marks an unverified model--benchmark
+-cell, not a zero effect.}
++by the model's layer count. All eight cells are measured on their own
++baseline-screened, common-item populations.}
+ \label{tab:paireddepth}
+ \normalfont\rmfamily\fontsize{9}{11}\selectfont
+ \renewcommand{\arraystretch}{1.18}
+@@ -329,7 +329,7 @@
+ Post-skill-to-skill cuts account for most of the tested loss at this layer.
+ Earlier cuts at layers $8$ and $16$ damage both paths. This decomposition
+ covers three depths in one model--task setting; it cannot identify the
+-post-skill-only component of all six main curves. Because these cuts affect
++post-skill-only component of all eight main curves. Because these cuts affect
+ both prefill and decoding, they also do not locate the effect in either
+ phase separately.
+ 
+@@ -341,6 +341,17 @@
+ it remains $38.5$ points on the $96$ questions whose three baselines finish
+ without truncation. An adverse reassignment of truncated outputs still
+ leaves a $35.1$-point gain (Appendix~\ref{app:mechanism}).
++\paragraph{Extension across models and tasks.}
++Using the same split-prefill repair definitions and fresh baselines,
++we also evaluate the other seven main model--benchmark combinations.
++At the fixed layer $16$, adding cache replacement to residual replacement
++improves accuracy in all eight settings, by $6.8$--$43.4$ percentage points.
++A next-layer post-skill-to-skill recut lowers joint-repair accuracy by
++$2.2$--$37.7$ points. Table~\ref{tab:repair-extension} reports every
++combination and its own denominator. These measurements extend the
++partial-repair observation, while their different effect sizes and
++remaining deficits do not establish a shared, sufficient mechanism.
++
+ \paragraph{What the repair does and does not identify.}
+ $S$ changes a block's skill-position output and can thereby alter later skill
+ states and caches; $C$ writes skill-position caches at layers $0$ through $L$.
+diff --olcli a/overleaf-skillvector/sections/05-conclusion.tex b/overleaf-skillvector/sections/05-conclusion.tex
+--- a/overleaf-skillvector/sections/05-conclusion.tex
++++ b/overleaf-skillvector/sections/05-conclusion.tex
+@@ -2,19 +2,21 @@
+ \label{sec:discussion}
+ 
+ Weak skill-state transfer does not, by itself, show that the original
+-execution has stopped depending on its skill text. Across six completed main
++execution has stopped depending on its skill text. Across eight completed main
+ comparisons, residual transfer crosses below half of the donor's gain
+ before aggregate skill-attention dependence falls to half. Early controls
+ validate the transfer probe; common-item and threshold checks delimit the
+ observed depth ordering. The result remains conditional on the screened
+ populations and the wrong-skill receiver background.
+ 
+-The focused Qwen3-8B/MedCalc study supplies a partial intervention result.
+-Adding skill-cache replacement improves late transfer at layer $16$, and
+-a post-skill-to-skill cut removes most of the recovered effect. This makes skill
++The cache-replacement experiments supply a partial intervention result.
++At layer $16$, joint replacement improves over residual replacement in
++all eight main settings; a next-layer post-skill-to-skill cut reduces that
++accuracy in each setting. The focused Qwen3-8B/MedCalc study shows a large
++repair and recutting effect. This makes skill
+ caches one concrete contributor to test, while leaving cache coverage,
+ post-skill-state changes and other omitted components unresolved. The recovery
+-is incomplete, and the recutting effect varies with depth.
++is incomplete, and the recutting effect varies with model, task and depth.
+ 
+ A stronger explanation requires all-layer and late-layer skill-cache
+ controls, matched alternative-skill caches, and post-skill-only interventions
+diff --olcli a/overleaf-skillvector/tables/tab-extension-populations.tex b/overleaf-skillvector/tables/tab-extension-populations.tex
+--- /dev/null
++++ b/overleaf-skillvector/tables/tab-extension-populations.tex
+@@ -0,0 +1,14 @@
++\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrrrr@{}}
++\toprule
++Model & Task & L8 battery & L2 battery & Cross-question & Windows & Repair & Path cuts \\
++\midrule
++Qwen3-8B & MedCalc & $135$ & $97$ & $151$ & $135$ & $114$ & $114$ \\
++Qwen3-8B & TheoremQA & $57$ & $61$ & $8$ & $61$ & $53$ & $53$ \\
++Mistral-7B & MedCalc & $35$ & $35$ & $10$ & $35$ & $38$ & $38$ \\
++Mistral-7B & TheoremQA & $61$ & $61$ & $7$ & $61$ & $59$ & $59$ \\
++Llama-3.1-8B & MedCalc & $112$ & $112$ & $92$ & $112$ & $104$ & $104$ \\
++Llama-3.1-8B & TheoremQA & $92$ & $92$ & $46$ & $92$ & $72$ & $72$ \\
++DeepSeek-7B & MedCalc & $25$ & $25$ & $25$ & $25$ & $21$ & $21$ \\
++DeepSeek-7B & TheoremQA & $54$ & $54$ & $23$ & $54$ & $46$ & $46$ \\
++\bottomrule
++\end{tabular*}
+diff --olcli a/overleaf-skillvector/tables/tab-paired-depth.tex b/overleaf-skillvector/tables/tab-paired-depth.tex
+--- a/overleaf-skillvector/tables/tab-paired-depth.tex
++++ b/overleaf-skillvector/tables/tab-paired-depth.tex
+@@ -4,8 +4,8 @@
+ \cmidrule(lr){2-6}\cmidrule(l){7-11}
+  & $n/G$ & $T$ & $R$ & $\Delta$ & $\Delta/D$ (\%) & $n/G$ & $T$ & $R$ & $\Delta$ & $\Delta/D$ (\%) \\
+ \midrule
+-Qwen3-8B & $134/14$ & $13$ & $25$ & $12$ & $33.3$ & \multicolumn{5}{c}{\textit{Pending}} \\
+-Mistral-7B & $46/16$ & $7$ & $27$ & $20$ & $62.5$ & \multicolumn{5}{c}{\textit{Pending}} \\
++Qwen3-8B & $134/14$ & $13$ & $25$ & $12$ & $33.3$ & $82/66$ & $13$ & $21$ & $8$ & $22.2$ \\
++Mistral-7B & $46/16$ & $7$ & $27$ & $20$ & $62.5$ & $72/58$ & $7$ & $19$ & $12$ & $37.5$ \\
+ Llama-3.1-8B & $112/20$ & $7$ & $18$ & $11$ & $34.4$ & $92/71$ & $6$ & $18$ & $12$ & $37.5$ \\
+ DeepSeek-7B & $25/13$ & $6$ & $21$ & $15$ & $50.0$ & $54/45$ & $4$ & $19$ & $15$ & $50.0$ \\
+ \bottomrule
+diff --olcli a/overleaf-skillvector/tables/tab-repair-extension.tex b/overleaf-skillvector/tables/tab-repair-extension.tex
+--- /dev/null
++++ b/overleaf-skillvector/tables/tab-repair-extension.tex
+@@ -0,0 +1,14 @@
++\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrrrrr@{}}
++\toprule
++Model & Task & $n/G$ & $S$ & $C$ & $SC$ & $SC{+}\mathrm{recut}$ & Gain (pp) & Recut loss (pp) \\
++\midrule
++Qwen3-8B & MedCalc & $114/14$ & $3.5$ & $7.0$ & $42.1$ & $7.0$ & $38.6$ & $35.1$ \\
++Qwen3-8B & TheoremQA & $53/43$ & $18.9$ & $15.1$ & $62.3$ & $24.5$ & $43.4$ & $37.7$ \\
++Mistral-7B & MedCalc & $38/15$ & $7.9$ & $18.4$ & $18.4$ & $5.3$ & $10.5$ & $13.2$ \\
++Mistral-7B & TheoremQA & $59/49$ & $3.4$ & $5.1$ & $10.2$ & $6.8$ & $6.8$ & $3.4$ \\
++Llama-3.1-8B & MedCalc & $104/20$ & $3.8$ & $5.8$ & $18.3$ & $9.6$ & $14.4$ & $8.7$ \\
++Llama-3.1-8B & TheoremQA & $72/56$ & $4.2$ & $12.5$ & $41.7$ & $12.5$ & $37.5$ & $29.2$ \\
++DeepSeek-7B & MedCalc & $21/10$ & $0.0$ & $19.0$ & $28.6$ & $19.0$ & $28.6$ & $9.5$ \\
++DeepSeek-7B & TheoremQA & $46/40$ & $2.2$ & $6.5$ & $10.9$ & $8.7$ & $8.7$ & $2.2$ \\
++\bottomrule
++\end{tabular*}
+
+12 file(s) differ from "6a2cfd49b99635e8e968576a": 3 added, 9 modified, 0 remote-only
+  a/ = remote as of 2026-10-20T06:17:43.724Z, b/ = local

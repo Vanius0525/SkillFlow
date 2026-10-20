@@ -1,3 +1,33 @@
+## 2026-10-20 正文、图表和Overleaf更新完成（r3为权威）
+
+- 用户目标：把已审计完整结果纳入正文、表格、图表及相关说明；处理中也已回答数据齐全与结论边界。已更新摘要/Introduction/实验/结论、当前两附录、主深度表与八面板图，补Qwen0.6双任务曲线、8组合L16机制表、独立人群表和线上README。全部活跃稿件无Pending，无置信区间/置信度/误差条展示。
+- 明确纠正此前机制审计口径：repair/edges/bridge按原协议逐题新基线筛选，不能复用depth的整组receiver筛选。Mistral/MedCalc为38题15组，Llama/MedCalc104题20组。当前CURRENT.json→completed-matrix-audit-20261020-r3.json与completion-matrix-20261020-r3.json；旧r1/r2保留历史，不作最终数值来源。回归反事实例与18025条patch/cache/mask执行核验通过。
+- 结论：8个主深度组合与2个补充组合均T<R，阈值0.4/0.5/0.6顺序保持；固定L16下8主组合SC-S为6.8–43.4pp、SC到recut准确率下降2.2–37.7pp。只称本协议条件人群上的部分修复，不推成统一/充分机制，不外推所有层。保持独立分母、结构性无donor与历史KO预算差异说明。
+- 验证：python tools/integrate_audited_results.py；python tools/build_boundary_table.py；MPLCONFIGDIR=/tmp/skillvector-mpl-20261020 python tools/style_main_figures.py；python experiments/family_depth_20261018/audit_completed_matrix.py --self-test；python tools/audit_integrated_manuscript.py --pdf skillvector-www2027.pdf均通过。编译stage xxlQrefW；本地与Overleaf均正文8页、总12页，零LaTeX错误/未定义引用/溢出，云端PDF已保存为本地skillvector-www2027.pdf。旧check_main_data/audit_three_display脚本含过时六格/CI断言，本轮使用绑定最终原始审计的独立audit_integrated_manuscript检查，不将过时脚本报成通过。
+- Overleaf：首次完整diff只有线上README独有，其他稿件与初始本地一致，未猜测作者；上传前完整diff＋立即比对初始远端基线，未发现期间新增协作修改。原项目6a2cfd49b99635e8e968576a、根overleaf-skillvector/main.tex，非删除上传20文件，云端编译核对新数值与12页；最终完整diff零差异（06:32:03Z）。收据audit/OVERLEAF-DELIVERY-20261020.json记录20文件SHA与PDF/日志SHA，供下次三方核查。没有导出桌面，原始生成/权重未改、未删除。
+- 所有本轮CPU审计和编译均已结束，当前不需新的GPU实验。最后仅执行本次文件的GitHub commit/push；成功后按原实验停止条件创建本地TASK-COMPLETE并停止小时/5h监督，避免继续投递积压完成消息。CPU Notebook保留原自动停机设置，不擅自停止可能复用的实例。后续为新的科研问题或审稿修订，不再恢复旧队列。
+
+## 2026-10-20 机制筛选校正与最终稿验证
+
+- 最终机制权威报告为completed-matrix-audit-20261020-r3.json：repair/edges/bridge按原analyze.py逐题新基线筛选；depth和内容控制保留各自整组receiver规则。Mistral/MedCalc机制38题15组、Llama/MedCalc104题20组，其他主要机制分母不变。旧r1/r2及旧completion摘要不作最终论文输入，保留供审计历史。
+- r3通过80文件87915记录、6024身份对照、18025机制patch/cache/mask执行计数、评分逆序及16独立进程对照；已用反事实小例验证“同组一题receiver成功不应排除另一题的机制样本”。不重跑GPU。新的完成度completion-matrix-20261020-r3.json。
+- integrate_audited_results.py现仅引用r3；8个L16组合的SC-S均正，范围6.8–43.4pp，SC-recut损失均正，范围2.2–37.7pp；只描述固定层和本协议，不能推成所有层机制。旧不恰当组筛选已向用户明确纠正。
+- 主文八面板、Qwen0.6双benchmark补充图、独立分母表、8组合机制表均已更新。调整补充图为单栏、压缩重复历史说明，上一排版版本正文8页/总12页/零溢出零未定义，校正数值后正在最终编译，stage xxlQrefW，exec session45660。
+- 下一步等最终编译完成，运行audit_integrated_manuscript.py --pdf，再核对最终页面；上传前完整diff并与初始远端基线核对，再非删除push、云端编译和最终diff。当前未上传新版本，定时器仍保留。
+
+## 2026-10-20 论文整合中发现并修正机制筛选口径（最高优先级）
+
+- 将机制结果纳入论文时对照原analyze.py发现：此前audit_completed_matrix与旧aggregate_completed_supplements错误地对repair/edges/bridge再次应用整组receiver屏蔽，原机制协议是逐题donor正确、receiver与no-skill错误。导致部分扩展分母偏小；本地raw已证Mistral/MedCalc逐题38（旧28），Llama/MedCalc逐题104（旧99）。原始生成齐全，不重跑GPU。
+- 已告知用户此前扩展机制数值暂不采用，正按原协议重新聚合全部机制套件；所有扩展效应范围和跨设置结论必须重算后再写入。深度实验的组筛选不变。旧r1报告保留作为已知错误口径历史，不当当前机制权威结果。
+- audit_completed_matrix.py已区分三机制suite为per_item_fresh_split_baselines；将输出新的r2报告，不覆盖旧报告。后续更新当前完成度报告引用、论文输入、独立审计及HANDOFF，再编译并同步Overleaf；此版本尚未上传。
+
+## 2026-10-20 论文整合进行中
+
+- 用户明确要求更新正文/表格/图表；过程中询问是否缺数据与结论，已答复：既定冻结人群结果齐，十组合深度顺序一致，机制不作统一充分解释。
+- 开始前完整olcli diff已读：2026-10-20T05:46:12Z远端与初始本地稿件TeX/PDF一致，仅远端README独有；未按差异猜作者。初始沙箱DNS失败，沙箱外成功。README保留并更新，不传播删除。
+- integrate_audited_results.py已生成depth-current-values.json（10组合）、repair-extension-values.json（8组合）和两张扩展表，包含独立分母、全量阈值敏感性断言；原始输出不动。主深度图改2benchmark×4模型八面板，小模型两面板另绘；正文/摘要/结论与当前附录同步消除Pending，补TheoremQA重生成协议差异与L16扩展范围。
+- 当前待完成：本地编译、页数/版面及数字审计、修正必要限制；上传前再次完整diff，比较远端基线防并发覆盖，非删除push后云端编译下载核验，最终diff与GitHub推送。还未上传此版本，不标交付完成，不导出桌面。
+
 ## 2026-10-20 剩余审计完成，正文模型×benchmark矩阵齐全
 
 - 用户目标已处理：诊断HDD配额、完成剩余审计、判定正文所需结果是否齐全。本轮无GPU生成/重提，无删除/下载，无论文修改。

@@ -1,0 +1,849 @@
+{
+  "date": "2026-10-20",
+  "main_model_benchmark_cells": 8,
+  "supplementary_cells": 2,
+  "depth": [
+    {
+      "model": "Qwen3-8B",
+      "benchmark": "MedCalc",
+      "n": 134,
+      "groups": 14,
+      "T": 13,
+      "R": 25,
+      "status": "historically_audited_sources_revalidated"
+    },
+    {
+      "model": "Qwen3-0.6B",
+      "benchmark": "MedCalc",
+      "n": 90,
+      "groups": 21,
+      "T": 11,
+      "R": 22,
+      "status": "historically_audited_sources_revalidated"
+    },
+    {
+      "model": "Mistral-7B",
+      "benchmark": "MedCalc",
+      "n": 46,
+      "groups": 16,
+      "T": 7,
+      "R": 27,
+      "status": "historically_audited_sources_revalidated"
+    },
+    {
+      "model": "Qwen3-8B",
+      "benchmark": "TheoremQA",
+      "n": 82,
+      "groups": 66,
+      "T": 13,
+      "R": 21,
+      "status": "audited",
+      "report": "q8-independent-audit-20261020.json"
+    },
+    {
+      "model": "Mistral-7B-Instruct-v0.3",
+      "benchmark": "TheoremQA",
+      "n": 72,
+      "groups": 58,
+      "T": 7,
+      "R": 19,
+      "status": "audited",
+      "report": "mistral-independent-audit-20261020-r1.json"
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "n": 112,
+      "groups": 20,
+      "T": 7,
+      "R": 18,
+      "status": "audited",
+      "report": "final-family-depth-audit-20261020.json"
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "n": 92,
+      "groups": 71,
+      "T": 6,
+      "R": 18,
+      "status": "audited",
+      "report": "final-family-depth-audit-20261020.json"
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "n": 25,
+      "groups": 13,
+      "T": 6,
+      "R": 21,
+      "status": "audited",
+      "report": "final-family-depth-audit-20261020.json"
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "n": 54,
+      "groups": 45,
+      "T": 4,
+      "R": 19,
+      "status": "audited",
+      "report": "final-family-depth-audit-20261020.json"
+    },
+    {
+      "model": "Qwen3-0.6B",
+      "benchmark": "TheoremQA",
+      "n": 122,
+      "groups": 92,
+      "T": 11,
+      "R": 20,
+      "status": "previously_audited",
+      "report": "aggregated-post-quota-20261019-v2.json"
+    }
+  ],
+  "control_suite_cells": 70,
+  "controls": [
+    {
+      "model": "q8",
+      "benchmark": "medcalc",
+      "suite": "battery",
+      "status": "historical_verified",
+      "scope": "Original Qwen8/MedCalc probe and mechanism artifacts; not uniform regeneration with the new families."
+    },
+    {
+      "model": "q8",
+      "benchmark": "medcalc",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "backfill-q8-medcalc-battery-l2.jsonl",
+      "eligible_n": 97,
+      "eligible_groups": 11,
+      "structurally_unavailable_records": 78
+    },
+    {
+      "model": "q8",
+      "benchmark": "medcalc",
+      "suite": "doclast",
+      "status": "historical_verified",
+      "scope": "Original Qwen8/MedCalc probe and mechanism artifacts; not uniform regeneration with the new families."
+    },
+    {
+      "model": "q8",
+      "benchmark": "medcalc",
+      "suite": "windows",
+      "status": "historical_verified",
+      "scope": "Original Qwen8/MedCalc probe and mechanism artifacts; not uniform regeneration with the new families."
+    },
+    {
+      "model": "q8",
+      "benchmark": "medcalc",
+      "suite": "bridge",
+      "status": "historical_verified",
+      "scope": "Original Qwen8/MedCalc probe and mechanism artifacts; not uniform regeneration with the new families."
+    },
+    {
+      "model": "q8",
+      "benchmark": "medcalc",
+      "suite": "repair",
+      "status": "historical_verified",
+      "scope": "Original Qwen8/MedCalc probe and mechanism artifacts; not uniform regeneration with the new families."
+    },
+    {
+      "model": "q8",
+      "benchmark": "medcalc",
+      "suite": "edges",
+      "status": "historical_verified",
+      "scope": "Original Qwen8/MedCalc probe and mechanism artifacts; not uniform regeneration with the new families."
+    },
+    {
+      "model": "q8",
+      "benchmark": "theoremqa",
+      "suite": "battery",
+      "status": "audited",
+      "file": "backfill-q8-theoremqa-battery.jsonl",
+      "eligible_n": 57,
+      "eligible_groups": 49,
+      "structurally_unavailable_records": 52
+    },
+    {
+      "model": "q8",
+      "benchmark": "theoremqa",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "backfill-q8-theoremqa-battery-l2.jsonl",
+      "eligible_n": 61,
+      "eligible_groups": 51,
+      "structurally_unavailable_records": 56
+    },
+    {
+      "model": "q8",
+      "benchmark": "theoremqa",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "backfill-q8-theoremqa-doclast.jsonl",
+      "eligible_n": 30,
+      "eligible_groups": 28,
+      "structurally_unavailable_records": 132
+    },
+    {
+      "model": "q8",
+      "benchmark": "theoremqa",
+      "suite": "windows",
+      "status": "audited",
+      "file": "backfill-q8-theoremqa-windows.jsonl",
+      "eligible_n": 61,
+      "eligible_groups": 51,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q8",
+      "benchmark": "theoremqa",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "backfill-q8-theoremqa-bridge.jsonl",
+      "eligible_n": 1,
+      "eligible_groups": 1,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q8",
+      "benchmark": "theoremqa",
+      "suite": "repair",
+      "status": "audited",
+      "file": "backfill-q8-theoremqa-repair.jsonl",
+      "eligible_n": 53,
+      "eligible_groups": 43,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q8",
+      "benchmark": "theoremqa",
+      "suite": "edges",
+      "status": "audited",
+      "file": "backfill-q8-theoremqa-edges.jsonl",
+      "eligible_n": 53,
+      "eligible_groups": 43,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "medcalc",
+      "suite": "battery",
+      "status": "audited",
+      "file": "backfill-mistral-medcalc-battery.jsonl",
+      "eligible_n": 35,
+      "eligible_groups": 13,
+      "structurally_unavailable_records": 27
+    },
+    {
+      "model": "mistral",
+      "benchmark": "medcalc",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "backfill-mistral-medcalc-battery-l2.jsonl",
+      "eligible_n": 35,
+      "eligible_groups": 13,
+      "structurally_unavailable_records": 27
+    },
+    {
+      "model": "mistral",
+      "benchmark": "medcalc",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "backfill-mistral-medcalc-doclast.jsonl",
+      "eligible_n": 12,
+      "eligible_groups": 8,
+      "structurally_unavailable_records": 12
+    },
+    {
+      "model": "mistral",
+      "benchmark": "medcalc",
+      "suite": "windows",
+      "status": "audited",
+      "file": "backfill-mistral-medcalc-windows.jsonl",
+      "eligible_n": 35,
+      "eligible_groups": 13,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "medcalc",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "backfill-mistral-medcalc-bridge.jsonl",
+      "eligible_n": 2,
+      "eligible_groups": 1,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "medcalc",
+      "suite": "repair",
+      "status": "audited",
+      "file": "backfill-mistral-medcalc-repair.jsonl",
+      "eligible_n": 38,
+      "eligible_groups": 15,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "medcalc",
+      "suite": "edges",
+      "status": "audited",
+      "file": "backfill-mistral-medcalc-edges.jsonl",
+      "eligible_n": 38,
+      "eligible_groups": 15,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "theoremqa",
+      "suite": "battery",
+      "status": "audited",
+      "file": "backfill-mistral-theoremqa-battery.jsonl",
+      "eligible_n": 61,
+      "eligible_groups": 51,
+      "structurally_unavailable_records": 56
+    },
+    {
+      "model": "mistral",
+      "benchmark": "theoremqa",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "backfill-mistral-theoremqa-battery-l2.jsonl",
+      "eligible_n": 61,
+      "eligible_groups": 51,
+      "structurally_unavailable_records": 56
+    },
+    {
+      "model": "mistral",
+      "benchmark": "theoremqa",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "backfill-mistral-theoremqa-doclast.jsonl",
+      "eligible_n": 35,
+      "eligible_groups": 34,
+      "structurally_unavailable_records": 168
+    },
+    {
+      "model": "mistral",
+      "benchmark": "theoremqa",
+      "suite": "windows",
+      "status": "audited",
+      "file": "backfill-mistral-theoremqa-windows.jsonl",
+      "eligible_n": 61,
+      "eligible_groups": 51,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "theoremqa",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "backfill-mistral-theoremqa-bridge.jsonl",
+      "eligible_n": 2,
+      "eligible_groups": 2,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "theoremqa",
+      "suite": "repair",
+      "status": "audited",
+      "file": "backfill-mistral-theoremqa-repair.jsonl",
+      "eligible_n": 59,
+      "eligible_groups": 49,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "mistral",
+      "benchmark": "theoremqa",
+      "suite": "edges",
+      "status": "audited",
+      "file": "backfill-mistral-theoremqa-edges.jsonl",
+      "eligible_n": 59,
+      "eligible_groups": 49,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "suite": "battery",
+      "status": "audited",
+      "file": "llama-medcalc-battery.jsonl",
+      "eligible_n": 112,
+      "eligible_groups": 20,
+      "structurally_unavailable_records": 63
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "llama-medcalc-battery-l2.jsonl",
+      "eligible_n": 112,
+      "eligible_groups": 20,
+      "structurally_unavailable_records": 63
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "llama-medcalc-doclast.jsonl",
+      "eligible_n": 92,
+      "eligible_groups": 15,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "suite": "windows",
+      "status": "audited",
+      "file": "llama-medcalc-windows.jsonl",
+      "eligible_n": 112,
+      "eligible_groups": 20,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "llama-medcalc-bridge.jsonl",
+      "eligible_n": 2,
+      "eligible_groups": 1,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "suite": "repair",
+      "status": "audited",
+      "file": "llama-medcalc-repair.jsonl",
+      "eligible_n": 104,
+      "eligible_groups": 20,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "medcalc",
+      "suite": "edges",
+      "status": "audited",
+      "file": "llama-medcalc-edges.jsonl",
+      "eligible_n": 104,
+      "eligible_groups": 20,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "suite": "battery",
+      "status": "audited",
+      "file": "llama-theoremqa-battery.jsonl",
+      "eligible_n": 92,
+      "eligible_groups": 71,
+      "structurally_unavailable_records": 77
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "llama-theoremqa-battery-l2.jsonl",
+      "eligible_n": 92,
+      "eligible_groups": 71,
+      "structurally_unavailable_records": 77
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "llama-theoremqa-doclast.jsonl",
+      "eligible_n": 79,
+      "eligible_groups": 61,
+      "structurally_unavailable_records": 198
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "suite": "windows",
+      "status": "audited",
+      "file": "llama-theoremqa-windows.jsonl",
+      "eligible_n": 92,
+      "eligible_groups": 71,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "llama-theoremqa-bridge.jsonl",
+      "eligible_n": 1,
+      "eligible_groups": 1,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "suite": "repair",
+      "status": "audited",
+      "file": "llama-theoremqa-repair.jsonl",
+      "eligible_n": 72,
+      "eligible_groups": 56,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "llama",
+      "benchmark": "theoremqa",
+      "suite": "edges",
+      "status": "audited",
+      "file": "llama-theoremqa-edges.jsonl",
+      "eligible_n": 72,
+      "eligible_groups": 56,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "suite": "battery",
+      "status": "audited",
+      "file": "deepseek-medcalc-battery.jsonl",
+      "eligible_n": 25,
+      "eligible_groups": 13,
+      "structurally_unavailable_records": 20
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "deepseek-medcalc-battery-l2.jsonl",
+      "eligible_n": 25,
+      "eligible_groups": 13,
+      "structurally_unavailable_records": 20
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "deepseek-medcalc-doclast.jsonl",
+      "eligible_n": 25,
+      "eligible_groups": 12,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "suite": "windows",
+      "status": "audited",
+      "file": "deepseek-medcalc-windows.jsonl",
+      "eligible_n": 25,
+      "eligible_groups": 13,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "deepseek-medcalc-bridge.jsonl",
+      "eligible_n": 2,
+      "eligible_groups": 1,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "suite": "repair",
+      "status": "audited",
+      "file": "deepseek-medcalc-repair.jsonl",
+      "eligible_n": 21,
+      "eligible_groups": 10,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "medcalc",
+      "suite": "edges",
+      "status": "audited",
+      "file": "deepseek-medcalc-edges.jsonl",
+      "eligible_n": 21,
+      "eligible_groups": 10,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "suite": "battery",
+      "status": "audited",
+      "file": "deepseek-theoremqa-corrected54-battery.jsonl",
+      "eligible_n": 54,
+      "eligible_groups": 45,
+      "structurally_unavailable_records": 52
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "deepseek-theoremqa-corrected54-battery-l2.jsonl",
+      "eligible_n": 54,
+      "eligible_groups": 45,
+      "structurally_unavailable_records": 52
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "deepseek-theoremqa-doclast.jsonl",
+      "eligible_n": 53,
+      "eligible_groups": 46,
+      "structurally_unavailable_records": 180
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "suite": "windows",
+      "status": "audited",
+      "file": "deepseek-theoremqa-corrected54-windows.jsonl",
+      "eligible_n": 54,
+      "eligible_groups": 45,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "deepseek-theoremqa-corrected54-bridge.jsonl",
+      "eligible_n": 1,
+      "eligible_groups": 1,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "suite": "repair",
+      "status": "audited",
+      "file": "deepseek-theoremqa-corrected54-repair.jsonl",
+      "eligible_n": 46,
+      "eligible_groups": 40,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "deepseek",
+      "benchmark": "theoremqa",
+      "suite": "edges",
+      "status": "audited",
+      "file": "deepseek-theoremqa-corrected54-edges.jsonl",
+      "eligible_n": 46,
+      "eligible_groups": 40,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "medcalc",
+      "suite": "battery",
+      "status": "audited",
+      "file": "backfill-q06-medcalc-battery.jsonl",
+      "eligible_n": 90,
+      "eligible_groups": 21,
+      "structurally_unavailable_records": 40
+    },
+    {
+      "model": "q06",
+      "benchmark": "medcalc",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "backfill-q06-medcalc-battery-l2.jsonl",
+      "eligible_n": 90,
+      "eligible_groups": 21,
+      "structurally_unavailable_records": 40
+    },
+    {
+      "model": "q06",
+      "benchmark": "medcalc",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "backfill-q06-medcalc-doclast.jsonl",
+      "eligible_n": 65,
+      "eligible_groups": 16,
+      "structurally_unavailable_records": 36
+    },
+    {
+      "model": "q06",
+      "benchmark": "medcalc",
+      "suite": "windows",
+      "status": "audited",
+      "file": "backfill-q06-medcalc-windows.jsonl",
+      "eligible_n": 90,
+      "eligible_groups": 21,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "medcalc",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "backfill-q06-medcalc-bridge.jsonl",
+      "eligible_n": 2,
+      "eligible_groups": 2,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "medcalc",
+      "suite": "repair",
+      "status": "audited",
+      "file": "backfill-q06-medcalc-repair.jsonl",
+      "eligible_n": 85,
+      "eligible_groups": 21,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "medcalc",
+      "suite": "edges",
+      "status": "audited",
+      "file": "backfill-q06-medcalc-edges.jsonl",
+      "eligible_n": 85,
+      "eligible_groups": 21,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "theoremqa",
+      "suite": "battery",
+      "status": "audited",
+      "file": "backfill-q06-theoremqa-battery.jsonl",
+      "eligible_n": 122,
+      "eligible_groups": 91,
+      "structurally_unavailable_records": 106
+    },
+    {
+      "model": "q06",
+      "benchmark": "theoremqa",
+      "suite": "battery-l2",
+      "status": "audited",
+      "file": "backfill-q06-theoremqa-battery-l2.jsonl",
+      "eligible_n": 122,
+      "eligible_groups": 91,
+      "structurally_unavailable_records": 106
+    },
+    {
+      "model": "q06",
+      "benchmark": "theoremqa",
+      "suite": "doclast",
+      "status": "audited",
+      "file": "backfill-q06-theoremqa-doclast.jsonl",
+      "eligible_n": 85,
+      "eligible_groups": 68,
+      "structurally_unavailable_records": 312
+    },
+    {
+      "model": "q06",
+      "benchmark": "theoremqa",
+      "suite": "windows",
+      "status": "audited",
+      "file": "backfill-q06-theoremqa-windows.jsonl",
+      "eligible_n": 122,
+      "eligible_groups": 91,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "theoremqa",
+      "suite": "bridge",
+      "status": "audited",
+      "file": "backfill-q06-theoremqa-bridge.jsonl",
+      "eligible_n": 2,
+      "eligible_groups": 2,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "theoremqa",
+      "suite": "repair",
+      "status": "audited",
+      "file": "backfill-q06-theoremqa-repair.jsonl",
+      "eligible_n": 116,
+      "eligible_groups": 87,
+      "structurally_unavailable_records": 0
+    },
+    {
+      "model": "q06",
+      "benchmark": "theoremqa",
+      "suite": "edges",
+      "status": "audited",
+      "file": "backfill-q06-theoremqa-edges.jsonl",
+      "eligible_n": 116,
+      "eligible_groups": 87,
+      "structurally_unavailable_records": 0
+    }
+  ],
+  "historical_q8_medcalc_control_files": [
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/hsw/full-battery-a.jsonl",
+      "sha256": "af6c876c2f714ad312e9c884a1fe869ced3beb3f0bf5679bf7a2c98a697b81fb",
+      "records": 467
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/hsw2/full-battery-b.jsonl",
+      "sha256": "ee6a418a12f7b220a37b4ddb4333c5d30cdeaafc9a9769cd02c842fa208b7a8f",
+      "records": 467
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/sra4/full-window.jsonl",
+      "sha256": "27b03015a98144961e39ef145d1c6f98e998247c3b6aeb350b505f6beab28b8e",
+      "records": 469
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/hsw3/full-dl-a.jsonl",
+      "sha256": "fba2810bb0c823cc13faccdc81aae2d26a344c6bbb90953712a1cf41dee4db15",
+      "records": 467
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/wb/full-dl-b.jsonl",
+      "sha256": "15fd83a32e4ce847a6bc86abcc7fd713bdad31f2ee49f2a1c07a95f0e45362e3",
+      "records": 467
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/sra2/full-quarters.jsonl",
+      "sha256": "34743fc4edc0799eefdf522aab55d89ebc25383d19f6fcf58363992369487278",
+      "records": 467
+    },
+    {
+      "file": "/home/vanius/proj/agent-harness/howskill/results/p8-wb/fetched/by-host/sra4/pb-tq.jsonl",
+      "sha256": "e3bc98685c50b319ee344ab97ba279801e0b5edcb5f3ebf2c448ecf4c46029c2",
+      "records": 135
+    }
+  ],
+  "historical_q8_medcalc_doclast_verified": {
+    "n": 151,
+    "groups": 17,
+    "L8_current_rho": 1.0168067226890756,
+    "L8_other_rho": 0.9831932773109243
+  },
+  "audited_family_files": 80,
+  "audited_family_records": 87915,
+  "identity_checks": 6024,
+  "unexpected_missing_final_grid": 0,
+  "repair_edges_baseline_token_drift": 0,
+  "eligibility_correction": "Mechanism bridge/repair/edges use per-item fresh baselines, matching original analyze.py; r1/r2 summaries are superseded for final manuscript use.",
+  "conditional_generation_and_remaining_audits_complete": true,
+  "manuscript_integration_complete": false,
+  "limits": [
+    "These are frozen conditional candidate populations, not full-benchmark sweeps for every model.",
+    "Historical Qwen8/MedCalc support is reused; all 70 cells are not uniform reruns.",
+    "Same-family and cross-question donor availability restrict some cells; absent donors are not imputed as zero.",
+    "Depth and mechanism/controls use independently screened populations and different protocols; do not impose one denominator.",
+    "Exact historical knockout budget equivalence for regenerated legacy TheoremQA remains unverified.",
+    "Old DeepSeek depth missing records are resolved by merging scorefix supplements; do not double-count baselines.",
+    "HDD quota remains unresolved for durable writes; audit reports were returned directly to local storage."
+  ]
+}

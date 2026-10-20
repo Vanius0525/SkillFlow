@@ -26,7 +26,7 @@ plt.rcParams.update({
 })
 from figure_fonts import configure_fonts
 configure_fonts()
-INPUTS = ['fig-channels-values.json', 'depth-crossmodel-values.json', 'depth-verified-extension-20261019.json']
+INPUTS = ['fig-channels-values.json', 'depth-crossmodel-values.json', 'depth-current-values.json']
 
 def data(name):
     return json.loads((VALUES/name).read_text())
@@ -81,13 +81,13 @@ def channels():
     save(fig,'fig-channels-medcalc')
 
 def depth():
-    cells=data('depth-verified-extension-20261019.json')
-    fig,axes=plt.subplots(2,4,figsize=(7.1,4.3),sharey=True,layout='constrained')
-    names={'Llama-3.1-8B':'Llama-8B','DeepSeek-LLM-7B':'DeepSeek-7B'}
-    for index,c in enumerate(cells):
-        row,col=divmod(index,4);ax=axes[row,col];nl=c['n_layers'];x=np.arange(nl)
-        tb,rb=c['transfer_boundary'],c['reading_boundary'];pop=c['common']
+    cells=data('depth-current-values.json')
+    models=['Qwen3-8B','Mistral-7B','Llama-3.1-8B','DeepSeek-LLM-7B']
+    lookup={(c['model'],c['task']):c for c in cells}
+    def draw(ax,c):
+        nl=c['n_layers'];x=np.arange(nl);tb,rb=c['transfer_boundary'],c['reading_boundary'];pop=c['common']
         frame(ax)
+        names={'Llama-3.1-8B':'Llama-8B','DeepSeek-LLM-7B':'DeepSeek-7B'}
         ax.set_title(names.get(c['model'],c['model'])+' / '+c['task']+'\n'+f"n={pop['n']}, G={pop['groups']}",fontsize=8.2,fontweight='bold',pad=7)
         ax.axvspan(tb-.5,rb-.5,color='#F5BE7E',alpha=.26,lw=0,zorder=0)
         ax.axhline(.5,color='#A4AFBA',ls=(0,(2.5,2.5)),lw=.7,zorder=1)
@@ -96,12 +96,25 @@ def depth():
         ax.text(.98,.96,f'T/R = {tb}/{rb}',transform=ax.transAxes,ha='right',va='top',fontsize=7.3,color='#94551D')
         ax.set(xlim=(0,nl-1),ylim=(-.035,1.105),xticks=sorted(set([0,16,nl-1])),yticks=[0,.5,1])
         ax.set_yticklabels(['0','.5','1.0'])
-        if col==0:ax.set_ylabel('Recovery / dependence',labelpad=4)
-        if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
-    axes[1,3].axis('off')
+    fig,axes=plt.subplots(2,4,figsize=(7.1,4.3),sharey=True,layout='constrained')
+    for row,task in enumerate(['MedCalc','TheoremQA']):
+        for col,model in enumerate(models):
+            ax=axes[row,col];draw(ax,lookup[model,task])
+            if col==0:ax.set_ylabel('Recovery / dependence',labelpad=4)
+            if row==1:ax.set_xlabel('Intervention layer L',labelpad=4)
     handles,labels=axes[0,0].get_legend_handles_labels()
     fig.legend(handles,labels,loc='outside upper center',ncol=2,fontsize=8,handlelength=2.4,columnspacing=2)
     save(fig,'fig-transfer-reading')
+    fig,axes=plt.subplots(1,2,figsize=(3.45,2.15),sharey=True,layout='constrained')
+    for ax,task in zip(axes,['MedCalc','TheoremQA']):
+        c=lookup['Qwen3-0.6B',task];draw(ax,c)
+        ax.set_title(task+'\n'+f"n={c['common']['n']}, G={c['common']['groups']}",fontsize=7.4,fontweight='bold',pad=5)
+        ax.set_xlabel('Layer L',labelpad=3,fontsize=7)
+        ax.tick_params(labelsize=7)
+        for label in ax.texts:label.set_fontsize(6.5)
+    axes[0].set_ylabel('Recovery / dependence',labelpad=3,fontsize=7)
+    fig.legend(handles,labels,loc='outside upper center',ncol=2,fontsize=7)
+    save(fig,'fig-depth-scale-check')
 
 
 def rank():
@@ -176,7 +189,7 @@ def position():
 
 def position_main():
     d=data('posbudget.json'); A=d['arms']; full=A['evfull']['rho']
-    fig,(a,b)=plt.subplots(1,2,figsize=(7.1,2.35),layout='constrained')
+    fig,(a,b)=plt.subplots(1,2,figsize=(3.45,2.15),layout='constrained')
     names=[('wf','Skill steps'),('wd','Description'),('wr','Random'),('we','Example')]
     for off,budget,color,label in [(-.18,'256',BLUE,'256 positions'),(.18,'half',TEAL,'Half span')]:
         vs=[A[k+budget] for k,_ in names];xx=np.arange(4)+off
@@ -201,9 +214,9 @@ def position_main():
 
 if __name__=='__main__':
     before={f:hashlib.sha256((VALUES/f).read_bytes()).hexdigest() for f in INPUTS}
-    channels();depth()
+    depth()
     after={f:hashlib.sha256((VALUES/f).read_bytes()).hexdigest() for f in INPUTS}
     assert before==after
-    (AUDIT/'FIGURE-STYLE-WEBSKILLS-20261017.json').write_text(json.dumps({'input_sha256':before,
-        'numeric_records_unchanged':True,'figures': ['fig-channels-medcalc','fig-transfer-reading']},indent=2)+'\n')
+    (AUDIT/'DEPTH-FIGURES-20261020.json').write_text(json.dumps({'input_sha256':before,
+        'numeric_records_unchanged':True,'figures': ['fig-transfer-reading','fig-depth-scale-check']},indent=2)+'\n')
     print('Rendered submission point-estimate figures; numerical records unchanged.')

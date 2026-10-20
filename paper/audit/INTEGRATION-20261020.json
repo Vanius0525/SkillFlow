@@ -1,0 +1,24 @@
+{
+  "input_sha256": {
+    "experiments/family_depth_20261018/completion-matrix-20261020-r3.json": "0a5f1c1a663e09bcbdadd2c37638727259cb2dd9c4734579622515e3cd69c10c",
+    "experiments/family_depth_20261018/q8-independent-audit-20261020.json": "919cfd50c6751135d8fc84d099b468803a534b561a559aaee61dc71f20ba4329",
+    "experiments/family_depth_20261018/mistral-independent-audit-20261020-r1.json": "1947b5367ac58d411762eac4a16f932daf794c0ad3a1a8b4e0d8f2f601afd0fa",
+    "experiments/family_depth_20261018/aggregated-post-quota-20261019-v2.json": "9e4556016b9500d85b4c54dee34482971228171a9008a680b5391bc214088a4d",
+    "experiments/family_depth_20261018/final-family-depth-audit-20261020.json": "a52a84760303405e6ebd0495f2746d55aa56e0f770c47e81fccb0359d7d55c62",
+    "experiments/family_depth_20261018/completed-matrix-audit-20261020-r3.json": "39c6383caadc666469638d62ca2afd4e1f89ce745874d06ab1724f782d266923",
+    "experiments/mechanism_20261017/formal-audit.json": "c3a82f4202a916017bff943dfd546e765490e48d47c2fa9773a2d5c8e354caf7"
+  },
+  "main_depth_cells": 8,
+  "supplementary_depth_cells": 2,
+  "threshold_ordering_all_passed": true,
+  "repair_comparisons": 8,
+  "gain_range_pp": [
+    6.779661016949152,
+    43.39622641509434
+  ],
+  "recut_loss_range_pp": [
+    2.1739130434782608,
+    37.735849056603776
+  ],
+  "raw_outputs_modified": false
+}

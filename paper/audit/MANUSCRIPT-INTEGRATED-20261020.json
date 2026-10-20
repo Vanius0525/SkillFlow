@@ -1,0 +1,21 @@
+{
+  "main_depth_cells": 8,
+  "supplementary_depth_cells": 2,
+  "repair_rows": 8,
+  "input_hashes_bound": true,
+  "threshold_checks_passed": true,
+  "reachable_tex_no_pending_or_displayed_uncertainty": true,
+  "figure_checks": {
+    "fig-transfer-reading.pdf": {
+      "panels": 8,
+      "sha256": "c37f615314e8be84f3c8f17a5027eda97d4024c9e0d85844e8ef882367d27973"
+    },
+    "fig-depth-scale-check.pdf": {
+      "panels": 2,
+      "sha256": "ec721c5ff132bb91b534e9a7b9c86eb69ef984f0258c00f77efecd8676e50c1c"
+    }
+  },
+  "raw_inference_run": false,
+  "total_pages": 12,
+  "pdf_sha256": "4aa84a30100be635e0c9e2399b4610eb13327c981a27e97e1bca08a832ac3293"
+}

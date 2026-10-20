@@ -1,5 +1,5 @@
 {
-  "status": "Frozen conditional experiment matrix complete and audited; manuscript integration pending",
+  "status": "Frozen experiment matrix audited; manuscript and Overleaf updated; final GitHub synchronization",
   "account": "me",
   "workspace": "\u53ef\u4e0a\u7f51GPU\u8d44\u6e90",
   "project": "\u516c\u5171\u79d1\u7814\u9879\u76ee",
@@ -79,7 +79,9 @@
     "wt-recover-ds-edges-c132-1019"
   ],
   "active_jobs": [],
-  "completion_audit": "completion-matrix-20261020.json",
-  "manuscript_integration_complete": false,
-  "storage_status": "HDD EDQUOT; filesystem has free space; exact personal quota unknown; audits completed without shared-disk writes"
+  "completion_audit": "completion-matrix-20261020-r3.json",
+  "manuscript_integration_complete": true,
+  "storage_status": "HDD EDQUOT; filesystem has free space; exact personal quota unknown; audits completed without shared-disk writes",
+  "suite_audit": "completed-matrix-audit-20261020-r3.json",
+  "overleaf_delivery": "../../audit/OVERLEAF-DELIVERY-20261020.json"
 }

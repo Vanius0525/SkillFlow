@@ -39,25 +39,9 @@ def project_members(paper):
 def write_project_zip(paper,out):
     paper=pathlib.Path(paper).resolve()
     members=project_members(paper)
-    pending=any(path.name=='fig-mechanism-reserved.pdf' for path in members)
-    phase_note=('The mechanism section contains explicitly blank result panels.\n'
-                'These are draft reservations for Qwen3-8B/MedCalc experiments,\n'
-                'not measured results.\n\n' if pending else
-                'The mechanism section includes measured Qwen3-8B/MedCalc results.\n\n')
     with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED) as z:
         for path in members:z.write(path,path.relative_to(paper).as_posix())
-        z.writestr('README.md',
-            '# Overleaf review draft\n\n'
-            'Main file: main.tex. Compiler: pdfLaTeX. Bibliography: BibTeX.\n\n'
-            'Upload this ZIP directly as a new Overleaf project. The default\n'
-            'build is the WWW submission manuscript. This project contains\n'
-            'only the submission and its references and compact appendix.\n\n'
-            +phase_note+'Depth displays report six main comparisons across four model families, plus a supplementary Qwen3-0.6B scale check (seven verified comparisons total).\n'
-            'Additional controls and legacy TheoremQA replays remain under audit;\n'
-            'the current mechanism displays are restricted to Qwen3-8B/MedCalc.\n\n'+
-            'This project contains only TeX inputs, referenced PDF figures,\n'
-            'the bibliography and this README. No local absolute paths,\n'
-            'experiment scripts, raw logs or build caches are needed.\n')
+        z.writestr('README.md', (paper/'overleaf-readme.md').read_text())
     return len(members)+1
 
 if __name__=='__main__':

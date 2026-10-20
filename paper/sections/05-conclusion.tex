@@ -2,19 +2,21 @@
 \label{sec:discussion}
 
 Weak skill-state transfer does not, by itself, show that the original
-execution has stopped depending on its skill text. Across six completed main
+execution has stopped depending on its skill text. Across eight completed main
 comparisons, residual transfer crosses below half of the donor's gain
 before aggregate skill-attention dependence falls to half. Early controls
 validate the transfer probe; common-item and threshold checks delimit the
 observed depth ordering. The result remains conditional on the screened
 populations and the wrong-skill receiver background.
 
-The focused Qwen3-8B/MedCalc study supplies a partial intervention result.
-Adding skill-cache replacement improves late transfer at layer $16$, and
-a post-skill-to-skill cut removes most of the recovered effect. This makes skill
+The cache-replacement experiments supply a partial intervention result.
+At layer $16$, joint replacement improves over residual replacement in
+all eight main settings; a next-layer post-skill-to-skill cut reduces that
+accuracy in each setting. The focused Qwen3-8B/MedCalc study shows a large
+repair and recutting effect. This makes skill
 caches one concrete contributor to test, while leaving cache coverage,
 post-skill-state changes and other omitted components unresolved. The recovery
-is incomplete, and the recutting effect varies with depth.
+is incomplete, and the recutting effect varies with model, task and depth.
 
 A stronger explanation requires all-layer and late-layer skill-cache
 controls, matched alternative-skill caches, and post-skill-only interventions

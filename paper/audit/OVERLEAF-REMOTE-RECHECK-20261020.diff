@@ -1,0 +1,27 @@
+diff --olcli a/overleaf-skillvector/README.md b/overleaf-skillvector/README.md
+--- a/overleaf-skillvector/README.md
++++ /dev/null
+@@ -1,19 +0,0 @@
+-# Overleaf review draft
+-
+-Main file: main.tex. Compiler: pdfLaTeX. Bibliography: BibTeX.
+-
+-Upload this ZIP directly as a new Overleaf project. The default
+-build is the WWW submission manuscript. This project contains
+-only the submission and its references and compact appendix.
+-
+-The mechanism section includes measured Qwen3-8B/MedCalc results.
+-
+-The main matrix covers four models and two benchmarks: six verified cells,
+-and two Pending cells.
+-A Qwen3-0.6B scale check is retained in the appendix.
+-Additional controls and legacy TheoremQA replays remain under audit;
+-the current mechanism displays are restricted to Qwen3-8B/MedCalc.
+-
+-This project contains only TeX inputs, referenced PDF figures,
+-the bibliography and this README. No local absolute paths,
+-experiment scripts, raw logs or build caches are needed.
+
+1 file(s) differ from "6a2cfd49b99635e8e968576a": 0 added, 0 modified, 1 remote-only
+  remote-only files are left alone by push; use push --delete to remove them
+  a/ = remote as of 2026-10-20T06:13:32.751Z, b/ = local

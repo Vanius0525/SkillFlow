@@ -1,6 +1,23 @@
 """Read-only protocol-aware audit of completed family suites; emit a local report."""
 import collections,copy,hashlib,json,random,subprocess,sys,time
 from pathlib import Path
+def eligible_population(groups,by,per_item=False):
+ eligible=[]
+ for ids in groups.values():
+  if any((i,arm,-1) not in by for i in ids for arm in ['donor','receiver','no_skill']):continue
+  if not per_item and any(by[i,'receiver',-1]['correct'] for i in ids):continue
+  eligible.extend(i for i in ids if by[i,'donor',-1]['correct'] and not by[i,'receiver',-1]['correct'] and not by[i,'no_skill',-1]['correct'])
+ return eligible
+
+if '--self-test' in sys.argv:
+ # A successful receiver on one question must not exclude a different rescued
+ # question from the original per-item mechanism protocol.
+ by={(i,arm,-1):{'correct':v} for i,vals in [('a',(True,False,False)),('b',(True,True,False)),('c',(True,False,True)),('d',(False,False,False))] for arm,v in zip(['donor','receiver','no_skill'],vals)}
+ assert set(eligible_population({'g':{'a','b','c','d'}},by,True))=={'a'}
+ assert eligible_population({'g':{'a','b','c','d'}},by,False)==[]
+ assert set(eligible_population({'g':{'a'},'h':{'b'}},by,False))=={'a'}
+ print('Population rule regression checks passed');sys.exit(0)
+
 root=Path('/inspire/ssd/project/project-public/czxs253130660/family-depth-20261018-v1')
 hdd=Path('/inspire/hdd/project/project-public/czxs253130660/family-depth-recovery-20261019')
 sys.path.insert(0,str(root/'repo/howskill'))
@@ -66,6 +83,18 @@ for path in paths:
    result=evaluate(r,dataset)
    if bool(r['correct'])!=bool(result['correct']):new_changes.append({'file':path.name,'iid':r['instance_id'],'arm':r['arm'],'layer':r['layer']})
    r['correct']=bool(result['correct'])
+ instrumentation_checked=0
+ if suite in ['repair','edges']:
+  for r in data:
+   if r['layer']<0:continue
+   ins=r['instrumentation']
+   assert r.get('n_generated',len(r['token_ids']))==len(r['token_ids'])
+   if suite=='repair':
+    if r['arm'] in ['S','SC','SC_recut']:assert ins['patch_calls']==1
+    if r['arm'] in ['C','SC','SC_recut']:assert ins['cache_layers_replaced']==r['layer']+1
+    if r['arm']=='SC_recut':assert ins['mask_calls']>0
+   else:assert ins['mask_calls']>0
+   instrumentation_checked+=1
  by={}
  for r in data:
   key=(r['instance_id'],r['arm'],r['layer']);assert key not in by,(path,key);by[key]=r
@@ -74,11 +103,7 @@ for path in paths:
   if r['arm']=='donor':groups[r['group']].add(r['instance_id'])
  allids=set().union(*groups.values()) if groups else set()
  missing_baselines=[(i,arm) for i in allids for arm in ['donor','receiver','no_skill'] if (i,arm,-1) not in by]
- eligible=[]
- for g,ids in groups.items():
-  if any((i,arm,-1) not in by for i in ids for arm in ['donor','receiver','no_skill']):continue
-  if any(by[i,'receiver',-1]['correct'] for i in ids):continue
-  eligible.extend(i for i in ids if by[i,'donor',-1]['correct'] and not by[i,'no_skill',-1]['correct'])
+ eligible=eligible_population(groups,by,suite in ['repair','edges','bridge'])
  donor_failures=[]
  for r in data:
   if r['arm']=='other_question':
@@ -139,7 +164,7 @@ for path in paths:
   obs=[by[i,arm,l] for i in eligible if (i,arm,l) in by]
   estimates.append({'arm':arm,'layer':l,'n':len(obs),'correct':sum(r['correct'] for r in obs),'truncated':sum(bool(r['truncated']) for r in obs)})
  baselines_by_file[path.name]={i:{arm:by[i,arm,-1]['token_ids'] for arm in ['donor','receiver','no_skill'] if (i,arm,-1) in by} for i in allids}
- results.append({'file':path.name,'path':str(path),'model':model,'dataset':dataset,'suite':suite,'sha256':digest,'manifest_sha256':sha(mp),'records':len(data),'baseline_n':len(allids),'eligible_n':len(eligible),'eligible_ids':sorted(eligible),'eligible_groups':len({by[i,'donor',-1]['group'] for i in eligible}),'missing_baselines':missing_baselines,'missing_fixed_candidates':candidate_missing,'unexpected_missing_grid':missing,'structurally_unavailable_n':len(structural),'identity_checked':identity_n,'cross_question_donor_failures':donor_failures,'identity_failures':identity,'grading_overlay':used,'estimates':estimates,'scope':'Own observed protocol baselines; structural donor unavailability explicit; bridge is a two-candidate probe.'})
+ results.append({'file':path.name,'path':str(path),'model':model,'dataset':dataset,'suite':suite,'sha256':digest,'manifest_sha256':sha(mp),'records':len(data),'instrumentation_checked':instrumentation_checked,'baseline_n':len(allids),'eligible_n':len(eligible),'eligible_ids':sorted(eligible),'eligible_groups':len({by[i,'donor',-1]['group'] for i in eligible}),'missing_baselines':missing_baselines,'missing_fixed_candidates':candidate_missing,'unexpected_missing_grid':missing,'structurally_unavailable_n':len(structural),'identity_checked':identity_n,'cross_question_donor_failures':donor_failures,'identity_failures':identity,'grading_overlay':used,'estimates':estimates,'eligibility_rule':('per_item_fresh_split_baselines' if suite in ['repair','edges','bridge'] else 'group_receiver_screen_then_item_donor_rescue'),'scope':'Own observed protocol baselines; mechanism uses the original per-item fresh-baseline screen; structural donor unavailability explicit; bridge is a two-candidate probe.'})
  print('AUDITED',path.name,len(data),len(eligible),'missing',len(missing),flush=True)
 # Independently regraded files must be order invariant, with fresh-process checks.
 for key in reversed(list(cache)):

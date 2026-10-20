@@ -1,0 +1,9 @@
+{
+  "project_id": "6a2cfd49b99635e8e968576a",
+  "remote_as_of": "2026-10-20T05:46:12.983Z",
+  "full_line_diff_read": true,
+  "local_stage": "/tmp/skillvector-before-update-20261020",
+  "differences": ["remote-only overleaf-skillvector/README.md"],
+  "tex_and_pdf_differences": [],
+  "interpretation": "Current remote manuscript files match the pre-update local stage; diff does not identify authors. Existing remote README is retained and updated to the audited coverage."
+}

@@ -1,3 +1,7 @@
+## 2026-10-20 最终论文已同步Overleaf
+
+当前入口为[CURRENT.json](CURRENT.json)；机制结果采用原协议的逐题新基线筛选，最终审计r3，旧r1/r2不作论文数值来源。正文8主组合＋2补充组合、固定L16修复及独立人群表已整合；本地/云端均正文8页、总12页，源码最终diff零差异。详见paper/HANDOFF.md与audit/OVERLEAF-DELIVERY-20261020.json。GitHub同步成功后按原停止条件结束小时/5h监督，不重跑旧实验。
+
 ## 2026-10-20 当前状态（覆盖下方旧状态）
 
 剩余独立审计完成，正文4主模型×2 benchmark的8格深度均齐全；补充Qwen0.6两格也齐全。内容/位置、L2、跨题、windows、bridge、repair、edges均有各模型任务产物，结构性无donor按独立分母处理。详见[COMPLETION-20261020.md](COMPLETION-20261020.md)与completion-matrix-20261020.json。论文尚未整合，不能将数据齐全当交付完成。HDD个人配额受限，所有本轮审计报告已直接取回本地，原始数据未改、未删除。

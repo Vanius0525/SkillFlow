@@ -1,0 +1,12 @@
+{
+  "input_sha256": {
+    "fig-channels-values.json": "2a2c3ea072b6032350804be5210dcaab795c8ea30c90335be8fb779ddcee3685",
+    "depth-crossmodel-values.json": "e1cf2b65d6b68266c2050f0c42219d40a76a1759d355ebfd4fad998c46ced2a6",
+    "depth-current-values.json": "b832b0b94e56317e7b9857b85b8040ac947aa89a51aae15dc08e2001bf291733"
+  },
+  "numeric_records_unchanged": true,
+  "figures": [
+    "fig-transfer-reading",
+    "fig-depth-scale-check"
+  ]
+}

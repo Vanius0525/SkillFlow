@@ -1,4 +1,17 @@
 % Appendix A: protocol, implementation and scope.
+\begin{table*}[t]
+\centering
+\caption{State/cache repair at the fixed layer $16$ on all main model--task
+combinations. Accuracies are percentages. Gain is $a_{SC}-a_S$;
+recut loss is $a_{SC}-a_{SC+\mathrm{recut}}$, both in percentage points.
+Each row uses its own $n$ questions from $G$ skill groups.}
+\label{tab:repair-extension}
+\small
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-repair-extension}
+\end{table*}
+
 \section{Experimental protocols and provenance}
 \label{app:setup}
 
@@ -59,9 +72,13 @@ for a position-matched neutral receiver intervention.
 The four main models are Qwen3-8B ($36$ layers, hidden width $4096$),
 Mistral-7B-Instruct-v0.3 ($32$ layers, width $4096$),
 Llama-3.1-8B-Instruct ($32$ layers) and DeepSeek-LLM-7B-Chat ($30$ layers).
-The supplementary Qwen3-0.6B check uses $28$ layers and width $1024$. Their full-prompt state capture and
-knockout both use BF16, eager attention and $900$ new tokens, without
-quantization. For DeepSeek, system instructions are merged into the user
+The supplementary Qwen3-0.6B check uses $28$ layers and width $1024$. The added Llama and DeepSeek depth runs use BF16, matched eager
+attention for full-prompt state capture and knockout, and $900$ new tokens,
+without quantization. Regenerated Qwen and Mistral TheoremQA runs retain
+scaled dot-product attention for residual transfer and eager attention for
+knockout, with a $900$-token limit for both. This is a fresh evaluation of
+frozen historical candidates; exact equivalence to the original knockout
+generation budget is not established. For DeepSeek, system instructions are merged into the user
 turn. The Llama weights, configuration and vocabulary match the original
 release; the public distribution supplies its tokenizer template.
 For Mistral, which has no system role in its chat template, system
@@ -113,21 +130,52 @@ with at least two, giving $467$ items from $48$ calculators.
 The main receiver screen then retains $135$ questions from $14$ calculators.
 Historical development results retain their original sample labels.
 Table~\ref{tab:fullscale} shows the corrected rerun alongside the earlier
-screened subset. The main depth study currently covers six verified model--task
-comparisons across four models and families, with two TheoremQA cells
-pending. A seventh verified comparison uses Qwen3-0.6B on MedCalc as a
-supplementary scale check. Each comparison uses common eligible items
+screened subset. The main depth study covers all eight model--task comparisons across
+four models and families. Qwen3-0.6B supplies two supplementary
+comparisons, one per task. Each comparison uses common eligible items
 for the two intervention types. The new-family candidate pools
 inherit the earlier models' selection, so their results are conditional
 rather than full-benchmark estimates.
+
+\paragraph{Extended control populations.}
+Table~\ref{tab:extension-populations} records the independent populations
+for content/position, fixed layer-$2$ sensitivity, skill-after-question,
+repeated-write, cache-repair and attention-path experiments. We do not
+transfer the depth comparison's denominator to another protocol.
+For TheoremQA, all retained text is scored with fresh symbolic-parser
+state per answer, checked in reverse order and against fresh processes.
+The corrected DeepSeek depth population contains $54$ items; repair and
+path-cut protocols independently retain $46$ of those candidates from
+$40$ skills. Their three baseline token sequences agree on all $54$
+candidates. Cross-question tests require another question using the same
+skill, and same-family controls require another available skill in that
+family. Unavailable donors are excluded from the corresponding arm's
+population rather than assigned zero effect. The two-candidate bridge
+checks validate execution timing and are not effect estimates over an
+entire model--benchmark population.
+
+\begin{table*}[t]
+\centering
+\caption{Independent eligible question counts for the four main models.
+Cross-question counts require an available other-question donor.
+The Qwen3-8B/MedCalc layer-$8$ battery retains its historical group screen;
+other rows apply their own unpatched baselines. Within a battery,
+variable-donor controls can have smaller populations.}
+\label{tab:extension-populations}
+\small
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{3pt}
+\input{tables/tab-extension-populations}
+\end{table*}
 
 \paragraph{Scientific scope.}
 The experiments characterize supplied skill instructions under fixed
 selection and controlled generation. The depth ordering holds for the
 reported conditional populations and protocols. Historical transfer and
 knockout differ in backend; the added families use matching eager-attention
-protocols. The cache-repair and path-specific tests provide a focused
-result on Qwen3-8B/MedCalc. All-query skill knockout combines access from post-skill tokens with
+protocols. The cache-repair tests include all eight main combinations, with
+independently screened populations. The detailed path decomposition and
+generation-length sensitivity discussion focus on Qwen3-8B/MedCalc. All-query skill knockout combines access from post-skill tokens with
 skill-state updates; its full-depth profile cannot be interpreted as
 post-skill-only dependence. Prefill and decoding are jointly intervened on,
 so phase-specific claims require separate tests. The stored paired-outcome diagnostic supports same-question joint

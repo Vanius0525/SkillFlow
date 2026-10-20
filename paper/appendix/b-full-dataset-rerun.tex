@@ -2,43 +2,30 @@
 \section{Additional transfer and skill-dependence analyses}
 \label{app:fullscale}
 
-The original MedCalc $\times$ Qwen3-8B intervention battery was developed on the
-forty calculators with the most historically rescued items, sampling four each: $160$ of
-$467$ candidate items, and $60$ items over $15$ calculators after the
-receiver-never-solves restriction. We reran each of them with every rescued
-item of every calculator that has at least two ($467$ items, $48$ calculators),
-keeping the intervention configuration fixed. The group screen is stricter
-on the larger set because a calculator must fail on up to twenty items
-rather than four, so it keeps
-$135$ items over $14$ calculators, and we also report the per-item restriction
-($369$ items over $45$), which keeps the items whose own receiver fails.
+The initial Qwen3-8B/MedCalc battery sampled four historically rescued
+questions from each of $40$ calculators ($160$ candidates), retaining
+$60$ questions from $15$ calculators under the receiver-never-solves
+screen. The corrected rerun evaluates all $467$ candidates from $48$
+calculators and retains $135$ questions from $14$ calculators. A weaker
+item-level receiver screen retains $369$ questions from $45$ calculators.
+The group screen becomes stricter as more questions from each calculator
+are tested. Table~\ref{tab:fullscale} compares the fixed interventions
+under these screens.
 
+For the dose controls, $\delta^L=H_D^L[\mathcal I]-H_R^L[\mathcal I]$ and
+the write is $H_R^L[\mathcal I]+\alpha\delta^L$. Rank truncation retains
+the leading $k$ singular directions of this difference; bottom-$k$ retains
+the least prominent. The formula quarter provides the largest standalone
+recovery in both samples. Same-family means use their available-donor
+population ($41$ items in the full rerun).
 
-
-For the dose and rank controls in Table~\ref{tab:fullscale}, the state
-difference is $\delta^L=H_D^L[\mathcal I]-H_R^L[\mathcal I]$.
-A dose $\alpha$ writes $H_R^L[\mathcal I]+\alpha\delta^L$;
-$\alpha=1$ is full replacement and $\alpha=0.5$ is half dose.
-
-Table~\ref{tab:fullscale} also includes a rank-truncation diagnostic.
-We decompose the injected state-difference matrix into ordered directions
-using singular value decomposition and retain only the leading $k$.
-Increasing $k$ from $32$ to $64$ restores much of the recovery.
-A bottom-$k$ control retains the least prominent directions instead.
-The formula quarter gives the largest standalone recovery in both samples.
-The same-family mean donor changes from $0.05$ to $0.12$, on the $41$
-full-rerun items where it is available.
-
-\paragraph{The depth sweep at one-layer resolution.} The subset sweep measured
-layers $0,4,8,12,14,15,16,20$ and placed the collapse somewhere after $12$.
-At full scale we added $13$ and $17$--$19$:
-recovery is $0.98,0.98,0.89,0.74$ at layers $0,4,8,12$, then
-$0.16,0.16,0.06,0.06,0.07,0.03,0.02,0.03$ at $13$ through $20$ (per-calc; the
-per-item restriction gives $1.00,0.98,0.94,0.79$ then
-$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$). Under the group screen,
-layers $13$ and $14$ both round to $0.16$. Under the item screen, they
-differ at $0.32$ and $0.34$. Both screens show their largest local decline
-between layers $12$ and $13$.
+\paragraph{One-layer resolution.}
+The initial depth grid could only place the decline after layer $12$.
+The completed grid measures every layer. Under the group screen,
+recovery falls from $0.74$ at $12$ to $0.16$ at $13$; the item screen gives
+$0.79$ and $0.32$. Both screens have their largest local decline at this
+same step, while Figure~\ref{fig:transferreading} retains the later
+fluctuations rather than imposing monotonicity.
 
 \paragraph{Supplementary model-scale check.}
 \label{app:scale-check}
@@ -48,9 +35,25 @@ common-item set contains $90$ questions from $21$ skills. The half-effect
 boundaries are $T=11$ and $R=22$, giving $\Delta=11$ layers, or $39.3\%$
 of its $28$-layer depth. Transfer/dependence boundary pairs are
 $11/21$ at threshold $0.4$ and $11/22$ at both $0.5$ and $0.6$.
-Together with the six main comparisons, this gives seven verified
-comparisons across five model sizes from four families; it does not fill
-any Pending cell in Table~\ref{tab:paireddepth}.
+On TheoremQA, fresh isolated grading and independent baseline screening
+retain $122$ common questions from $92$ skills, with $T/R=11/20$
+($\Delta=9$, or $32.1\%$ of model depth). The corresponding threshold
+pairs are $11/20$, $11/20$ and $11/21$ at $0.4$, $0.5$ and $0.6$.
+Together with the eight main comparisons, these give ten measured
+comparisons across five model sizes from four families.
+Figure~\ref{fig:scale-depth} shows both supplementary curves.
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig-depth-scale-check.pdf}
+\caption{Supplementary Qwen3-0.6B depth profiles on both benchmarks.
+Each panel uses common eligible items for transfer and knockout, with
+each protocol's own baselines. Curves, first half-effect boundaries and
+skill-group counts use the same definitions as Figure~\ref{fig:transferreading}.}
+\Description{Two plots show Qwen3-0.6B transfer falling below half at layer 11 on both tasks, while skill dependence first falls to half at layer 22 on MedCalc and layer 20 on TheoremQA.}
+\label{fig:scale-depth}
+\end{figure}
 
 \paragraph{Same-question joint failures.}
 \label{app:joint-failure}
@@ -66,8 +69,9 @@ Table~\ref{tab:paireddepth}. The diagnostic also retains protocol
 mismatch: $4$, $0$ and $4$ items, respectively, are correct under the
 transfer protocol's no-skill baseline despite failing that baseline under
 knockout. These are paired outcomes under two interventions, not a claim
-of identical baseline executions. Corresponding paired summaries for the
-four added-family comparisons are not available in the retained artifacts.
+of identical baseline executions. We report this stricter paired-outcome diagnostic for these three
+historical MedCalc settings only; common IDs alone do not establish
+that every question fails both interventions elsewhere.
 
 \paragraph{Repeated replacement as a consistency check.}
 \label{app:repeated}
@@ -121,6 +125,8 @@ $0.86$--$0.99$ of the donor's despite weak behavioural recovery. Earlier receive
 the interaction tests in \S\ref{sec:mechanism}.
 
 
+
+
 \subsection{Focused skill-cache and path-specific experiments}
 \label{app:mechanism}
 
@@ -170,3 +176,17 @@ Reader cuts truncate $21$ outputs; counting all as correct still leaves
 retention at $50/114$, below skill-to-skill retention $110/114$ (no truncation).
 Both contrasts survive worst-case reassignment of truncated outputs.
 Analysis artifacts retain arm-wise counts, hashes and truncation bounds.
+
+
+\paragraph{Repair extension across families and benchmarks.}
+Table~\ref{tab:repair-extension} reports the same fixed layer-$16$
+contrast on all eight main combinations. Every row uses its own fresh
+split-prefill baselines, retaining donor-correct questions that both the
+wrong-skill receiver and no-skill execution answer incorrectly. Repair
+and path-cut baseline token sequences match within each model--task
+combination. The extension keeps the $1{,}536$-token limit and includes
+truncated generations in the accuracy denominator. The control and
+mechanism populations differ from the full-prefill depth populations;
+for example, Qwen3-8B/TheoremQA has $82$ depth items and $53$ repair items.
+The main text's truncation sensitivity bounds apply to the focused
+Qwen3-8B/MedCalc study, not automatically to every extension row.
