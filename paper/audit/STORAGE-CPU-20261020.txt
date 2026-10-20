@@ -1,0 +1,37 @@
+{
+  "host": "wt-family-prep-1018--17ea4a26a8e2-bngb37dizk",
+  "role": "cpu",
+  "time": 1792485013.074449,
+  "tiers": {
+    "ssd": {
+      "root": "/inspire/ssd/project/project-public/czxs253130660",
+      "df": "Filesystem      Size  Used Avail Use% Mounted on\ngpfs_flash       50T   50T  565G  99% /inspire/ssd/project/project-public/czxs253130660\n",
+      "mount": [
+        "gpfs_flash /inspire/ssd/project/project-public/czxs253130660 gpfs rw,relatime 0 0"
+      ],
+      "existing": [],
+      "write_seconds": 0.15476612374186516,
+      "written_bytes": 33554432,
+      "sha256": "60022cb77c6a64d7362049193d735a3b1a01bdda09f69451295e262c590cbccf",
+      "readback_ok": true,
+      "small_files_ok": 16,
+      "ok": true
+    },
+    "hdd": {
+      "root": "/inspire/hdd/project/project-public/czxs253130660",
+      "df": "Filesystem      Size  Used Avail Use% Mounted on\ngpfs_hdd         80T   56T   25T  70% /inspire/hdd/project/project-public/czxs253130660\n",
+      "mount": [
+        "gpfs_hdd /inspire/hdd/project/project-public/czxs253130660 gpfs rw,relatime 0 0"
+      ],
+      "existing": [],
+      "write_seconds": 0.0694962926208973,
+      "written_bytes": 33554432,
+      "sha256": "60022cb77c6a64d7362049193d735a3b1a01bdda09f69451295e262c590cbccf",
+      "readback_ok": true,
+      "small_files_ok": 16,
+      "ok": true
+    }
+  }
+}
+OK
+⚠ InspireSkill v7.1.13 available (current v7.1.8); run `inspire update` to upgrade.

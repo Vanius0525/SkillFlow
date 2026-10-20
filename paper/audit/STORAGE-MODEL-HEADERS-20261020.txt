@@ -1,0 +1,86 @@
+⚠ InspireSkill v7.1.13 available (current v7.1.8); run `inspire update` to upgrade.
+{
+  "Qwen3-8B": {
+    "shards": [
+      {
+        "name": "model-00001-of-00005.safetensors",
+        "bytes": 3996250744,
+        "header_valid": true
+      },
+      {
+        "name": "model-00002-of-00005.safetensors",
+        "bytes": 3993160032,
+        "header_valid": true
+      },
+      {
+        "name": "model-00003-of-00005.safetensors",
+        "bytes": 3959604768,
+        "header_valid": true
+      },
+      {
+        "name": "model-00004-of-00005.safetensors",
+        "bytes": 3187841392,
+        "header_valid": true
+      },
+      {
+        "name": "model-00005-of-00005.safetensors",
+        "bytes": 1244659840,
+        "header_valid": true
+      }
+    ]
+  },
+  "Mistral-7B-Instruct-v0.3": {
+    "shards": [
+      {
+        "name": "model-00001-of-00003.safetensors",
+        "bytes": 4949453792,
+        "header_valid": true
+      },
+      {
+        "name": "model-00002-of-00003.safetensors",
+        "bytes": 4999819336,
+        "header_valid": true
+      },
+      {
+        "name": "model-00003-of-00003.safetensors",
+        "bytes": 4546807800,
+        "header_valid": true
+      }
+    ],
+    "extra_consolidated_bytes": 14496078512,
+    "consolidated_referenced_by_index": false
+  },
+  "Llama-3.1-8B-Instruct": {
+    "shards": [
+      {
+        "name": "model-00001-of-00004.safetensors",
+        "bytes": 4976698672,
+        "header_valid": true
+      },
+      {
+        "name": "model-00002-of-00004.safetensors",
+        "bytes": 4999802720,
+        "header_valid": true
+      },
+      {
+        "name": "model-00003-of-00004.safetensors",
+        "bytes": 4915916176,
+        "header_valid": true
+      },
+      {
+        "name": "model-00004-of-00004.safetensors",
+        "bytes": 1168138808,
+        "header_valid": true
+      }
+    ]
+  },
+  "deepseek-llm-7b-chat": {
+    "shards": [
+      {
+        "name": "model.safetensors",
+        "error": "[Errno 2] No such file or directory: '/inspire/ssd/project/project-public/czxs253130660/models/deepseek-llm-7b-chat/model.safetensors'"
+      }
+    ]
+  }
+}
+OK

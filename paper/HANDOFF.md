@@ -1,3 +1,14 @@
+## 2026-10-20 启智存储复查（完成诊断，GPU受调度限制）
+
+- 用户目标：复查CPU/GPU的SSD/HDD历史故障，为之后新benchmark×四主模型矩阵准备；本轮不启动正式实验。
+- 已读inspire skill及平台/项目记忆，CLI v7.1.8，update --check显示v7.1.13可用，未升级。CPU wt-family-prep-1018运行中；旧四个4090续接Job均succeeded，没有恢复旧监督。
+- CPU两盘各32MiB写入、fsync、SHA256读回及16小文件成功；证据audit/STORAGE-CPU-20261020.txt。探针保留于个人两盘storage-checks/check-20261020/，未删除。工具tools/probe_inspire_storage.py，限制1–128MiB并独占创建文件。
+- SSD整池约565GiB剩余、99%使用；HDD整池约25TiB剩余、70%使用；这些不是个人配额。已有个人目录历史du约SSD92GiB/HDD58GiB。容器无mmlsquota/quota，精确配额未知；历史Errno122不能仅凭du推断配额阈值。
+- 旧wt-mechanism-4090-1017尝试启动后因12.8组无余额排队，已stop恢复原状态。临时wt-storage-check-1020（13.2组/1卡/同CUDA12.8镜像/30分钟自动停止）持续PENDING，Events资源不足，本轮结束已stop并核验两个Notebook均STOPPED。GPU端没有完成新复验，未遗留排队/运行探针。
+- Mistral额外consolidated.safetensors为14,496,078,512字节（13.50GiB），HF索引不引用，三HF分片结构有效；仅列可清理候选，未经删除授权未动。Qwen8/Mistral/Llama共12分片文件头和末端长度均匹配；DeepSeek为bin双分片，已确认存在，初始safetensors探针不适用，不能误报缺权重。
+- 报告reports/启智存储复查_20261020.md；raw证据audit/STORAGE-MODEL-HEADERS-20261020.txt含DeepSeek探针格式局限说明见报告。CPU当前两盘可小写，不称配额永久解决；旧“370MB限额”已不适用，精确限额仍未知。
+- 后续新benchmark×四模型：SSD只读模型，HDD新目录存结果；实际GPU获分配后先检查两盘写入和双向marker，再跑少量样本估算raw容量并预留余量。永久方案是管理员核实/调高块与文件数配额；SSD整池99%也需关注。未发消息、未删除、未下载、未启动正式实验或旧监督。
+
 ## 2026-10-20 用户收束目标：第三benchmark改优先CHAMP
 
 - 最新指令：只增加benchmark，不追求扩展研究对象或加强机制解释，优先匹配原task与答案形式。覆盖此前LogicBench首选排序：现推荐SRA-CHAMP＋发布概念skills；LogicBench备选，BigCodeBench本轮不选。
