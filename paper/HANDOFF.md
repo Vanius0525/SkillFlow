@@ -1,3 +1,9 @@
+## 2026-10-20 最终收尾：双端同步与监督停止已验证
+
+- 稿件内容提交001f752已成功push origin/master；Overleaf同稿件20源文件最终diff零差异，云端PDF为本地skillvector-www2027.pdf，12页且References从第8页开始。交付收据audit/OVERLEAF-DELIVERY-20261020.json与独立稿件审计MANUSCRIPT-INTEGRATED-20261020.json均已落盘。
+- 已按原停止条件创建experiments/family_depth_20261018/TASK-COMPLETE，停止family-depth-watch-01a15016.timer与family-depth-progress-01a14a9e.timer；systemctl回读两者ActiveState=inactive。不再按小时/5h投递旧实验续接，旧消息若延迟到达只去重，不重跑。
+- 最终权威：CURRENT.json→completion-matrix-20261020-r3.json、completed-matrix-audit-20261020-r3.json；此前机制多套件整组筛选口径已纠正，最终论文依原协议逐题新基线。后续是新的科研/审稿工作；旧队列不恢复。平台CPU保留原自动停止设置，原始数据与权重不动。
+
 ## 2026-10-20 正文、图表和Overleaf更新完成（r3为权威）
 
 - 用户目标：把已审计完整结果纳入正文、表格、图表及相关说明；处理中也已回答数据齐全与结论边界。已更新摘要/Introduction/实验/结论、当前两附录、主深度表与八面板图，补Qwen0.6双任务曲线、8组合L16机制表、独立人群表和线上README。全部活跃稿件无Pending，无置信区间/置信度/误差条展示。

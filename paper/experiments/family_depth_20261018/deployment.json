@@ -1,5 +1,5 @@
 {
-  "status": "Frozen experiment matrix audited; manuscript and Overleaf updated; final GitHub synchronization",
+  "status": "Complete: corrected audit, manuscript, Overleaf and GitHub delivered",
   "account": "me",
   "workspace": "\u53ef\u4e0a\u7f51GPU\u8d44\u6e90",
   "project": "\u516c\u5171\u79d1\u7814\u9879\u76ee",
@@ -83,5 +83,17 @@
   "manuscript_integration_complete": true,
   "storage_status": "HDD EDQUOT; filesystem has free space; exact personal quota unknown; audits completed without shared-disk writes",
   "suite_audit": "completed-matrix-audit-20261020-r3.json",
-  "overleaf_delivery": "../../audit/OVERLEAF-DELIVERY-20261020.json"
+  "overleaf_delivery": "../../audit/OVERLEAF-DELIVERY-20261020.json",
+  "supervision_complete": true,
+  "recovery_statuses": {
+    "wt-fix-ds-tqa-battery-1019": "job_succeeded",
+    "wt-fix-ds-tqa-battery-l2-1019": "job_succeeded",
+    "wt-fix-ds-tqa-windows-1019": "job_succeeded",
+    "wt-legacy-q06-tqa-1019": "job_succeeded",
+    "wt-recover-q8-tqa-c132-1019": "job_succeeded",
+    "wt-recover-mistral-tqa-c132-1019": "job_succeeded",
+    "wt-recover-q8-ko-c132-1019": "job_succeeded",
+    "wt-recover-ds-edges-c132-1019": "job_succeeded",
+    "wt-probe-4090-c132-r1-1019": "job_succeeded"
+  }
 }

@@ -1,8 +1,14 @@
 {
-  "status": "manuscript_updated_and_overleaf_verified",
+  "status": "complete",
   "completion": "completion-matrix-20261020-r3.json",
   "suite_audit": "completed-matrix-audit-20261020-r3.json",
   "manuscript_values": "../../values/depth-current-values.json",
   "delivery": "../../audit/OVERLEAF-DELIVERY-20261020.json",
-  "note": "Mechanism bridge/repair/edges use per-item fresh baselines, matching original analyze.py; earlier r1/r2 generic group-screen summaries are superseded for manuscript use."
+  "note": "Mechanism bridge/repair/edges use per-item fresh baselines, matching original analyze.py; earlier r1/r2 generic group-screen summaries are superseded for manuscript use.",
+  "manuscript_commit": "001f752",
+  "supervision": {
+    "completion_marker": "TASK-COMPLETE",
+    "hourly_timer": "inactive",
+    "five_hour_timer": "inactive"
+  }
 }
