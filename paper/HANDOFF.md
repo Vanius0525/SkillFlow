@@ -1,3 +1,23 @@
+## 2026-10-20 13:17 Qwen8独立审计与聚合完成（论文未改）
+
+- 已完成本次q8-transfer-20事件对应的全Qwen8审计，不重跑GPU。9个transfer块＋KO共9828条原始回答，逐题parser重置后changed_labels=0，全量逆序一致，16个全新进程评分一致；生成顺序与窄表一一映射，prompt/span与冻结expected一致。
+- 168候选→transfer有效88题；KO完整168题合法（启用admission前已生成），独立KO基线筛选后共同82题/66组。共同集36层transfer/KO网格完整、transfer全部有效题网格完整，已执行self身份检查无失败。transfer首次低于0.5在L13，retention首次≥0.5在L21（0-based层号，首次阈值，不宣称单调或机制充分证明）。每层截断计数已保存，最大5/82。
+- 9个后续/KO文件的raw和窄表SHA256与done匹配；首块旧done无哈希字段，因此本轮计算并记录其哈希、核对计数/manifest/expected/模块及映射，不冒称其done已有哈希绑定。历史KO预算精确可比性仍未核实，不能称原结果逐字恢复。
+- 首次远端overlay审计被HDD Errno122中断，保留部分overlay且无AUDIT-COMPLETE；第二次原生--report-stdout纯内存审计41.51s成功，完整小报告已取回本地experiments/family_depth_20261018/q8-independent-audit-20261020.json。失败中间目录不当完整overlay来源，原始raw未改、未删除文件。脚本audit_q8_recovery.py支持不写共享盘模式。初次字符串转换方案在审计前assert失败，改为直接执行压缩源码后通过。
+- 当前Qwen8检查已结束，无本轮审计进程待续接。下一步核验Mistral恢复全网格/独立评分，以及DeepSeek edges独立baseline/eligible与repair token协议，合并全部模型后再按Overleaf完整diff流程改稿。共享盘满会阻碍后续落盘，优先小报告直接本地取回；任何删除另按用户确认规则。整项未完成，不建TASK-COMPLETE。小时timer继续。
+
+## 2026-10-20 Qwen8审计存储异常（实时记录）
+
+- 第一轮审计9个transfer块均完成哈希/映射/逐题重判，处理KO评分overlay写入时HDD返回Errno122 Disk quota exceeded；未形成report/AUDIT-COMPLETE，部分overlay不能当完整审计。原raw未改动，未删除任何文件。
+- 诊断后启动相同代码的纯内存审计（跳过远端mkdir/overlay/report写入，以stdout取回本地小报告）；本地进程命令python /tmp/run_q8_memory_audit.py，初次exec session37693在审计前因字符串转换校验失败退出；已加入原生--report-stdout模式，以压缩源码直接在远端whitebox Python执行，当前exec session83779（不写远端文件），远端exec上限600s。目标本地experiments/family_depth_20261018/q8-independent-audit-20261020.json；失败日志和未完成目录保留，不扩写共享盘。
+- 下一步检查上述进程结果，完整网格/逆序及独立进程对照通过后再聚合；无论成功与否记录存储约束。不据done改论文。
+
+## 2026-10-20 Qwen8完成事件：独立审计准备
+
+- 用户监督事件q8-transfer-20属于恢复观察后的积压完成通知；四续接Job已全部成功，不重新生成。
+- 新增audit_q8_recovery.py，核对9个transfer块＋KO的done计数/raw与窄表哈希/manifest模块与expected哈希/900token协议、按生成顺序映射所有答案、逐题重置parser评分、全量逆序及16独立进程对照。重建168候选基线与36层共同网格，允许KO全候选、transfer后续仅88题。未运行前不声称通过。
+- 远端审计目标：HDD recovery目录下q8-independent-audit-20261020；新脚本audit_q8_recovery_20261020.py；原始输出保留，不改论文。已启动timeout PID26797（最长1200s），日志q8-independent-audit-20261020.log、PID元数据同名.pid.json；首轮日志9个transfer块全部AUDITED，KO/逆序/独立进程对照仍在运行，尚无report/done。下一步读取report与AUDIT-COMPLETE，异常先诊断不重提GPU。
+
 ## 2026-10-20 13:12 当前实验检查与每小时监督恢复
 
 - 本轮用户目标：阅读当前实验交接、核实进度、设置每小时周期检查。当前入口是paper/HANDOFF.md及experiments/family_depth_20261018/README.md，上级HANDOFF.md为旧GAIA记录。
