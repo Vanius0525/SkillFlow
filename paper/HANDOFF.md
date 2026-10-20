@@ -1,3 +1,11 @@
+## 2026-10-20 用户收束目标：第三benchmark改优先CHAMP
+
+- 最新指令：只增加benchmark，不追求扩展研究对象或加强机制解释，优先匹配原task与答案形式。覆盖此前LogicBench首选排序：现推荐SRA-CHAMP＋发布概念skills；LogicBench备选，BigCodeBench本轮不选。
+- 原因：CHAMP同样纯文本、一次生成逐步解答、抽取简短数值/表达式/短语答案，可沿用现有干预；本轮不引入代码生成或短标签分类作为目标。
+- 范围：全量223题含114单skill、109多skill；最贴近现有单skill设置的是114题子集，但必须明确子集名称，已有全量收益不等于该子集收益已验证。44单skill组、95题可有跨题donor；不因此剔除其他实验可用singleton。
+- 新静态核查：223题的精确skill集合有132种，37种可跨题，共128题。仅在样本不足且决定采用全量时才考虑固定多skill拼接，不自动扩容或变更设置。旧Qwen8单skill rescued21题未审计，四模型样本充足尚未知。
+- 已补充reports/第三benchmark调研_20261020.md，未启动GPU、未改投稿稿件。下一动作是先核验CHAMP单skill子集四模型三基线总体收益与人数，不根据T<R/repair结果选题。
+
 ## 2026-10-20 回答形式与第三任务适配判断（完成）
 
 - 用户追问当前回答是否多token、候选task＋skill是否合理。已核对本地prompt/评分器、747题TheoremQA答案类型和少量保存回答；补充至reports/第三benchmark调研_20261020.md末节。
