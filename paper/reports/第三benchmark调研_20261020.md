@@ -117,3 +117,41 @@ SRA Llama-3.1-8B 22.4%→40.8%，+18.4个百分点；SKIM Qwen3-8B 48.88%→68.1
 - 本地旧LogicBench/CHAMP资产与HF最新commit未逐字对比，旧输出未独立重判。
 - 如果选择全部来自SRA，能够扩展任务，但仍未消除skill构建来源单一的问题。若论文诉求是跨skill来源泛化，应考虑固定SELF-DISCOVER结构的BBH子任务，代价是额外构建与验证。
 - 下一条可执行动作：固定LogicBench数据/skill版本和预注册筛选标准，编写最小三基线评估与评分自检，再讨论GPU试验；本次任务止于调研交付。
+
+
+## 2026-10-20 补充：回答形式与当前干预的适配判断
+
+用户追问：当前任务是否多token答案，以及候选task＋skill是否适合整篇论文。核对本地实际prompt、评分器及回答后，维持LogicBench为当前第三组首选，但尚未正式确定接入实验。
+
+### 输出形式的两个层次
+
+- MedCalc：要求逐步计算，最后`ANSWER: <value>`；value可以是数值、整数、日期等。整个completion是多token生成，不能把一个数值字段等同一个token。`howskill/howskill/prompts.py`定义模板，`grade.py`抽取最终答案评分。
+- TheoremQA：要求solution，最后`Therefore, the answer is ...`；支持数值、数值列表、True/False和选项。747题的静态标签为float360、integer200、bool112、list of integer51、list of float8、option16。这是全候选池分布，不是各模型筛选后的论文分布。
+- LogicBench：最终评分为yes/no或choice_N，但官方builder只返回原题，没有统一“必须输出CoT”的额外指令。模型允许生成解释，不能未经统计称其必然长CoT。其最终标签短、语义候选少；choice_N也不必是一个token。精确长度依赖tokenizer、前导空格和上下文，本轮未为四个tokenizer测量最终标签长度。
+- CHAMP：逐步解答＋`ANSWER:`，最终为数值/表达式/yes-no/短语；语义与现有数学任务接近。
+- BigCodeBench：输出完整函数/代码，是多token的被评分产物；需通过单元测试，而非只提取最终数值。
+
+作为实例核验，`experiments/mechanism_20261016/probe2-raw.jsonl`中两条MedCalc donor生成173和339token，分别以日期和整数结束。这是两个诊断样例，不能外推全文平均长度。TheoremQA历史repair文件亦含数百token的solution；本轮不复用其旧correct标签、不重新宣称评分通过。
+
+### 为什么最终答案短不构成排除条件
+
+论文的S是在prompt prefill阶段替换skill span的状态，后续自由生成整段回答；attention knockout覆盖prefill和decoding；SC写入skill位置的cache并继续生成。因此机制并不以“最终答案超过一个token”为成立前提。短标签任务仍可测迁移恢复与切断损失；但仅凭yes/no翻转不能证明迁移了专门推理算法，更不能证明整个推理链正确。
+
+多token本身也不是更强机制证据：长代码增加错误机会、截断和生成历史累积，可能放大SC与S差异。若拿它与短QA比较，必须区分任务机制与序列长度，不能把更大的修复收益自动归因于更依赖skill cache。
+
+### 当前决策
+
+| 标准 | LogicBench | CHAMP | BigCodeBench |
+|---|---|---|---|
+| 现成且可复用的task＋skill | 是，一题一规则skill | 是，但约半数题多skill | 是，常需多个库skill |
+| 与现有干预定义可比 | 高，能沿用单span和客观答案 | 高，但多skill或子集选择要重定义 | 可实施，但组合skill、长输入/输出和测试环境增加变量 |
+| 新增任务维度 | 从数值计算转到逻辑判定 | 仍偏数学推理 | 新增可执行代码生成，跨度最大 |
+| 答案层面的诊断分辨率 | 较低，需连续标签分数与分层分析 | 较高但解析复杂 | 多token产物、客观测试，但函数通过率也会把多种错误压成一个二值 |
+| 同skill跨题donor可用性 | 19组各40题，结构上较好 | 单skill可跨题仅95候选题 | 必须界定同库与同skill组合，不自动等同 |
+| 当前结论 | 首选可行性验证 | 备选，增量与样本都受限 | 适合后续更强任务扩展，当前不优先 |
+
+LogicBench要成为主论文第三组，应先满足四模型总体gold-vs-none收益、足够的独立有效题和skill覆盖、早层真实技能专属性、稳定评分等条件；这些不能靠已有论文代替验证。wrong-skill对照需补generic指导/等长中性，避免把一般推理激励当作专门skill知识。
+
+不按是否出现断崖、T<R或正cache修复筛选benchmark；若这些不成立，应作为主张边界报告。若将输出改为answer-only、额外加入强CoT模板，或仅选MCQA，都属于新协议/子集，需要明确报告，不能冒称复用了原版完整LogicBench。连续读数可对两个/四个候选标签的完整token序列求条件log-probability；若在模型已自由生成的推理末尾评分，它条件于已改变的推理历史，不能当作独立机制证据。
+
+结论：维持LogicBench优先，是因它最能在保持现有干预可比性的同时加入逻辑任务；并非因为它能最容易复现已有结果。当前论文可支持的范围仍为单次供给程序性指令的受控QA，加入LogicBench本身不会补成真实Web agent或长产物任务证据。
