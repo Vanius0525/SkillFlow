@@ -1,3 +1,16 @@
+## 2026-10-20 第三个 benchmark 广泛调研完成（未启动实验）
+
+- 用户目标：寻找现成、单次加载skill能提高原任务的第三组，未来扩展4模型×3benchmark。本轮只调研、静态资产检查，不改投稿正文/图表，不启动GPU或旧监督。
+- 交付：reports/第三benchmark调研_20261020.md，覆盖16项论文/项目记录与15类候选；reports/第三benchmark本地资产核查_20261020.json记录统计及SHA。现有MedCalc/TheoremQA的技能来源为SRA，而非原始benchmark原生技能。
+- 推荐LogicBench（760题、19skill、一题一skill）；SRA报告当前Llama3.1-8B 54.6→69.5%，后续SKIM的Qwen3-8B未压缩对照77.11→85.26%。更强调输出类型多样性则BigCodeBench（一次生成代码，离线测试），CHAMP作为纯文本备选（223题仅114单skill，95题具同skill跨题donor）。论文收益不保证当前四模型greedy均有效。
+- 关键历史异常：未引用旧appendix/f-rank-and-replication.tex已有LogicBench 57题/16skill结果，span恢复0.75但other0.38、permuted0.25，曲线L0 .93/L16 .49/L20 .33较平缓；本轮未审计，不能直接复用，也不能因不符合既有断崖故事排除benchmark。旧cells的Qwen8 LogicBench gold/none86.18/76.18%，CHAMP49.78/35.43%，均仅历史标签线索。
+- 验证：Python静态核对本地instances/skills/pairs及历史cells，生成配套JSON；联网核查原论文、官方仓库/数据卡/评分器。未与线上最新数据逐字核对，未重判旧回答。
+- 下一步（新实验尚未执行）：先冻结LogicBench全760题与skill版本，四模型匹配协议的none/gold/wrong三基线，先判总体收益、有效题数与覆盖，再开展干预。二分类任务不直接搬整组receiver全错筛选；中性文档/generic指导和BQA/MCQA分层应预先规定。不能根据是否T<R挑第三任务。
+
+### Open Ideas / 值得深挖的问题（2026-10-20 benchmark调研）
+
+- skill语义专属性与答案空间/通用推理指导可能混杂。触发：旧LogicBench other-skill恢复0.38而span0.75，且542/760题为BQA；旧CHAMP wrong准确率42.15%高于none35.43%。值得验证正确skill是在提供专门过程还是泛化推理/格式提示。最小验证：冻结同题比较gold/同域wrong/generic/等长中性，分答案类型并读连续标签分数。历史数据尚未独立复核、新颖性尚未调研到足够程度，不声称独立顶会贡献。
+
 ## 2026-10-20 当前入口：仅4主模型×2benchmark，图表覆盖更新完成
 
 - 最新用户指令：放弃小模型相关论文结果，重点让4主模型×2benchmark覆盖所有表格和图表。用户称Qwen0.8B，当前实际小模型为Qwen3-0.6B；已从活跃正文/附录、当前深度JSON、图表与生成入口移除。原始实验、历史报告及未引用旧文件保留，不删除。

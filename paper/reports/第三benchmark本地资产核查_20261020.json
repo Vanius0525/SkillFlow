@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-20",
+  "method": "static_local_file_inspection_only",
+  "fresh_model_inference": false,
+  "remote_version_comparison": false,
+  "datasets": {
+    "logicbench": {
+      "instances": 760,
+      "skills": 19,
+      "annotation_count_distribution": {
+        "1": 760
+      },
+      "task_type_counts": {
+        "MCQA": 218,
+        "BQA": 542
+      },
+      "single_skill_groups": 19,
+      "single_skill_repeated_groups": 19,
+      "single_skill_repeated_items": 760,
+      "content_char_range": [
+        3352,
+        6121
+      ],
+      "source_files": {
+        "../howskill/data/sra/logicbench_instances.json": {
+          "sha256": "c8b833422f64516eba535a018a3cb960bf70cb1d33bc23c496f1ccbeda6550d6",
+          "bytes": 493231
+        },
+        "../howskill/data/sra/logicbench_skills.json": {
+          "sha256": "7ed971f7503159cd6c871886ea3a313b11669ccc43656f4127f3eaaa30ef7c27",
+          "bytes": 97863
+        },
+        "../howskill/data/sra/logicbench_pairs.json": {
+          "sha256": "bfa5f156d15635ed01d8734d4abdf4a54389758b3980e27e746184f5224ec4b4",
+          "bytes": 686
+        }
+      },
+      "unverified_historical_summary": {
+        "file": "../howskill/data/cells/cells-lb-qwen8b.json",
+        "sha256": "69dfc83829db19cb48b6b556519213d90130734d53ac3a0b6bc3d64f0518cc72",
+        "accuracy": {
+          "gold": 0.8618,
+          "none": 0.7618,
+          "wrong": 0.7171
+        },
+        "cell_counts": {
+          "R": 137,
+          "F": 44,
+          "K": 518,
+          "B": 61
+        },
+        "single_skill_rescued_count": 137,
+        "warning": "Historical labels only; original answers and grading have not been independently audited in this task."
+      }
+    },
+    "champ": {
+      "instances": 223,
+      "skills": 89,
+      "annotation_count_distribution": {
+        "1": 114,
+        "2": 69,
+        "4": 8,
+        "3": 31,
+        "5": 1
+      },
+      "task_type_counts": {
+        "unspecified": 223
+      },
+      "single_skill_groups": 44,
+      "single_skill_repeated_groups": 25,
+      "single_skill_repeated_items": 95,
+      "content_char_range": [
+        1952,
+        5651
+      ],
+      "source_files": {
+        "../howskill/data/sra/champ_instances.json": {
+          "sha256": "e70a8b60ecc64bbce1a910dc2c205b2c6bcabd3f3342b13a34a6adadc01dab55",
+          "bytes": 61609
+        },
+        "../howskill/data/sra/champ_skills.json": {
+          "sha256": "82eb409c3124451906c508cdb8674a7347aeda74ad7eea2dec9b750f97fc7e54",
+          "bytes": 326356
+        },
+        "../howskill/data/sra/champ_pairs.json": {
+          "sha256": "82d4099104f1e22ae04e45e30f21a17324fe343cfe57d4d0417be48365aedc7c",
+          "bytes": 2316
+        }
+      },
+      "unverified_historical_summary": {
+        "file": "../howskill/data/cells/cells-champ-qwen8b.json",
+        "sha256": "437b9531cb59cc47915e0e552173cca27632b45f5114e018e85920d63ab998ec",
+        "accuracy": {
+          "gold": 0.4978,
+          "none": 0.3543,
+          "wrong": 0.4215
+        },
+        "cell_counts": {
+          "R": 51,
+          "F": 93,
+          "K": 60,
+          "B": 19
+        },
+        "single_skill_rescued_count": 21,
+        "warning": "Historical labels only; original answers and grading have not been independently audited in this task."
+      }
+    }
+  }
+}
