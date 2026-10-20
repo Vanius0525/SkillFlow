@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-10-20T05:11:03.631090+00:00",
+  "statuses": {
+    "wt-fix-ds-tqa-battery-1019": "job_succeeded",
+    "wt-fix-ds-tqa-battery-l2-1019": "job_succeeded",
+    "wt-fix-ds-tqa-windows-1019": "job_succeeded",
+    "wt-legacy-q06-tqa-1019": "job_succeeded",
+    "wt-recover-q8-tqa-c132-1019": "job_succeeded",
+    "wt-recover-mistral-tqa-c132-1019": "job_succeeded",
+    "wt-recover-q8-ko-c132-1019": "job_succeeded",
+    "wt-recover-ds-edges-c132-1019": "job_succeeded",
+    "wt-probe-4090-c132-r1-1019": "job_succeeded"
+  },
+  "recovery_done": [
+    "q8-transfer-20.done.json",
+    "q8-transfer-16.done.json",
+    "q8-transfer-recovery.done.json",
+    "q8-transfer-04.done.json",
+    "q8-transfer-08.done.json",
+    "q8-transfer-12.done.json",
+    "mistral-transfer-28.done.json",
+    "q8-transfer-32.done.json",
+    "q8-transfer-28.done.json",
+    "q8-knockout.done.json",
+    "deepseek-theoremqa-corrected54-edges.done.json",
+    "mistral-transfer-recovery.done.json",
+    "q8-transfer-24.done.json",
+    "mistral-knockout.done.json"
+  ],
+  "monitor_error": null,
+  "timer_interval_hours": 1,
+  "next_check_cst": "2026-10-20 14:11",
+  "limits": "Completion markers verified; full raw integrity and scoring audit pending."
+}

@@ -25,7 +25,7 @@ def main():
   def save():STATE.write_text(json.dumps(state,indent=2)+'\n')
   def notify(key,message):
    if key in state['notified']:return
-   call([cfg['codex'],'queue','--thread',cfg['thread'],'--message','实验监督触发：'+message+'。先读paper/HANDOFF.md最新入口，自动诊断续接，不重复生成已完成结果。'],60)
+   call([cfg['codex'],'queue','--thread',cfg.get('monitor_thread',cfg['thread']),'--message','实验监督触发：'+message+'。先读paper/HANDOFF.md最新入口，自动诊断续接，不重复生成已完成结果。'],60)
    state['notified'].append(key);save()
   state['checked_at']=now.isoformat();save()
   try:
@@ -80,6 +80,7 @@ print('WATCH '+json.dumps({'cpu_audit':cpu,'recovery_formal_started':formal,'fir
     launch=json.loads(launch_path.read_text());launch['submitted'].append(PAR);launch_path.write_text(json.dumps(launch,indent=2)+'\n')
     notify('parallel-started','Qwen8完整首批基线已完成，KO独立单卡已提交；总活跃任务不超过8，原worker将验证复用同一KO完成产物')
    state.pop('last_error',None);save()
+   notify('hourly-check:'+now.strftime('%Y%m%d%H'),'每小时状态检查完成：当前Job状态='+json.dumps(state['statuses'],ensure_ascii=False)+'；共享盘完成标记数='+str(len(seen.get('recovery_done',[])))+'。本次仅核查并报告实验进展、监控健康与待审计事项，不重复提交实验；完成标记不等同评分和论文审计完成')
   except Exception as e:
    state['last_error']=str(e);save();notify('monitor-error:'+type(e).__name__,'监督脚本遇到'+type(e).__name__+'，细节见watch-progress-state.json；不能盲目重试提交')
 if __name__=='__main__':main()

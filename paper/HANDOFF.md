@@ -1,3 +1,12 @@
+## 2026-10-20 13:12 当前实验检查与每小时监督恢复
+
+- 本轮用户目标：阅读当前实验交接、核实进度、设置每小时周期检查。当前入口是paper/HANDOFF.md及experiments/family_depth_20261018/README.md，上级HANDOFF.md为旧GAIA记录。
+- Live `inspire --json job status`确认四项c132续接均job_succeeded：Qwen8 transfer、Mistral transfer、Qwen8 KO、DeepSeek edges。观察CPU wt-family-prep-1018原已STOPPED，现已start并connection refresh，RUNNING/cpu-nat-389，恢复时自动停止剩余22h59m；共享盘exec读取成功。
+- 共享盘已有Qwen8 transfer全部后续块04/08/12/16/20/24/28/32及总recovery完成标记；Qwen8 KO标记5412回答/168记录；Mistral末块852回答/142记录，KO2450回答/73记录；DeepSeek edges标记54 items/648 records。这里只核验标记和平台状态，尚未对本轮全部raw重新计算哈希、完整网格与独立评分。复制首块标记不计新完成。
+- 复用family-depth-watch-01a15016.timer，实际OnUnitActiveUSec=1h、active；手动触发service成功结束（Result=success），watch-progress-state.json已更新且last_error清除。下次北京时间约2026-10-20 14:11；原5h完整检查约16:02保留。新增每小时去重状态摘要，monitor_thread改为当前会话01a157b3-4b1a-76a2-85fe-33c86548a953；原5h续接会话不改。不新增重复timer或GPU任务。
+- 定时器依赖本机WSL/systemd/Codex在线，Linger=no，重启后transient timer不保证保留；原expiry 2026-11-01 00:21北京时间及TASK-COMPLETE停止条件保留。CPU约23h后仍需维护，不能将timer active当远端读取永久健康。
+- 下一步：独立核验SSD完整块＋HDD续接块的raw哈希、全层网格、身份与token协议，逐题隔离重判、各suite独立重建baseline/eligible，特别核对edges与repair人群；不得直接沿用54分母。完成审计前不声称论文实验完成，不创建TASK-COMPLETE。本文/Overleaf本轮未修改。
+
 ## 2026-10-19 最新指令：只排4090，5分钟监督，完成后同步论文
 
 - 用户取消H卡方案。此前仅阅读help/平台文档，**没有提交H100/H200任务或创建H卡实例**；parallel-plan和launch-state无H卡项，不新增第二套GPU队列。现有四个HDD续接任务均为4090单卡Job，合计最多4卡，仍服从8卡总上限。
