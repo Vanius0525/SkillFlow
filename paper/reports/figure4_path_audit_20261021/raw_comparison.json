@@ -1,0 +1,1046 @@
+[
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-mistral-medcalc-edges.jsonl",
+    "layer": 8,
+    "n": 46,
+    "tokens_equal": 46,
+    "correct_equal": 46,
+    "first_equal": 46,
+    "different_masked_rows": 46,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 4896,
+          "masked_rows": 14088,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 4896,
+          "masked_rows": 35616,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          46,
+          943
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-mistral-medcalc-edges.jsonl",
+    "layer": 16,
+    "n": 46,
+    "tokens_equal": 46,
+    "correct_equal": 46,
+    "first_equal": 46,
+    "different_masked_rows": 46,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 4336,
+          "masked_rows": 10464,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 4336,
+          "masked_rows": 24816,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          46,
+          943
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-mistral-medcalc-edges.jsonl",
+    "layer": 24,
+    "n": 46,
+    "tokens_equal": 46,
+    "correct_equal": 46,
+    "first_equal": 46,
+    "different_masked_rows": 46,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 1696,
+          "masked_rows": 4760,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 1696,
+          "masked_rows": 11936,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          46,
+          943
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-q06-theoremqa-edges.jsonl",
+    "layer": 8,
+    "n": 124,
+    "tokens_equal": 124,
+    "correct_equal": 124,
+    "first_equal": 124,
+    "different_masked_rows": 124,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 280,
+          "masked_rows": 1160,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 280,
+          "masked_rows": 22140,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          115,
+          1164
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-q06-theoremqa-edges.jsonl",
+    "layer": 16,
+    "n": 124,
+    "tokens_equal": 124,
+    "correct_equal": 124,
+    "first_equal": 124,
+    "different_masked_rows": 124,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 108,
+          "masked_rows": 636,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 108,
+          "masked_rows": 13224,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          115,
+          1164
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-q06-theoremqa-edges.jsonl",
+    "layer": 24,
+    "n": 124,
+    "tokens_equal": 124,
+    "correct_equal": 124,
+    "first_equal": 124,
+    "different_masked_rows": 124,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 40,
+          "masked_rows": 216,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 40,
+          "masked_rows": 4412,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          115,
+          1164
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-q8-theoremqa-edges.jsonl",
+    "layer": 8,
+    "n": 63,
+    "tokens_equal": 63,
+    "correct_equal": 63,
+    "first_equal": 63,
+    "different_masked_rows": 63,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 7532,
+          "masked_rows": 12152,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 7532,
+          "masked_rows": 39620,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          115,
+          1096
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-q8-theoremqa-edges.jsonl",
+    "layer": 16,
+    "n": 63,
+    "tokens_equal": 63,
+    "correct_equal": 63,
+    "first_equal": 63,
+    "different_masked_rows": 63,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 2760,
+          "masked_rows": 6060,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 2760,
+          "masked_rows": 25680,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          115,
+          1096
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-q8-theoremqa-edges.jsonl",
+    "layer": 24,
+    "n": 63,
+    "tokens_equal": 63,
+    "correct_equal": 63,
+    "first_equal": 63,
+    "different_masked_rows": 63,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 5088,
+          "masked_rows": 7068,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 5088,
+          "masked_rows": 18840,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          115,
+          1096
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-mistral-theoremqa-edges.jsonl",
+    "layer": 8,
+    "n": 65,
+    "tokens_equal": 65,
+    "correct_equal": 65,
+    "first_equal": 65,
+    "different_masked_rows": 65,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 1584,
+          "masked_rows": 2520,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 1584,
+          "masked_rows": 31992,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          121,
+          1349
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-mistral-theoremqa-edges.jsonl",
+    "layer": 16,
+    "n": 65,
+    "tokens_equal": 65,
+    "correct_equal": 65,
+    "first_equal": 65,
+    "different_masked_rows": 65,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 576,
+          "masked_rows": 1200,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 576,
+          "masked_rows": 20848,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          121,
+          1349
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/backfill-mistral-theoremqa-edges.jsonl",
+    "layer": 24,
+    "n": 65,
+    "tokens_equal": 65,
+    "correct_equal": 65,
+    "first_equal": 65,
+    "different_masked_rows": 65,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 288,
+          "masked_rows": 600,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 288,
+          "masked_rows": 10424,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          121,
+          1349
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/llama-medcalc-edges.jsonl",
+    "layer": 8,
+    "n": 112,
+    "tokens_equal": 112,
+    "correct_equal": 112,
+    "first_equal": 112,
+    "different_masked_rows": 112,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 4800,
+          "masked_rows": 18144,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 4800,
+          "masked_rows": 35832,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          46,
+          783
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/llama-medcalc-edges.jsonl",
+    "layer": 16,
+    "n": 112,
+    "tokens_equal": 112,
+    "correct_equal": 112,
+    "first_equal": 112,
+    "different_masked_rows": 112,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 6192,
+          "masked_rows": 15088,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 6192,
+          "masked_rows": 26880,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          46,
+          783
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/llama-medcalc-edges.jsonl",
+    "layer": 24,
+    "n": 112,
+    "tokens_equal": 112,
+    "correct_equal": 112,
+    "first_equal": 112,
+    "different_masked_rows": 112,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 4912,
+          "masked_rows": 9360,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 4912,
+          "masked_rows": 15256,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          46,
+          783
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/llama-theoremqa-edges.jsonl",
+    "layer": 8,
+    "n": 92,
+    "tokens_equal": 92,
+    "correct_equal": 92,
+    "first_equal": 92,
+    "different_masked_rows": 92,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 36888,
+          "masked_rows": 37848,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 36888,
+          "masked_rows": 63024,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          118,
+          1167
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/llama-theoremqa-edges.jsonl",
+    "layer": 16,
+    "n": 92,
+    "tokens_equal": 92,
+    "correct_equal": 92,
+    "first_equal": 92,
+    "different_masked_rows": 92,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 2768,
+          "masked_rows": 3408,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 2768,
+          "masked_rows": 20192,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          118,
+          1167
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/llama-theoremqa-edges.jsonl",
+    "layer": 24,
+    "n": 92,
+    "tokens_equal": 92,
+    "correct_equal": 92,
+    "first_equal": 92,
+    "different_masked_rows": 92,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 2152,
+          "masked_rows": 2472,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 2152,
+          "masked_rows": 10864,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          118,
+          1167
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/deepseek-medcalc-edges.jsonl",
+    "layer": 8,
+    "n": 24,
+    "tokens_equal": 24,
+    "correct_equal": 24,
+    "first_equal": 24,
+    "different_masked_rows": 24,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 4906,
+          "masked_rows": 8228,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 4906,
+          "masked_rows": 19096,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          44,
+          538
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/deepseek-medcalc-edges.jsonl",
+    "layer": 16,
+    "n": 24,
+    "tokens_equal": 24,
+    "correct_equal": 24,
+    "first_equal": 24,
+    "different_masked_rows": 24,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 994,
+          "masked_rows": 3108,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 994,
+          "masked_rows": 10024,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          44,
+          538
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/deepseek-medcalc-edges.jsonl",
+    "layer": 24,
+    "n": 24,
+    "tokens_equal": 24,
+    "correct_equal": 24,
+    "first_equal": 24,
+    "different_masked_rows": 24,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 60,
+          "masked_rows": 966,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 60,
+          "masked_rows": 3930,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          44,
+          538
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/deepseek-theoremqa-edges.jsonl",
+    "layer": 8,
+    "n": 51,
+    "tokens_equal": 51,
+    "correct_equal": 51,
+    "first_equal": 51,
+    "different_masked_rows": 51,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 286,
+          "masked_rows": 1144,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 286,
+          "masked_rows": 27104,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          118,
+          1298
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/deepseek-theoremqa-edges.jsonl",
+    "layer": 16,
+    "n": 51,
+    "tokens_equal": 51,
+    "correct_equal": 51,
+    "first_equal": 51,
+    "different_masked_rows": 51,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 574,
+          "masked_rows": 1120,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 574,
+          "masked_rows": 17640,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          118,
+          1298
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/family_depth_20261018/retrieved/snapshot-20261019/deepseek-theoremqa-edges.jsonl",
+    "layer": 24,
+    "n": 51,
+    "tokens_equal": 51,
+    "correct_equal": 51,
+    "first_equal": 51,
+    "different_masked_rows": 51,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 90,
+          "masked_rows": 324,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 90,
+          "masked_rows": 7404,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          118,
+          1298
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-3.jsonl",
+    "layer": 8,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 5040,
+          "masked_rows": 8820,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 5040,
+          "masked_rows": 33376,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          920
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-3.jsonl",
+    "layer": 16,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 3220,
+          "masked_rows": 5920,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 3220,
+          "masked_rows": 23460,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          920
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-3.jsonl",
+    "layer": 24,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 1872,
+          "masked_rows": 3492,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 1872,
+          "masked_rows": 14016,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          920
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-0.jsonl",
+    "layer": 8,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 6720,
+          "masked_rows": 12180,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 6720,
+          "masked_rows": 26572,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          557
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-0.jsonl",
+    "layer": 16,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 4960,
+          "masked_rows": 8860,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 4960,
+          "masked_rows": 19140,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          557
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-0.jsonl",
+    "layer": 24,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 2400,
+          "masked_rows": 4740,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 2400,
+          "masked_rows": 10908,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          557
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-1.jsonl",
+    "layer": 8,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 13692,
+          "masked_rows": 20972,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 13692,
+          "masked_rows": 49224,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          1052
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-1.jsonl",
+    "layer": 16,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 14160,
+          "masked_rows": 19360,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 14160,
+          "masked_rows": 39540,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          1052
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-1.jsonl",
+    "layer": 24,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 18444,
+          "masked_rows": 21564,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 18444,
+          "masked_rows": 33672,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          1052
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-2.jsonl",
+    "layer": 8,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 43036,
+          "masked_rows": 78764,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 43036,
+          "masked_rows": 107464,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          1068
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-2.jsonl",
+    "layer": 16,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 5140,
+          "masked_rows": 30660,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 5140,
+          "masked_rows": 51160,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          1068
+        ]
+      }
+    ]
+  },
+  {
+    "file": "experiments/mechanism_20261017/parallel/edges-s4-2.jsonl",
+    "layer": 24,
+    "n": 31,
+    "tokens_equal": 31,
+    "correct_equal": 31,
+    "first_equal": 31,
+    "different_masked_rows": 31,
+    "examples": [
+      {
+        "reader": {
+          "mask_calls": 9732,
+          "masked_rows": 25044,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "both": {
+          "mask_calls": 9732,
+          "masked_rows": 37344,
+          "patch_calls": 0,
+          "cache_layers_replaced": 0
+        },
+        "source_span": [
+          43,
+          1068
+        ]
+      }
+    ]
+  }
+]
