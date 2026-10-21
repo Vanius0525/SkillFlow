@@ -1,0 +1,1105 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="944.39952pt" height="438.39976pt" viewBox="0 0 944.39952 438.39976" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-21T17:27:00.503898</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.8, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 438.39976 
+L 944.39952 438.39976 
+L 944.39952 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 36.575313 222.192187 
+L 257.231004 222.192187 
+L 257.231004 56.639314 
+L 36.575313 56.639314 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="69.152738" y="231.973906" transform="rotate(-0 69.152738 231.973906)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="146.903158" y="231.973906" transform="rotate(-0 146.903158 231.973906)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="224.653578" y="231.973906" transform="rotate(-0 224.653578 231.973906)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_4">
+      <path d="M 36.575313 222.192187 
+L 257.231004 222.192187 
+" clip-path="url(#p3b6a29d73b)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_5"/>
+     <g id="text_4">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="225.333047" transform="rotate(-0 33.075313 225.333047)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_6">
+      <path d="M 36.575313 182.009451 
+L 257.231004 182.009451 
+" clip-path="url(#p3b6a29d73b)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_7"/>
+     <g id="text_5">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="185.150311" transform="rotate(-0 33.075313 185.150311)">25</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_8">
+      <path d="M 36.575313 141.826715 
+L 257.231004 141.826715 
+" clip-path="url(#p3b6a29d73b)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_9"/>
+     <g id="text_6">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="144.967574" transform="rotate(-0 33.075313 144.967574)">50</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_10">
+      <path d="M 36.575313 101.643978 
+L 257.231004 101.643978 
+" clip-path="url(#p3b6a29d73b)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_11"/>
+     <g id="text_7">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="104.784838" transform="rotate(-0 33.075313 104.784838)">75</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_12">
+      <path d="M 36.575313 61.461242 
+L 257.231004 61.461242 
+" clip-path="url(#p3b6a29d73b)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_13"/>
+     <g id="text_8">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="64.602101" transform="rotate(-0 33.075313 64.602101)">100</text>
+     </g>
+    </g>
+    <g id="text_9">
+     <text style="font-size: 10px; font-family: 'Linux Libertine O'; text-anchor: middle" x="14.179688" y="139.415751" transform="rotate(-90 14.179688 139.415751)">Correct answers lost (%)</text>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 46.605117 222.192187 
+L 68.375234 222.192187 
+L 68.375234 68.510845 
+L 46.605117 68.510845 
+z
+" clip-path="url(#p3b6a29d73b)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 124.355537 222.192187 
+L 146.125654 222.192187 
+L 146.125654 68.510845 
+L 124.355537 68.510845 
+z
+" clip-path="url(#p3b6a29d73b)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 202.105957 222.192187 
+L 223.876074 222.192187 
+L 223.876074 102.348939 
+L 202.105957 102.348939 
+z
+" clip-path="url(#p3b6a29d73b)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 69.930243 222.192187 
+L 91.70036 222.192187 
+L 91.70036 67.100924 
+L 69.930243 67.100924 
+z
+" clip-path="url(#p3b6a29d73b)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 147.680663 222.192187 
+L 169.45078 222.192187 
+L 169.45078 68.510845 
+L 147.680663 68.510845 
+z
+" clip-path="url(#p3b6a29d73b)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 225.431083 222.192187 
+L 247.2012 222.192187 
+L 247.2012 216.552505 
+L 225.431083 216.552505 
+z
+" clip-path="url(#p3b6a29d73b)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="146.903158" y="50.639314" transform="rotate(-0 146.903158 50.639314)">Qwen3-8B / MC</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_9">
+    <path d="M 263.231484 222.192187 
+L 483.887176 222.192187 
+L 483.887176 56.639314 
+L 263.231484 56.639314 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_4">
+     <g id="line2d_14"/>
+     <g id="text_11">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="295.80891" y="231.973906" transform="rotate(-0 295.80891 231.973906)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_15"/>
+     <g id="text_12">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="373.55933" y="231.973906" transform="rotate(-0 373.55933 231.973906)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_16"/>
+     <g id="text_13">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="451.30975" y="231.973906" transform="rotate(-0 451.30975 231.973906)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_6">
+     <g id="line2d_17">
+      <path d="M 263.231484 222.192187 
+L 483.887176 222.192187 
+" clip-path="url(#peee928b1ba)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_18"/>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_19">
+      <path d="M 263.231484 182.009451 
+L 483.887176 182.009451 
+" clip-path="url(#peee928b1ba)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_20"/>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_21">
+      <path d="M 263.231484 141.826715 
+L 483.887176 141.826715 
+" clip-path="url(#peee928b1ba)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_22"/>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_23">
+      <path d="M 263.231484 101.643978 
+L 483.887176 101.643978 
+" clip-path="url(#peee928b1ba)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_24"/>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_25">
+      <path d="M 263.231484 61.461242 
+L 483.887176 61.461242 
+" clip-path="url(#peee928b1ba)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_26"/>
+    </g>
+   </g>
+   <g id="patch_10">
+    <path d="M 273.261289 222.192187 
+L 295.031406 222.192187 
+L 295.031406 106.951132 
+L 273.261289 106.951132 
+z
+" clip-path="url(#peee928b1ba)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 351.011709 222.192187 
+L 372.781826 222.192187 
+L 372.781826 103.918473 
+L 351.011709 103.918473 
+z
+" clip-path="url(#peee928b1ba)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 428.762128 222.192187 
+L 450.532246 222.192187 
+L 450.532246 182.767616 
+L 428.762128 182.767616 
+z
+" clip-path="url(#peee928b1ba)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 296.586415 222.192187 
+L 318.356532 222.192187 
+L 318.356532 97.853154 
+L 296.586415 97.853154 
+z
+" clip-path="url(#peee928b1ba)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 374.336835 222.192187 
+L 396.106952 222.192187 
+L 396.106952 103.918473 
+L 374.336835 103.918473 
+z
+" clip-path="url(#peee928b1ba)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 452.087254 222.192187 
+L 473.857372 222.192187 
+L 473.857372 213.094209 
+L 452.087254 213.094209 
+z
+" clip-path="url(#peee928b1ba)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="373.55933" y="50.639314" transform="rotate(-0 373.55933 50.639314)">Qwen3-8B / TQA</text>
+   </g>
+  </g>
+  <g id="axes_3">
+   <g id="patch_16">
+    <path d="M 489.887656 222.192187 
+L 710.543348 222.192187 
+L 710.543348 56.639314 
+L 489.887656 56.639314 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_5">
+    <g id="xtick_7">
+     <g id="line2d_27"/>
+     <g id="text_15">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="522.465082" y="231.973906" transform="rotate(-0 522.465082 231.973906)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_28"/>
+     <g id="text_16">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="600.215502" y="231.973906" transform="rotate(-0 600.215502 231.973906)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_9">
+     <g id="line2d_29"/>
+     <g id="text_17">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="677.965922" y="231.973906" transform="rotate(-0 677.965922 231.973906)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_6">
+    <g id="ytick_11">
+     <g id="line2d_30">
+      <path d="M 489.887656 222.192187 
+L 710.543348 222.192187 
+" clip-path="url(#p43dd6d57a1)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_31"/>
+    </g>
+    <g id="ytick_12">
+     <g id="line2d_32">
+      <path d="M 489.887656 182.009451 
+L 710.543348 182.009451 
+" clip-path="url(#p43dd6d57a1)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_33"/>
+    </g>
+    <g id="ytick_13">
+     <g id="line2d_34">
+      <path d="M 489.887656 141.826715 
+L 710.543348 141.826715 
+" clip-path="url(#p43dd6d57a1)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_35"/>
+    </g>
+    <g id="ytick_14">
+     <g id="line2d_36">
+      <path d="M 489.887656 101.643978 
+L 710.543348 101.643978 
+" clip-path="url(#p43dd6d57a1)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_37"/>
+    </g>
+    <g id="ytick_15">
+     <g id="line2d_38">
+      <path d="M 489.887656 61.461242 
+L 710.543348 61.461242 
+" clip-path="url(#p43dd6d57a1)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_39"/>
+    </g>
+   </g>
+   <g id="patch_17">
+    <path d="M 499.91746 222.192187 
+L 521.687578 222.192187 
+L 521.687578 82.610051 
+L 499.91746 82.610051 
+z
+" clip-path="url(#p43dd6d57a1)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 577.66788 222.192187 
+L 599.437998 222.192187 
+L 599.437998 103.758859 
+L 577.66788 103.758859 
+z
+" clip-path="url(#p43dd6d57a1)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 655.4183 222.192187 
+L 677.188418 222.192187 
+L 677.188418 146.056477 
+L 655.4183 146.056477 
+z
+" clip-path="url(#p43dd6d57a1)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_20">
+    <path d="M 523.242586 222.192187 
+L 545.012704 222.192187 
+L 545.012704 86.839812 
+L 523.242586 86.839812 
+z
+" clip-path="url(#p43dd6d57a1)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_21">
+    <path d="M 600.993006 222.192187 
+L 622.763124 222.192187 
+L 622.763124 171.435047 
+L 600.993006 171.435047 
+z
+" clip-path="url(#p43dd6d57a1)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_22">
+    <path d="M 678.743426 222.192187 
+L 700.513544 222.192187 
+L 700.513544 184.124332 
+L 678.743426 184.124332 
+z
+" clip-path="url(#p43dd6d57a1)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="600.215502" y="50.639314" transform="rotate(-0 600.215502 50.639314)">Mistral-7B / MC</text>
+   </g>
+  </g>
+  <g id="axes_4">
+   <g id="patch_23">
+    <path d="M 716.543828 222.192187 
+L 937.19952 222.192187 
+L 937.19952 56.639314 
+L 716.543828 56.639314 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_7">
+    <g id="xtick_10">
+     <g id="line2d_40"/>
+     <g id="text_19">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="749.121254" y="231.973906" transform="rotate(-0 749.121254 231.973906)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_11">
+     <g id="line2d_41"/>
+     <g id="text_20">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="826.871674" y="231.973906" transform="rotate(-0 826.871674 231.973906)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_12">
+     <g id="line2d_42"/>
+     <g id="text_21">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="904.622094" y="231.973906" transform="rotate(-0 904.622094 231.973906)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_8">
+    <g id="ytick_16">
+     <g id="line2d_43">
+      <path d="M 716.543828 222.192187 
+L 937.19952 222.192187 
+" clip-path="url(#p53e7c95827)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_44"/>
+    </g>
+    <g id="ytick_17">
+     <g id="line2d_45">
+      <path d="M 716.543828 182.009451 
+L 937.19952 182.009451 
+" clip-path="url(#p53e7c95827)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_46"/>
+    </g>
+    <g id="ytick_18">
+     <g id="line2d_47">
+      <path d="M 716.543828 141.826715 
+L 937.19952 141.826715 
+" clip-path="url(#p53e7c95827)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_48"/>
+    </g>
+    <g id="ytick_19">
+     <g id="line2d_49">
+      <path d="M 716.543828 101.643978 
+L 937.19952 101.643978 
+" clip-path="url(#p53e7c95827)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_50"/>
+    </g>
+    <g id="ytick_20">
+     <g id="line2d_51">
+      <path d="M 716.543828 61.461242 
+L 937.19952 61.461242 
+" clip-path="url(#p53e7c95827)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_52"/>
+    </g>
+   </g>
+   <g id="patch_24">
+    <path d="M 726.573632 222.192187 
+L 748.34375 222.192187 
+L 748.34375 66.909749 
+L 726.573632 66.909749 
+z
+" clip-path="url(#p53e7c95827)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_25">
+    <path d="M 804.324052 222.192187 
+L 826.09417 222.192187 
+L 826.09417 118.670562 
+L 804.324052 118.670562 
+z
+" clip-path="url(#p53e7c95827)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_26">
+    <path d="M 882.074472 222.192187 
+L 903.84459 222.192187 
+L 903.84459 203.122414 
+L 882.074472 203.122414 
+z
+" clip-path="url(#p53e7c95827)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_27">
+    <path d="M 749.898758 222.192187 
+L 771.668876 222.192187 
+L 771.668876 94.152282 
+L 749.898758 94.152282 
+z
+" clip-path="url(#p53e7c95827)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_28">
+    <path d="M 827.649178 222.192187 
+L 849.419296 222.192187 
+L 849.419296 178.604135 
+L 827.649178 178.604135 
+z
+" clip-path="url(#p53e7c95827)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_29">
+    <path d="M 905.399598 222.192187 
+L 927.169716 222.192187 
+L 927.169716 214.019428 
+L 905.399598 214.019428 
+z
+" clip-path="url(#p53e7c95827)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="826.871674" y="50.639314" transform="rotate(-0 826.871674 50.639314)">Mistral-7B / TQA</text>
+   </g>
+  </g>
+  <g id="axes_5">
+   <g id="patch_30">
+    <path d="M 36.575313 419.311479 
+L 257.231004 419.311479 
+L 257.231004 253.758605 
+L 36.575313 253.758605 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_9">
+    <g id="xtick_13">
+     <g id="line2d_53"/>
+     <g id="text_23">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="69.152738" y="429.093197" transform="rotate(-0 69.152738 429.093197)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_14">
+     <g id="line2d_54"/>
+     <g id="text_24">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="146.903158" y="429.093197" transform="rotate(-0 146.903158 429.093197)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_15">
+     <g id="line2d_55"/>
+     <g id="text_25">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="224.653578" y="429.093197" transform="rotate(-0 224.653578 429.093197)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_10">
+    <g id="ytick_21">
+     <g id="line2d_56">
+      <path d="M 36.575313 419.311479 
+L 257.231004 419.311479 
+" clip-path="url(#p8a7190ac8a)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_57"/>
+     <g id="text_26">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="422.452338" transform="rotate(-0 33.075313 422.452338)">0</text>
+     </g>
+    </g>
+    <g id="ytick_22">
+     <g id="line2d_58">
+      <path d="M 36.575313 379.128742 
+L 257.231004 379.128742 
+" clip-path="url(#p8a7190ac8a)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_59"/>
+     <g id="text_27">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="382.269602" transform="rotate(-0 33.075313 382.269602)">25</text>
+     </g>
+    </g>
+    <g id="ytick_23">
+     <g id="line2d_60">
+      <path d="M 36.575313 338.946006 
+L 257.231004 338.946006 
+" clip-path="url(#p8a7190ac8a)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_61"/>
+     <g id="text_28">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="342.086865" transform="rotate(-0 33.075313 342.086865)">50</text>
+     </g>
+    </g>
+    <g id="ytick_24">
+     <g id="line2d_62">
+      <path d="M 36.575313 298.76327 
+L 257.231004 298.76327 
+" clip-path="url(#p8a7190ac8a)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_63"/>
+     <g id="text_29">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="301.904129" transform="rotate(-0 33.075313 301.904129)">75</text>
+     </g>
+    </g>
+    <g id="ytick_25">
+     <g id="line2d_64">
+      <path d="M 36.575313 258.580533 
+L 257.231004 258.580533 
+" clip-path="url(#p8a7190ac8a)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_65"/>
+     <g id="text_30">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: end" x="33.075313" y="261.721393" transform="rotate(-0 33.075313 261.721393)">100</text>
+     </g>
+    </g>
+    <g id="text_31">
+     <text style="font-size: 10px; font-family: 'Linux Libertine O'; text-anchor: middle" x="14.179688" y="336.535042" transform="rotate(-90 14.179688 336.535042)">Correct answers lost (%)</text>
+    </g>
+   </g>
+   <g id="patch_31">
+    <path d="M 46.605117 419.311479 
+L 68.375234 419.311479 
+L 68.375234 261.671513 
+L 46.605117 261.671513 
+z
+" clip-path="url(#p8a7190ac8a)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_32">
+    <path d="M 124.355537 419.311479 
+L 146.125654 419.311479 
+L 146.125654 284.853861 
+L 124.355537 284.853861 
+z
+" clip-path="url(#p8a7190ac8a)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_33">
+    <path d="M 202.105957 419.311479 
+L 223.876074 419.311479 
+L 223.876074 386.856192 
+L 202.105957 386.856192 
+z
+" clip-path="url(#p8a7190ac8a)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_34">
+    <path d="M 69.930243 419.311479 
+L 91.70036 419.311479 
+L 91.70036 272.489942 
+L 69.930243 272.489942 
+z
+" clip-path="url(#p8a7190ac8a)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_35">
+    <path d="M 147.680663 419.311479 
+L 169.45078 419.311479 
+L 169.45078 397.674621 
+L 147.680663 397.674621 
+z
+" clip-path="url(#p8a7190ac8a)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_36">
+    <path d="M 225.431083 419.311479 
+L 247.2012 419.311479 
+L 247.2012 408.49305 
+L 225.431083 408.49305 
+z
+" clip-path="url(#p8a7190ac8a)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="146.903158" y="247.758605" transform="rotate(-0 146.903158 247.758605)">Llama-8B / MC</text>
+   </g>
+  </g>
+  <g id="axes_6">
+   <g id="patch_37">
+    <path d="M 263.231484 419.311479 
+L 483.887176 419.311479 
+L 483.887176 253.758605 
+L 263.231484 253.758605 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_11">
+    <g id="xtick_16">
+     <g id="line2d_66"/>
+     <g id="text_33">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="295.80891" y="429.093197" transform="rotate(-0 295.80891 429.093197)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_17">
+     <g id="line2d_67"/>
+     <g id="text_34">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="373.55933" y="429.093197" transform="rotate(-0 373.55933 429.093197)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_18">
+     <g id="line2d_68"/>
+     <g id="text_35">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="451.30975" y="429.093197" transform="rotate(-0 451.30975 429.093197)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_12">
+    <g id="ytick_26">
+     <g id="line2d_69">
+      <path d="M 263.231484 419.311479 
+L 483.887176 419.311479 
+" clip-path="url(#paf75a9bb63)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_70"/>
+    </g>
+    <g id="ytick_27">
+     <g id="line2d_71">
+      <path d="M 263.231484 379.128742 
+L 483.887176 379.128742 
+" clip-path="url(#paf75a9bb63)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_72"/>
+    </g>
+    <g id="ytick_28">
+     <g id="line2d_73">
+      <path d="M 263.231484 338.946006 
+L 483.887176 338.946006 
+" clip-path="url(#paf75a9bb63)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_74"/>
+    </g>
+    <g id="ytick_29">
+     <g id="line2d_75">
+      <path d="M 263.231484 298.76327 
+L 483.887176 298.76327 
+" clip-path="url(#paf75a9bb63)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_76"/>
+    </g>
+    <g id="ytick_30">
+     <g id="line2d_77">
+      <path d="M 263.231484 258.580533 
+L 483.887176 258.580533 
+" clip-path="url(#paf75a9bb63)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_78"/>
+    </g>
+   </g>
+   <g id="patch_38">
+    <path d="M 273.261289 419.311479 
+L 295.031406 419.311479 
+L 295.031406 274.207153 
+L 273.261289 274.207153 
+z
+" clip-path="url(#paf75a9bb63)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_39">
+    <path d="M 351.011709 419.311479 
+L 372.781826 419.311479 
+L 372.781826 332.248883 
+L 351.011709 332.248883 
+z
+" clip-path="url(#paf75a9bb63)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_40">
+    <path d="M 428.762128 419.311479 
+L 450.532246 419.311479 
+L 450.532246 372.43162 
+L 428.762128 372.43162 
+z
+" clip-path="url(#paf75a9bb63)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_41">
+    <path d="M 296.586415 419.311479 
+L 318.356532 419.311479 
+L 318.356532 278.671902 
+L 296.586415 278.671902 
+z
+" clip-path="url(#paf75a9bb63)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_42">
+    <path d="M 374.336835 419.311479 
+L 396.106952 419.311479 
+L 396.106952 390.290614 
+L 374.336835 390.290614 
+z
+" clip-path="url(#paf75a9bb63)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_43">
+    <path d="M 452.087254 419.311479 
+L 473.857372 419.311479 
+L 473.857372 388.058239 
+L 452.087254 388.058239 
+z
+" clip-path="url(#paf75a9bb63)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_36">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="373.55933" y="247.758605" transform="rotate(-0 373.55933 247.758605)">Llama-8B / TQA</text>
+   </g>
+  </g>
+  <g id="axes_7">
+   <g id="patch_44">
+    <path d="M 489.887656 419.311479 
+L 710.543348 419.311479 
+L 710.543348 253.758605 
+L 489.887656 253.758605 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_13">
+    <g id="xtick_19">
+     <g id="line2d_79"/>
+     <g id="text_37">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="522.465082" y="429.093197" transform="rotate(-0 522.465082 429.093197)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_20">
+     <g id="line2d_80"/>
+     <g id="text_38">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="600.215502" y="429.093197" transform="rotate(-0 600.215502 429.093197)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_21">
+     <g id="line2d_81"/>
+     <g id="text_39">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="677.965922" y="429.093197" transform="rotate(-0 677.965922 429.093197)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_14">
+    <g id="ytick_31">
+     <g id="line2d_82">
+      <path d="M 489.887656 419.311479 
+L 710.543348 419.311479 
+" clip-path="url(#pd9c4b197a2)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_83"/>
+    </g>
+    <g id="ytick_32">
+     <g id="line2d_84">
+      <path d="M 489.887656 379.128742 
+L 710.543348 379.128742 
+" clip-path="url(#pd9c4b197a2)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_85"/>
+    </g>
+    <g id="ytick_33">
+     <g id="line2d_86">
+      <path d="M 489.887656 338.946006 
+L 710.543348 338.946006 
+" clip-path="url(#pd9c4b197a2)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_87"/>
+    </g>
+    <g id="ytick_34">
+     <g id="line2d_88">
+      <path d="M 489.887656 298.76327 
+L 710.543348 298.76327 
+" clip-path="url(#pd9c4b197a2)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_89"/>
+    </g>
+    <g id="ytick_35">
+     <g id="line2d_90">
+      <path d="M 489.887656 258.580533 
+L 710.543348 258.580533 
+" clip-path="url(#pd9c4b197a2)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_91"/>
+    </g>
+   </g>
+   <g id="patch_45">
+    <path d="M 499.91746 419.311479 
+L 521.687578 419.311479 
+L 521.687578 258.580533 
+L 499.91746 258.580533 
+z
+" clip-path="url(#pd9c4b197a2)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_46">
+    <path d="M 577.66788 419.311479 
+L 599.437998 419.311479 
+L 599.437998 281.542097 
+L 577.66788 281.542097 
+z
+" clip-path="url(#pd9c4b197a2)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_47">
+    <path d="M 655.4183 419.311479 
+L 677.188418 419.311479 
+L 677.188418 335.119079 
+L 655.4183 335.119079 
+z
+" clip-path="url(#pd9c4b197a2)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_48">
+    <path d="M 523.242586 419.311479 
+L 545.012704 419.311479 
+L 545.012704 273.888242 
+L 523.242586 273.888242 
+z
+" clip-path="url(#pd9c4b197a2)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_49">
+    <path d="M 600.993006 419.311479 
+L 622.763124 419.311479 
+L 622.763124 342.772933 
+L 600.993006 342.772933 
+z
+" clip-path="url(#pd9c4b197a2)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_50">
+    <path d="M 678.743426 419.311479 
+L 700.513544 419.311479 
+L 700.513544 404.00377 
+L 678.743426 404.00377 
+z
+" clip-path="url(#pd9c4b197a2)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_40">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="600.215502" y="247.758605" transform="rotate(-0 600.215502 247.758605)">DeepSeek-7B / MC</text>
+   </g>
+  </g>
+  <g id="axes_8">
+   <g id="patch_51">
+    <path d="M 716.543828 419.311479 
+L 937.19952 419.311479 
+L 937.19952 253.758605 
+L 716.543828 253.758605 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_15">
+    <g id="xtick_22">
+     <g id="line2d_92"/>
+     <g id="text_41">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="749.121254" y="429.093197" transform="rotate(-0 749.121254 429.093197)">L8</text>
+     </g>
+    </g>
+    <g id="xtick_23">
+     <g id="line2d_93"/>
+     <g id="text_42">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="826.871674" y="429.093197" transform="rotate(-0 826.871674 429.093197)">L16</text>
+     </g>
+    </g>
+    <g id="xtick_24">
+     <g id="line2d_94"/>
+     <g id="text_43">
+      <text style="font-size: 9px; font-family: 'Linux Libertine O'; text-anchor: middle" x="904.622094" y="429.093197" transform="rotate(-0 904.622094 429.093197)">L24</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_16">
+    <g id="ytick_36">
+     <g id="line2d_95">
+      <path d="M 716.543828 419.311479 
+L 937.19952 419.311479 
+" clip-path="url(#p55335bb45e)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_96"/>
+    </g>
+    <g id="ytick_37">
+     <g id="line2d_97">
+      <path d="M 716.543828 379.128742 
+L 937.19952 379.128742 
+" clip-path="url(#p55335bb45e)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_98"/>
+    </g>
+    <g id="ytick_38">
+     <g id="line2d_99">
+      <path d="M 716.543828 338.946006 
+L 937.19952 338.946006 
+" clip-path="url(#p55335bb45e)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_100"/>
+    </g>
+    <g id="ytick_39">
+     <g id="line2d_101">
+      <path d="M 716.543828 298.76327 
+L 937.19952 298.76327 
+" clip-path="url(#p55335bb45e)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_102"/>
+    </g>
+    <g id="ytick_40">
+     <g id="line2d_103">
+      <path d="M 716.543828 258.580533 
+L 937.19952 258.580533 
+" clip-path="url(#p55335bb45e)" style="fill: none; stroke: #e8edf2; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_104"/>
+    </g>
+   </g>
+   <g id="patch_52">
+    <path d="M 726.573632 419.311479 
+L 748.34375 419.311479 
+L 748.34375 283.03959 
+L 726.573632 283.03959 
+z
+" clip-path="url(#p55335bb45e)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_53">
+    <path d="M 804.324052 419.311479 
+L 826.09417 419.311479 
+L 826.09417 304.004496 
+L 804.324052 304.004496 
+z
+" clip-path="url(#p55335bb45e)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_54">
+    <path d="M 882.074472 419.311479 
+L 903.84459 419.311479 
+L 903.84459 370.393365 
+L 882.074472 370.393365 
+z
+" clip-path="url(#p55335bb45e)" style="fill: #d27a29"/>
+   </g>
+   <g id="patch_55">
+    <path d="M 749.898758 419.311479 
+L 771.668876 419.311479 
+L 771.668876 279.545439 
+L 749.898758 279.545439 
+z
+" clip-path="url(#p55335bb45e)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_56">
+    <path d="M 827.649178 419.311479 
+L 849.419296 419.311479 
+L 849.419296 349.428459 
+L 827.649178 349.428459 
+z
+" clip-path="url(#p55335bb45e)" style="fill: #2866a0"/>
+   </g>
+   <g id="patch_57">
+    <path d="M 905.399598 419.311479 
+L 927.169716 419.311479 
+L 927.169716 398.346573 
+L 905.399598 398.346573 
+z
+" clip-path="url(#p55335bb45e)" style="fill: #2866a0"/>
+   </g>
+   <g id="text_44">
+    <text style="font-size: 11px; font-family: 'Linux Libertine O'; text-anchor: middle" x="826.871674" y="247.758605" transform="rotate(-0 826.871674 247.758605)">DeepSeek-7B / TQA</text>
+   </g>
+  </g>
+  <g id="legend_1">
+   <g id="text_45">
+    <text style="font-size: 10px; font-family: 'Linux Libertine O'; text-anchor: start" x="382.084135" y="16.079688" transform="rotate(-0 382.084135 16.079688)">(b) Attention-path dependence across layers</text>
+   </g>
+   <g id="patch_58">
+    <path d="M 376.058354 30.420313 
+L 396.058354 30.420313 
+L 396.058354 23.420313 
+L 376.058354 23.420313 
+z
+" style="fill: #d27a29"/>
+   </g>
+   <g id="text_46">
+    <text style="font-size: 10px; font-family: 'Linux Libertine O'; text-anchor: start" x="404.058354" y="30.420313" transform="rotate(-0 404.058354 30.420313)">Post-skill to skill</text>
+   </g>
+   <g id="patch_59">
+    <path d="M 492.169291 30.420313 
+L 512.169291 30.420313 
+L 512.169291 23.420313 
+L 492.169291 23.420313 
+z
+" style="fill: #2866a0"/>
+   </g>
+   <g id="text_47">
+    <text style="font-size: 10px; font-family: 'Linux Libertine O'; text-anchor: start" x="520.169291" y="30.420313" transform="rotate(-0 520.169291 30.420313)">Skill to skill</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p3b6a29d73b">
+   <rect x="36.575313" y="56.639314" width="220.655692" height="165.552874"/>
+  </clipPath>
+  <clipPath id="peee928b1ba">
+   <rect x="263.231484" y="56.639314" width="220.655692" height="165.552874"/>
+  </clipPath>
+  <clipPath id="p43dd6d57a1">
+   <rect x="489.887656" y="56.639314" width="220.655692" height="165.552874"/>
+  </clipPath>
+  <clipPath id="p53e7c95827">
+   <rect x="716.543828" y="56.639314" width="220.655692" height="165.552874"/>
+  </clipPath>
+  <clipPath id="p8a7190ac8a">
+   <rect x="36.575313" y="253.758605" width="220.655692" height="165.552874"/>
+  </clipPath>
+  <clipPath id="paf75a9bb63">
+   <rect x="263.231484" y="253.758605" width="220.655692" height="165.552874"/>
+  </clipPath>
+  <clipPath id="pd9c4b197a2">
+   <rect x="489.887656" y="253.758605" width="220.655692" height="165.552874"/>
+  </clipPath>
+  <clipPath id="p55335bb45e">
+   <rect x="716.543828" y="253.758605" width="220.655692" height="165.552874"/>
+  </clipPath>
+ </defs>
+</svg>
