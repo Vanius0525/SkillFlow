@@ -1,0 +1,45 @@
+{
+  "instances": 760,
+  "skills": 19,
+  "per_skill": {
+    "logicbench_006": 40,
+    "logicbench_007": 40,
+    "logicbench_004": 40,
+    "logicbench_015": 40,
+    "logicbench_016": 40,
+    "logicbench_017": 40,
+    "logicbench_018": 40,
+    "logicbench_005": 40,
+    "logicbench_002": 40,
+    "logicbench_009": 40,
+    "logicbench_003": 40,
+    "logicbench_008": 40,
+    "logicbench_000": 40,
+    "logicbench_001": 40,
+    "logicbench_011": 40,
+    "logicbench_012": 40,
+    "logicbench_013": 40,
+    "logicbench_014": 40,
+    "logicbench_010": 40
+  },
+  "answer_types": {
+    "MCQA": 218,
+    "BQA": 542
+  },
+  "sha256": "c8b833422f64516eba535a018a3cb960bf70cb1d33bc23c496f1ccbeda6550d6",
+  "group_zero_receiver_survival_illustrations": {
+    "0.05": {
+      "all40_wrong_probability": 0.12851215656510312,
+      "expected_surviving_of19": 2.4417309747369593
+    },
+    "0.1": {
+      "all40_wrong_probability": 0.014780882941434608,
+      "expected_surviving_of19": 0.28083677588725753
+    },
+    "0.5": {
+      "all40_wrong_probability": 9.094947017729282e-13,
+      "expected_surviving_of19": 1.7280399333685637e-11
+    }
+  },
+  "note": "Survival calculation assumes independent equal per-item success probability for illustration, not a measured model estimate."
+}

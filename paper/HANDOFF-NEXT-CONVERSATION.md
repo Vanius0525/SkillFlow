@@ -1,3 +1,10 @@
+## 2026-10-21 最新指令：CHAMP已放弃并清理，第三benchmark重新选型
+
+- 用户明确要求放弃CHAMP并删除相关内容。本轮新建本地experiments/champ_20261020、三处远端专用实验/探针目录、4个/tmp临时产物及4个已终态wt-champ-*-1020平台条目已删除；原始结果不再作为续接或paper候选。仅保留experiments/benchmark_replacement_20261021/中的简短删除回执和替代调研。
+- champ-hourly-01a1587f.timer清理前已inactive；没有活跃CHAMP监督。迟到的CHAMP小时/完成消息只报告“已按用户要求放弃和删除”，不要访问已删目录、重建代码、恢复timer或重新启动实验。
+- 原4主模型×2benchmark论文保持当前版本；共享历史SRA资产和评分模块未扩删。第三benchmark重新比较，尚未授权本轮启动新GPU；按现有任务形式、skill来源、客观评分和样本覆盖筛选，不能以T<R或修复正结果挑数据。
+- 当前入口experiments/benchmark_replacement_20261021/HANDOFF.md，删除范围与回执见cleanup-local.json/cleanup-remote.json。已交付reports/第三benchmark替代调研_20261021.md：优先静态核查GSM8K+21类公开模板；LogicBench为条件备选，先解决组级筛选一致性。未启动新实验。
+
 ## 2026-10-20 当前入口：仅4主模型×2benchmark，图表覆盖更新完成
 
 - 最新用户指令：放弃小模型相关论文结果，重点让4主模型×2benchmark覆盖所有表格和图表。用户称Qwen0.8B，当前实际小模型为Qwen3-0.6B；已从活跃正文/附录、当前深度JSON、图表与生成入口移除。原始实验、历史报告及未引用旧文件保留，不删除。

@@ -1,0 +1,141 @@
+{
+  "bigcodebench": {
+    "url": "https://huggingface.co/datasets/WeihangSu/SRA-Bench/resolve/main/instances/bigcodebench.json",
+    "bytes": 4623115,
+    "sha256": "0ed01363e2c93134cf8696fea47b6d640f32f0d7ae9d7b478a05595c3f5ae788",
+    "instances": 1140,
+    "single_skill_n": 0,
+    "single_skill_groups": 0,
+    "single_skill_cross_question_n": 0,
+    "exact_skill_set_groups": 577,
+    "exact_set_cross_question_n": 710,
+    "single_skill_group_sizes": {}
+  },
+  "math_templates": {
+    "url": "https://raw.githubusercontent.com/YangLing0818/buffer-of-thought-llm/main/math.txt",
+    "bytes": 21172,
+    "sha256": "0c20298d37733991fa7fdc1b98ed3a2d3b51295fd87c2b96b175a185eeeda5de",
+    "template_types": [
+      [
+        "1",
+        "Normalization Problem"
+      ],
+      [
+        "2",
+        "Total Quantity Problem"
+      ],
+      [
+        "3",
+        "Sum and Difference Problem"
+      ],
+      [
+        "4",
+        "Sum and Multiple Problem"
+      ],
+      [
+        "5",
+        "Difference and Multiple Problem"
+      ],
+      [
+        "6",
+        "Proportional Problem"
+      ],
+      [
+        "7",
+        "Meeting Problem"
+      ],
+      [
+        "8",
+        "Overtaking Problem"
+      ],
+      [
+        "9",
+        "Tree Planting Problem"
+      ],
+      [
+        "10",
+        "Age Problem"
+      ],
+      [
+        "11",
+        "Boat Problem"
+      ],
+      [
+        "12",
+        "Train Passing a Bridge Problem"
+      ],
+      [
+        "13",
+        "Clock Problem"
+      ],
+      [
+        "14",
+        "Surplus and Deficit Problem"
+      ],
+      [
+        "15",
+        "Work Problem"
+      ],
+      [
+        "16",
+        "Cows Eating Grass Problem"
+      ],
+      [
+        "17",
+        "Chicken and Rabbit Problem"
+      ],
+      [
+        "18",
+        "Profit and Loss Problem"
+      ],
+      [
+        "19",
+        "Bank Interest Problem"
+      ],
+      [
+        "20",
+        "Solution Concentration Problem"
+      ],
+      [
+        "21",
+        "Equation Problem"
+      ]
+    ],
+    "template_count": 21
+  },
+  "bbh_object_counting": {
+    "url": "https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/object_counting.json",
+    "bytes": 35890,
+    "sha256": "8acef14dbbdd40d2326ef7755750b6b5fe919fef06276af1bab3f1c297f022ff",
+    "n": 250,
+    "target_types": {
+      "integer": 250
+    }
+  },
+  "bbh_arithmetic": {
+    "url": "https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/multistep_arithmetic_two.json",
+    "bytes": 18325,
+    "sha256": "c9d5a6433c9b78256422a15c78463949c8bec8d85607aa28b52d7234ad4a8595",
+    "n": 250,
+    "target_types": {
+      "integer": 250
+    }
+  },
+  "bbh_word_sorting": {
+    "url": "https://raw.githubusercontent.com/suzgunmirac/BIG-Bench-Hard/main/bbh/word_sorting.json",
+    "bytes": 66300,
+    "sha256": "2a6132d2c99f00d0d2eb1113ac6b4a918bd969d863c48749210d969713db8d43",
+    "n": 250,
+    "target_types": {
+      "other_string": 250
+    }
+  },
+  "gsm8k": {
+    "url": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/test.jsonl",
+    "bytes": 749738,
+    "sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "n": 1319,
+    "answer_separator": "####",
+    "note": "Original GSM8K test split; no native skill category annotations"
+  }
+}

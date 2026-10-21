@@ -1,0 +1,32 @@
+[
+  {
+    "path": "/home/vanius/proj/agent-harness/paper/experiments/champ_20261020",
+    "files": 107,
+    "logical_bytes": 1274863,
+    "absent": true
+  },
+  {
+    "path": "/tmp/champ-20261020.tar.gz",
+    "files": 1,
+    "logical_bytes": 2012141,
+    "absent": true
+  },
+  {
+    "path": "/tmp/champ-20261020-deploy.tar.gz",
+    "files": 1,
+    "logical_bytes": 2016231,
+    "absent": true
+  },
+  {
+    "path": "/tmp/champ-20261020-ready.tar.gz",
+    "files": 1,
+    "logical_bytes": 2024209,
+    "absent": true
+  },
+  {
+    "path": "/tmp/champ-completion-summary-output.json",
+    "files": 1,
+    "logical_bytes": 4083,
+    "absent": true
+  }
+]

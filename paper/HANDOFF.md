@@ -1,3 +1,10 @@
+## 2026-10-21 最新指令：CHAMP已放弃并清理，第三benchmark重新选型
+
+- 用户明确要求放弃CHAMP并删除相关内容。本轮新建本地experiments/champ_20261020、三处远端专用实验/探针目录、4个/tmp临时产物及4个已终态wt-champ-*-1020平台条目已删除；原始结果不再作为续接或paper候选。仅保留experiments/benchmark_replacement_20261021/中的简短删除回执和替代调研。
+- champ-hourly-01a1587f.timer清理前已inactive；没有活跃CHAMP监督。迟到的CHAMP小时/完成消息只报告“已按用户要求放弃和删除”，不要访问已删目录、重建代码、恢复timer或重新启动实验。
+- 原4主模型×2benchmark论文保持当前版本；共享历史SRA资产和评分模块未扩删。第三benchmark重新比较，尚未授权本轮启动新GPU；按现有任务形式、skill来源、客观评分和样本覆盖筛选，不能以T<R或修复正结果挑数据。
+- 当前入口experiments/benchmark_replacement_20261021/HANDOFF.md，删除范围与回执见cleanup-local.json/cleanup-remote.json。已交付reports/第三benchmark替代调研_20261021.md：优先静态核查GSM8K+21类公开模板；LogicBench为条件备选，先解决组级筛选一致性。未启动新实验。
+
 ## 2026-10-20 用户授权清理已完成
 
 - 用户授权“把确定没有用的事情删掉”。本轮仅删除Mistral额外consolidated.safetensors（14,496,078,512字节，HF索引不引用且三分片结构有效）及两盘storage-checks/check-20261020下各17个本轮探针文件和对应空目录；35文件，共14,563,188,060逻辑字节（13.56GiB）。删除前核验精确路径/大小、探针SHA及marker内容，之后全部目标不存在，三份正式HF分片仍在。
@@ -14,14 +21,6 @@
 - Mistral额外consolidated.safetensors为14,496,078,512字节（13.50GiB），HF索引不引用，三HF分片结构有效；仅列可清理候选，未经删除授权未动。Qwen8/Mistral/Llama共12分片文件头和末端长度均匹配；DeepSeek为bin双分片，已确认存在，初始safetensors探针不适用，不能误报缺权重。
 - 报告reports/启智存储复查_20261020.md；raw证据audit/STORAGE-MODEL-HEADERS-20261020.txt含DeepSeek探针格式局限说明见报告。CPU当前两盘可小写，不称配额永久解决；旧“370MB限额”已不适用，精确限额仍未知。
 - 后续新benchmark×四模型：SSD只读模型，HDD新目录存结果；实际GPU获分配后先检查两盘写入和双向marker，再跑少量样本估算raw容量并预留余量。永久方案是管理员核实/调高块与文件数配额；SSD整池99%也需关注。未发消息、未删除、未下载、未启动正式实验或旧监督。
-
-## 2026-10-20 用户收束目标：第三benchmark改优先CHAMP
-
-- 最新指令：只增加benchmark，不追求扩展研究对象或加强机制解释，优先匹配原task与答案形式。覆盖此前LogicBench首选排序：现推荐SRA-CHAMP＋发布概念skills；LogicBench备选，BigCodeBench本轮不选。
-- 原因：CHAMP同样纯文本、一次生成逐步解答、抽取简短数值/表达式/短语答案，可沿用现有干预；本轮不引入代码生成或短标签分类作为目标。
-- 范围：全量223题含114单skill、109多skill；最贴近现有单skill设置的是114题子集，但必须明确子集名称，已有全量收益不等于该子集收益已验证。44单skill组、95题可有跨题donor；不因此剔除其他实验可用singleton。
-- 新静态核查：223题的精确skill集合有132种，37种可跨题，共128题。仅在样本不足且决定采用全量时才考虑固定多skill拼接，不自动扩容或变更设置。旧Qwen8单skill rescued21题未审计，四模型样本充足尚未知。
-- 已补充reports/第三benchmark调研_20261020.md，未启动GPU、未改投稿稿件。下一动作是先核验CHAMP单skill子集四模型三基线总体收益与人数，不根据T<R/repair结果选题。
 
 ## 2026-10-20 回答形式与第三任务适配判断（完成）
 

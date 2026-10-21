@@ -1,0 +1,36 @@
+{
+  "directories": [
+    {
+      "path": "/inspire/hdd/project/project-public/czxs253130660/champ-20261020-v1",
+      "deleted_files": 330,
+      "logical_bytes": 54880388,
+      "absent": true
+    },
+    {
+      "path": "/inspire/hdd/project/project-public/czxs253130660/champ-20261020-probes",
+      "deleted_files": 10,
+      "logical_bytes": 167772235,
+      "absent": true
+    },
+    {
+      "path": "/inspire/ssd/project/project-public/czxs253130660/champ-20261020-probes",
+      "deleted_files": 10,
+      "logical_bytes": 167772235,
+      "absent": true
+    }
+  ],
+  "deleted_terminal_jobs": [
+    "wt-champ-q8-1020",
+    "wt-champ-mistral-1020",
+    "wt-champ-llama-1020",
+    "wt-champ-deepseek-1020"
+  ],
+  "job_delete_exit_codes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "authorization": "User explicitly abandoned CHAMP and requested deletion on 2026-10-21",
+  "note": "Per-file experimental results intentionally deleted at user request; this receipt retains only deletion scope/counts."
+}
