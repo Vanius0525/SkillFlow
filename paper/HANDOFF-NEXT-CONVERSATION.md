@@ -1,3 +1,12 @@
+## 2026-10-21 新对话接管：LogicBench运行中，周期检查已取消
+
+- 用户最新要求：更新交接，由新对话接管；取消本对话周期检查。只继续本轮LogicBench，不操作其他实验、不更新论文；不恢复任何旧timer。延迟的旧监督消息一律忽略。
+- 当前入口：`experiments/logicbench_20261021/HANDOFF.md`；最新实测状态：`experiments/logicbench_20261021/monitor-state.json`（2026-10-21 17:50 CST）。
+- DeepSeek已完成2240条并经独立进程重判；全760题gold 66.32%、none 57.37%，有效89题/15skill。Mistral 2043/2240、Llama 998/2240、Qwen 360/2240，均RUNNING。Llama当前Job为wt-logic-llama-1021-r1，原911条已复用。
+- 已停止logicbench-hourly-01a1587f.timer；systemctl --user list-timers --all显示0 timers。SUPERVISION-CANCELLED与watch-config.json.cancelled_at防止误恢复；不因新对话接管自动重建周期检查。GPU Job继续运行，没有停止实验。
+- 下一步先查询四个现有Job并读取远端outputs中的progress/summary/done；不要再次提交整池。远端个人HDD：/inspire/hdd/project/project-public/czxs253130660/logicbench-20261021-v1；观察CPU wt-family-prep-1018，保留自动停止设置。CPU不可用时先诊断观察通道，不当作GPU失败。
+- 本次交接仅保存代码/数据快照及小摘要，原始输出留远端。仓库另有其他对话/历史稿件改动，不纳入本轮提交、不覆盖。正式深度矩阵尚未启动；先完成四模型基线并核验真实结果。
+
 ## 2026-10-21 最新指令：CHAMP已放弃并清理，第三benchmark重新选型
 
 - 用户明确要求放弃CHAMP并删除相关内容。本轮新建本地experiments/champ_20261020、三处远端专用实验/探针目录、4个/tmp临时产物及4个已终态wt-champ-*-1020平台条目已删除；原始结果不再作为续接或paper候选。仅保留experiments/benchmark_replacement_20261021/中的简短删除回执和替代调研。

@@ -1,0 +1,14 @@
+{
+  "thread": "01a1587f-e2ba-7652-b397-1ff88c9ba667",
+  "codex": "/home/vanius/.local/bin/codex",
+  "timer": "logicbench-hourly-01a1587f.timer",
+  "expires_at": 1792747125.3572967,
+  "active_names": [
+    "wt-logic-q8-1021",
+    "wt-logic-mistral-1021",
+    "wt-logic-llama-1021-r1",
+    "wt-logic-deepseek-1021"
+  ],
+  "cancelled_at": "2026-10-21T09:51:50.690100+00:00",
+  "cancelled_by": "user"
+}

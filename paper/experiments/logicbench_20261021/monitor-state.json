@@ -1,0 +1,121 @@
+{
+  "checked_at": "2026-10-21T09:50:50.780834+00:00",
+  "statuses": {
+    "wt-logic-q8-1021": "RUNNING",
+    "wt-logic-mistral-1021": "RUNNING",
+    "wt-logic-llama-1021-r1": "RUNNING",
+    "wt-logic-deepseek-1021": "SUCCEEDED"
+  },
+  "observed": {
+    "progress": {
+      "mistral.progress": {
+        "time": 1792576252.2514765,
+        "model": "mistral",
+        "stage": "baseline_generation",
+        "completed": 2043,
+        "instance": "logicbench_00694",
+        "arm": "donor",
+        "correct": false,
+        "n_generated": 92,
+        "seconds": 2.789538621902466
+      },
+      "deepseek.progress": {
+        "time": 1792571972.4059618,
+        "model": "deepseek",
+        "stage": "complete",
+        "completed": 2240
+      },
+      "q8.progress": {
+        "time": 1792576250.9774628,
+        "model": "q8",
+        "stage": "baseline_generation",
+        "completed": 360,
+        "instance": "logicbench_00133",
+        "arm": "donor",
+        "correct": true,
+        "n_generated": 286,
+        "seconds": 10.588336706161499
+      },
+      "llama.progress": {
+        "time": 1792576253.1181903,
+        "model": "llama",
+        "stage": "baseline_generation",
+        "completed": 998,
+        "instance": "logicbench_00345",
+        "arm": "no_skill",
+        "correct": true,
+        "n_generated": 113,
+        "seconds": 3.2929000854492188
+      }
+    },
+    "summary": {
+      "deepseek.summary": {
+        "complete": true,
+        "records": 2240,
+        "all": {
+          "donor": {
+            "n": 760,
+            "correct": 504,
+            "accuracy": 0.6631578947368421,
+            "truncated": 1
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 368,
+            "accuracy": 0.5111111111111111,
+            "truncated": 1
+          },
+          "no_skill": {
+            "n": 760,
+            "correct": 436,
+            "accuracy": 0.5736842105263158,
+            "truncated": 0
+          },
+          "rescued": 171,
+          "harmed": 103,
+          "paired_n": 720,
+          "eligible_n": 89
+        },
+        "paired": {
+          "donor": {
+            "n": 720,
+            "correct": 477,
+            "accuracy": 0.6625,
+            "truncated": 1
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 368,
+            "accuracy": 0.5111111111111111,
+            "truncated": 1
+          },
+          "no_skill": {
+            "n": 720,
+            "correct": 411,
+            "accuracy": 0.5708333333333333,
+            "truncated": 0
+          },
+          "rescued": 164,
+          "harmed": 98,
+          "paired_n": 720,
+          "eligible_n": 89
+        },
+        "common_n": 89,
+        "groups": 15
+      }
+    },
+    "done": [
+      "deepseek.done"
+    ],
+    "sizes": {
+      "llama.hardware.jsonl": 492,
+      "q8.jsonl": 2420051,
+      "llama.jsonl": 3106638,
+      "mistral.jsonl": 4546496,
+      "q8.hardware.jsonl": 198,
+      "deepseek.jsonl": 3241044,
+      "deepseek.hardware.jsonl": 198,
+      "mistral.hardware.jsonl": 198
+    }
+  }
+}
