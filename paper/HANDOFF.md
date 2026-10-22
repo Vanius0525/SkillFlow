@@ -1,3 +1,11 @@
+## 2026-10-22 创新性质疑与最小判别实验（设计完成，未启动）
+
+- 用户要求评估晚层失败是否源于不完整状态复制，以及中性receiver、同协议和cache内容/覆盖对照的必要性与可行性。已审阅当前方法/实现、协议桥接与7篇相关原始论文，报告：`reports/创新性质疑与最小判别实验_20261022.md`。
+- 结论：优先关键对照而非扩模型。SC理想上覆盖全source KV但留下B_S；建议先同协议wrong/neutral深度复测，再对比C_all、SC_exact、B_only、完整prefix copy与suffix replay，测实际source对齐，分离source内容/覆盖与receiver历史。完整copy/全suffix重算是正控制，不计作创新。
+- PrefillNotes已涉及下游旧结论与重算，Multiple Mediators已涉及patch交互，2026-09/10另有预算cache修复和历史敏感性近邻；概念相近不构成新贡献。更强贡献需未见skill上的可证伪预测/修复规律，目前未验证。
+- 没有运行新推理、启智操作、论文修改或Overleaf同步；无新增进程/timer。下一可执行动作是按报告冻结阶段计划、扩cache层/位置API并做仪器正控制，不能把本次评估当成已启动GPU实验。
+- Open Ideas / 值得深挖的问题：固定全source内容后，预测必须重建多少reader历史。触发为L16 SC42.1%对donor100%及非source未匹配；最小验证为C_all/SC_exact/完整copy/suffix replay后按skill留出。若仅全重算有效或近邻已覆盖则价值下降。记录日期2026-10-22；尚不足以标为已发现独立顶会idea。
+
 ## 2026-10-22 LogicBench基线与监督已完成（当前有效）
 
 四模型各2240条，独立重判/完整网格/唯一键及done/summary/raw SHA256全部通过；小摘要已取回。监督timer已自动停止，迟到通知忽略。Qwen入选78题中13题涉及截断，四模型原入选共同交集仅6题，后续设计须处理；不自动启动深度矩阵。详见experiments/logicbench_20261021/FINAL-REPORT.md、final-audit.json与HANDOFF.md。其他实验/论文未操作。
