@@ -1,0 +1,16 @@
+{
+  "thread": "01a15de9-a90e-73b0-95e2-72f7731cba2a",
+  "codex": "/home/vanius/.local/bin/codex",
+  "timer": "logicbench-hourly-01a15de9.timer",
+  "expires_at": 1792750270.7170315,
+  "active_names": [
+    "wt-logic-q8-1021",
+    "wt-logic-mistral-1021",
+    "wt-logic-llama-1021-r1",
+    "wt-logic-deepseek-1021"
+  ],
+  "cancel_marker": "SUPERVISION-CANCELLED-01a15de9",
+  "complete_marker": "SUPERVISION-COMPLETE-01a15de9",
+  "authorized_at": 1792577470.7170327,
+  "authorization": "2026-10-21 user explicitly requested renewed hourly supervision in this session"
+}

@@ -1,23 +1,18 @@
 {
-  "checked_at": "2026-10-21T09:50:50.780834+00:00",
+  "checked_at": "2026-10-21T20:00:00.609391+00:00",
   "statuses": {
-    "wt-logic-q8-1021": "RUNNING",
-    "wt-logic-mistral-1021": "RUNNING",
-    "wt-logic-llama-1021-r1": "RUNNING",
+    "wt-logic-q8-1021": "SUCCEEDED",
+    "wt-logic-mistral-1021": "SUCCEEDED",
+    "wt-logic-llama-1021-r1": "SUCCEEDED",
     "wt-logic-deepseek-1021": "SUCCEEDED"
   },
   "observed": {
     "progress": {
       "mistral.progress": {
-        "time": 1792576252.2514765,
+        "time": 1792577031.5467684,
         "model": "mistral",
-        "stage": "baseline_generation",
-        "completed": 2043,
-        "instance": "logicbench_00694",
-        "arm": "donor",
-        "correct": false,
-        "n_generated": 92,
-        "seconds": 2.789538621902466
+        "stage": "complete",
+        "completed": 2240
       },
       "deepseek.progress": {
         "time": 1792571972.4059618,
@@ -26,29 +21,127 @@
         "completed": 2240
       },
       "q8.progress": {
-        "time": 1792576250.9774628,
+        "time": 1792609487.427942,
         "model": "q8",
-        "stage": "baseline_generation",
-        "completed": 360,
-        "instance": "logicbench_00133",
-        "arm": "donor",
-        "correct": true,
-        "n_generated": 286,
-        "seconds": 10.588336706161499
+        "stage": "complete",
+        "completed": 2240
       },
       "llama.progress": {
-        "time": 1792576253.1181903,
+        "time": 1792583889.181014,
         "model": "llama",
-        "stage": "baseline_generation",
-        "completed": 998,
-        "instance": "logicbench_00345",
-        "arm": "no_skill",
-        "correct": true,
-        "n_generated": 113,
-        "seconds": 3.2929000854492188
+        "stage": "complete",
+        "completed": 2240
       }
     },
     "summary": {
+      "mistral.summary": {
+        "complete": true,
+        "records": 2240,
+        "all": {
+          "donor": {
+            "n": 760,
+            "correct": 508,
+            "accuracy": 0.6684210526315789,
+            "truncated": 0
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 387,
+            "accuracy": 0.5375,
+            "truncated": 0
+          },
+          "no_skill": {
+            "n": 760,
+            "correct": 447,
+            "accuracy": 0.5881578947368421,
+            "truncated": 0
+          },
+          "rescued": 168,
+          "harmed": 107,
+          "paired_n": 720,
+          "eligible_n": 77
+        },
+        "paired": {
+          "donor": {
+            "n": 720,
+            "correct": 486,
+            "accuracy": 0.675,
+            "truncated": 0
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 387,
+            "accuracy": 0.5375,
+            "truncated": 0
+          },
+          "no_skill": {
+            "n": 720,
+            "correct": 423,
+            "accuracy": 0.5875,
+            "truncated": 0
+          },
+          "rescued": 161,
+          "harmed": 98,
+          "paired_n": 720,
+          "eligible_n": 77
+        },
+        "common_n": 77,
+        "groups": 17
+      },
+      "q8.summary": {
+        "complete": true,
+        "records": 2240,
+        "all": {
+          "donor": {
+            "n": 760,
+            "correct": 665,
+            "accuracy": 0.875,
+            "truncated": 22
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 487,
+            "accuracy": 0.6763888888888889,
+            "truncated": 119
+          },
+          "no_skill": {
+            "n": 760,
+            "correct": 585,
+            "accuracy": 0.7697368421052632,
+            "truncated": 17
+          },
+          "rescued": 137,
+          "harmed": 57,
+          "paired_n": 720,
+          "eligible_n": 78
+        },
+        "paired": {
+          "donor": {
+            "n": 720,
+            "correct": 630,
+            "accuracy": 0.875,
+            "truncated": 14
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 487,
+            "accuracy": 0.6763888888888889,
+            "truncated": 119
+          },
+          "no_skill": {
+            "n": 720,
+            "correct": 551,
+            "accuracy": 0.7652777777777777,
+            "truncated": 9
+          },
+          "rescued": 134,
+          "harmed": 55,
+          "paired_n": 720,
+          "eligible_n": 78
+        },
+        "common_n": 78,
+        "groups": 17
+      },
       "deepseek.summary": {
         "complete": true,
         "records": 2240,
@@ -102,16 +195,79 @@
         },
         "common_n": 89,
         "groups": 15
+      },
+      "llama.summary": {
+        "complete": true,
+        "records": 2240,
+        "all": {
+          "donor": {
+            "n": 760,
+            "correct": 526,
+            "accuracy": 0.6921052631578948,
+            "truncated": 2
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 397,
+            "accuracy": 0.5513888888888889,
+            "truncated": 2
+          },
+          "no_skill": {
+            "n": 760,
+            "correct": 445,
+            "accuracy": 0.5855263157894737,
+            "truncated": 15
+          },
+          "rescued": 213,
+          "harmed": 132,
+          "paired_n": 720,
+          "eligible_n": 121
+        },
+        "paired": {
+          "donor": {
+            "n": 720,
+            "correct": 510,
+            "accuracy": 0.7083333333333334,
+            "truncated": 2
+          },
+          "receiver": {
+            "n": 720,
+            "correct": 397,
+            "accuracy": 0.5513888888888889,
+            "truncated": 2
+          },
+          "no_skill": {
+            "n": 720,
+            "correct": 423,
+            "accuracy": 0.5875,
+            "truncated": 9
+          },
+          "rescued": 208,
+          "harmed": 121,
+          "paired_n": 720,
+          "eligible_n": 121
+        },
+        "common_n": 121,
+        "groups": 18
       }
     },
+    "verified": {
+      "q8": true,
+      "mistral": true,
+      "llama": true,
+      "deepseek": true
+    },
     "done": [
-      "deepseek.done"
+      "llama.done",
+      "mistral.done",
+      "deepseek.done",
+      "q8.done"
     ],
     "sizes": {
       "llama.hardware.jsonl": 492,
-      "q8.jsonl": 2420051,
-      "llama.jsonl": 3106638,
-      "mistral.jsonl": 4546496,
+      "q8.jsonl": 12623667,
+      "llama.jsonl": 6596697,
+      "mistral.jsonl": 4970306,
       "q8.hardware.jsonl": 198,
       "deepseek.jsonl": 3241044,
       "deepseek.hardware.jsonl": 198,

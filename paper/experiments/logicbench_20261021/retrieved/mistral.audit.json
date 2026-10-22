@@ -1,0 +1,27 @@
+{
+  "independent_regrade_matches": true,
+  "raw_sha256_matches": true,
+  "paired": {
+    "n": 720,
+    "correct": {
+      "donor": 486,
+      "receiver": 387,
+      "no_skill": 423
+    }
+  },
+  "all_three_untruncated": {
+    "n": 720,
+    "correct": {
+      "donor": 486,
+      "receiver": 387,
+      "no_skill": 423
+    }
+  },
+  "eligible_with_any_truncation": [],
+  "eligible_untruncated_n": 77,
+  "eligible_truncated_by_arm": {
+    "donor": 0,
+    "receiver": 0,
+    "no_skill": 0
+  }
+}

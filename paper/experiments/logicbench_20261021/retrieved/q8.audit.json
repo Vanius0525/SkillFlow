@@ -1,0 +1,41 @@
+{
+  "independent_regrade_matches": true,
+  "raw_sha256_matches": true,
+  "paired": {
+    "n": 720,
+    "correct": {
+      "donor": 630,
+      "receiver": 487,
+      "no_skill": 551
+    }
+  },
+  "all_three_untruncated": {
+    "n": 587,
+    "correct": {
+      "donor": 522,
+      "receiver": 418,
+      "no_skill": 450
+    }
+  },
+  "eligible_with_any_truncation": [
+    "logicbench_00095",
+    "logicbench_00167",
+    "logicbench_00219",
+    "logicbench_00262",
+    "logicbench_00310",
+    "logicbench_00313",
+    "logicbench_00446",
+    "logicbench_00469",
+    "logicbench_00473",
+    "logicbench_00479",
+    "logicbench_00587",
+    "logicbench_00598",
+    "logicbench_00692"
+  ],
+  "eligible_untruncated_n": 65,
+  "eligible_truncated_by_arm": {
+    "donor": 3,
+    "receiver": 11,
+    "no_skill": 1
+  }
+}

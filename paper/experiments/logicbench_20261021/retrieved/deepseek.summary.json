@@ -1,0 +1,656 @@
+{
+  "time": 1792661703.425227,
+  "complete": true,
+  "records": 2240,
+  "expected_records": 2240,
+  "raw_sha256": "acc6bb4eec175167b35fd7cbf2ed2450e7ca2d634c8a5cb4a72549f3d289b59f",
+  "all": {
+    "donor": {
+      "n": 760,
+      "correct": 504,
+      "accuracy": 0.6631578947368421,
+      "truncated": 1
+    },
+    "receiver": {
+      "n": 720,
+      "correct": 368,
+      "accuracy": 0.5111111111111111,
+      "truncated": 1
+    },
+    "no_skill": {
+      "n": 760,
+      "correct": 436,
+      "accuracy": 0.5736842105263158,
+      "truncated": 0
+    },
+    "rescued": 171,
+    "harmed": 103,
+    "paired_n": 720,
+    "eligible_n": 89
+  },
+  "paired": {
+    "donor": {
+      "n": 720,
+      "correct": 477,
+      "accuracy": 0.6625,
+      "truncated": 1
+    },
+    "receiver": {
+      "n": 720,
+      "correct": 368,
+      "accuracy": 0.5111111111111111,
+      "truncated": 1
+    },
+    "no_skill": {
+      "n": 720,
+      "correct": 411,
+      "accuracy": 0.5708333333333333,
+      "truncated": 0
+    },
+    "rescued": 164,
+    "harmed": 98,
+    "paired_n": 720,
+    "eligible_n": 89
+  },
+  "by_type": {
+    "BQA": {
+      "donor": {
+        "n": 542,
+        "correct": 355,
+        "accuracy": 0.6549815498154982,
+        "truncated": 1
+      },
+      "receiver": {
+        "n": 512,
+        "correct": 248,
+        "accuracy": 0.484375,
+        "truncated": 1
+      },
+      "no_skill": {
+        "n": 542,
+        "correct": 290,
+        "accuracy": 0.5350553505535055,
+        "truncated": 0
+      },
+      "rescued": 139,
+      "harmed": 74,
+      "paired_n": 512,
+      "eligible_n": 73
+    },
+    "MCQA": {
+      "donor": {
+        "n": 218,
+        "correct": 149,
+        "accuracy": 0.6834862385321101,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 208,
+        "correct": 120,
+        "accuracy": 0.5769230769230769,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 218,
+        "correct": 146,
+        "accuracy": 0.6697247706422018,
+        "truncated": 0
+      },
+      "rescued": 32,
+      "harmed": 29,
+      "paired_n": 208,
+      "eligible_n": 16
+    }
+  },
+  "by_skill": {
+    "logicbench_000": {
+      "donor": {
+        "n": 40,
+        "correct": 35,
+        "accuracy": 0.875,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 23,
+        "accuracy": 0.575,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 29,
+        "accuracy": 0.725,
+        "truncated": 0
+      },
+      "rescued": 8,
+      "harmed": 2,
+      "paired_n": 40,
+      "eligible_n": 6
+    },
+    "logicbench_001": {
+      "donor": {
+        "n": 40,
+        "correct": 26,
+        "accuracy": 0.65,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 22,
+        "accuracy": 0.55,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 10,
+        "accuracy": 0.25,
+        "truncated": 0
+      },
+      "rescued": 16,
+      "harmed": 0,
+      "paired_n": 40,
+      "eligible_n": 6
+    },
+    "logicbench_002": {
+      "donor": {
+        "n": 40,
+        "correct": 23,
+        "accuracy": 0.575,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 21,
+        "accuracy": 0.525,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 23,
+        "accuracy": 0.575,
+        "truncated": 0
+      },
+      "rescued": 8,
+      "harmed": 8,
+      "paired_n": 40,
+      "eligible_n": 4
+    },
+    "logicbench_003": {
+      "donor": {
+        "n": 40,
+        "correct": 35,
+        "accuracy": 0.875,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 21,
+        "accuracy": 0.525,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 20,
+        "accuracy": 0.5,
+        "truncated": 0
+      },
+      "rescued": 18,
+      "harmed": 3,
+      "paired_n": 40,
+      "eligible_n": 10
+    },
+    "logicbench_004": {
+      "donor": {
+        "n": 40,
+        "correct": 25,
+        "accuracy": 0.625,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 15,
+        "accuracy": 0.375,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 29,
+        "accuracy": 0.725,
+        "truncated": 0
+      },
+      "rescued": 2,
+      "harmed": 6,
+      "paired_n": 40,
+      "eligible_n": 2
+    },
+    "logicbench_005": {
+      "donor": {
+        "n": 40,
+        "correct": 21,
+        "accuracy": 0.525,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 21,
+        "accuracy": 0.525,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 16,
+        "accuracy": 0.4,
+        "truncated": 0
+      },
+      "rescued": 13,
+      "harmed": 8,
+      "paired_n": 40,
+      "eligible_n": 7
+    },
+    "logicbench_006": {
+      "donor": {
+        "n": 40,
+        "correct": 27,
+        "accuracy": 0.675,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 0,
+        "correct": 0,
+        "accuracy": null,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 25,
+        "accuracy": 0.625,
+        "truncated": 0
+      },
+      "rescued": 7,
+      "harmed": 5,
+      "paired_n": 0,
+      "eligible_n": 0
+    },
+    "logicbench_007": {
+      "donor": {
+        "n": 40,
+        "correct": 20,
+        "accuracy": 0.5,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 22,
+        "accuracy": 0.55,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 33,
+        "accuracy": 0.825,
+        "truncated": 0
+      },
+      "rescued": 2,
+      "harmed": 15,
+      "paired_n": 40,
+      "eligible_n": 0
+    },
+    "logicbench_008": {
+      "donor": {
+        "n": 40,
+        "correct": 15,
+        "accuracy": 0.375,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 13,
+        "accuracy": 0.325,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 15,
+        "accuracy": 0.375,
+        "truncated": 0
+      },
+      "rescued": 5,
+      "harmed": 5,
+      "paired_n": 40,
+      "eligible_n": 1
+    },
+    "logicbench_009": {
+      "donor": {
+        "n": 40,
+        "correct": 39,
+        "accuracy": 0.975,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 37,
+        "accuracy": 0.925,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 40,
+        "accuracy": 1.0,
+        "truncated": 0
+      },
+      "rescued": 0,
+      "harmed": 1,
+      "paired_n": 40,
+      "eligible_n": 0
+    },
+    "logicbench_010": {
+      "donor": {
+        "n": 40,
+        "correct": 29,
+        "accuracy": 0.725,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 16,
+        "accuracy": 0.4,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 22,
+        "accuracy": 0.55,
+        "truncated": 0
+      },
+      "rescued": 10,
+      "harmed": 3,
+      "paired_n": 40,
+      "eligible_n": 6
+    },
+    "logicbench_011": {
+      "donor": {
+        "n": 40,
+        "correct": 30,
+        "accuracy": 0.75,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 16,
+        "accuracy": 0.4,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 16,
+        "accuracy": 0.4,
+        "truncated": 0
+      },
+      "rescued": 20,
+      "harmed": 6,
+      "paired_n": 40,
+      "eligible_n": 12
+    },
+    "logicbench_012": {
+      "donor": {
+        "n": 40,
+        "correct": 28,
+        "accuracy": 0.7,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 20,
+        "accuracy": 0.5,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 24,
+        "accuracy": 0.6,
+        "truncated": 0
+      },
+      "rescued": 12,
+      "harmed": 8,
+      "paired_n": 40,
+      "eligible_n": 7
+    },
+    "logicbench_013": {
+      "donor": {
+        "n": 40,
+        "correct": 22,
+        "accuracy": 0.55,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 23,
+        "accuracy": 0.575,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 29,
+        "accuracy": 0.725,
+        "truncated": 0
+      },
+      "rescued": 6,
+      "harmed": 13,
+      "paired_n": 40,
+      "eligible_n": 3
+    },
+    "logicbench_014": {
+      "donor": {
+        "n": 40,
+        "correct": 30,
+        "accuracy": 0.75,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 17,
+        "accuracy": 0.425,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 17,
+        "accuracy": 0.425,
+        "truncated": 0
+      },
+      "rescued": 14,
+      "harmed": 1,
+      "paired_n": 40,
+      "eligible_n": 11
+    },
+    "logicbench_015": {
+      "donor": {
+        "n": 40,
+        "correct": 29,
+        "accuracy": 0.725,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 26,
+        "accuracy": 0.65,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 30,
+        "accuracy": 0.75,
+        "truncated": 0
+      },
+      "rescued": 3,
+      "harmed": 4,
+      "paired_n": 40,
+      "eligible_n": 0
+    },
+    "logicbench_016": {
+      "donor": {
+        "n": 40,
+        "correct": 25,
+        "accuracy": 0.625,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 19,
+        "accuracy": 0.475,
+        "truncated": 1
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 23,
+        "accuracy": 0.575,
+        "truncated": 0
+      },
+      "rescued": 8,
+      "harmed": 6,
+      "paired_n": 40,
+      "eligible_n": 5
+    },
+    "logicbench_017": {
+      "donor": {
+        "n": 40,
+        "correct": 23,
+        "accuracy": 0.575,
+        "truncated": 0
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 16,
+        "accuracy": 0.4,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 21,
+        "accuracy": 0.525,
+        "truncated": 0
+      },
+      "rescued": 8,
+      "harmed": 6,
+      "paired_n": 40,
+      "eligible_n": 6
+    },
+    "logicbench_018": {
+      "donor": {
+        "n": 40,
+        "correct": 22,
+        "accuracy": 0.55,
+        "truncated": 1
+      },
+      "receiver": {
+        "n": 40,
+        "correct": 20,
+        "accuracy": 0.5,
+        "truncated": 0
+      },
+      "no_skill": {
+        "n": 40,
+        "correct": 14,
+        "accuracy": 0.35,
+        "truncated": 0
+      },
+      "rescued": 11,
+      "harmed": 3,
+      "paired_n": 40,
+      "eligible_n": 3
+    }
+  },
+  "common_ids": [
+    "logicbench_00091",
+    "logicbench_00118",
+    "logicbench_00179",
+    "logicbench_00182",
+    "logicbench_00189",
+    "logicbench_00194",
+    "logicbench_00198",
+    "logicbench_00201",
+    "logicbench_00214",
+    "logicbench_00216",
+    "logicbench_00220",
+    "logicbench_00237",
+    "logicbench_00239",
+    "logicbench_00250",
+    "logicbench_00252",
+    "logicbench_00255",
+    "logicbench_00289",
+    "logicbench_00299",
+    "logicbench_00302",
+    "logicbench_00309",
+    "logicbench_00312",
+    "logicbench_00313",
+    "logicbench_00316",
+    "logicbench_00321",
+    "logicbench_00331",
+    "logicbench_00332",
+    "logicbench_00356",
+    "logicbench_00405",
+    "logicbench_00413",
+    "logicbench_00416",
+    "logicbench_00417",
+    "logicbench_00423",
+    "logicbench_00424",
+    "logicbench_00425",
+    "logicbench_00428",
+    "logicbench_00429",
+    "logicbench_00430",
+    "logicbench_00462",
+    "logicbench_00483",
+    "logicbench_00493",
+    "logicbench_00496",
+    "logicbench_00505",
+    "logicbench_00512",
+    "logicbench_00514",
+    "logicbench_00523",
+    "logicbench_00533",
+    "logicbench_00535",
+    "logicbench_00540",
+    "logicbench_00542",
+    "logicbench_00549",
+    "logicbench_00565",
+    "logicbench_00567",
+    "logicbench_00574",
+    "logicbench_00575",
+    "logicbench_00578",
+    "logicbench_00580",
+    "logicbench_00588",
+    "logicbench_00590",
+    "logicbench_00591",
+    "logicbench_00593",
+    "logicbench_00594",
+    "logicbench_00596",
+    "logicbench_00616",
+    "logicbench_00617",
+    "logicbench_00619",
+    "logicbench_00621",
+    "logicbench_00622",
+    "logicbench_00626",
+    "logicbench_00637",
+    "logicbench_00649",
+    "logicbench_00660",
+    "logicbench_00678",
+    "logicbench_00681",
+    "logicbench_00685",
+    "logicbench_00690",
+    "logicbench_00698",
+    "logicbench_00699",
+    "logicbench_00700",
+    "logicbench_00705",
+    "logicbench_00708",
+    "logicbench_00710",
+    "logicbench_00715",
+    "logicbench_00718",
+    "logicbench_00722",
+    "logicbench_00724",
+    "logicbench_00726",
+    "logicbench_00742",
+    "logicbench_00745",
+    "logicbench_00747"
+  ],
+  "common_n": 89,
+  "groups": 15
+}
