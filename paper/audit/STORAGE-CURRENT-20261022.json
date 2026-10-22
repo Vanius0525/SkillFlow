@@ -1,0 +1,11 @@
+{
+  "uid_in_container": 0,
+  "quota_tools": {
+    "mmlsquota": null,
+    "quota": null
+  },
+  "df -h /inspire/ssd/project/project-public/czxs253130660 /inspire/hdd/project/project-public/czxs253130660": "Filesystem      Size  Used Avail Use% Mounted on\ngpfs_flash       50T   50T  525G  99% /inspire/ssd/project/project-public/czxs253130660\ngpfs_hdd         80T   56T   25T  70% /inspire/hdd/project/project-public/czxs253130660\n",
+  "df -i /inspire/ssd/project/project-public/czxs253130660 /inspire/hdd/project/project-public/czxs253130660": "Filesystem          Inodes       IUsed       IFree IUse% Mounted on\ngpfs_flash      6000000000  3385095522  2614904478   57% /inspire/ssd/project/project-public/czxs253130660\ngpfs_hdd       40000000000 25359898049 14640101951   64% /inspire/hdd/project/project-public/czxs253130660\n",
+  "hostname": "wt-family-prep-1018--17ea4a26a8e2-ixjuvpvhl2\n",
+  "queried_on": "2026-10-22"
+}
