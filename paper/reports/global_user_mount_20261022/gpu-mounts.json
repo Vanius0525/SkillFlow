@@ -1,0 +1,21 @@
+{
+  "hostname": "job-b8b99a19-4129-457b-91e0-da0d0dfe01a9-worker-0",
+  "global_roots": {
+    "hdd": false,
+    "ssd": false,
+    "sj-ssd3": false
+  },
+  "mounts": [
+    "gpfs_hdd /inspire/hdd/global_public gpfs ro,relatime 0 0",
+    "gpfs_hdd /inspire/hdd/project/project-public/czxs253130660 gpfs rw,relatime 0 0",
+    "gpfs_hdd /inspire/hdd/project/project-public/public gpfs rw,relatime 0 0",
+    "gpfs_flash /inspire/ssd/project/project-public/czxs253130660 gpfs rw,relatime 0 0",
+    "gpfs_flash /inspire/ssd/project/project-public/public gpfs rw,relatime 0 0",
+    "gpfs_hdd /inspire/hdd/project/project-public/inspire_shared/mount/test1 gpfs ro,relatime 0 0"
+  ],
+  "mount_capabilities": [
+    "CapEff:\t00000000a80c25fb"
+  ],
+  "checked_job": "wt-lfull-deepseek-s0-1022",
+  "has_cap_sys_admin": false
+}

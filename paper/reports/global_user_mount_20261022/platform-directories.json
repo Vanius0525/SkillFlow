@@ -1,0 +1,528 @@
+{
+  "可上网GPU资源": {
+    "pools": {
+      "system_storages": [
+        {
+          "cluster_id": "cluster-stg-id-1",
+          "is_primary": true,
+          "name": "hdd"
+        },
+        {
+          "cluster_id": "cluster-stg-id-2",
+          "is_primary": false,
+          "name": "ssd"
+        },
+        {
+          "cluster_id": "cluster_stg_id_8",
+          "is_primary": false,
+          "name": "qb-ilm"
+        },
+        {
+          "cluster_id": "cluster_stg_id_10",
+          "is_primary": false,
+          "name": "qb-ilm2"
+        },
+        {
+          "cluster_id": "cluster_stg_id_11",
+          "is_primary": false,
+          "name": "hdd2"
+        },
+        {
+          "cluster_id": "cluster_stg_id_12",
+          "is_primary": false,
+          "name": "hdd3"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-ssd"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-qb-ilm"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-qb-ilm2"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-hdd2"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-hdd3"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-hdd"
+        }
+      ],
+      "total": 12
+    },
+    "directories": {
+      "hdd/global_user": {
+        "files": [],
+        "total": 0
+      },
+      "hdd/project": {
+        "files": [
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/multi-agent/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/multi-agent/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/project-public/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/project-public/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          }
+        ],
+        "total": 4
+      },
+      "ssd/global_user": {
+        "error_type": "ValueError",
+        "error": "API error: InvalidParameter: invalid directory name"
+      },
+      "ssd/project": {
+        "files": [
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/project-public/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/multi-agent/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/multi-agent/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/project-public/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          }
+        ],
+        "total": 4
+      }
+    }
+  },
+  "CPU资源空间": {
+    "pools": {
+      "system_storages": [
+        {
+          "cluster_id": "cluster-stg-id-1",
+          "is_primary": true,
+          "name": "hdd"
+        },
+        {
+          "cluster_id": "cluster-stg-id-2",
+          "is_primary": false,
+          "name": "ssd"
+        },
+        {
+          "cluster_id": "cluster_stg_id_8",
+          "is_primary": false,
+          "name": "qb-ilm"
+        },
+        {
+          "cluster_id": "cluster_stg_id_10",
+          "is_primary": false,
+          "name": "qb-ilm2"
+        },
+        {
+          "cluster_id": "cluster_stg_id_11",
+          "is_primary": false,
+          "name": "hdd2"
+        },
+        {
+          "cluster_id": "cluster_stg_id_12",
+          "is_primary": false,
+          "name": "hdd3"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-qb-ilm"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-qb-ilm2"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-hdd2"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-hdd3"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-hdd"
+        },
+        {
+          "cluster_id": "",
+          "is_primary": false,
+          "name": "share-ssd"
+        }
+      ],
+      "total": 12
+    },
+    "directories": {
+      "hdd/global_user": {
+        "files": [],
+        "total": 0
+      },
+      "hdd/project": {
+        "files": [
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/multi-agent/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/multi-agent/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/project-public/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/hdd/project/project-public/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          }
+        ],
+        "total": 4
+      },
+      "ssd/global_user": {
+        "error_type": "ValueError",
+        "error": "API error: InvalidParameter: invalid directory name"
+      },
+      "ssd/project": {
+        "files": [
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/multi-agent/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/multi-agent/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "大模型时代下的多智能体系统",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/project-public/public",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          },
+          {
+            "creator": {
+              "created_at": "",
+              "email": "",
+              "global_role": "UNKNOWN_GLOBAL_ROLE",
+              "id": "",
+              "name": "root",
+              "name_en": ""
+            },
+            "directory": "/inspire/ssd/project/project-public/czxs253130660",
+            "file_path": "",
+            "group_permission": "",
+            "is_dir": false,
+            "is_mount": 0,
+            "is_share": 0,
+            "my_permission": "",
+            "name": "公共科研项目",
+            "owner_permission": "",
+            "share_dirs": [],
+            "size": "0",
+            "updated_at": ""
+          }
+        ],
+        "total": 4
+      }
+    }
+  }
+}
