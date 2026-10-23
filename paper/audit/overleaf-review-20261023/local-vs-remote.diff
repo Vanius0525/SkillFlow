@@ -1,0 +1,1013 @@
+diff --olcli a/overleaf-skillvector/README.md b/overleaf-skillvector/README.md
+--- a/overleaf-skillvector/README.md
++++ b/overleaf-skillvector/README.md
+@@ -6,15 +6,13 @@
+ build is the WWW submission manuscript. This project contains
+ only the submission and its references and compact appendix.
+ 
+-The mechanism section includes measured repair and path results across eight model/task cells.
++The mechanism section includes measured Qwen3-8B/MedCalc results.
+ 
+ The main matrix covers four models and two benchmarks: all eight cells
+ are populated from finalized audit reports, with eight panels in Figure 3.
+ The active manuscript uses only the four selected models.
+ Control and layer-16 repair tables cover all eight model/task cells.
+-Figure 4 shows eight L16 repair rows and two distinct attention cuts at L8/L16/L24.
+-Section 5 discusses potential applications and future work,
+-followed by the conclusion in Section 6.
++Figure 4 retains the detailed Qwen3-8B/MedCalc case.
+ TheoremQA regeneration preserves protocol limitations documented in Appendix A.
+ 
+ This project contains only TeX inputs, referenced PDF figures,
+diff --olcli a/overleaf-skillvector/appendix/a-setup.tex b/overleaf-skillvector/appendix/a-setup.tex
+--- a/overleaf-skillvector/appendix/a-setup.tex
++++ b/overleaf-skillvector/appendix/a-setup.tex
+@@ -4,37 +4,36 @@
+ 
+ \paragraph{Tasks and scoring.}
+ MedCalc provides $55$ calculator skills and $20$ questions per calculator
+-through SRA-Bench, scored against prescribed numerical tolerances.
+-TheoremQA uses its released prompts, skill assignments and evaluator.
+-Skills are supplied directly, with no tools during generation.
+-Groups are calculators for MedCalc and skill identities for TheoremQA.
++through SRA-Bench. Its scorer checks numerical answers against prescribed
++tolerances. TheoremQA uses its released prompts, skill assignments and
++evaluator. All main experiments supply skills directly and generate
++answers without tools. Groups are calculators for MedCalc and skill
++identities for TheoremQA.
+ 
+ \paragraph{Evaluation populations.}
+ The original MedCalc list contains $470$ previously rescued questions,
+ answered incorrectly without a skill and correctly with one. Eligibility
+ restrictions leave $467$ from $48$ calculators for corrected transfer controls.
+ 
+-The group screen retains skills with no correct receiver answers,
+-including donor failures. Its $135$ questions from $14$ calculators yield
+-$124$ correct donor and $110$ correct layer-$8$ span answers.
+-Recovery uses the measured donor gain. Intersection with knockout's
+-correct-with-skill, incorrect-without-skill IDs gives $134$ depth items,
+-with separate intervention baselines.
++The group screen retains skills whose re-evaluated receivers solve no
++sampled question, including donor failures. Its $135$ questions from $14$
++calculators yield $124$ correct donor and $110$ correct layer-$8$ span
++answers. Recovery uses the measured donor gain. Intersecting with the
++knockout run's correct-with-skill, incorrect-without-skill IDs gives the
++$134$-item depth set, with separate baselines for each intervention.
+ 
+-The seven added control cells require a fresh correct donor and incorrect
+-no-skill baseline, giving $100\%$ donor accuracy. Repair instead screens
+-individual items. Of $124$ candidate IDs, $116$ are donor-correct and
+-receiver-incorrect, and $114$ also fail without the skill. Repair and path
+-cuts share these $114$. The candidate, paired-check and correct-donor
+-counts each equal $124$ under different, non-interchangeable rules.
++The seven added control cells also require a fresh correct donor and
++incorrect no-skill baseline, so their donor accuracy is $100\%$.
++Repair cells require a correct donor and incorrect receiver and no-skill
++answers per item, without a group screen. Of the original $124$ candidate
++IDs, $116$ are donor-correct and receiver-incorrect, and $114$ also fail
++without the skill. Repair and path cuts share these $114$. The candidate
++count, paired-check size and correct-donor count each equal $124$ under
++different rules and are not interchangeable.
+ 
++These conditional screens do not remove wrong-skill interference.
+ The broader screen in Appendix~\ref{app:fullscale} retains individual
+-receiver failures. Other-skill and noise interventions are more effective
+-under this broader screen, as reported in
+-Table~\ref{tab:fullscale}. The common DeepSeek/MedCalc depth set contains
+-$25$ questions, so its boundary may be sensitive to sample composition.
+-Changing the half-effect threshold tests the summary rule, not that
+-sampling sensitivity.
++receiver failures. Neither replaces a position-matched neutral-text control.
+ 
+ \subsection{Implementation details}
+ \label{app:detail}
+@@ -59,11 +58,12 @@
+ note. TheoremQA retains the benchmark's science-teacher system message,
+ \texttt{Problem:<question>} and \texttt{Solution:} user format, and
+ ``Therefore, the answer is ...'' final-answer requirement.
+-The tokenizer converts text to tokens. Its chat template supplies role
+-labels and the generation prompt. Character offsets identify tokens
+-overlapping the skill text, excluding its header and separator.
+-We replace IDs in $[\mathrm{lo},\mathrm{hi})$, including the start but
+-excluding the end, without decoding and retokenizing.
++The tokenizer converts text to tokens, and its chat template supplies role
++labels and the generation prompt. The source span contains only skill
++text, excluding its header and separator. After rendering the prompt,
++character offsets identify all overlapping tokens in
++$[\mathrm{lo},\mathrm{hi})$, including the start but excluding the end.
++We replace these token IDs directly without decoding and retokenizing.
+ 
+ \paragraph{Models and decoding.}
+ The four main models are Qwen3-8B ($36$ layers, hidden width $4096$),
+@@ -78,19 +78,19 @@
+ template. Decoding is greedy, with Qwen's extended-reasoning mode disabled.
+ Earlier state replacement uses PyTorch scaled dot-product attention (SDPA).
+ Regenerated Qwen and Mistral TheoremQA runs use SDPA for transfer, eager
+-attention for knockout and $900$ new tokens. Historical Qwen3-8B/MedCalc also
++attention for knockout and $900$ new tokens. Equivalence to historical
++knockout budgets remains unverified. Historical Qwen3-8B/MedCalc also
+ allows $900$ tokens in both runs, with different attention implementations.
+ Repair and path experiments use BF16, eager attention and $1{,}536$ new
+ tokens. All their conditions split prefill before the final prompt token,
+ allowing cache writes before its recomputation.
+-All cuts span prefill and decoding. Layer indices in the path comparisons
+-refer to the measured blocks, not matched computational stages across models.
+ 
+ \paragraph{Position and state checks.}
+-Length matching preserves question positions. Patches replace prefill
+-block outputs indexed separately from scored answer tokens. Identity
+-controls write back receiver states. A final-layer patch reproduces donor
+-next-token scores at that position. Cuts preserve the causal mask.
++Length-matched skills preserve question positions. Patches replace selected
++block outputs during prefill, indexed within the prompt separately from
++scored answer tokens. Identity controls write back receiver states.
++Replacing a final-layer state also reproduces the donor's next-token scores
++at that position. Attention cuts preserve the causal mask.
+ 
+ \paragraph{Checking the prefill procedure.}
+ A preliminary comparison of full and split prefill uses one item from each
+@@ -112,11 +112,13 @@
+ use this correction. Knockout modifies masks without donor-state capture.
+ 
+ \paragraph{Development and replication.}
+-Initial MedCalc controls sampled four rescued questions from each of the
+-$40$ largest eligible calculator groups. The corrected Qwen3-8B rerun
+-uses all rescued questions from groups with at least two
+-(Table~\ref{tab:fullscale}). The eight-cell depth study uses common items
+-for both interventions.
++The initial MedCalc controls sampled four rescued questions from each of
++the $40$ calculators with the most eligible questions. The corrected rerun
++uses every rescued question from calculators with at least two, retaining
++the sample labels in Table~\ref{tab:fullscale}. This rerun is specific to
++Qwen3-8B/MedCalc. The eight-cell depth study uses common items for both
++interventions. New-family pools inherit earlier models' selection, so
++these are conditional, not full-benchmark estimates.
+ 
+ \paragraph{Extension pools and grading checks.}
+ The Llama and DeepSeek extensions use frozen pools of $446$ MedCalc and
+@@ -135,8 +137,19 @@
+ Table~\ref{tab:probe}, the MedCalc question counts are $97,35,112,25$ and
+ correct-span counts are $87,24,101,14$. TheoremQA counts are $61,61,92,54$,
+ with $57,52,70,31$ correct. The DeepSeek/TheoremQA cells use the final
+-$54$-item grading correction.
++$54$-item grading correction. These sets need not equal the layer-$8$
++or depth-study sets.
+ 
++\paragraph{Scientific scope.}
++Depth ordering and layer-$16$ repair gains describe the reported
++conditional populations and protocols. Figure~\ref{fig:mechanism}'s
++path comparison remains specific to Qwen3-8B/MedCalc. Source knockout
++combines reading from the skill and attention within it. The cuts span
++both prefill and decoding, so reader-only or phase-specific claims need
++separate tests. Paired outcomes support same-question failures for
++Qwen3-8B and Mistral-7B on MedCalc, not all eight settings. Extension to
++interactive agents, skill retrieval errors and learned compression remains open.
++
+ \paragraph{Artifact availability.}
+ Stored artifacts contain configurations, question IDs, answers and token
+ sequences. An anonymous review archive is not yet linked.
+diff --olcli a/overleaf-skillvector/appendix/b-full-dataset-rerun.tex b/overleaf-skillvector/appendix/b-full-dataset-rerun.tex
+--- a/overleaf-skillvector/appendix/b-full-dataset-rerun.tex
++++ b/overleaf-skillvector/appendix/b-full-dataset-rerun.tex
+@@ -25,7 +25,8 @@
+ \label{eq:dose-rank}
+ \end{equation}
+ Full rank with $\alpha=1$ is full replacement, and $\alpha=0.5$ is half
+-the state difference. Rank controls use $\alpha=1$.
++the state difference, not half the token positions. Rank controls use
++$\alpha=1$. Not every combination of $\alpha$ and $k$ was tested.
+ Increasing $k$ from $32$ to $64$ restores much of the recovery.
+ A bottom-$k$ control instead retains the least prominent directions of
+ the centered variation, with the same mean retained.
+@@ -33,7 +34,7 @@
+ gives the largest recovery when copied alone in both samples.
+ The same-category mean donor changes from $0.05$ to $0.12$, on the $41$
+ full-rerun items where it is available. Here category refers to a calculator
+-group derived from skill-title keywords (for example, related fluid calculations). The intervention averages
++group derived from skill-title keywords (for example, related fluid calculations), not a model family. The intervention averages
+ donor-minus-receiver state differences from other calculators in that group.
+ 
+ \paragraph{The depth sweep at one-layer resolution.} The subset sweep measured
+@@ -42,13 +43,14 @@
+ recovery is $0.98,0.98,0.89,0.74$ at layers $0,4,8,12$, then
+ $0.16,0.16,0.06,0.06,0.07,0.03,0.02,0.03$ at $13$ through $20$ under the group screen.
+ The item screen gives $1.00,0.98,0.94,0.79$ then
+-$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$.
+-Both screens show their largest local decline
++$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$. Under the group screen,
++layers $13$ and $14$ both round to $0.16$. Under the item screen, they
++differ at $0.32$ and $0.34$. Both screens show their largest local decline
+ between layers $12$ and $13$.
+ 
+ \paragraph{Broader screening and boundary sensitivity.}
+-The item-level screen retains the transfer decline. Paired knockout
+-comparisons use the common-item populations. Using transfer thresholds
++The item-level screen retains the transfer decline, but has no full
++paired knockout curve. On the common-item populations, using transfer thresholds
+ $\tau=0.4$ or $0.6$ with dependence thresholds $1-\tau$ preserves the
+ boundary ordering in all eight main comparisons. Qwen3-8B/MedCalc dependence
+ first falls to at most half at layer $25$, rises above half again at $26$,
+@@ -62,22 +64,28 @@
+ Qwen3-8B at $T=13$ and $25/43$ ($58.1\%$) for Mistral-7B at $T=7$,
+ on $14$ and $15$ MedCalc skill groups. These sets differ from
+ Table~\ref{tab:paireddepth}. Four items in each pass the transfer
+-no-skill baseline despite failing it under knockout.
++no-skill baseline despite failing it under knockout, so common IDs do
++not imply identical baseline outcomes. This paired check is not
++extended to the other model and task combinations.
+ 
+ \paragraph{Repeated replacement as a consistency check.}
+ \label{app:repeated}
+ On the $135$ screened MedCalc items, replacing source states at layers
+ $8$ to $11$, $12$ to $15$, $14$ to $19$ and $16$ to $35$ recovers
+ $0.89,0.74,0.16,0.06$. Starting at the first layer recovers $0.98$.
+-Repeated and single writes produce identical tokens from each starting
+-layer, consistent with Appendix~\ref{app:cache-coverage}'s causal argument.
++Recorded repeated and single writes from the same starting layer produce
++identical output tokens. With identical preceding context and causal
++attention, one complete source-span write can determine later source
++states. Repeating it therefore does not provide an independent test of
++state maintenance or explain the late transfer deficit.
+ 
+ \paragraph{A continuous readout at the same boundary.}
+ We generate correct-skill reasoning once per item, then score that fixed
+ sequence under each intervention. This is teacher forcing: recorded
+ preceding tokens replace newly generated ones. Mean token log-probability
+-uses natural logarithms, measured in nats. Higher values indicate stronger
+-predictions of the recorded sequence. We normalize it as
++measures how strongly the model predicts the recorded reasoning. It uses
++natural logarithms, measured in nats, with higher scores indicating more
++likely sequences. We normalize it as
+ $z=(\ell_L-\ell_{\mathrm{recv}})/(\ell_{\mathrm{gold}}-\ell_{\mathrm{recv}})$,
+ where $\ell$ is the mean log-probability for the patched, receiver or
+ donor condition. This $z$ differs from knockout retention $q$.
+@@ -85,7 +93,8 @@
+ On $442$ donor-correct items from $48$ calculators, $z$ is
+ $0.999,0.989,0.960,0.831,0.598,0.595,0.340,0.201,0.129$ at layers
+ $0,4,8,12,13,14,16,20,24$. The $0.233$ drop from $12$ to $13$ is near
+-the accuracy boundary in the separate $134$-item depth set.
++the main accuracy boundary, but these $442$ items differ from the
++$134$-item depth set. Only the location is compared.
+ The decline spans all four quarters of the reasoning sequence
+ ($0.20,0.26,0.31,0.21$). After supplying the reasoning, all conditions
+ predict the final number closely: median log-probabilities lie between
+@@ -102,15 +111,15 @@
+ the interaction tests in \S\ref{sec:mechanism}.
+ 
+ 
+-\subsection{Source-cache repair and attention-path experiments}
++\subsection{Focused source-cache and path-specific experiments}
+ \label{app:mechanism}
+ 
+-The focused Qwen3-8B/MedCalc experiments fix $\mathcal Q_0$, comprising
+-$124$ historical IDs from $14$ calculators, before inference. Four NVIDIA
+-RTX 4090 graphics processors each receive every fourth ID, using the
+-$1{,}536$-token protocol in Appendix~\ref{app:detail}.
+-Let $e_i^X$ be binary correctness for item $i$ in condition $X$, with
+-$0$ denoting no skill. Selection uses only fresh baselines:
++The focused Qwen3-8B/MedCalc experiments fix a candidate set $\mathcal Q_0$
++of $124$ historical IDs from $14$ calculators before inference, assigning
++every fourth ID to each of four NVIDIA RTX 4090 graphics processors. They use BF16, eager
++attention, greedy decoding and $1{,}536$ new tokens. Let $e_i^X$ be the
++benchmark's binary correctness label for item $i$ in condition $X$,
++with $0$ denoting the no-skill baseline. Selection uses only fresh baselines:
+ \begin{equation}
+ \mathcal Q_{\mathrm{rep}}
+ =\{i\in\mathcal Q_0:e_i^D=1,\ e_i^R=e_i^0=0\}.
+@@ -125,14 +134,17 @@
+ $2{,}356$ generations, the path grid $1{,}488$, and worker identity checks
+ $100$. All $48$ own-state writebacks are token-exact.
+ 
+-Figure~\ref{fig:mechanism} and Table~\ref{tab:mechanism-contrasts} use this
+-rule for eight comparisons with separate candidates. Repair and path tests
+-share item IDs and baseline tokens within each row. Repair is measured
+-at $L8$, $L12$, $L16$ and $L24$, and path cuts at $L8$, $L16$ and $L24$.
+-Writes, masks and contrasts follow
++Table~\ref{tab:mechanism-contrasts} extends layer-$16$ repair to eight
++model and task combinations under the same fresh-baseline rule, each with
++its own candidates. Writes, masks and contrasts follow
+ Eqs.~\eqref{eq:cache}, \eqref{eq:reading-cut} and \eqref{eq:repair-effects}.
++All-layer source-KV-only,
++later-layer KV-only and matched other-skill cache controls are not in the
++reported grid. They remain necessary to distinguish coverage from more
++specific interactions with execution history.
+ 
+-\paragraph{Qwen3-8B/MedCalc truncation sensitivity.}
++
++\paragraph{Truncation sensitivity.}
+ We retain all intervention outcomes, including outputs stopped at the
+ generation limit, which we call truncated outputs. For the
+ prespecified difference between $SC$ and $S$ at layer $16$, the gain is $38.6$ percentage
+@@ -144,7 +156,8 @@
+ Scoring truncated $S$ answers as correct and truncated $SC$ answers as
+ incorrect still leaves a
+ $35.1$-point repair advantage. At layer $24$, $SC$ and $SC+\mathrm{cut}$ truncate $3$ and $28$
+-outputs and show no additional loss in measured accuracy.
++outputs and show no additional loss in measured accuracy. This depth is not
++used to claim independence after repair.
+ 
+ At layer $24$, reader and source-self cuts retain $29/114$ and $110/114$
+ correct answers. Their loss difference is $71.1$ points.
+@@ -153,12 +166,4 @@
+ Both contrasts survive this worst-case reassignment. Experiment records retain counts for each condition, file checksums
+ and these sensitivity calculations.
+ 
+-\paragraph{Redundant combined cut.}
+-With causal attention and otherwise positionwise operations, earlier
+-tokens cannot read the skill. Persistent reading cuts also prevent its
+-changed states from reaching later tokens. Adding a within-skill cut
+-therefore leaves outputs unchanged by induction over layers and generated
+-tokens. We omit this redundant condition. The argument does not apply
+-when later reading is allowed.
+-
+ \input{appendix/cache-coverage}
+diff --olcli a/overleaf-skillvector/appendix/behavior-recovery.tex b/overleaf-skillvector/appendix/behavior-recovery.tex
+--- a/overleaf-skillvector/appendix/behavior-recovery.tex
++++ b/overleaf-skillvector/appendix/behavior-recovery.tex
+@@ -1,15 +1,18 @@
+ \subsection{A sufficient condition for behavioral recovery}
+ \label{app:behavior-recovery}
+ 
+-We apply margin-based stability reasoning \citep{tsuzuku2018lipschitz}
+-to cached decoding, adding a sensitivity assumption to Eq.~\eqref{eq:cache-distance}.
++Equation~\eqref{eq:cache-distance} sums squared differences over disjoint
++coordinates. An output guarantee additionally requires a sensitivity
++bound. We apply standard margin-based stability reasoning
++\citep{tsuzuku2018lipschitz} to cached decoding.
+ 
+ \paragraph{One-step guarantee.}
+ Fix the model, last prompt token $u_*$, positions and original mask $M_0$.
+-For vocabulary $\mathcal V$, let $F(\mathbf z)\in\mathbb R^{|\mathcal V|}$
+-map initial prefix caches to next-token logits. Assume finite sensitivity
+-$\kappa$ over the compared states in $\Omega$. The infinity norm is the
+-largest absolute change in any token score:
++Let $F(\mathbf z)\in\mathbb R^{|\mathcal V|}$ be the next-token logits
++computed from the initial prefix cache, with vocabulary $\mathcal V$.
++Assume a finite sensitivity bound $\kappa$ on a set $\Omega$ containing
++the compared cache states. The infinity norm below is the largest
++absolute change in any token score:
+ \begin{equation}
+ \|F(\mathbf z)-F(\mathbf z')\|_\infty
+ \le\kappa\|\mathbf z-\mathbf z'\|_2,\qquad
+@@ -34,25 +37,34 @@
+ to increase. Strict inequality excludes ties. \hfill$\square$
+ 
+ \paragraph{Complete generation.}
+-Let the donor produce $N$ tokens including its stopping token.
+-$F_t^D(\mathbf z)$ processes $u_*$ and fixed donor history $y_{D,<t}$
+-from initial cache $\mathbf z$, recomputing all new caches.
+-Assume Eq.~\eqref{eq:cache-lipschitz} for $F_t^D$ with bound $\kappa_t$
+-and donor margin $m_{D,t}>0$. The bound includes all intervening cache updates:
++Let the donor produce $N$ tokens, including its stopping token.
++Define $F_t^D(\mathbf z)$ by starting from the initial cache
++$\mathbf z$, processing $u_*$, and supplying the fixed donor history
++$y_{D,<t}$ while recomputing all new caches.
++Assume Eq.~\eqref{eq:cache-lipschitz} holds for $F_t^D$ with bound
++$\kappa_t$, and let $m_{D,t}>0$ be its donor margin.
++These bounds include all cache updates from the initial observation
++point, not just the last decoding step. Then
+ \begin{equation}
+ \bigl[\ \forall t\le N:\ 2\kappa_t\varepsilon_{SC}<m_{D,t}\ \bigr]
+ \quad\Longrightarrow\quad \hat y_{SC}=\hat y_D.
+ \label{eq:sequence-recovery}
+ \end{equation}
+-The first token agrees by the one-step result. If earlier tokens agree,
+-decoding follows the history defining $F_t^D$, so token $t$ agrees.
+-Induction under the common stopping rule gives an identical sequence,
+-which is correct whenever the donor's answer is correct.
++The one-step result gives the same first token. If the previous tokens
++agree, actual decoding follows the fixed history defining $F_t^D$, so
++the same argument gives token $t$. Induction includes the stopping
++token under the common stopping rule. If the donor answer is correct,
++the identical sequence is correct too.
+ 
+ \paragraph{Scope.}
+-Common valid $\kappa_t$ over $D$, $S$ and $SC$ give $SC$ no larger error
+-bounds (Eq.~\eqref{eq:cache-distance}). Losing cancellation can increase
+-actual errors, so accuracy gains are not guaranteed. Different sequences
+-may answer correctly, making this condition only sufficient.
+-$SC+\mathrm{cut}$ changes the mask and prefix and is excluded.
+-Sensitivity bounds and itemwise margins remain unverified.
++With common valid $\kappa_t$ on a domain containing $D$, $S$ and $SC$,
++Eq.~\eqref{eq:cache-distance} makes these error bounds no larger for
++$SC$ than for $S$. Actual logit errors need not decrease: errors from
++different cache coordinates may cancel before the write.
++Thus neither per-item accuracy nor the measured gain is guaranteed.
++The condition is sufficient, not necessary, since different sequences
++can yield the same correct answer. It does not compare $SC+\mathrm{cut}$,
++which changes both the mask and prefix computation.
++We have not established useful $\kappa_t$ bounds or checked the margin
++conditions on experimental items. This is a conditional explanation,
++not a numerical certificate for the observed recovery.
+diff --olcli a/overleaf-skillvector/appendix/cache-coverage.tex b/overleaf-skillvector/appendix/cache-coverage.tex
+--- a/overleaf-skillvector/appendix/cache-coverage.tex
++++ b/overleaf-skillvector/appendix/cache-coverage.tex
+@@ -7,6 +7,7 @@
+ and the same exact-arithmetic computation without extra attention cuts.
+ Donor and receiver tokens differ only within the complete, contiguous
+ source interval $\mathcal I=[\mathrm{lo},\mathrm{hi})$ in the prefix.
++It is not an experimental finding.
+ 
+ \paragraph{Proposition (source-cache coverage).}
+ Suppose $S$ replaces the entire source output of block $L$ before the
+@@ -36,7 +37,7 @@
+ 
+ \input{tables/tab-cache-coverage}
+ 
+-\paragraph{Remaining execution state.}
++\paragraph{What the result does and does not determine.}
+ The post-prefill write preserves the other caches
+ (Table~\ref{tab:cache-coverage}). Under these assumptions,
+ \begin{equation}
+@@ -57,8 +58,8 @@
+ from $\mathcal B_S$, and continuation uses a different mask. The contrast
+ includes both prefill and decoding effects.
+ 
+-Code inspection confirms the stated write ordering. Exact source-cache
+-identities rely on the arithmetic assumption above. Discrepancies against
+-the donor in BF16 runs remain unmeasured.
++Code inspection confirms the stated write ordering. It does not establish
++the exact source-cache identities in BF16 runs, where discrepancies
++against the donor have not been measured.
+ 
+ \input{appendix/behavior-recovery}
+diff --olcli a/overleaf-skillvector/figures/fig-intervention-design.pdf b/overleaf-skillvector/figures/fig-intervention-design.pdf
+Binary files a/overleaf-skillvector/figures/fig-intervention-design.pdf and b/overleaf-skillvector/figures/fig-intervention-design.pdf differ
+diff --olcli a/overleaf-skillvector/figures/fig-mechanism-results.pdf b/overleaf-skillvector/figures/fig-mechanism-results.pdf
+Binary files a/overleaf-skillvector/figures/fig-mechanism-results.pdf and b/overleaf-skillvector/figures/fig-mechanism-results.pdf differ
+diff --olcli a/overleaf-skillvector/figures/fig-teaser.pdf b/overleaf-skillvector/figures/fig-teaser.pdf
+Binary files a/overleaf-skillvector/figures/fig-teaser.pdf and /dev/null differ
+diff --olcli a/overleaf-skillvector/figures/figureteaser.pdf b/overleaf-skillvector/figures/figureteaser.pdf
+Binary files /dev/null and b/overleaf-skillvector/figures/figureteaser.pdf differ
+diff --olcli a/overleaf-skillvector/main.tex b/overleaf-skillvector/main.tex
+--- a/overleaf-skillvector/main.tex
++++ b/overleaf-skillvector/main.tex
+@@ -1,4 +1,4 @@
+- %% main.tex --- "Transferring and Reading Skills in Language Model Contexts"
++%% main.tex --- "Transferring and Reading Skills in Language Model Contexts"
+ %% Submission format: The ACM Web Conference 2027 (WWW '27), research track.
+ %%
+ %% The track asks for \documentclass[sigconf, anonymous, review]{acmart}
+@@ -139,8 +139,7 @@
+ \input{sections/02-related-work}
+ \input{sections/03-problem-formulation}
+ \input{sections/04-experiment}
+-% Let the discussion follow the results without forcing a new column.
+-\input{sections/05-discussion}
++\FloatBarrier % All results displays precede the conclusion and references.
+ \input{sections/05-conclusion}
+ \label{endmain}
+ 
+diff --olcli a/overleaf-skillvector/sections/00-abstract.tex b/overleaf-skillvector/sections/00-abstract.tex
+--- a/overleaf-skillvector/sections/00-abstract.tex
++++ b/overleaf-skillvector/sections/00-abstract.tex
+@@ -5,9 +5,10 @@
+ We study this relationship using skills, sets of instructions that describe how to perform a task.
+ At different layers, we transfer states at the instruction positions from an execution using the correct skill into one using an unrelated skill.
+ Separately, we block attention to the skill in the original execution.
+-Across four models and two benchmarks, all eight comparisons show that transfer weakens at later layers while the original execution remains strongly dependent on the skill.
+-We then augment state transfer with key/value caches, the stored information used by attention.
+-At layer 16, this joint intervention improves accuracy over state transfer alone by 6.8 to 43.4 percentage points across all eight combinations.
+-For Qwen3-8B/MedCalc, accuracy rises from 3.5\% to 42.1\%, and blocking subsequent skill reading reduces it to 7.0\%.
+-These findings establish a separation between using contextual skills and reusing their internal states, and demonstrate cache-assisted recovery across models and tasks.
++On screened questions across eight evaluated combinations covering four models and two benchmarks, transfer weakens at later layers while the original execution remains strongly dependent on the skill.
++We then test whether the stored information used by attention, known as key/value caches, can help restore late transfer.
++In a focused experiment on Qwen3-8B/MedCalc at layer 16, transferring these caches together with the states raises accuracy from 3.5\% to 42.1\%.
++Blocking subsequent reading of the skill reduces accuracy to 7.0\%.
++These findings distinguish using a contextual skill from reusing its internal states.
++Across all eight combinations at layer 16, including cached information improves accuracy over state transfer alone, while blocking subsequent skill reading reduces the recovered performance.
+ \end{abstract}
+diff --olcli a/overleaf-skillvector/sections/01-introduction.tex b/overleaf-skillvector/sections/01-introduction.tex
+--- a/overleaf-skillvector/sections/01-introduction.tex
++++ b/overleaf-skillvector/sections/01-introduction.tex
+@@ -2,14 +2,15 @@
+ % right-column top, alongside the abstract, using standard ACM float placement.
+ \begin{figure}[t]
+ \centering
+-\includegraphics[width=\columnwidth]{fig-teaser.pdf}
+-\caption{Weak transfer and continued skill use at the same later depth.
+-Copying skill-position states from a correct-skill run into an unrelated-skill
+-run gives strong early recovery (left) and weak late recovery (middle).
+-At that same later depth, the original run still needs skill access:
+-retaining access preserves performance, while cutting it reduces accuracy
+-(right). S and Q label skill and question tokens.
+-Figure~\ref{fig:transferreading} gives the measured depth profiles.}
++\includegraphics[width=\columnwidth]{overleaf-skillvector/figures/figureteaser.pdf}
++\caption{Skill use can persist as state transfer weakens.
++Copying internal vectors at skill positions from a run with the correct
++skill into one with an unrelated skill yields strong early recovery but
++weak late recovery. At those later layers, blocking attention to the
++skill can still impair the original run. S and Q denote skill and
++question tokens, the text units processed by the model.
++This schematic summarizes the measured depth profiles in
++Figure~\ref{fig:transferreading}.}
+ \Description{A schematic follows transformer depth from input to output.
+ At an early layer, replacing skill-position hidden states yields strong
+ recovery. At a later layer the same type of replacement yields weak recovery.
+@@ -36,8 +37,8 @@
+ Web agents use reusable skills and workflows to guide later actions
+ \citep{wang2024awm,wang2026webxskill}. This motivates studying whether the
+ internal states formed from such instructions can also be reused. We
+-study this question through controlled question answering after a skill
+-has been selected, isolating the use and transfer of its instructions.
++isolate that question through controlled question answering after a skill
++has been selected, rather than evaluating an interactive Web agent.
+ 
+ The difficulty is interpreting a failed transfer. If copying a skill's
+ hidden states no longer restores performance, has the model stopped
+@@ -64,18 +65,18 @@
+ 
+ We next test whether adding information omitted by hidden-state copying
+ can improve late transfer. Attention stores information from previously
+-processed tokens in a key/value (KV) cache. At layer $16$, copying these
+-caches together with hidden states improves accuracy over state transfer
+-alone in all eight settings, by $6.8$ to $43.4$ percentage points.
+-Blocking subsequent skill reading reduces the recovered accuracy in each
+-setting. For Qwen3-8B/MedCalc, joint replacement raises accuracy from
+-$3.5\%$ to $42.1\%$, and the reading cut reduces it to $7.0\%$.
+-The shared direction across models and tasks establishes cache-assisted
+-partial restoration alongside continued use of the skill.
++processed tokens in a key/value (KV) cache. In a focused Qwen3-8B/MedCalc
++experiment at layer $16$, copying skill-position caches together with
++hidden states raises accuracy from $3.5\%$ to $42.1\%$. Under the same
++joint-replacement condition, blocking subsequent reading of the skill
++reduces accuracy to $7.0\%$. Layer-$16$ comparisons across all eight
++settings likewise improve over state transfer alone and lose accuracy
++under a reading cut. These observations establish partial restoration
++without explaining the entire depth separation.
+ 
+ The paper follows three steps: validate early transfer
+ (\S\ref{sec:battery}), establish its separation from continued skill use
+ (\S\ref{sec:depth}), and test the extent of cache-assisted restoration
+-(\S\ref{sec:mechanism}). Together, the tests distinguish the ability to
+-use contextual instructions from the ability to reuse their internal
+-states, and identify cached information as a component that improves reuse.
++(\S\ref{sec:mechanism}). The results concern screened questions and a
++wrong-skill receiving context. Within that scope, they show why reusing
++skill states and continuing to use a skill must be measured separately.
+diff --olcli a/overleaf-skillvector/sections/02-related-work.tex b/overleaf-skillvector/sections/02-related-work.tex
+--- a/overleaf-skillvector/sections/02-related-work.tex
++++ b/overleaf-skillvector/sections/02-related-work.tex
+@@ -28,6 +28,8 @@
+ skill-instruction span and compare transfer into a wrong-skill execution
+ with blocking attention to that span in the original execution on common questions.
+ The comparison measures how the two effects separate across depth.
++Differences in tasks and interventions limit comparisons with earlier
++context-masking findings.
+ 
+ PrefillNotes \citep{li2026prefillnotes} studies editable and reusable KV
+ caches. In its field-editing tasks, replacing local KV entries can fail
+@@ -35,7 +37,9 @@
+ composes precompiled skill caches into new contexts. Our focus is the
+ depth separation between skill-state transfer and original-run source
+ dependence. We then ask whether copying source caches together with
+-states partially restores late transfer.
++states partially restores late transfer. This focused test does not
++establish that failure to update previously computed conclusions causes
++our observed deficit.
+ 
+ \paragraph{Skills and reusable context.}
+ Agent Skills organize instructions and resources for on-demand use
+diff --olcli a/overleaf-skillvector/sections/03-problem-formulation.tex b/overleaf-skillvector/sections/03-problem-formulation.tex
+--- a/overleaf-skillvector/sections/03-problem-formulation.tex
++++ b/overleaf-skillvector/sections/03-problem-formulation.tex
+@@ -24,17 +24,17 @@
+ \begin{figure*}[t]
+ \centering
+ \includegraphics[width=\textwidth]{fig-intervention-design.pdf}
+-\caption{Timing of state repair, cache repair and the reading cut in the receiver.
+-The prefix contains all prompt tokens except the last.
+-(a) $S$ copies donor source states at block $L$'s output during prefix prefill.
++\caption{Source-component repair and reader-path test. (a) $S$ copies donor
++source states at block $L$'s output during receiver prefix prefill.
++Here the prefix is the prompt except its last token.
+ (b) $C$ copies source-position key/value (KV) entries at layers $0$ through
+-$L$ after prefix prefill, before final-token recomputation. $SC$ combines
+-these two writes, then recomputes the final prompt token and generates.
+-(c) $SC+\mathrm{cut}$ installs a reading mask before prefill, blocking
+-reader-to-source attention from $L+1$ onward during prefill and decoding.
+-Source-to-source attention remains unmasked. Reader states and caches
+-evolve through computation rather than direct replacement.
+-Figure~\ref{fig:mechanism}(b) separately tests cuts in the original correct-skill run.}
++$L$ after prefix prefill, before recomputing the final prompt token.
++$SC$ combines both writes. (c) $SC+\mathrm{cut}$ additionally blocks
++reader-to-source attention from $L+1$ onward during both prefill and
++decoding. The mask is installed before prefill. Source-to-source edges
++remain unmasked during prefill.
++Reader states and KV entries are not directly replaced, but later reader
++computation can change indirectly. Generation follows final-token recomputation.}
+ \Description{Three panels illustrate source-state replacement at block L's
+ output, source-key/value replacement at layers zero through L, and joint
+ replacement with a reader-to-source attention cut from layer L plus one.
+@@ -55,6 +55,8 @@
+ \end{equation}
+ The write occurs during prefill, after which the receiver continues with
+ the patched states. Other positions at that layer remain unchanged.
++Because this execution has processed the wrong skill, the measured effect
++includes supplying useful information in that receiving context.
+ 
+ \paragraph{Blocking attention to the skill.}
+ In the original correct-skill execution, we block attention to source
+@@ -107,8 +109,8 @@
+ \end{equation}
+ Higher $d$ means more correct answers are lost when source attention is
+ blocked. We compare $\rho$ and $d$ on common eligible question IDs, while
+-retaining each test's baselines. The two measures describe restoration in
+-the receiver and dependence in the donor. A separate paired-outcome check tests
++retaining each test's baselines. They are effects in different executions,
++not complementary probabilities. A separate paired-outcome check tests
+ whether individual questions fail both interventions.
+ 
+ \paragraph{Depth boundaries.}
+@@ -123,10 +125,12 @@
+ \end{equation}
+ We report these boundaries when both crossings exist.
+ The separation set $\mathcal W=\{L:\rho(L)<0.5,\ d(L)>0.5\}$ contains
+-layers with weak transfer and strong source dependence. This set may
+-contain several intervals. The thresholds summarize half-effect sizes,
+-and Figure~\ref{fig:transferreading} retains later threshold crossings.
+-Depth indexes processing layers within each token's computation.
++layers with weak transfer and strong source dependence. It need not be
++one interval. The thresholds summarize effect size: they do not mark
++complete transfer failure or complete independence. We retain later
++threshold crossings in Figure~\ref{fig:transferreading}. Layer depth is also
++separate from generation time, since each generated token passes through
++the layer stack.
+ 
+ \paragraph{The execution state before generation.}
+ For one question, split the complete $n$-token prompt before its last token
+@@ -146,7 +150,8 @@
+ \label{eq:continuation}
+ \end{equation}
+ Here $M_X$ specifies attention masks, and $\mathcal G$ includes computing
+-$u_*$ and generating the answer from both source and other prefix caches.
++$u_*$ and generating the answer. Source caches are only one part of this
++execution state.
+ 
+ \paragraph{Cache replacement and joint repair.}
+ After prefix prefill and before computing $u_*$, cache replacement writes
+@@ -156,15 +161,16 @@
+ \label{eq:cache}
+ \end{equation}
+ The prefix is computed without state replacement for $C$ ($X=R$), or
+-with the block-$L$ write for $SC$ ($X=S$). The post-prefill write preserves
+-the other prefix caches. Thus $\mathcal B_C=\mathcal B_R$ and
++with the block-$L$ write for $SC$ ($X=S$). The cache write does not replay
++prefix computation. Thus $\mathcal B_C=\mathcal B_R$ and
+ $\mathcal B_{SC}=\mathcal B_S$, although $\mathcal B_S$ can differ from
+ $\mathcal B_R$ through indirect effects of $S$.
+ Under the causal assumptions in Appendix~\ref{app:cache-coverage}, ideal
+ state replacement reconstructs source KV at layers above $L$. The explicit
+ cache write supplies layers $0$ through $L$, giving donor-aligned source
+-caches under $SC$ while retaining the receiver's other prefix caches
+-$\mathcal B_S$. Figure~\ref{fig:design} shows the write schedule.
++caches under $SC$. This conditional result does not imply
++$\mathcal B_S=\mathcal B_D$, identical answers, or an accuracy gain.
++Figure~\ref{fig:design} shows the write schedule.
+ 
+ \paragraph{From cache repair to output recovery.}
+ At this same observation point, flatten the prefix caches into
+@@ -185,20 +191,21 @@
+ \label{eq:cache-distance}
+ \end{equation}
+ Here $\|\cdot\|_2$ is the Euclidean length of a vector.
+-For an exact copy, the coordinate decomposition proves that the squared
+-cache distance decreases by precisely the replaced entries' squared error,
+-independently of the causal reconstruction claim above.
++This identity requires an exact copy, but not the
++causal reconstruction claim above. It proves a non-increase in cache
++distance, not necessarily in output error.
+ Appendix~\ref{app:behavior-recovery} gives a sufficient condition for
+ donor decoding: at every step, the change in each unnormalized token score,
+ called a logit, must be less than half the donor's margin. The margin is
+ the difference between its highest and second-highest scores.
+-The condition includes cache updates and stopping.
++The condition includes cache updates and stopping, and has not been
++verified on the measured items.
+ 
+ \begin{samepage}
+ \paragraph{Reading cuts and their timing.}
+ A \emph{skill-reading cut} blocks reader-to-source attention.
+ A \emph{within-skill attention cut} blocks source-to-source attention.
+-In $SC+\mathrm{cut}$, the reading mask is
++\emph{Both} applies both cuts. In $SC+\mathrm{cut}$, the reading mask is
+ \begin{equation}
+ \widetilde z^\ell_{ij}=
+ \begin{cases}
+@@ -213,8 +220,6 @@
+ change already during prefill. Consequently both $M_X$ and
+ $\mathcal B_X$ in Eq.~\eqref{eq:continuation} can differ from $SC$.
+ The separate original-run path tests start their cuts at $L$, not $L+1$.
+-Adding a within-skill cut to a persistent reading cut is structurally
+-redundant for the output (Appendix~\ref{app:mechanism}).
+ 
+ \paragraph{Three repair contrasts.}
+ On one fixed evaluation set under one protocol, let $a_X(L)$ denote
+@@ -230,5 +235,8 @@
+ These measure the added cache benefit, the interaction on the accuracy
+ scale, and sensitivity of joint repair to a reading cut.
+ Positive $\Gamma$ means the joint gain exceeds the sum of the individual
+-gains. These are intervention contrasts on the accuracy scale.
+-Multiplying them by $100$ gives percentage points.
++gains, without identifying a unique internal mechanism.
++$\Delta_{\mathrm{read}}$ compares two interventions. It does not identify
++the fraction of $\Delta_{\mathrm{cache}}$ caused by continued reading.
++Accuracies are fractions, so multiplying
++these differences by $100$ gives percentage points.
+diff --olcli a/overleaf-skillvector/sections/04-experiment.tex b/overleaf-skillvector/sections/04-experiment.tex
+--- a/overleaf-skillvector/sections/04-experiment.tex
++++ b/overleaf-skillvector/sections/04-experiment.tex
+@@ -74,19 +74,19 @@
+ The added control cells require correct donor and incorrect no-skill
+ baselines. Repair uses that rule plus an incorrect receiver for each
+ item. Llama and DeepSeek reuse fixed candidate pools selected by earlier
+-models. Intervention estimates are conditional on these selection rules.
++models. These are conditional populations, not full-benchmark estimates.
+ Each depth panel uses common question IDs for its two interventions.
+-Repair and path tests likewise share question IDs within each model and
+-task combination, using their own fresh-baseline screen.
+ Appendix~\ref{app:setup} details the distinct selection rules.
+ 
+ \paragraph{Protocol consistency.}
+ Historical Qwen3-8B and regenerated Qwen/Mistral TheoremQA runs use
+  different attention implementations for transfer and knockout.
+-Llama and DeepSeek use matching implementations. Repair and path cuts share a protocol
++Common question IDs do not remove this difference. Llama and DeepSeek
++use matching implementations. Repair and path cuts share a protocol
+ with fresh baselines. Identity controls copy receiver states back to
+ their original positions and reproduce its output tokens exactly.
+-Resetting the TheoremQA evaluator before every answer
++This verifies each intervention's internal consistency, not agreement
++between protocols. Resetting the TheoremQA evaluator before every answer
+ and reversing grading order preserve the labels. Implementation details
+ and corrections are in Appendix~\ref{app:setup}.
+ 
+@@ -100,8 +100,8 @@
+ the same $135$ questions correctly and the receiver answers none, giving
+ aggregate recovery $\rho=110/124=0.89$ (Table~\ref{tab:probe}). Patching the last prompt
+ position or the final $16$ positions has much smaller effects. The skill
+-span is therefore an effective intervention site. The matched-prefix
+-controls below compare content at equal replacement lengths.
++span is therefore an effective intervention site, although it also offers
++more replaced states than these final-position alternatives.
+ 
+ 
+ 
+@@ -144,7 +144,8 @@
+ the Euclidean length of the skill-state change. Rescaling
+ the correct patch to the receiver's norm still recovers $0.87$.
+ Together, these controls support a role for skill-specific content and
+-its arrangement.
++its arrangement. Their contrast applies to the screened population:
++other-skill and noise interventions are more effective in excluded groups.
+ The expanded table reports the same controls for every model and task.
+ Since layer $8$ follows the transfer boundary in several cells, its lower
+ recovery is consistent with Figure~\ref{fig:transferreading}.
+@@ -169,18 +170,18 @@
+ \begin{figure*}[t]
+ \centering
+ \includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
+-\caption{Repair and attention cuts across four models and two benchmarks.
+-MC denotes MedCalc and TQA denotes TheoremQA.
+-(a) Receiver accuracy at $L16$ for state replacement ($S$), cache
+-replacement ($C$), joint repair ($SC$), and joint repair with a reading
+-cut from $L17$ onward ($SC+\mathrm{cut}$).
++\caption{Repair and attention cuts on the same $114$ Qwen3-8B/MedCalc items
++from $14$ skills. (a) Receiver accuracy for state replacement ($S$), cache
++replacement ($C$), joint repair ($SC$), and joint repair with a reading cut
++from $L+1$ onward ($SC+\mathrm{cut}$). Bold numbers highlight $L16$.
+ (b) Correct answers lost in the original correct-skill run under cuts
+-from $L8$, $L16$ or $L24$ onward during prefill and decoding.
+-Skill reading blocks reader-to-source attention. Within-skill attention
+-blocks source-to-source attention. Each row uses the same
+-questions in both panels, with counts in Table~\ref{tab:mechanism-contrasts}.
+-Layer numbers index each model's blocks.}
+-\Description{Eight shared rows pair each of four models with MedCalc and TheoremQA. The left mint heatmap gives all 32 repair accuracies at layer 16 on a fixed zero-to-100-percent scale, with the joint-repair column bold. Three aligned panels on the right show 48 horizontal bars at layers 8, 16 and 24. Mint bars denote Skill reading cuts and pink bars denote Within-skill attention cuts. All three horizontal axes run from zero to 100 percent of originally correct answers lost. At layer 24, reading cuts cause larger losses than within-skill cuts in all eight rows, with varying magnitudes.}
++from the indicated layer onward. The Skill reading cut blocks
++reader-to-source attention. The Within-skill attention cut blocks
++source-to-source attention.
++Both applies the two cuts together. Bars show all three conditions at
++each measured layer. At $L24$, Skill reading loses $74.6\%$ versus
++$3.5\%$ for Within-skill attention, a $71.1$-percentage-point difference.}
++\Description{Left: a compact mint-green heatmap retains all sixteen repair accuracies on a fixed zero-to-100-percent scale. The L16 label is underlined and its values are bold, with 42.1 percent for joint repair emphasized above 3.5 for states and 7.0 with a reading cut. Right: three groups of horizontal bars show losses at L8, L16, and L24, with mint for Skill reading, pink for Within-skill attention, and gray-blue for Both. All nine values are labelled. At L8 the losses are 95.6, 96.5, and 95.6 percent. At L16 all are 95.6 percent. At L24 they are 74.6, 3.5, and 74.6 percent. The 71.1-percentage-point gap is labelled in the open area beside the short L24 within-skill bar.}
+ \label{fig:mechanism}
+ \end{figure*}
+ 
+@@ -196,22 +197,23 @@
+ Table~\ref{tab:paireddepth} summarizes their boundaries.
+ \end{samepage}
+ 
+-The dependence boundary follows the transfer boundary in all eight
+-comparisons. The gaps are $8$ to $20$ layers, or $22.2\%$ to $62.5\%$ of
+-model depth (Table~\ref{tab:paireddepth}). The common direction spans
+-both benchmarks and all four model families.
+-
+-\paragraph{A representative depth profile.}
+-For Qwen3-8B/MedCalc, recovery drops from $0.73$
++On the $134$ common Qwen3-8B/MedCalc questions, recovery drops from $0.73$
+ at layer $12$ to $0.16$ at $13$ and stays below $0.08$ from $15$ onward.
+ Dependence remains $0.93$ at $13$ and $0.75$ at $24$.
+ Throughout layers $13$ to $24$, transfer restores less than half of the
+ donor's gain while knockout removes more than half of the originally
+ correct answers (Figure~\ref{fig:transferreading}).
+ 
++\paragraph{Across models and tasks.}
++The dependence boundary follows the transfer boundary in all eight
++comparisons. The gaps are $8$ to $20$ layers, or $22.2\%$ to $62.5\%$ of
++model depth (Table~\ref{tab:paireddepth}). The question and skill-group counts delimit each comparison.
++DeepSeek/MedCalc has only $25$ selected questions, so its boundary may be
++sensitive to sample composition. Threshold checks do not measure that sensitivity.
++
+ \paragraph{Paired outcomes and robustness.}
+-The separation also occurs within questions. In the Qwen3-8B/MedCalc
+-paired check, $100/124$
++The separation also occurs within questions. On a stricter $124$-question
++Qwen3-8B/MedCalc set requiring both donors to be correct, $100/124$
+ ($80.6\%$) fail both interventions at layer $13$, and $113/124$ ($91.1\%$)
+ at $16$ (Appendix~\ref{app:joint-failure}). The boundary ordering also
+ holds at thresholds $0.4$ and $0.6$ in all eight comparisons. Broader
+@@ -221,40 +223,61 @@
+ \label{sec:mechanism}
+ 
+ \paragraph{Testing an omitted source component.}
+-Figure~\ref{fig:mechanism} compares all eight model and task combinations,
+-separating receiver repair at $L16$ (panel a) from attention cuts in the
+-original correct-skill run at $L8$, $L16$ and $L24$ (panel b).
++We test source-cache repair across all eight model and task combinations
++(Table~\ref{tab:mechanism-contrasts}). Figure~\ref{fig:mechanism}
++shows the detailed Qwen3-8B/MedCalc case on $114$ questions, separating receiver
++repair (panel a: $S$, $C$, $SC$ and $SC+\mathrm{cut}$) from attention-path
++cuts in the original correct-skill run (panel b).
+ 
++
++
+ \paragraph{Repair gains in the receiver.}
+-Adding caches improves accuracy over state transfer alone in all eight
+-layer-$16$ comparisons, by $6.8$ to $43.4$ percentage points
+-(Figure~\ref{fig:mechanism}a). Joint-repair accuracy ranges from $10.2\%$
+-to $62.3\%$. For Qwen3-8B/MedCalc, $S$, $C$ and $SC$ answer $4$, $8$
+-and $48$ of $114$ questions correctly ($3.5\%$, $7.0\%$, $42.1\%$).
++At layer $16$, $S$, $C$ and $SC$ answer $4$, $8$ and $48$ of the
++$114$ Qwen3-8B/MedCalc questions correctly ($3.5\%$, $7.0\%$, $42.1\%$).
+ The cache benefit is $\Delta_{\mathrm{cache}}=(48-4)/114$, or $38.6$
+ percentage points. The accuracy interaction is
+ $\Gamma=(48-4-8+0)/114$, or $31.6$ points (Eq.~\eqref{eq:repair-effects}).
+ At layer $24$, $SC$ reaches $25.4\%$, versus $0.9\%$ for $S$ and
+-$18.4\%$ for $C$. The added benefit of states alongside caches varies.
+-For Mistral/MedCalc at $L16$, $SC$ and $C$ both reach $18.4\%$, with
+-$\Gamma=-7.9$ points. Table~\ref{tab:mechanism-contrasts} reports all
+-individual conditions and contrasts.
++$18.4\%$ for $C$, still below the donor's $100\%$.
++Across all eight layer-$16$ comparisons, adding caches improves over
++states alone by $6.8$ to $43.4$ points, and a reading cut reduces joint
++accuracy by $2.2$ to $37.7$ points (Table~\ref{tab:mechanism-contrasts}).
++Each cell uses its own screened set. Joint repair does not always
++outperform cache replacement alone.
+ 
+ \paragraph{Reading under joint repair.}
+-Reading cuts reduce joint-repair accuracy by $2.2$ to $37.7$ points
+-across all eight layer-$16$ comparisons. For Qwen3-8B/MedCalc, accuracy falls
++At layer $16$ on Qwen3-8B/MedCalc, the reading cut reduces $SC$ accuracy
+ from $42.1\%$ to $7.0\%$, giving $\Delta_{\mathrm{read}}=(48-8)/114$,
+-or $35.1$ points. Thus the cross-model improvement from adding caches
+-coexists with continued use of the skill. The Qwen3-8B/MedCalc result at
+-$L24$ differs: the cut gives $27.2\%$ versus $25.4\%$ without it.
+-Appendix~\ref{app:mechanism} documents the layer grid and checks sensitivity
+-to outputs stopped at the generation limit.
++or $35.1$ points. This shows sensitivity to reading, not the fraction
++of the cache gain caused by reading. At $L24$, the cut instead gives
++$27.2\%$ versus $25.4\%$ without it, so the claim is layer-specific.
++The mask is installed before prefill, jointly with repair.
++On the $96$ items whose baselines finish before the generation limit,
++the layer-$16$ cache benefit remains $38.5$ points.
++Appendix~\ref{app:mechanism} checks outputs stopped at that limit.
+ 
+ \paragraph{Attention paths in the original run.}
+ Figure~\ref{fig:mechanism}(b) tests the original correct-skill execution.
+-At $L8$, both types of cut cause large losses across the eight rows.
+-At $L24$, Skill reading loses $11.9\%$ to $74.6\%$ of correct answers,
+-exceeding Within-skill attention by $6.8$ to $71.1$ points in every row.
+-The Qwen3-8B/MedCalc contrast is $74.6\%$ versus $3.5\%$.
+-At this measured depth, later positions' access to the skill has a
+-larger effect than attention among skill positions across all eight settings.
++At $L24$, blocking Skill reading loses $74.6\%$ of correct answers,
++versus $3.5\%$ for Within-skill attention, a $71.1$-point gap.
++Both gives the same loss as Skill reading. Either path causes large
++losses at $L8$ and $L16$. These three measured depths distinguish the
++paths in this run without explaining every repair condition or model.
++
++\paragraph{Interpretation and scope.}
++Cache replacement helps transfer but does not identify its unique failure
++cause. The coverage proof in Appendix~\ref{app:cache-coverage} concerns
++source caches, leaving other caches unmatched. The score-margin condition
++in Appendix~\ref{app:behavior-recovery} is sufficient for donor decoding
++but unverified here. Neither predicts the observed $42.1\%$ accuracy.
++Joint replacement changes both content and cache coverage. Positive
++$\Gamma$ alone does not identify how internal states interact
++\citep{vaidyanathan2026mediators}. All-layer, later-layer and matched
++other-skill cache controls would help separate these effects.
++
++Source knockout combines reading and within-skill attention, and cuts
++span prefill and decoding together. Matching historical Qwen attention
++implementations, using a neutral receiver and separating the two phases
++would test broader claims. The supported results are depth separation
++and partial layer-$16$ repair across eight settings. The detailed path
++comparison remains specific to Qwen3-8B/MedCalc.
+diff --olcli a/overleaf-skillvector/sections/05-conclusion.tex b/overleaf-skillvector/sections/05-conclusion.tex
+--- a/overleaf-skillvector/sections/05-conclusion.tex
++++ b/overleaf-skillvector/sections/05-conclusion.tex
+@@ -1,19 +1,18 @@
+ \section{Conclusion}
+-\label{sec:conclusion}
++\label{sec:discussion}
+ 
+-Using a contextual skill and reusing its internal states are distinct
+-capabilities. Across four models and two benchmarks, state transfer
+-weakens before the original execution's dependence on skill attention,
+-with half-effect boundaries separated by $8$ to $20$ layers.
+-Early content controls establish that the transferred states carry
+-skill-relevant information, and the depth comparisons show that this
+-information becomes harder to reuse while the skill remains useful.
++The effects of transferring skill states and blocking source attention
++can separate across depth. Across eight evaluated combinations of four
++models and two benchmarks, state transfer weakens before the original
++execution's dependence on source attention falls to the same half-effect
++threshold. Early controls validate the state-transfer test, while common
++question sets and threshold checks support the observed depth ordering.
+ 
+-Source-cache replacement provides a way to recover part of that transfer.
+-At layer $16$, adding caches improves accuracy over states alone by
+-$6.8$ to $43.4$ percentage points in all eight comparisons, while cutting
+-subsequent skill reading reduces the joint-repair accuracy in each.
+-The mathematical analysis connects cache alignment to output stability
+-under explicit conditions. Together, these findings motivate evaluating
+-state reuse separately from continued skill use and including cached
+-information in the design of reusable skill representations.
++At layer $16$, adding source caches improves over states alone in all
++eight comparisons, and a subsequent reading cut reduces joint-repair
++accuracy in each. The detailed Qwen3-8B/MedCalc case shows that this
++reading-cut effect does not hold at layer $24$. These results concern
++screened questions and a wrong-skill receiver. They do not fully explain
++the depth separation, but support two findings:
++continued skill use can persist when state reuse is weak, and including
++cached information can recover part of that lost transfer.
+diff --olcli a/overleaf-skillvector/sections/05-discussion.tex b/overleaf-skillvector/sections/05-discussion.tex
+--- a/overleaf-skillvector/sections/05-discussion.tex
++++ /dev/null
+@@ -1,29 +0,0 @@
+-\section{Discussion}
+-\label{sec:discussion}
+-
+-\paragraph{Potential applications.}
+-Our findings suggest a way to evaluate the reuse of contextual skills.
+-Consider a Web agent that repeatedly follows the same instructions across
+-requests. A reusable internal representation would need to preserve task
+-performance in the receiving execution. Our results motivate evaluating
+-this transfer separately from the original execution's dependence on the
+-skill. If a reuse method also removes access to the original instructions,
+-that additional change needs its own evaluation. The observed cache gains
+-motivate reuse methods that carry both hidden states and attention caches
+-across requests. Deployment studies can evaluate their latency, memory
+-use and task performance in interactive Web settings.
+-
+-\paragraph{Future work.}
+-A next step is to investigate which questions benefit from cache
+-replacement. The mathematical analysis connects remaining cache
+-differences to output stability under explicit assumptions. Measuring
+-these differences, their influence on token predictions and the donor's
+-prediction margins could test whether this framework helps distinguish
+-successful from unsuccessful repairs. Another direction is to separate
+-the effects of cache content and layer coverage through matched other-skill
+-copies and additional layer ranges. Separating attention cuts during prompt
+-processing from those during answer generation would clarify when continued
+-skill access matters. Finally,
+-testing neutral receiving contexts and multi-step Web workflows would
+-assess how far the observed separation extends beyond the screened
+-question-answering settings studied here.
+diff --olcli a/overleaf-skillvector/tables/tab-cache-coverage.tex b/overleaf-skillvector/tables/tab-cache-coverage.tex
+--- a/overleaf-skillvector/tables/tab-cache-coverage.tex
++++ b/overleaf-skillvector/tables/tab-cache-coverage.tex
+@@ -6,7 +6,7 @@
+ tokens. $D$ and $R$
+ denote donor and receiver source KV. $\mathcal B_R$ and $\mathcal B_S$
+ are all other prefix caches from the unpatched and state-patched runs.
+-The entries are identities derived under these assumptions.}
++The entries are derived identities, not measured cache agreement.}
+ \label{tab:cache-coverage}
+ \small
+ \renewcommand{\arraystretch}{1.18}
+diff --olcli a/overleaf-skillvector/tables/tab-fullscale-float.tex b/overleaf-skillvector/tables/tab-fullscale-float.tex
+--- a/overleaf-skillvector/tables/tab-fullscale-float.tex
++++ b/overleaf-skillvector/tables/tab-fullscale-float.tex
+@@ -1,6 +1,6 @@
+ \begin{table*}[tbp]
+ \caption{Screening and full-pool rerun for Qwen3-8B/MedCalc at layer $8$.
+-Entries show recovery
++This is a single-model check of sample selection. Entries show recovery
+ (Eq.~\ref{eq:rho}). The group screen keeps calculators whose receiver
+ solves no sampled question. The item screen keeps individual receiver
+ failures. Category means related calculator functions. Direction and
+
+19 file(s) differ from "6a2cfd49b99635e8e968576a": 1 added, 16 modified, 2 remote-only
+  remote-only files are left alone by push; use push --delete to remove them
+  a/ = remote as of 2026-10-23T15:07:49.195Z, b/ = local

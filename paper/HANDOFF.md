@@ -1,3 +1,9 @@
+## 2026-10-23 Overleaf最新版只读核查完成
+
+补实验已完成并以b7e4781提交推送；没有把新结果写入论文。本轮先保存完整olcli diff，再下载线上23文件与12页PDF，核对10月21日哈希基线及10月20日Git稿件。线上原机制正文Table3现为附录Table4（第11页），这一移动在10月21日已有；主要数学公式仍正文，共16个equation环境与10月21日逐字相同。线上新增Discussion、Figure4八组合，不能用旧本地单案例版覆盖。
+新实验主要应更新§4.3及一个独立聚焦对照展示，原Table4八组合数据保留，C_all不可写入原C列。具体说明：reports/Overleaf版本核查与更新留痕_20261023.md；最新源/PDF/hash/full diff：audit/overleaf-review-20261023/。没有上传或覆盖活动稿。
+用户希望云端行级留痕：当前olcli push已源码确认整文件替换，本地diff不是云端编辑日志。未来正式文本更新先验证增量编辑与History实际呈现；Track Changes是不同功能，权限未核验。本轮未打开项目History时间线，不声称识别作者或已验证上传条目的细粒度呈现。
+
 ## 2026-10-23 晚间恢复观察与独立审计（进行中）
 
 - 处理17:00迟到通知时实际已21:48。原CPU wt-family-prep-1018为timedShutdown STOPPED，两次start均平台InternalError，不再盲重试。通用wt-dev-cpu只读探测未成功，未启动任何其他实验。

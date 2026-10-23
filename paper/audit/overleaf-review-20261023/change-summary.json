@@ -1,0 +1,116 @@
+[
+  {
+    "path": "README.md",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "appendix/a-setup.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "appendix/b-full-dataset-rerun.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "appendix/behavior-recovery.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "appendix/cache-coverage.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "figures/fig-intervention-design.pdf",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "figures/fig-mechanism-results.pdf",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "figures/fig-teaser.pdf",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "figures/figureteaser.pdf",
+    "state": "removed",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "main.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "sections/00-abstract.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "sections/01-introduction.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "sections/02-related-work.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "sections/03-problem-formulation.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "sections/04-experiment.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "sections/05-conclusion.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "sections/05-discussion.tex",
+    "state": "added",
+    "baseline_hash_verified": false,
+    "local_matches_20261021_baseline": false
+  },
+  {
+    "path": "tables/tab-cache-coverage.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  },
+  {
+    "path": "tables/tab-fullscale-float.tex",
+    "state": "modified",
+    "baseline_hash_verified": true,
+    "local_matches_20261021_baseline": true
+  }
+]

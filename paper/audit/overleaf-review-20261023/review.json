@@ -1,0 +1,35 @@
+{
+  "project": "6a2cfd49b99635e8e968576a",
+  "downloaded_source_files": 23,
+  "baseline": "2026-10-21 pre-tone remote snapshot, hashes independently verified",
+  "new_content_authored": false,
+  "uploaded_files": 0,
+  "active_manuscript_overwritten": false,
+  "remote_source": "audit/overleaf-review-20261023/remote-source",
+  "pdf_pages": 12,
+  "pdf_sha256": "4589dfcc2e3062a3417da6e7185b9d93de631727151a60f311ed6c8bfbae1546",
+  "math_equation_environments_unchanged": {
+    "sections/03-problem-formulation.tex": 10,
+    "appendix/cache-coverage.tex": 2,
+    "appendix/behavior-recovery.tex": 4
+  },
+  "table4": {
+    "page": 11,
+    "label": "tab:mechanism-contrasts",
+    "location": "appendix B",
+    "previous_20261020": "main Table3 in commit564cc49"
+  },
+  "cli_write_semantics": {
+    "push_calls": "uploadFile",
+    "method": "POST /project/<id>/upload",
+    "whole_file_replace": true,
+    "incremental_text_edits": false,
+    "reviewed_local_files": [
+      "dist/cli.js:1298",
+      "dist/client.js:1397-1412"
+    ],
+    "project_history_ui_inspected": false
+  },
+  "checked_at": "2026-10-23T23:16:45.116822+08:00",
+  "remote_recheck_no_differences": true
+}
