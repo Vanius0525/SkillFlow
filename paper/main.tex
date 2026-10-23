@@ -1,4 +1,4 @@
-%% main.tex --- "Transferring and Reading Skills in Language Model Contexts"
+ %% main.tex --- "Transferring and Reading Skills in Language Model Contexts"
 %% Submission format: The ACM Web Conference 2027 (WWW '27), research track.
 %%
 %% The track asks for \documentclass[sigconf, anonymous, review]{acmart}
@@ -26,7 +26,7 @@
 \acmYear{2027}
 \acmDOI{}
 \acmConference[WWW '27]{Proceedings of the ACM Web Conference 2027}%
-  {May 10--14, 2027}{Dublin, Ireland}
+  {May 10 to 14, 2027}{Dublin, Ireland}
 \acmISBN{}
 \settopmatter{printacmref=false}
 
@@ -37,6 +37,8 @@
 \let\Bbbk\relax
 \usepackage{amssymb}
 \usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{placeins} % Keep each experimental stage with its displays.
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
 % Shared table system: unshaded rows, generous spacing, restrained rules.
@@ -46,6 +48,10 @@
 \definecolor{ConflictHighlight}{HTML}{FFF0DD}
 \definecolor{TableStripe}{HTML}{F5F8FA}
 \usepackage{etoolbox}
+% Use periods between displayed CCS concepts, matching the manuscript prose.
+\makeatletter
+\patchcmd{\ccsdesc@parse}{\else; \fi}{\else. \fi}{}{}
+\makeatother
 \AtBeginEnvironment{tabular}{%
   \normalfont\rmfamily\fontsize{9}{11}\selectfont%
   \renewcommand{\arraystretch}{1.22}%
@@ -83,6 +89,9 @@
 \mathcode`\,="8000
 {\catcode`\,=\active \gdef,{\mathcommachar\discretionary{}{}{}}}
 \emergencystretch=1em
+% Avoid one- and two-letter fragments in the narrow review columns.
+\AtBeginDocument{\lefthyphenmin=3\righthyphenmin=3}
+\hyphenation{skill skills identify different}
 
 %% Submission only. Historical extended sources remain archived in the repo.
 %% References to those historical diagnostics use their descriptive fallback.
@@ -130,6 +139,8 @@ activation patching, context reuse, mechanistic interpretability}
 \input{sections/02-related-work}
 \input{sections/03-problem-formulation}
 \input{sections/04-experiment}
+% Let the discussion follow the results without forcing a new column.
+\input{sections/05-discussion}
 \input{sections/05-conclusion}
 \label{endmain}
 

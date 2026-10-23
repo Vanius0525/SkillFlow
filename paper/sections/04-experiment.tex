@@ -1,28 +1,10 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We first establish an effective early transfer probe, then compare its
-depth profile with aggregate skill dependence. The final experiment asks
-whether replacing skill-position caches omitted by that probe can repair part of
-the late deficit. Each step supports a different level of inference.
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
-\caption{Depth profiles for all eight main model--benchmark comparisons. Blue shows
-skill-span transfer recovery $\rho(L)$ in a wrong-skill receiver.
-Orange shows aggregate skill-attention dependence $d(L)=1-q(L)$: the fraction
-of originally correct answers lost after cumulative attention knockout
-in the correct-skill execution. Shading spans the first half-effect
-boundaries, highlighting weak transfer despite strong dependence; later
-recrossings remain visible. Boundary layers are marked above each panel.
-Each panel uses common eligible item IDs for both curves, with each run's
-own baselines and execution protocol; $G$ denotes skill groups. The
-knockout affects both access from post-skill tokens and skill-state updates. Every plotted
-layer is measured.}
-\Description{Eight line plots show transfer recovery declining before skill-attention dependence subsides on their common eligible populations.}
-\label{fig:transferreading}
-\end{figure*}
+The experiments follow three questions. Does early state transfer carry
+skill-relevant information? Does that transfer weaken before dependence
+on the skill does? Can source-cache replacement restore part of the late
+transfer deficit?
 
 \subsection{Experimental setup}
 \label{sec:setup}
@@ -30,207 +12,122 @@ layer is measured.}
 
 \paragraph{Tasks and models.}
 We pair MedCalc-Bench \citep{khandekar2024medcalc} with skills from
-SRA-Bench \citep{su2026srabench}, covering $1{,}100$ questions from $55$
+SRA-Bench, a benchmark that pairs questions with reusable skill documents
+\citep{su2026srabench}, covering $1{,}100$ questions from $55$
 clinical calculators. We also use SRA-Bench's TheoremQA subset, with $747$
-questions and $320$ skills. Each question receives its designated skill,
-holding skill selection fixed. The main comparison uses four open-weight
-models from four families: Qwen3-8B \citep{yang2025qwen3},
+questions and $320$ skills. TheoremQA tests the application of theorems
+across mathematics, physics, electrical engineering and computer science,
+and finance \citep{chen2023theoremqa}, extending the evaluation beyond
+clinical calculations. Each question receives its designated skill.
+Skill selection is held fixed.
+
+The four main models are Qwen3-8B \citep{yang2025qwen3},
 Mistral-7B-Instruct-v0.3 \citep{jiang2023mistral}, Llama-3.1-8B-Instruct
 \citep{grattafiori2024llama3} and DeepSeek-LLM-7B-Chat
-\citep{deepseek2024llm}. Models generate
-step-by-step answers with greedy decoding, selecting the highest-probability
-next token at each step. We use no tools and apply the corresponding
-benchmark scorers. On the full MedCalc benchmark, Qwen3-8B
-achieves $74.2\%$ accuracy with the correct skill, $34.5\%$ without a skill,
+\citep{deepseek2024llm}. The depth study covers all eight combinations of
+model and benchmark (Table~\ref{tab:paireddepth}). Qwen3-8B and Mistral on
+TheoremQA use regenerated answers with independently checked grading
+(Appendix~\ref{app:limits}).
+Models generate step-by-step answers without tools using greedy decoding,
+and the benchmark scorers evaluate those answers. On the full MedCalc benchmark, Qwen3-8B
+achieves $74.2\%$ accuracy with the correct skill, $34.5\%$ without one,
 and $31.5\%$ with an unrelated skill.
 
-\paragraph{Selection and evaluation baselines.}
-The original MedCalc/Qwen3-8B transfer battery begins with a historical
-behavioural screen: $467$ questions from $48$ calculators were incorrect
-without a skill and correct with it in that earlier evaluation.
-The intervention protocol re-evaluates donor and receiver baselines.
-The group-level receiver screen retains $135$ questions from $14$
-calculators, without additionally requiring the re-evaluated donor to be
-correct on each question. Consequently, Table~\ref{tab:probe} has
-$124/135$ correct donor answers, not $135/135$. Its layer-$8$ transfer
-recovery is $(110/135-0)/(124/135-0)=110/124$, approximately $0.89$.
-Eligibility in the historical screen must not be confused with correctness
-under the transfer protocol.
+% Queue the control table before the depth figures.
+\begin{table*}[t]
+\centering
+\caption{State-transfer controls at layer $8$ across four models and two
+benchmarks. Entries are accuracy (\%). $n/G$ counts questions and skills.
+Qwen3-8B/MedCalc retains re-evaluated donor failures. The other cells
+additionally require a correct donor and incorrect no-skill baseline.
+The two matched-prefix rows replace the same number of leading skill
+positions with correct or unrelated content. Final-token controls
+replace fewer positions. Layer $8$ is already beyond the transfer
+boundary for some models (Table~\ref{tab:paireddepth}).}
+\label{tab:probe}
+\normalfont\rmfamily\fontsize{9}{11}\selectfont
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{2pt}
+\arrayrulecolor{TableInk}
+\setlength{\heavyrulewidth}{0.7pt}
+\setlength{\lightrulewidth}{0.3pt}
+\setlength{\aboverulesep}{2pt}
+\setlength{\belowrulesep}{2.5pt}
+\input{tables/tab-transfer-controls}
+\end{table*}
 
-For the depth comparison, we intersect transfer IDs with questions that
-are correct with and incorrect without the skill in the knockout run.
-This leaves $134$ Qwen3-8B/MedCalc items; transfer retains its own
-re-evaluated baselines. The original transfer and knockout protocols use
-different attention backends, so common IDs control population membership
-without establishing protocol equivalence. The mechanism study instead
-starts from $124$ fixed historical IDs and applies fresh baselines under
-one split-prefill protocol, retaining $114$ items. Appendix~\ref{app:setup}
-details these populations.
+\paragraph{Analysis populations.}
+We select questions using earlier with-skill and without-skill outcomes,
+then re-evaluate unmodified runs, or baselines, under each protocol.
+The group receiver screen retains a skill only if its receiver solves
+none of its sampled questions.
 
-The added families use frozen candidate pools of $446$ MedCalc and $255$
-TheoremQA questions inherited from the earlier models' eligible transfer
-items. Each new model is screened on its own unpatched baselines, with
-matched eager-attention protocols for transfer and knockout. One
-DeepSeek/MedCalc candidate is excluded in advance because its input cannot
-reserve the $900$-token answer budget. These inherited pools and the
-wrong-skill group screen define conditional populations, rather than
-representative samples of either benchmark.
+For Qwen3-8B/MedCalc, we use $135$ questions for controls
+(Table~\ref{tab:probe}), $134$ for common depth curves
+(Figure~\ref{fig:transferreading}), $124$ for the paired-outcome check
+(\S\ref{sec:depth}), and $114$ for repair and path cuts
+(Figure~\ref{fig:mechanism}). The control donor answers $124/135$
+correctly. The common depth set intersects transfer eligibility with
+correct-with-skill, incorrect-without-skill knockout outcomes.
+The paired check also requires both donors to be correct.
 
-\paragraph{Implementation checks.}
-An identity patch writes the receiver's own states
-back and should reproduce its output. Correcting an attention-mask mismatch
-between state capture and decoding restores exact agreement, including
-all $467$ MedCalc identity checks. All main results use the corrected
-implementation. TheoremQA outputs for all four main models are regraded
-with the official evaluation rules while restoring fresh parser state
-before every answer. We retain the original text, verify grading-order
-invariance and compare with fresh-process evaluations; eligibility is
-recomputed before merging the depth supplements. Appendix~\ref{app:detail} specifies the intervention
-protocol, and Appendix~\ref{app:limits} records the correction.
+The added control cells require correct donor and incorrect no-skill
+baselines. Repair uses that rule plus an incorrect receiver for each
+item. Llama and DeepSeek reuse fixed candidate pools selected by earlier
+models. Intervention estimates are conditional on these selection rules.
+Each depth panel uses common question IDs for its two interventions.
+Repair and path tests likewise share question IDs within each model and
+task combination, using their own fresh-baseline screen.
+Appendix~\ref{app:setup} details the distinct selection rules.
+
+\paragraph{Protocol consistency.}
+Historical Qwen3-8B and regenerated Qwen/Mistral TheoremQA runs use
+ different attention implementations for transfer and knockout.
+Llama and DeepSeek use matching implementations. Repair and path cuts share a protocol
+with fresh baselines. Identity controls copy receiver states back to
+their original positions and reproduce its output tokens exactly.
+Resetting the TheoremQA evaluator before every answer
+and reversing grading order preserve the labels. Implementation details
+and corrections are in Appendix~\ref{app:setup}.
 
 \subsection{Validation of skill-state transfer}
 \label{sec:battery}
 
 \paragraph{Early transfer recovery.}
-Before comparing transfer across depth, we check that the intervention
-transmits useful behaviour. Table~\ref{tab:probe} reports all eight combinations.
-At layer $2$, span-patch accuracy ranges from $56.0\%$ to $93.4\%$ under
-each battery's own baselines. Layer $8$ is already later than the transfer
-boundary for Mistral, Llama and DeepSeek, so it is not a universally early
-probe. On the historically screened Qwen3-8B/MedCalc set,
-replacing states at the skill's token positions recovers most of the
-correct skill's benefit (Table~\ref{tab:probe}). Patching the last prompt
-position or the final $16$ positions has a much smaller effect.
-This locates an effective intervention in the skill span. Its larger
-number of replaced states also makes it a higher-capacity intervention
-than the final-position alternatives.
-
-\begin{table*}[t]
-\centering
-\caption{State-transfer controls for all eight model--benchmark combinations.
-Entries are accuracy percentages. $n_2/n_8$ gives the independent layer-2/layer-8
-populations; the remaining controls are at layer 8. Other denotes matched-prefix
-other-skill content. Qwen3-8B/MedCalc retains its historical layer-8 screen
-(124/135 correct donor answers); other batteries require fresh correct donors.
-Layer 8 can already lie beyond a model's transfer boundary.}
-\label{tab:probe}
-\setlength{\tabcolsep}{3pt}
-\input{tables/tab-control-matrix}
-\end{table*}
-
-\paragraph{Content and position controls.}
-For Qwen3-8B/MedCalc, the unrelated-skill, permuted-position and noise
-controls in Table~\ref{tab:probe} yield little recovery. Across the other
-combinations, the layer-8 span/control gap varies; these controls do not
-establish uniformly strong transfer at one absolute layer. The noise is scaled to match
-the size, measured by Euclidean norm, of the skill-state change. For the content comparison,
-the correct and unrelated skills are patched over a common prefix length.
-The correct prefix recovers $0.65$ of the available gain. A mean of
-same-family skill differences recovers $0.12$ on its smaller eligible set
-of $41$ items. Rescaling patched states to match the receiver's norm at
-each position preserves $0.87$ recovery, close to the full-span result.
-These comparisons identify skill-specific content and its arrangement as
-important to early transfer. The group screen matters: other-skill and
-noise controls are more effective in excluded groups, so the control
-contrast describes the screened population.
+The depth comparison requires a state-transfer test that works at early layers.
+At layer $8$ on the $135$-item Qwen3-8B/MedCalc set, copying states at the
+skill positions yields $110$ correct answers. The donor answers $124$ of
+the same $135$ questions correctly and the receiver answers none, giving
+aggregate recovery $\rho=110/124=0.89$ (Table~\ref{tab:probe}). Patching the last prompt
+position or the final $16$ positions has much smaller effects. The skill
+span is therefore an effective intervention site. The matched-prefix
+controls below compare content at equal replacement lengths.
 
 
 
-\paragraph{Cross-question transfer.}
-\label{sec:whose}
-In the main prompt order, the skill precedes the question. Causal attention,
-which restricts a token to attending to earlier positions, prevents those
-skill states from encoding the later question. We additionally place the
-skill after the question and obtain donor states from other questions using
-the same skill. On $151$ eligible items from $17$ calculators, these states
-recover $0.98$ at layer $8$, close to $1.02$ for a donor answering the
-current question. At layer $16$, the values separate to $0.29$ and $0.49$.
-Early transfer therefore carries information shared across instances, with
-greater question sensitivity later. Additional content, dose and rank
-diagnostics are reported in Appendix~\ref{app:fullscale}; their role is to
-validate the probe rather than supply a separate mechanism for the depth
-separation.
-
+% Queue the paired depth displays together.
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
-\caption{Repair and attention-path results for all eight main combinations.
-MC denotes MedCalc and TQA denotes TheoremQA. Each row uses its own fresh
-split-prefill population; parentheses give questions/skill groups.
-(a) Layer-16 accuracy after state ($S$), cache ($C$), joint ($SC$), or joint
-replacement followed by a next-layer post-skill-to-skill recut.
-(b) At layer 24, the fraction of donor-correct answers lost after cutting
-post-skill-to-skill, skill-to-skill, or both paths. Both prefill and decoding
-are intervened on. Table~\ref{tab:mechanism-contrasts} gives derived contrasts.}
-\Description{Eight rows compare four repair accuracies at layer 16 and three attention-path losses at layer 24 across four models and two benchmarks.}
-\label{fig:mechanism}
+\includegraphics[width=\textwidth]{fig-transfer-reading.pdf}
+\caption{State transfer weakens before source-attention dependence across
+eight combinations of model and task. Rows show MedCalc (top) and TheoremQA
+(bottom), with models aligned by column. Mint: recovery $\rho(L)$ in the wrong-skill
+receiver. Pink dash-dotted: dependence $d(L)$ in the original correct-skill
+run. Each panel uses common eligible questions with each protocol's own
+baselines. $G$ counts skills. Shading spans the first half-effect boundaries
+(Table~\ref{tab:paireddepth}). Later threshold crossings remain visible. Knockout
+blocks both skill reading and within-skill attention. Every layer is measured.}
+\Description{Eight compact line plots in two rows and four columns show mint transfer-recovery curves and pink dash-dotted source-dependence curves on common eligible populations. The top row is MedCalc and the bottom row TheoremQA. Columns are Qwen3-8B, Mistral-7B, Llama-3.1-8B and DeepSeek-7B. Light bands mark intervals between first half-effect boundaries.}
+\label{fig:transferreading}
 \end{figure*}
-
-\subsection{Weak transfer with persistent skill dependence}
-\label{sec:where}
-\label{sec:depth}
-\label{sec:ladder}
-
-\paragraph{Transfer--dependence separation.}
-An effective early probe makes a weak later patch interpretable, but does
-not establish that the original run has stopped using the skill.
-Figure~\ref{fig:transferreading} therefore pairs both effects at every
-layer. On the $134$ common Qwen3-8B/MedCalc items, transfer recovery is
-$0.73$ at layer $12$, falls to $0.16$ at $13$, and stays below $0.08$ from
-layer $15$ onward. Skill-attention dependence is still $0.93$ at layer
-$13$ and $0.75$ at $24$, first falling to at most half at layer $25$.
-Throughout layers $13$--$24$, transfer recovers less than half the donor's
-gain while knockout loses more than half the originally correct answers.
-This is a separation of average intervention effects on common questions,
-not a claim that every question fails both interventions.
-
-
-A stricter paired-outcome check keeps questions answered correctly by both
-protocols' donors and incorrectly by the receiver and the knockout
-protocol's no-skill baseline. On the resulting $124$ Qwen3-8B/MedCalc
-questions, $100/124$ ($80.6\%$) fail both transfer and knockout at layer
-$13$, rising to $113/124$ ($91.1\%$) at layer $16$. Thus, the separation
-also occurs within individual questions. This diagnostic has a stricter
-screen than the main curves and retains their protocol differences
-(Appendix~\ref{app:joint-failure}).
-
-The first crossing summarizes each curve. Qwen3-8B/MedCalc dependence
-briefly rises above half again at layer $26$ before falling below it from
-layer $27$ onward. We retain these fluctuations in the measured curves.
-The measured interval summarizes weak transfer with strong aggregate
-skill dependence. The first crossing does not mean that transfer has
-vanished or that subsequent skill access is no longer needed.
-
-\paragraph{Common-item and threshold checks.}
-Original transfer and knockout runs can retain different eligible questions.
-We therefore recompute the curves over the intersection of their item IDs,
-using eligibility determined from unpatched baselines.
-Table~\ref{tab:paireddepth} organizes four models by two benchmarks.
-All eight model--benchmark cells have verified depth results. On
-TheoremQA, Qwen3-8B has $T/R=13/21$ ($82$ items, $66$ skills), and
-Mistral-7B has $7/19$ ($72$ items, $58$ skills). The skill-dependence
-boundary follows the transfer boundary in every main comparison. For Llama-3.1-8B, $T/R$ is $7/18$ on MedCalc
-($112$ items, $20$ skills) and $6/18$ on TheoremQA ($92$ items, $71$
-skills). For DeepSeek-LLM-7B, the corresponding boundaries are $6/21$
-($25$ items, $13$ skills) and $4/19$ ($54$ items, $45$ skills).
-Using transfer thresholds $\tau=0.4$ or $0.6$ and dependence thresholds
-$1-\tau$ preserves the ordering in all eight main comparisons. This extends
-the observed separation to four model families, conditional on their
-respective baseline screens. The $25$-item DeepSeek/MedCalc result supports
-only that selected population. Alongside sample and skill-group counts,
-Table~\ref{tab:paireddepth} reports raw boundary differences and their
-percentage of model depth, $100\Delta/D$, where $D$ is the number of
-layers. This normalization makes layer gaps comparable across model
-depths; it is not a benchmark-accuracy ranking.
 
 \begin{table*}[t]
 \centering
 \caption{Main depth comparison across four open-weight models and two benchmarks.
-$n/G$ gives common eligible questions/skill groups; $T$ and $R$ are the first
-half-effect crossings for transfer ($\rho<0.5$) and aggregate skill dependence
-($d\le0.5$). $\Delta=R-T$ is in layers; $\Delta/D$ normalizes the gap
-by the model's layer count. All eight cells are measured on their own
-baseline-screened, common-item populations.}
+$n/G$ gives common eligible questions/skill groups. $T$ and $R$ are the first
+half-effect crossings for transfer ($\rho<0.5$) and aggregate source dependence
+($d\le0.5$). $\Delta=R-T$ is in layers. $\Delta/D$ normalizes the gap
+by the model's layer count. All eight cells use audited common-item populations.}
 \label{tab:paireddepth}
 \normalfont\rmfamily\fontsize{9}{11}\selectfont
 \renewcommand{\arraystretch}{1.18}
@@ -238,113 +135,183 @@ baseline-screened, common-item populations.}
 \input{tables/tab-paired-depth}
 \end{table*}
 
-\paragraph{Broader screening and repeated replacement.}
-With the less restrictive item-level receiver screen, $369$ questions from
-$45$ calculators yield recovery $0.94$ at layer $8$, $0.79$ at $12$ and
-$0.32$ at $13$. The early-to-late decline therefore persists outside the
-strict group screen. This transfer-only check does not establish a full
-paired knockout curve under the broader screen. Nor does it remove the
-wrong-skill background; an equal-length neutral receiver is a separate
-control still needed.
+\paragraph{Content and position controls.}
+The paired content controls replace a common prefix length with either
+correct-skill or other-skill information. Correct content recovers $0.65$
+of the donor's gain, versus $0.05$ for other-skill content. Shuffling source
+positions and injecting random vectors of matching length also give little
+recovery. The latter is the norm-matched noise control, which preserves
+the Euclidean length of the skill-state change. Rescaling
+the correct patch to the receiver's norm still recovers $0.87$.
+Together, these controls support a role for skill-specific content and
+its arrangement.
+The expanded table reports the same controls for every model and task.
+Since layer $8$ follows the transfer boundary in several cells, its lower
+recovery is consistent with Figure~\ref{fig:transferreading}.
+An additional layer-$2$ check gives $56.0\%$ to $93.4\%$ span accuracy
+across the eight cells, above noise and shuffled-position controls
+in each case (Appendix~\ref{app:limits}).
 
-Repeated full-span replacement produces the same outputs as a single
-write at the window's start in the audited comparison. Under causal
-attention and an identical preceding context, later writes can be
-redundant. We retain the window results as a consistency check in
-Appendix~\ref{app:repeated}, not as an independent exclusion of the
-single-write explanation.
+\paragraph{Cross-question transfer.}
+\label{sec:whose}
+In the main prompt order, the skill precedes the question. Causal attention
+prevents those skill states from encoding a later question. We additionally
+place the skill after the question and take donor states from other
+questions using the same skill. On $151$ eligible items from $17$
+calculators, these states recover $0.98$ at layer $8$, close to $1.02$ for
+a donor answering the current question. At layer $16$, the values separate
+to $0.29$ and $0.49$. Early transfer thus carries information shared across
+questions, with greater question sensitivity later. Further content,
+controls varying the strength and retained directions of a state change
+appear in Appendix~\ref{app:fullscale}.
 
-\subsection{Partial restoration with skill-cache replacement}
+% Queue the repair display for the page following the depth comparison.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-mechanism-results.pdf}
+\caption{Repair and attention cuts across four models and two benchmarks.
+MC denotes MedCalc and TQA denotes TheoremQA.
+(a) Receiver accuracy at $L16$ for state replacement ($S$), cache
+replacement ($C$), joint repair ($SC$), and joint repair with a reading
+cut from $L17$ onward ($SC+\mathrm{cut}$).
+(b) Correct answers lost in the original correct-skill run under cuts
+from $L8$, $L16$ or $L24$ onward during prefill and decoding.
+Skill reading blocks reader-to-source attention. Within-skill attention
+blocks source-to-source attention. Each row uses the same
+questions in both panels, with counts in Table~\ref{tab:mechanism-contrasts}.
+Layer numbers index each model's blocks.}
+\Description{Eight shared rows pair each of four models with MedCalc and TheoremQA. The left mint heatmap gives all 32 repair accuracies at layer 16 on a fixed zero-to-100-percent scale, with the joint-repair column bold. Three aligned panels on the right show 48 horizontal bars at layers 8, 16 and 24. Mint bars denote Skill reading cuts and pink bars denote Within-skill attention cuts. All three horizontal axes run from zero to 100 percent of originally correct answers lost. At layer 24, reading cuts cause larger losses than within-skill cuts in all eight rows, with varying magnitudes.}
+\label{fig:mechanism}
+\end{figure*}
+
+\begin{samepage}
+\subsection{Weak transfer with persistent source dependence}
+\label{sec:where}
+\label{sec:depth}
+\label{sec:ladder}
+
+\paragraph{Depth separation.}
+Early transfer is effective, but it weakens before source dependence does.
+Figure~\ref{fig:transferreading} shows the full curves, and
+Table~\ref{tab:paireddepth} summarizes their boundaries.
+\end{samepage}
+
+The dependence boundary follows the transfer boundary in all eight
+comparisons. The gaps are $8$ to $20$ layers, or $22.2\%$ to $62.5\%$ of
+model depth (Table~\ref{tab:paireddepth}). The common direction spans
+both benchmarks and all four model families.
+
+\paragraph{A representative depth profile.}
+For Qwen3-8B/MedCalc, recovery drops from $0.73$
+at layer $12$ to $0.16$ at $13$ and stays below $0.08$ from $15$ onward.
+Dependence remains $0.93$ at $13$ and $0.75$ at $24$.
+Throughout layers $13$ to $24$, transfer restores less than half of the
+donor's gain while knockout removes more than half of the originally
+correct answers (Figure~\ref{fig:transferreading}).
+
+\paragraph{Paired outcomes and robustness.}
+The separation also occurs within questions. In the Qwen3-8B/MedCalc
+paired check, $100/124$
+($80.6\%$) fail both interventions at layer $13$, and $113/124$ ($91.1\%$)
+at $16$ (Appendix~\ref{app:joint-failure}). The boundary ordering also
+holds at thresholds $0.4$ and $0.6$ in all eight comparisons. Broader
+screening and later threshold crossings appear in Appendix~\ref{app:fullscale}.
+
+\subsection{Partial restoration with source-cache replacement}
 \label{sec:mechanism}
 
-\paragraph{Interventions and evaluation set.}
-We compare $S$, $C$ and $SC$ as defined in
-Eqs.~\ref{eq:inject}--\ref{eq:cache}, plus $SC$ followed by a post-skill-to-skill cut
-from layer $L+1$, denoted $SC+\mathrm{recut}$. The depth separation motivates this test of a skill-position component omitted
-by residual replacement. It measures the effects of adding cache writes
-and of a subsequent post-skill-to-skill cut while retaining earlier computation at post-skill positions.
+\paragraph{Testing an omitted source component.}
+Figure~\ref{fig:mechanism} compares all eight model and task combinations,
+separating receiver repair at $L16$ (panel a) from attention cuts in the
+original correct-skill run at $L8$, $L16$ and $L24$ (panel b).
 
-We evaluate layers $8,12,16,24$ on a fixed $124$-question set from
-$14$ calculators with fresh baselines. Of these, $114$ questions are correct
-with the donor and incorrect with both the wrong-skill and no-skill baselines.
-The Qwen3-8B/MedCalc row of Figure~\ref{fig:mechanism} uses these questions;
-other rows use their own fresh-baseline populations.
-All $48$ own-state controls across four GPU shards reproduce output tokens
-exactly. Appendix~\ref{app:mechanism} gives implementation and eligibility
-details.
+\paragraph{Repair gains in the receiver.}
+Adding caches improves accuracy over state transfer alone in all eight
+layer-$16$ comparisons, by $6.8$ to $43.4$ percentage points
+(Figure~\ref{fig:mechanism}a). Joint-repair accuracy ranges from $10.2\%$
+to $62.3\%$. For Qwen3-8B/MedCalc, $S$, $C$ and $SC$ answer $4$, $8$
+and $48$ of $114$ questions correctly ($3.5\%$, $7.0\%$, $42.1\%$).
+The cache benefit is $\Delta_{\mathrm{cache}}=(48-4)/114$, or $38.6$
+percentage points. The accuracy interaction is
+$\Gamma=(48-4-8+0)/114$, or $31.6$ points (Eq.~\eqref{eq:repair-effects}).
+At layer $24$, $SC$ reaches $25.4\%$, versus $0.9\%$ for $S$ and
+$18.4\%$ for $C$. The added benefit of states alongside caches varies.
+For Mistral/MedCalc at $L16$, $SC$ and $C$ both reach $18.4\%$, with
+$\Gamma=-7.9$ points. Table~\ref{tab:mechanism-contrasts} reports all
+individual conditions and contrasts.
 
+\paragraph{Is complete source state sufficient?}
+We test this on a fixed pool of $124$ Qwen3-8B/MedCalc questions from
+$14$ skills, using both an unrelated-skill receiver and a fixed unrelated
+text receiver (Neutral). All conditions share BF16, eager attention,
+split prefill and greedy decoding. This pool retains fresh donor failures;
+it differs from the $114$-item repair screen above.
+For $SC$ at $L8$, $L16$ and $L24$, every source-position K/V tensor at
+every layer exactly matches the donor before continuation. Explicitly
+rewriting all source layers changes none of the $744$ paired outputs.
+Yet accuracy drops from $91.9\%$ to $25.8\%$ between $L8$ and $L24$
+in the unrelated-skill receiver, and from $91.1\%$ to $26.6\%$ in Neutral
+(Table~\ref{tab:state-completeness}). Thus missing source-cache layers
+alone cannot account for the late deficit.
 
-
-\paragraph{Joint replacement gains.}
-At layer $16$, residual replacement answers $4/114$ questions correctly,
-cache replacement answers $8/114$, and joint repair answers $48/114$.
-Table~\ref{tab:mechanism-contrasts} reports the repair gain.
-The Qwen3-8B/MedCalc joint-minus-additive contrast is positive on the accuracy scale.
-This is not universal: Mistral/MedCalc has a $-7.9$-point additive contrast
-despite a positive $SC-S$ gain (Table~\ref{tab:mechanism-contrasts}).
-It describes the tested conditions, but does not by itself identify a
-representation-level interaction or a unique computational mechanism
-\citep{vaidyanathan2026mediators}. At layer $24$, joint repair still improves on residual
-replacement ($25.4\%$ versus $0.9\%$), compared with $18.4\%$ for cache replacement alone. Adding skill-cache replacement therefore restores part of the deficit.
-Even the layer-$16$ joint condition remains $57.9$ percentage points below
-the donor's $100\%$ accuracy on these freshly screened items.
-
-\begin{table*}[t]
+\begin{table}[t]
 \centering
-\caption{Mechanism contrasts for all eight main combinations, in percentage points.
-$n/G$ gives each row's questions/skills. With accuracy $a_X$, interaction is
-$a_{SC}-a_S-a_C+a_R$; recut loss is $a_{SC}-a_{SC+\mathrm{recut}}$.
-The L24 path gap is skill-to-skill-cut accuracy minus post-skill-to-skill-cut
-accuracy, equivalently the excess loss from cutting post-skill access.}
-\label{tab:mechanism-contrasts}
-\setlength{\tabcolsep}{3pt}
-\input{tables/tab-mechanism-contrasts}
-\end{table*}
+\caption{Complete-source controls on the same $124$ Qwen3-8B/MedCalc
+questions. Entries are accuracy (\%). Wrong and Neutral denote the two
+receiving contexts. $C_{\mathrm{all}}$ copies source KV at every layer;
+it differs from $C$, which copies only through the intervention layer.
+The correct-skill donor scores $97.6\%$.}
+\label{tab:state-completeness}
+\normalfont\rmfamily\fontsize{9}{11}\selectfont
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{5pt}
+\arrayrulecolor{TableInk}
+\setlength{\heavyrulewidth}{0.7pt}
+\setlength{\lightrulewidth}{0.3pt}
+\setlength{\aboverulesep}{2pt}
+\setlength{\belowrulesep}{2.5pt}
+\begin{tabularx}{\columnwidth}{@{}Xrr@{}}
+\toprule
+\rowcolor[HTML]{E4F4FA}
+Intervention & Wrong & Neutral \\
+\midrule
+Receiver & 4.8 & 4.0 \\
+$C_{\mathrm{all}}$ & 29.8 & 25.0 \\
+$SC$ at $L8$ & 91.9 & 91.1 \\
+$SC$ at $L16$ & 41.9 & 28.2 \\
+$SC$ at $L24$ & 25.8 & 26.6 \\
+Copy other prefix KV only & 2.4 & 8.1 \\
+Copy complete prefix KV & 97.6 & 97.6 \\
+$C_{\mathrm{all}}$ + replay later prompt & 96.8 & 96.8 \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\paragraph{Continued reading and attention paths.}
-Following joint repair at layer $16$, cutting post-skill-to-skill attention
-reduces accuracy to $8/114$. Most of the repaired effect therefore relies
-on continued reading. To identify what the original cumulative knockout
-disrupts, we separately cut post-skill-to-skill attention, skill-to-skill
-attention, or both in the unmodified donor, during prefill and decoding.
-At layer $24$, post-skill-only and combined cuts each leave $29/114$ questions
-correct, while a skill-to-skill-only cut leaves $110/114$ correct.
-Post-skill-to-skill cuts account for most of the tested loss at this layer.
-Earlier cuts at layers $8$ and $16$ damage both paths. Figure~\ref{fig:mechanism} extends this layer-24 comparison to every
-main combination. The path gap varies across models and tasks
-(Table~\ref{tab:mechanism-contrasts}); it does not identify the
-post-skill-only component at every depth of the cumulative-knockout curves. Because these cuts affect
-both prefill and decoding, they also do not locate the effect in either
-phase separately.
+Copying the complete prefix cache reproduces the donor tokens on every
+question in both contexts. Copying source KV and recomputing the prompt
+positions after the skill instead reaches $96.8\%$, although its tokens
+match the donor on only $48/124$ questions per context. The remaining
+state therefore matters: caches at question and template positions can
+retain consequences of earlier skill processing. These controls establish
+neither a minimal state to copy nor a low-cost reuse method.
+Appendix~\ref{app:state-completeness} gives content and layer-window
+controls, paired uncertainty estimates and implementation checks.
 
-\paragraph{Depth variation and generation limits.}
-After joint repair at layer $24$, a post-skill-to-skill recut yields $27.2\%$ accuracy,
-compared with $25.4\%$ without the recut. The repaired-yet-reading-dependent
-result is therefore supported at layer $16$ and varies across the tested
-depths. The main repair gain is stable to generation-length diagnostics:
-it remains $38.5$ points on the $96$ questions whose three baselines finish
-without truncation. An adverse reassignment of truncated outputs still
-leaves a $35.1$-point gain (Appendix~\ref{app:mechanism}).
-\paragraph{Extension across models and tasks.}
-Using the same split-prefill repair definitions and fresh baselines,
-we also evaluate the other seven main model--benchmark combinations.
-At the fixed layer $16$, adding cache replacement to residual replacement
-improves accuracy in all eight settings, by $6.8$--$43.4$ percentage points.
-A next-layer post-skill-to-skill recut lowers joint-repair accuracy by
-$2.2$--$37.7$ points. Table~\ref{tab:repair-extension} reports every
-combination and its own denominator. These measurements extend the
-partial-repair observation, while their different effect sizes and
-remaining deficits do not establish a shared, sufficient mechanism.
+\paragraph{Reading under joint repair.}
+Reading cuts reduce joint-repair accuracy by $2.2$ to $37.7$ points
+across all eight layer-$16$ comparisons. For Qwen3-8B/MedCalc, accuracy falls
+from $42.1\%$ to $7.0\%$, giving $\Delta_{\mathrm{read}}=(48-8)/114$,
+or $35.1$ points. Thus the cross-model improvement from adding caches
+coexists with continued use of the skill. The Qwen3-8B/MedCalc result at
+$L24$ differs: the cut gives $27.2\%$ versus $25.4\%$ without it.
+Appendix~\ref{app:mechanism} documents the layer grid and checks sensitivity
+to outputs stopped at the generation limit.
 
-\paragraph{What the repair does and does not identify.}
-$S$ changes a block's skill-position output and can thereby alter later skill
-states and caches; $C$ writes skill-position caches at layers $0$ through $L$.
-Combining them can increase coverage across the skill-cache stack.
-The observed gain is therefore compatible with a cache-coverage account,
-as well as with more specific interactions involving states and execution
-history. Discriminating these accounts requires all-layer skill-KV-only
-and later-layer KV-only controls with existing post-skill caches fixed, plus
-matched other-skill cache controls before claiming cache specificity.
-These conditions have not been measured here. The present result is a
-partial repair and a layer-specific recutting effect, not a complete or
-unique explanation of late transfer failure.
+\paragraph{Attention paths in the original run.}
+Figure~\ref{fig:mechanism}(b) tests the original correct-skill execution.
+At $L8$, both types of cut cause large losses across the eight rows.
+At $L24$, Skill reading loses $11.9\%$ to $74.6\%$ of correct answers,
+exceeding Within-skill attention by $6.8$ to $71.1$ points in every row.
+The Qwen3-8B/MedCalc contrast is $74.6\%$ versus $3.5\%$.
+At this measured depth, later positions' access to the skill has a
+larger effect than attention among skill positions across all eight settings.

@@ -1,86 +1,81 @@
+% Insert early so the single-column float can occupy the first page's
+% right-column top, alongside the abstract, using standard ACM float placement.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig-teaser.pdf}
+\caption{Weak transfer and continued skill use at the same later depth.
+Copying skill-position states from a correct-skill run into an unrelated-skill
+run gives strong early recovery (left) and weak late recovery (middle).
+At that same later depth, the original run still needs skill access:
+retaining access preserves performance, while cutting it reduces accuracy
+(right). S and Q label skill and question tokens.
+Figure~\ref{fig:transferreading} gives the measured depth profiles.}
+\Description{A schematic follows transformer depth from input to output.
+At an early layer, replacing skill-position hidden states yields strong
+recovery. At a later layer the same type of replacement yields weak recovery.
+In the original correct-skill run at that later layer, retaining skill access
+preserves performance while cutting access reduces accuracy. Green blocks
+represent skill tokens and blue blocks question tokens.}
+\label{fig:teaser}
+\end{figure}
+
 \section{Introduction}
 \label{sec:intro}
 
-\paragraph{Relevance to the Web and to this track.}
-Web agents rely on machine-readable instructions and descriptions of tools
-and services to understand how to act across sites
-\citep{wang2024awm,wang2026webxskill}. Agent Skills package such procedural
-knowledge for reuse. We ask how a model uses a loaded skill and when the
-internal states it produces can support another execution. This connects
-our study to the Semantics and Knowledge track's interest in
-machine-readable descriptions that help agents understand and use Web
-resources, and in knowledge representations that support intelligent
-agent behaviour.
+Language models can perform new tasks by following instructions in their
+context. A skill makes such instructions reusable: a calculator skill,
+for example, specifies a formula, input conventions and the steps for
+applying them to a new question. A model divides text into tokens and
+represents each position with an internal vector, or hidden state.
+If the hidden states formed from these
+instructions also support reuse, one execution could supply task-relevant
+information to another without changing the model's weights.
 
-Agent Skills package instructions, scripts and resources around a
-\texttt{SKILL.md} entry point \citep{zhang2025agentskills}. We study the
-instruction content after the skill has been selected. For example, a
-calculator skill supplies a formula, input conventions and worked steps;
-the model must apply them to a new question. Web agents similarly use
-machine-readable descriptions of tools and services
-\citep{wang2024awm,wang2026webxskill}. Understanding the limits of reusing
-their processed representations connects this study to the Web's semantics
-and knowledge infrastructure. Our experiments test controlled skill-based
-question answering, rather than interactive browsing.
+Agent Skills organize instructions, scripts and resources around a
+\texttt{SKILL.md} entry point \citep{zhang2025agentskills}.
+Web agents use reusable skills and workflows to guide later actions
+\citep{wang2024awm,wang2026webxskill}. This motivates studying whether the
+internal states formed from such instructions can also be reused. We
+study this question through controlled question answering after a skill
+has been selected, isolating the use and transfer of its instructions.
 
-Task and function vectors show that internal states can transmit task
-behaviour across contexts \citep{hendel2023taskvectors,todd2024functionvectors}.
-However, restoring a corrupted execution and disrupting a successful one
-measure different intervention effects; one need not determine the other
-\citep{heimersheim2024patching}. Our contribution is to measure how those
-effects separate across depth for supplied skills, and to test a specific
-component omitted by residual-state transfer.
+The difficulty is interpreting a failed transfer. If copying a skill's
+hidden states no longer restores performance, has the model stopped
+needing those instructions, or has the copy failed to supply what the
+receiving execution needs? Task vectors summarize task demonstrations,
+while function vectors combine selected internal attention outputs.
+Both show that internal states can transmit task behaviour across contexts
+\citep{hendel2023taskvectors,todd2024functionvectors}. Yet restoring an
+execution and disrupting a successful one measure different effects
+\citep{heimersheim2024patching}. This motivates our central question:
+\emph{can skill-state transfer weaken while the original execution still
+relies on access to the skill?}
 
-We first validate a transfer probe that copies hidden vectors at the skill's
-token positions from a correct-skill donor into an equal-length wrong-skill
-receiver. Content, position and cross-question controls test whether its
-early benefit carries structured skill information. We then compare this
-probe across all layers with cumulative skill-attention knockout in the
-original correct-skill execution. This knockout blocks both access from post-skill tokens
-and attention within the skill text. It therefore measures aggregate
-skill-attention dependence, not post-skill-only dependence.
+We answer this question with two tests across model depth. The first
+copies hidden states at the skill's token positions from a correct-skill
+execution into an execution using length-matched text from an unrelated skill. The
+second blocks attention to the skill in the original correct-skill
+execution, from a chosen layer onward. Content, position and cross-question
+controls first establish that early copying transfers skill-relevant
+information. We then find a consistent separation in eight evaluated
+combinations of four models and two benchmarks: transfer weakens at later
+layers while the original execution remains strongly dependent on skill
+attention (Figure~\ref{fig:teaser}).
 
-Figure~\ref{fig:teaser} previews the two levels of evidence. The main
-finding is a depth interval in which residual transfer is weak while
-skill dependence remains high. The ordering of their first half-effect
-crossings recurs in all eight comparisons across four main models,
-using common eligible question IDs within each comparison. These are
-conditional effects on screened populations, and matching IDs does not
-make the donor and receiver execution backgrounds identical.
+We next test whether adding information omitted by hidden-state copying
+can improve late transfer. Attention stores information from previously
+processed tokens in a key/value (KV) cache. At layer $16$, copying these
+caches together with hidden states improves accuracy over state transfer
+alone in all eight settings, by $6.8$ to $43.4$ percentage points.
+Blocking subsequent skill reading reduces the recovered accuracy in each
+setting. For Qwen3-8B/MedCalc, joint replacement raises accuracy from
+$3.5\%$ to $42.1\%$, and the reading cut reduces it to $7.0\%$.
+The shared direction across models and tasks establishes cache-assisted
+partial restoration alongside continued use of the skill.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig-teaser.pdf}
-\caption{Overview of all four main models on both benchmarks (MC: MedCalc;
-TQA: TheoremQA). (a) Skill-span replacement accuracy at layers 2 and 8,
-with each battery's own baseline-screened population. (b) The gap between
-first transfer and dependence boundaries, as a percentage of model depth,
-on common eligible items. (c) Fixed-layer-16 joint-repair gain over state
-replacement and the loss after a next-layer recut. Panels use separate
-protocol-specific populations, not a single item-level trajectory.}
-\Description{Eight model--benchmark rows show early versus later transfer, positive normalized boundary gaps, and partial repair followed by recut losses.}
-\label{fig:teaser}
-\end{figure*}
-
-To probe one possible contributor to the late transfer deficit, we replace
-the skill-position key/value (KV) caches that residual replacement leaves
-unchanged. In a focused Qwen3-8B/MedCalc experiment, joint state and cache
-replacement raises layer-$16$ accuracy from $3.5\%$ to $42.1\%$; a subsequent
-post-skill-to-skill cut reduces it to $7.0\%$. This identifies a partial repair,
-not a complete account of the failure. The intervention changes which
-skill-position caches are available across layers, does not replay earlier post-skill
-computation, and remains far below the donor's $100\%$ accuracy on this
-freshly screened set. The same layer-$16$ comparison shows positive
-repair and recutting effects across all eight main model--task settings,
-with different effect sizes and independent baseline screens.
-Distinguishing cache coverage from more specific
-state--history interactions requires additional controls.
-
-The experiments follow this evidential progression: validate the early
-probe (\S\ref{sec:battery}), establish the depth separation
-(\S\ref{sec:depth}), and measure the effect and limits of partial cache
-repair (\S\ref{sec:mechanism}). The resulting contribution is a replicated
-depth ordering under the tested transfer and knockout protocols, together
-with a localized skill-cache intervention that recovers part of late
-transfer. It does not establish that the skill is fully internalized at a
-particular layer or that cache mismatch uniquely explains weak transfer.
+The paper follows three steps: validate early transfer
+(\S\ref{sec:battery}), establish its separation from continued skill use
+(\S\ref{sec:depth}), and test the extent of cache-assisted restoration
+(\S\ref{sec:mechanism}). Together, the tests distinguish the ability to
+use contextual instructions from the ability to reuse their internal
+states, and identify cached information as a component that improves reuse.

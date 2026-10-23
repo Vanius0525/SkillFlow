@@ -1,0 +1,176 @@
+--- before/appendix/b-full-dataset-rerun.tex
++++ after/appendix/b-full-dataset-rerun.tex
+@@ -162,3 +162,70 @@
+ when later reading is allowed.
+ 
+ \input{appendix/cache-coverage}
++
++
++\subsection{Complete-source and receiving-history controls}
++\label{app:state-completeness}
++
++\paragraph{Population and protocol.}
++The additional Qwen3-8B/MedCalc study uses a frozen $124$-question pool
++from $14$ calculator skills, selected using historical outcomes before
++these interventions. No item is removed based on the new repair outcome.
++The correct-skill donor answers $121/124$ correctly; the no-skill baseline
++answers $4/124$. Wrong uses the original unrelated skill; Neutral uses a
++predeclared unrelated natural-language document, not a guarantee of zero
++influence. Source positions and prompt lengths are aligned. The protocol
++uses BF16, eager attention, split prefill, greedy decoding and a $1536$
++new-token limit. All $49$ conditions per item share this protocol.
++Fresh screening for a correct donor and incorrect Wrong and no-skill
++baselines retains $114$ questions, reproducing the earlier $L16$
++$S/C/SC$ accuracies of $3.5/7.0/42.1\%$. Table~\ref{tab:state-completeness}
++instead reports all $124$ items, including donor and receiver errors.
++
++\paragraph{Source coverage and receiving history.}
++Before continuation, $SC$ source K/V matches the donor elementwise at all
++$36$ layers for both receivers and $L\in\{8,16,24\}$. A further explicit
++all-layer source write leaves all $744$ paired generated token sequences
++unchanged. Other prefix K/V need not match the donor and can vary with
++intervention depth. Copying only those other positions gives $3/124$
++and $10/124$ correct answers (Wrong/Neutral); copying the complete prefix
++cache gives $121/124$ in both contexts and reproduces all donor tokens
++($248/248$ pairs). This is a positive control using same-question donor
++computation. Replacing all source KV and replaying the prompt after the
++skill gives $120/124$ in both contexts. Only $48/124$ outputs per context
++are token-identical to the donor, so replay is not an exact numerical
++identity under BF16 and different prefill computation shapes.
++
++\paragraph{Paired uncertainty and truncation.}
++The $SC@8-SC@24$ accuracy difference is $66.1$ percentage points in Wrong
++and $64.5$ in Neutral. Resampling whole skill groups with replacement
++$10{,}000$ times gives exploratory $95\%$ percentile intervals of
++$[49.3,78.5]$ and $[40.5,82.8]$ points. The signs are positive/tied/negative
++in $12/2/0$ and $11/2/1$ of the $14$ groups, respectively.
++No $SC@8$ output reaches the token cap; $SC@24$ has three capped outputs
++in Wrong and none in Neutral. Assigning capped outcomes adversarially
++against the difference still leaves gaps of $63.7$ and $64.5$ points.
++These intervals are not adjusted for multiple comparisons. The small
++number of groups and single model/task limit extrapolation.
++
++\paragraph{Cache content and layer windows.}
++Holding all-layer source coverage fixed, correct-skill KV yields
++$29.8/25.0\%$ accuracy in Wrong/Neutral, versus $4.8/6.5\%$ for
++unrelated-skill KV and $1.6/4.0\%$ for a second predeclared neutral
++text's KV. The Wrong-to-Wrong source write is also a token-exact identity
++control. Four equally sized eight-layer source writes, at layers
++$0$--$7$, $8$--$15$, $16$--$23$ and $24$--$31$, yield
++$3.2/3.2/1.6/4.0\%$ in Wrong and $0.8/4.0/4.8/5.6\%$ in Neutral.
++These windows individually recover little; comparison with all $36$
++layers does not identify the minimum required coverage because the write
++budgets differ. Late $SC$ need not improve on $C_{\mathrm{all}}$:
++at $L24$ in Wrong, accuracy is $25.8\%$ versus $29.8\%$.
++
++\paragraph{Audit and scope.}
++All $6076$ formal records and $14$ implementation-check records passed
++full key-set, identity, source-write and file-hash checks. An independent
++process regraded answers, with identical labels in forward and reverse
++order. Cache-coverage claims use saved runtime elementwise checks, not
++an offline re-execution of the model. The study does not repeat the full
++transfer/knockout depth sweep, identify a unique semantic variable in
++other-position caches, or validate the margin sufficient condition.
+--- before/appendix/cache-coverage.tex
++++ after/appendix/cache-coverage.tex
+@@ -57,8 +57,11 @@
+ from $\mathcal B_S$, and continuation uses a different mask. The contrast
+ includes both prefill and decoding effects.
+ 
+-Code inspection confirms the stated write ordering. Exact source-cache
+-identities rely on the arithmetic assumption above. Discrepancies against
+-the donor in BF16 runs remain unmeasured.
++Code inspection confirms the stated write ordering. In the additional
++Qwen3-8B/MedCalc experiment, runtime elementwise checks found zero
++source-cache discrepancies against the donor for $SC$ at $L8$, $L16$
++and $L24$ in both receiving contexts
++(Appendix~\ref{app:state-completeness}). This verifies coverage for those
++BF16 runs; the proposition retains its exact-arithmetic assumptions.
+ 
+ \input{appendix/behavior-recovery}
+--- before/sections/05-discussion.tex
++++ after/sections/05-discussion.tex
+@@ -19,11 +19,11 @@
+ differences to output stability under explicit assumptions. Measuring
+ these differences, their influence on token predictions and the donor's
+ prediction margins could test whether this framework helps distinguish
+-successful from unsuccessful repairs. Another direction is to separate
+-the effects of cache content and layer coverage through matched other-skill
+-copies and additional layer ranges. Separating attention cuts during prompt
++successful from unsuccessful repairs. The complete-source controls further motivate testing which parts of
++the receiving history must be recomputed, and whether the required budget
++can be predicted on held-out skills. Extending these controls beyond
++Qwen3-8B/MedCalc would test their cross-model and cross-task scope. Separating attention cuts during prompt
+ processing from those during answer generation would clarify when continued
+ skill access matters. Finally,
+-testing neutral receiving contexts and multi-step Web workflows would
+-assess how far the observed separation extends beyond the screened
+-question-answering settings studied here.
++multi-step Web workflows would assess how far the observed separation
++extends beyond the question-answering settings studied here.
+--- before/sections/04-experiment.tex
++++ after/sections/04-experiment.tex
+@@ -240,6 +240,63 @@
+ $\Gamma=-7.9$ points. Table~\ref{tab:mechanism-contrasts} reports all
+ individual conditions and contrasts.
+ 
++\paragraph{Is complete source state sufficient?}
++We test this on a fixed pool of $124$ Qwen3-8B/MedCalc questions from
++$14$ skills, using both an unrelated-skill receiver and a fixed unrelated
++text receiver (Neutral). All conditions share BF16, eager attention,
++split prefill and greedy decoding. This pool retains fresh donor failures;
++it differs from the $114$-item repair screen above.
++For $SC$ at $L8$, $L16$ and $L24$, every source-position K/V tensor at
++every layer exactly matches the donor before continuation. Explicitly
++rewriting all source layers changes none of the $744$ paired outputs.
++Yet accuracy drops from $91.9\%$ to $25.8\%$ between $L8$ and $L24$
++in the unrelated-skill receiver, and from $91.1\%$ to $26.6\%$ in Neutral
++(Table~\ref{tab:state-completeness}). Thus missing source-cache layers
++alone cannot account for the late deficit.
++
++\begin{table}[t]
++\centering
++\caption{Complete-source controls on the same $124$ Qwen3-8B/MedCalc
++questions. Entries are accuracy (\%). Wrong and Neutral denote the two
++receiving contexts. $C_{\mathrm{all}}$ copies source KV at every layer;
++it differs from $C$, which copies only through the intervention layer.
++The correct-skill donor scores $97.6\%$.}
++\label{tab:state-completeness}
++\normalfont\rmfamily\fontsize{9}{11}\selectfont
++\renewcommand{\arraystretch}{1.18}
++\setlength{\tabcolsep}{5pt}
++\arrayrulecolor{TableInk}
++\setlength{\heavyrulewidth}{0.7pt}
++\setlength{\lightrulewidth}{0.3pt}
++\setlength{\aboverulesep}{2pt}
++\setlength{\belowrulesep}{2.5pt}
++\begin{tabularx}{\columnwidth}{@{}Xrr@{}}
++\toprule
++\rowcolor[HTML]{E4F4FA}
++Intervention & Wrong & Neutral \\
++\midrule
++Receiver & 4.8 & 4.0 \\
++$C_{\mathrm{all}}$ & 29.8 & 25.0 \\
++$SC$ at $L8$ & 91.9 & 91.1 \\
++$SC$ at $L16$ & 41.9 & 28.2 \\
++$SC$ at $L24$ & 25.8 & 26.6 \\
++Copy other prefix KV only & 2.4 & 8.1 \\
++Copy complete prefix KV & 97.6 & 97.6 \\
++$C_{\mathrm{all}}$ + replay later prompt & 96.8 & 96.8 \\
++\bottomrule
++\end{tabularx}
++\end{table}
++
++Copying the complete prefix cache reproduces the donor tokens on every
++question in both contexts. Copying source KV and recomputing the prompt
++positions after the skill instead reaches $96.8\%$, although its tokens
++match the donor on only $48/124$ questions per context. The remaining
++state therefore matters: caches at question and template positions can
++retain consequences of earlier skill processing. These controls establish
++neither a minimal state to copy nor a low-cost reuse method.
++Appendix~\ref{app:state-completeness} gives content and layer-window
++controls, paired uncertainty estimates and implementation checks.
++
+ \paragraph{Reading under joint repair.}
+ Reading cuts reduce joint-repair accuracy by $2.2$ to $37.7$ points
+ across all eight layer-$16$ comparisons. For Qwen3-8B/MedCalc, accuracy falls

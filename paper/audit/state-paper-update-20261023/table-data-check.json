@@ -1,0 +1,22 @@
+{
+  "denominator": 124,
+  "correct_counts": {
+    "wrong@-1": 6,
+    "neutral_a@-1": 5,
+    "wrong:C_all@-1": 37,
+    "neutral_a:C_all@-1": 31,
+    "wrong:SC@8": 114,
+    "neutral_a:SC@8": 113,
+    "wrong:SC@16": 52,
+    "neutral_a:SC@16": 35,
+    "wrong:SC@24": 32,
+    "neutral_a:SC@24": 33,
+    "wrong:B_only@-1": 3,
+    "neutral_a:B_only@-1": 10,
+    "wrong:full_copy@-1": 121,
+    "neutral_a:full_copy@-1": 121,
+    "wrong:suffix_replay@-1": 120,
+    "neutral_a:suffix_replay@-1": 120
+  },
+  "verified_against": "retrieved/binary-outcomes.json"
+}

@@ -1,0 +1,67 @@
+\subsection{Cache coverage under causal prefill}
+\label{app:cache-coverage}
+
+This deduction assumes a deterministic causal Transformer with masked
+attention as its only cross-position operation
+\citep{vaswani2017attention}, identical parameters and position IDs,
+and the same exact-arithmetic computation without extra attention cuts.
+Donor and receiver tokens differ only within the complete, contiguous
+source interval $\mathcal I=[\mathrm{lo},\mathrm{hi})$ in the prefix.
+
+\paragraph{Proposition (source-cache coverage).}
+Suppose $S$ replaces the entire source output of block $L$ before the
+next block executes, and the cache write occurs only after prefix prefill.
+At the observation point in Eq.~\eqref{eq:continuation},
+\begin{equation}
+\mathcal C_S^\ell[\mathcal I]=
+\begin{cases}
+\mathcal C_R^\ell[\mathcal I],&\ell\le L,\\
+\mathcal C_D^\ell[\mathcal I],&\ell>L.
+\end{cases}
+\label{eq:source-coverage}
+\end{equation}
+Together with the explicit write at layers $0$ through $L$, this gives
+$\mathcal C_{SC}[\mathcal I]=\mathcal C_D[\mathcal I]$.
+
+\emph{Proof.}
+Block-$L$ KV is computed before the output patch, leaving source caches
+at $\ell\le L$ unchanged. Before $\mathrm{lo}$, identical tokens and
+causality give identical states at every layer. After $S$, all block-$L$
+outputs at $i<\mathrm{hi}$ therefore match the donor.
+At these positions, the next block reads only matching earlier or
+current states, producing matching source KV and outputs.
+Induction proves the upper-layer case.
+Equation~\eqref{eq:cache} supplies the lower layers for $SC$.
+\hfill$\square$
+
+\input{tables/tab-cache-coverage}
+
+\paragraph{Remaining execution state.}
+The post-prefill write preserves the other caches
+(Table~\ref{tab:cache-coverage}). Under these assumptions,
+\begin{equation}
+\begin{aligned}
+\hat y_{SC}&=\mathcal G_{\theta,M_0}
+ (u_*,\mathcal C_D[\mathcal I],\mathcal B_S),\\
+\hat y_D&=\mathcal G_{\theta,M_0}
+ (u_*,\mathcal C_D[\mathcal I],\mathcal B_D),
+\end{aligned}
+\label{eq:source-not-full}
+\end{equation}
+where $M_0$ is the original mask. Since $\mathcal B_S$ need not equal
+$\mathcal B_D$, answers may differ. All-layer source-KV-only replacement
+instead preserves $\mathcal B_R$ and is generally not equivalent to $SC$.
+
+Under $SC+\mathrm{cut}$, source queries remain unmasked, so the same
+induction applies. However, $\mathcal B_{SC+\mathrm{cut}}$ may differ
+from $\mathcal B_S$, and continuation uses a different mask. The contrast
+includes both prefill and decoding effects.
+
+Code inspection confirms the stated write ordering. In the additional
+Qwen3-8B/MedCalc experiment, runtime elementwise checks found zero
+source-cache discrepancies against the donor for $SC$ at $L8$, $L16$
+and $L24$ in both receiving contexts
+(Appendix~\ref{app:state-completeness}). This verifies coverage for those
+BF16 runs; the proposition retains its exact-arithmetic assumptions.
+
+\input{appendix/behavior-recovery}

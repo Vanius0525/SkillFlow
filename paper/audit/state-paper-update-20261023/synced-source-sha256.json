@@ -1,0 +1,117 @@
+[
+  {
+    "local_path": "main.tex",
+    "remote_path": "overleaf-skillvector/main.tex",
+    "sha256": "1490d5353a8d5b756f7079afa61a896627fc9c470be6e7fcc67c1ecc05ba4aa3"
+  },
+  {
+    "local_path": "skillvector.bib",
+    "remote_path": "overleaf-skillvector/skillvector.bib",
+    "sha256": "3e0f1ee5192f3b716f1a5cf5ba352b4888a404d36e8ca753cbd47b87cd391bdc"
+  },
+  {
+    "local_path": "overleaf-readme.md",
+    "remote_path": "overleaf-skillvector/README.md",
+    "sha256": "f90f5221d29f7324047d87f0b9bd5c1b370d3ed2620c51331ce8c35104a91a9d"
+  },
+  {
+    "local_path": "sections/05-conclusion.tex",
+    "remote_path": "overleaf-skillvector/sections/05-conclusion.tex",
+    "sha256": "0f5e7bd28c9d568c494f9c6c11e9eb01e67c8f03c977eef1ae4210da19237868"
+  },
+  {
+    "local_path": "sections/03-problem-formulation.tex",
+    "remote_path": "overleaf-skillvector/sections/03-problem-formulation.tex",
+    "sha256": "ba53247e0733bf70421dc2d98bd4d240df8d2f763848410ce68d156a4d169ab4"
+  },
+  {
+    "local_path": "sections/00-abstract.tex",
+    "remote_path": "overleaf-skillvector/sections/00-abstract.tex",
+    "sha256": "ee9382a8fda860d4c7ea07d22df3ea245f3789316af1177f36b6a0e2990a7fef"
+  },
+  {
+    "local_path": "sections/01-introduction.tex",
+    "remote_path": "overleaf-skillvector/sections/01-introduction.tex",
+    "sha256": "75fca75f3e42a47f1222c8e1c5122683a03437d74c25140292254434ec12ff23"
+  },
+  {
+    "local_path": "sections/05-discussion.tex",
+    "remote_path": "overleaf-skillvector/sections/05-discussion.tex",
+    "sha256": "7ecfe455888911ad24dcee8c941dddbda524894f84a976e4b47cc81f2421d827"
+  },
+  {
+    "local_path": "sections/02-related-work.tex",
+    "remote_path": "overleaf-skillvector/sections/02-related-work.tex",
+    "sha256": "9b7ca6fd7111eb449bb9611d1a6650f306f64933344860d46f8c3e1aee90ceb8"
+  },
+  {
+    "local_path": "sections/04-experiment.tex",
+    "remote_path": "overleaf-skillvector/sections/04-experiment.tex",
+    "sha256": "7dd78b208d644c57b6721a3c3f223716a5f2865a7aa633851b4b3bb588af6da4"
+  },
+  {
+    "local_path": "appendix/b-full-dataset-rerun.tex",
+    "remote_path": "overleaf-skillvector/appendix/b-full-dataset-rerun.tex",
+    "sha256": "e6b58f1da203d95a4ef58857e8900d16b34b9e35950a42c414a65a999705e2d7"
+  },
+  {
+    "local_path": "appendix/a-setup.tex",
+    "remote_path": "overleaf-skillvector/appendix/a-setup.tex",
+    "sha256": "5fbbfbd18b48c391f7608279df2fed2f96211b0811db1d4eeaecd41ee23b2698"
+  },
+  {
+    "local_path": "appendix/behavior-recovery.tex",
+    "remote_path": "overleaf-skillvector/appendix/behavior-recovery.tex",
+    "sha256": "4ac664ee6c9878b593f97960666dc596e20b81f1193031392b4b7eee1392e29b"
+  },
+  {
+    "local_path": "appendix/cache-coverage.tex",
+    "remote_path": "overleaf-skillvector/appendix/cache-coverage.tex",
+    "sha256": "23f3c63e2606e6fdc3d43a7132dd5be5d572e6935e012d41b44a8a14e07d5a3b"
+  },
+  {
+    "local_path": "tables/tab-mechanism-contrasts.tex",
+    "remote_path": "overleaf-skillvector/tables/tab-mechanism-contrasts.tex",
+    "sha256": "70bf6ac8a7e88dfcd92f0652a2b76eb3f73b9cfa7877c1a4a841819b6ae10c78"
+  },
+  {
+    "local_path": "tables/tab-paired-depth.tex",
+    "remote_path": "overleaf-skillvector/tables/tab-paired-depth.tex",
+    "sha256": "64692ad4587721d76963c9729998f07c24e9affeb0f39ed4afdea392f5bb1765"
+  },
+  {
+    "local_path": "tables/tab-fullscale-float.tex",
+    "remote_path": "overleaf-skillvector/tables/tab-fullscale-float.tex",
+    "sha256": "ea775dc09f75c50a7ef9f8b7242f36ef4f572bbb5851bbc389d7f7f7d8375213"
+  },
+  {
+    "local_path": "tables/tab-cache-coverage.tex",
+    "remote_path": "overleaf-skillvector/tables/tab-cache-coverage.tex",
+    "sha256": "ee122cc47bda9c815cdcb39e101ded68c11750ba4e2d5c36a70c3adb4c558c26"
+  },
+  {
+    "local_path": "tables/tab-transfer-controls.tex",
+    "remote_path": "overleaf-skillvector/tables/tab-transfer-controls.tex",
+    "sha256": "adb64d626d39016ce8f24e9ddbe3731f88dd101a35f711d86eb1b397197bd596"
+  },
+  {
+    "local_path": "figures/fig-mechanism-results.pdf",
+    "remote_path": "overleaf-skillvector/figures/fig-mechanism-results.pdf",
+    "sha256": "5c83e2145b0f0fdbdf32c50b220bf8315415870fda921262ebc6ba7e53108a9f"
+  },
+  {
+    "local_path": "figures/fig-intervention-design.pdf",
+    "remote_path": "overleaf-skillvector/figures/fig-intervention-design.pdf",
+    "sha256": "8ef9711fe549fadb6dcdb79c5d2a2ae4d4ca57b74f37e28a8a7fd3f14a746573"
+  },
+  {
+    "local_path": "figures/fig-transfer-reading.pdf",
+    "remote_path": "overleaf-skillvector/figures/fig-transfer-reading.pdf",
+    "sha256": "4650b0cec2fbc69f76820f4ac397b55eb1393d8aef3a291822e9b2e923e6a50d"
+  },
+  {
+    "local_path": "figures/fig-teaser.pdf",
+    "remote_path": "overleaf-skillvector/figures/fig-teaser.pdf",
+    "sha256": "9b89923898ab9c486eb7bd7b134162b5366fe5eae813d315dd41aefd1270b749"
+  }
+]

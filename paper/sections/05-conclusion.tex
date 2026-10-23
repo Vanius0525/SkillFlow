@@ -1,25 +1,19 @@
 \section{Conclusion}
-\label{sec:discussion}
+\label{sec:conclusion}
 
-Weak skill-state transfer does not, by itself, show that the original
-execution has stopped depending on its skill text. Across eight completed main
-comparisons, residual transfer crosses below half of the donor's gain
-before aggregate skill-attention dependence falls to half. Early controls
-validate the transfer probe; common-item and threshold checks delimit the
-observed depth ordering. The result remains conditional on the screened
-populations and the wrong-skill receiver background.
+Using a contextual skill and reusing its internal states are distinct
+capabilities. Across four models and two benchmarks, state transfer
+weakens before the original execution's dependence on skill attention,
+with half-effect boundaries separated by $8$ to $20$ layers.
+Early content controls establish that the transferred states carry
+skill-relevant information, and the depth comparisons show that this
+information becomes harder to reuse while the skill remains useful.
 
-The cache-replacement experiments supply a partial intervention result.
-At layer $16$, joint replacement improves over residual replacement in
-all eight main settings; a next-layer post-skill-to-skill cut reduces that
-accuracy in each setting. The focused Qwen3-8B/MedCalc study shows a large
-repair and recutting effect. This makes skill
-caches one concrete contributor to test, while leaving cache coverage,
-post-skill-state changes and other omitted components unresolved. The recovery
-is incomplete, and the recutting effect varies with model, task and depth.
-
-A stronger explanation requires all-layer and late-layer skill-cache
-controls, matched alternative-skill caches, and post-skill-only interventions
-that separate prompt processing from answer generation. Broader receiver
-backgrounds and model families can establish how far the present
-separation and partial repair extend to reusable skill systems.
+Source-cache replacement provides a way to recover part of that transfer.
+At layer $16$, adding caches improves accuracy over states alone by
+$6.8$ to $43.4$ percentage points in all eight comparisons, while cutting
+subsequent skill reading reduces the joint-repair accuracy in each.
+The mathematical analysis connects cache alignment to output stability
+under explicit conditions. Together, these findings motivate evaluating
+state reuse separately from continued skill use and including cached
+information in the design of reusable skill representations.

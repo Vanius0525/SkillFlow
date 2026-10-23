@@ -3,33 +3,39 @@
 
 \paragraph{State transfer and its interpretation.}
 Task vectors summarize demonstrations as internal vectors
-\citep{hendel2023taskvectors}, and function vectors identify attention-head
+\citep{hendel2023taskvectors}, and function vectors identify attention
 outputs that transmit task behaviour \citep{todd2024functionvectors}.
 Instructions also yield transferable components
 \citep{davidson2025prompting,bigoulaeva2026instructionvectors}, whose effects
-vary with intervention depth \citep{jit2025taskrepr}. Activation patching
-requires matched controls and careful implementation
+vary with intervention depth \citep{jit2025taskrepr}. Activation patching,
+which copies internal states between executions, requires matched controls
+and careful implementation
 \citep{zhang2023bestpractices,heimersheim2024patching}. In particular,
 restoring behaviour and disrupting it need not reveal the same components.
 Interactions with other components can also affect a patching estimate
-\citep{vaidyanathan2026mediators}. We build on these methodological
-distinctions; the general difference between restoration and disruption is
-not itself our empirical contribution.
+\citep{vaidyanathan2026mediators}. We use these methodological distinctions to compare skill-state transfer
+and source dependence across depth.
 
-\paragraph{Depth, skill access and context caches.}
+\paragraph{Depth, source access and context caches.}
 Pola and Balasubramanian \citep{onset2025instruction} locate an onset beyond
-which selected residual patches largely cease to change answers in their
+which selected hidden-state replacements largely cease to change answers in their
 instruction tasks. Sia et al.\ \citep{sia2024incontexttranslation} use
-layer-wise context masking to test when translation no longer requires
-attention to its context. Joint transfer and masking analyses also locate
-subtask computation \citep{yang2025internalcot}. We compare residual
-transfer with skill-attention knockout within skill-based settings, then
-test an omitted skill-position component. Differences in tasks, models and
-interventions prevent our results from directly refuting the earlier
-onset or translation findings. PrefillNotes \citep{li2026prefillnotes}
-studies reusable skill caches. Our focused cache intervention asks how
-extending skill replacement affects an observed late transfer deficit;
-it is not a full-cache reuse system or a unique test of history matching.
+layer-wise context masking, which blocks attention to selected context
+positions, in machine translation and code generation to
+locate where attention to the instructional context becomes unnecessary.
+Joint transfer and masking analyses also locate subtask computation
+\citep{yang2025internalcot}. We instead define the source as an explicit
+skill-instruction span and compare transfer into a wrong-skill execution
+with blocking attention to that span in the original execution on common questions.
+The comparison measures how the two effects separate across depth.
+
+PrefillNotes \citep{li2026prefillnotes} studies editable and reusable KV
+caches. In its field-editing tasks, replacing local KV entries can fail
+when downstream cached conclusions still reflect the old field. It also
+composes precompiled skill caches into new contexts. Our focus is the
+depth separation between skill-state transfer and original-run source
+dependence. We then ask whether copying source caches together with
+states partially restores late transfer.
 
 \paragraph{Skills and reusable context.}
 Agent Skills organize instructions and resources for on-demand use
@@ -41,5 +47,5 @@ Other approaches compress context into aggregated activations
 \citep{ardoin2026promptcompression}, learned summary tokens
 \citep{mu2023gist}, hidden states \citep{ge2024icae}, or weight updates
 \citep{doc2lora2026,deepcontextdistill2025}. Our interventions characterize
-naturally occurring states and skill dependence without training a
+naturally occurring states and source dependence without training a
 compression mechanism.

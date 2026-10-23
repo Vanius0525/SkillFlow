@@ -1,3 +1,7 @@
+## 2026-10-23 原生增量编辑与History文本留痕已实测
+
+正式论文四个现有文本doc已通过tools/update_overleaf_text.mjs走editor socket applyOtUpdate，版本与原文校验后提交具体插入/删除操作，docID保持，逐份回读一致。History2440–2443保存textOperation，独立回放精确重建修改后全文。不是olcli push整文件上传。工具遇超时不盲重发，先核对receipt与线上原文；使用前完整olcli diff并准备逐文件before/after/ops。证据audit/state-paper-update-20261023；Track Changes未启用，网页UI视觉呈现未检查，但历史后台文本操作已直接验证。今后现有正文优先此路径；新文件/二进制另行处理。
+
 ## 2026-10-23 更新留痕偏好（覆盖默认整文件更新方式）
 
 用户希望在Overleaf内看到文件内部的行级修改记录。已核验当前olcli push为整文件上传替换，olcli diff只产生本地行级比较；不能把二者混称云端逐行编辑。正式正文更新前，需验证原生增量文本编辑及本项目History的实际呈现；若要求逐条接受/拒绝，再确认Track Changes权限。未验证前不承诺现有push符合要求。PDF图等二进制文件仍按文件更新。

@@ -1,0 +1,48 @@
+{
+  "projectId": "6a2cfd49b99635e8e968576a",
+  "method": "editor-socket/applyOtUpdate",
+  "started_at": "2026-10-23T15:38:42.401Z",
+  "documents": [
+    {
+      "path": "overleaf-skillvector/appendix/b-full-dataset-rerun.tex",
+      "docId": "6ada2569148298048ca0e203",
+      "before_version": 0,
+      "before_sha256": "b7c9a46fdc60d1ca7454e434f13c6e60b0053a5082a245ecb17980ba7906816d",
+      "after_sha256": "e6b58f1da203d95a4ef58857e8900d16b34b9e35950a42c414a65a999705e2d7",
+      "operations": 1,
+      "status": "verified",
+      "after_version": 1
+    },
+    {
+      "path": "overleaf-skillvector/appendix/cache-coverage.tex",
+      "docId": "6ada2563173781e4eb1f9fbd",
+      "before_version": 0,
+      "before_sha256": "e3ed9eb39f42be3f2cd3004cc789ce832ca9d46db0325c97b4238b8b06cbca79",
+      "after_sha256": "23f3c63e2606e6fdc3d43a7132dd5be5d572e6935e012d41b44a8a14e07d5a3b",
+      "operations": 2,
+      "status": "verified",
+      "after_version": 1
+    },
+    {
+      "path": "overleaf-skillvector/sections/05-discussion.tex",
+      "docId": "6ada2561cf1580aed089aa28",
+      "before_version": 0,
+      "before_sha256": "6aca4276496d5366aea998aef106ed274d7e0921b850f20e48f31d493e8a984e",
+      "after_sha256": "7ecfe455888911ad24dcee8c941dddbda524894f84a976e4b47cc81f2421d827",
+      "operations": 4,
+      "status": "verified",
+      "after_version": 1
+    },
+    {
+      "path": "overleaf-skillvector/sections/04-experiment.tex",
+      "docId": "6ada255ff0e9637a959732ac",
+      "before_version": 0,
+      "before_sha256": "d50f3c13681908708cf694f9ec906cb88160ca3182d7b336a08f0a680e1bc33e",
+      "after_sha256": "7dd78b208d644c57b6721a3c3f223716a5f2865a7aa633851b4b3bb588af6da4",
+      "operations": 1,
+      "status": "verified",
+      "after_version": 1
+    }
+  ],
+  "completed_at": "2026-10-23T15:38:56.350Z"
+}

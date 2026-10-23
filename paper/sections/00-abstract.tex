@@ -1,26 +1,13 @@
 \begin{abstract}
-% Background (1 sentence).
-Contextual skills supply reusable instructions to language-model agents,
-motivating efforts to transfer the resulting internal representations
-across executions.
-% Gap / research question (1 sentence).
-When such transfer weakens at later layers, does the original execution
-also depend less on the skill text, or does the transfer omit components
-that still matter?
-% Approach (2 sentences).
-We pair skill-position residual replacement in a wrong-skill receiver with
-cumulative skill-attention knockout in the correct-skill execution,
-comparing both interventions on common eligible questions across depth.
-Early content and position controls validate the transfer probe, and a
-focused experiment adds skill-position key/value cache replacement.
-% Results / findings / insight (2 sentences).
-Across eight verified model--benchmark comparisons involving four open-weight
-models on MedCalc-Bench and TheoremQA, transfer recovery falls below half
-of the donor's gain before skill-attention dependence falls to half,
-revealing a depth interval with weak transfer but persistent dependence.
-On Qwen3-8B/MedCalc at layer $16$, adding skill-cache replacement raises
-accuracy from $3.5\%$ to $42.1\%$, while a subsequent post-skill-to-skill cut
-reduces it to $7.0\%$; the same layer-$16$ comparison yields a $6.8$--$43.4$-point gain across
-all eight settings. This supports partial repair without uniquely
-explaining late transfer failure.
+Language models can adapt to new tasks by following instructions provided in context.
+Reusing the internal states formed from these instructions could allow the resulting task capabilities to be shared across executions.
+However, it remains unclear how the ability to transfer these states relates to the model’s continued dependence on the instructions.
+We study this relationship using skills, sets of instructions that describe how to perform a task.
+At different layers, we transfer states at the instruction positions from an execution using the correct skill into one using an unrelated skill.
+Separately, we block attention to the skill in the original execution.
+Across four models and two benchmarks, all eight comparisons show that transfer weakens at later layers while the original execution remains strongly dependent on the skill.
+We then augment state transfer with key/value caches, the stored information used by attention.
+At layer 16, this joint intervention improves accuracy over state transfer alone by 6.8 to 43.4 percentage points across all eight combinations.
+For Qwen3-8B/MedCalc, accuracy rises from 3.5\% to 42.1\%, and blocking subsequent skill reading reduces it to 7.0\%.
+These findings establish a separation between using contextual skills and reusing their internal states, and demonstrate cache-assisted recovery across models and tasks.
 \end{abstract}

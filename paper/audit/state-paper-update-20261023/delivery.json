@@ -1,0 +1,25 @@
+{
+  "project": "6a2cfd49b99635e8e968576a",
+  "changed_cloud_text_documents": 4,
+  "whole_file_uploads": 0,
+  "doc_ids_preserved": true,
+  "history_versions": [
+    2440,
+    2441,
+    2442,
+    2443
+  ],
+  "history_text_reconstruction_verified": true,
+  "cloud_matches_staged_source": true,
+  "pdf_pages": 13,
+  "new_table_number": 3,
+  "new_table_page": 7,
+  "old_mechanism_table_number": 5,
+  "math_environments_preserved": true,
+  "undefined_references": false,
+  "overfull_boxes": false,
+  "new_experiments_started": false,
+  "pdf_sha256": "7c5e1c77de53e09e3117c01532af55d20de2a4ccfa58211fb7ee1d3ef624dd67",
+  "local_before_backup": "/tmp/state-paper-update-20261023-active-before",
+  "note": "Git source also incorporates existing online collaborative changes from the previous verified snapshot; the new science patch itself touches four docs."
+}
