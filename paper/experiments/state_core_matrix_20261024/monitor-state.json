@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-24T00:30:14.286621+08:00",
+  "checked_at": "2026-10-24T00:50:50.918335+08:00",
   "scope": "seven new core24 cells; q8-medcalc reused",
   "supervision_expired": false,
   "launch_status": "all_seven_core24_jobs_submitted_not_completion",
@@ -15,59 +15,59 @@
   "observed": {
     "cells": {
       "q8-theoremqa": {
-        "gate": {
+        "core": {
           "cell": "q8-theoremqa",
-          "phase": "gate",
-          "records": 31,
-          "expected": 50
+          "phase": "core",
+          "records": 150,
+          "expected": 1512
         }
       },
       "mistral-medcalc": {
-        "gate": {
+        "core": {
           "cell": "mistral-medcalc",
-          "phase": "gate",
-          "records": 15,
-          "expected": 50
+          "phase": "core",
+          "records": 87,
+          "expected": 1104
         }
       },
       "mistral-theoremqa": {
-        "gate": {
+        "core": {
           "cell": "mistral-theoremqa",
-          "phase": "gate",
-          "records": 38,
-          "expected": 50
+          "phase": "core",
+          "records": 204,
+          "expected": 1560
         }
       },
       "llama-medcalc": {
-        "gate": {
+        "core": {
           "cell": "llama-medcalc",
-          "phase": "gate",
-          "records": 10,
-          "expected": 50
+          "phase": "core",
+          "records": 67,
+          "expected": 2688
         }
       },
       "llama-theoremqa": {
-        "gate": {
+        "core": {
           "cell": "llama-theoremqa",
-          "phase": "gate",
-          "records": 2,
-          "expected": 50
+          "phase": "core",
+          "records": 54,
+          "expected": 2208
         }
       },
       "deepseek-medcalc": {
-        "gate": {
+        "core": {
           "cell": "deepseek-medcalc",
-          "phase": "gate",
-          "records": 18,
-          "expected": 50
+          "phase": "core",
+          "records": 213,
+          "expected": 576
         }
       },
       "deepseek-theoremqa": {
-        "gate": {
+        "core": {
           "cell": "deepseek-theoremqa",
-          "phase": "gate",
-          "records": 1,
-          "expected": 50
+          "phase": "core",
+          "records": 127,
+          "expected": 1296
         }
       }
     },
