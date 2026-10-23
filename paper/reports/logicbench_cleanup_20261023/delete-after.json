@@ -1,0 +1,68 @@
+{
+  "success": true,
+  "data": {
+    "items": [],
+    "unresolved": [
+      {
+        "name": "wt-lfull-q8-s0-1022",
+        "reason": "No web job matching 'wt-lfull-q8-s0-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-q8-s0-1022`."
+      },
+      {
+        "name": "wt-lfull-q8-s1-1022",
+        "reason": "No web job matching 'wt-lfull-q8-s1-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-q8-s1-1022`."
+      },
+      {
+        "name": "wt-lfull-mistral-s0-1022",
+        "reason": "No web job matching 'wt-lfull-mistral-s0-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-mistral-s0-1022`."
+      },
+      {
+        "name": "wt-lfull-mistral-s1-1022",
+        "reason": "No web job matching 'wt-lfull-mistral-s1-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-mistral-s1-1022`."
+      },
+      {
+        "name": "wt-lfull-llama-s0-1022",
+        "reason": "No web job matching 'wt-lfull-llama-s0-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-llama-s0-1022`."
+      },
+      {
+        "name": "wt-lfull-llama-s1-1022",
+        "reason": "No web job matching 'wt-lfull-llama-s1-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-llama-s1-1022`."
+      },
+      {
+        "name": "wt-lfull-deepseek-s0-1022",
+        "reason": "No web job matching 'wt-lfull-deepseek-s0-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-deepseek-s0-1022`."
+      },
+      {
+        "name": "wt-lfull-deepseek-s1-1022",
+        "reason": "No web job matching 'wt-lfull-deepseek-s1-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-deepseek-s1-1022`."
+      },
+      {
+        "name": "wt-lfull-mistral-s0-r1-1022",
+        "reason": "No web job matching 'wt-lfull-mistral-s0-r1-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-mistral-s0-r1-1022`."
+      },
+      {
+        "name": "wt-lfull-mistral-s1-r1-1022",
+        "reason": "No web job matching 'wt-lfull-mistral-s1-r1-1022' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-lfull-mistral-s1-r1-1022`."
+      },
+      {
+        "name": "wt-logic-q8-1021",
+        "reason": "No web job matching 'wt-logic-q8-1021' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-logic-q8-1021`."
+      },
+      {
+        "name": "wt-logic-mistral-1021",
+        "reason": "No web job matching 'wt-logic-mistral-1021' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-logic-mistral-1021`."
+      },
+      {
+        "name": "wt-logic-llama-1021",
+        "reason": "No web job matching 'wt-logic-llama-1021' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-logic-llama-1021`."
+      },
+      {
+        "name": "wt-logic-deepseek-1021",
+        "reason": "No web job matching 'wt-logic-deepseek-1021' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-logic-deepseek-1021`."
+      },
+      {
+        "name": "wt-logic-llama-1021-r1",
+        "reason": "No web job matching 'wt-logic-llama-1021-r1' found. Try `inspire job list --workspace 可上网GPU资源 --name wt-logic-llama-1021-r1`."
+      }
+    ]
+  }
+}

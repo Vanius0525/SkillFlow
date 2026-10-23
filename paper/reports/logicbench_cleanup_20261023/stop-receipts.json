@@ -1,0 +1,50 @@
+[
+  {
+    "command": [
+      "job",
+      "stop",
+      "wt-lfull-q8-s0-1022",
+      "--workspace",
+      "可上网GPU资源"
+    ],
+    "returncode": 0,
+    "stdout": "OK Job stopped: wt-lfull-q8-s0-1022\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "job",
+      "stop",
+      "wt-lfull-q8-s1-1022",
+      "--workspace",
+      "可上网GPU资源"
+    ],
+    "returncode": 0,
+    "stdout": "OK Job stopped: wt-lfull-q8-s1-1022\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "job",
+      "stop",
+      "wt-lfull-llama-s0-1022",
+      "--workspace",
+      "可上网GPU资源"
+    ],
+    "returncode": 0,
+    "stdout": "OK Job stopped: wt-lfull-llama-s0-1022\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "job",
+      "stop",
+      "wt-lfull-llama-s1-1022",
+      "--workspace",
+      "可上网GPU资源"
+    ],
+    "returncode": 0,
+    "stdout": "OK Job stopped: wt-lfull-llama-s1-1022\n",
+    "stderr": ""
+  }
+]

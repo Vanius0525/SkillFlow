@@ -1,2 +1,0 @@
-{"time": 1792567759.7777874, "torch": "2.7.0a0+ecf3bae40a.nv25.02", "cuda": "12.8", "transformers": "4.57.6", "gpu": "NVIDIA GeForce RTX 4090, GPU-6026fc0f-f1dd-0fb0-277e-c3b3c192dad2, 570.124.06"}
-{"time": 1792575765.144446, "torch": "2.7.0a0+ecf3bae40a.nv25.02", "cuda": "12.8", "transformers": "4.57.6", "execution_manifest_sha256": "6461b66b55c0ecadc13dc078cc8e7492f722b1a645cb9c5a3b9ecf8ef024cfd0", "gpu": "NVIDIA GeForce RTX 4090, GPU-207f9004-6693-fe19-1230-47550a829a7f, 570.124.06"}

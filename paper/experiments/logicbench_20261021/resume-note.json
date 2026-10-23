@@ -1,7 +1,0 @@
-{
-  "reason": "Llama chat template strips one question trailing space; locating rendered user via rstrip only if exact user absent; prompt token generation unchanged",
-  "instance": "logicbench_00317",
-  "completed_before_failure": 911,
-  "prior_manifest_sha256": "5442ce006d7c92b252aa72aa09c32f04cbf9e9d94ea93456c8935d19c59c0d81",
-  "manifest_sha256": "6461b66b55c0ecadc13dc078cc8e7492f722b1a645cb9c5a3b9ecf8ef024cfd0"
-}

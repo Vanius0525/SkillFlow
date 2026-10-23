@@ -1,0 +1,8 @@
+Multiple notebooks named 'wt-state-observe-1023' found:
+#   Status      Resource     Created           Workspace    
+──────────────────────────────────────────────────────────────
+  1   STOPPED     4 CPU        1792763263000     CPU资源空间  
+  2   RUNNING     4 CPU        1792763228000     CPU资源空间
+Select notebook [1]: [{"path": "/inspire/hdd/project/project-public/czxs253130660/logicbench-20261021-v1", "files": 57, "bytes": 28284498}, {"path": "/inspire/hdd/project/project-public/czxs253130660/logicbench-20261021.tar.gz", "files": 1, "bytes": 126772}, {"path": "/inspire/hdd/project/project-public/czxs253130660/logicbench-full-resume-r1.tar.gz", "files": 1, "bytes": 8721}, {"path": "/inspire/hdd/project/project-public/czxs253130660/logicbench-full-20261022-v1", "files": 550, "bytes": 176315539}, {"path": "/inspire/hdd/project/project-public/czxs253130660/logicbench-full-20261022-v1.tar.gz", "files": 1, "bytes": 147001}, {"path": "/inspire/hdd/project/project-public/czxs253130660/logicbench-1021-resume.tar.gz", "files": 1, "bytes": 9890}]
+DELETION VERIFIED
+OK

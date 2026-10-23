@@ -1,0 +1,15 @@
+[
+  "/home/vanius/proj/agent-harness/paper/experiments/logicbench_20261021",
+  "/home/vanius/proj/agent-harness/paper/experiments/logicbench_full_20261022",
+  "/tmp/stage-logicbench-handoff.py",
+  "/tmp/run-logicbench-model-audit.py",
+  "/tmp/logicbench-r1-test.py",
+  "/tmp/logicbench-context-preflight.py",
+  "/tmp/logicbench-handoff-header.txt",
+  "/tmp/logicbench-final-handoff.patch",
+  "/tmp/run-logic-depth-audit.py",
+  "/tmp/logicbench-20261021.tar.gz",
+  "/tmp/logicbench-full-20261022-v1.tar.gz",
+  "/tmp/logicbench-1021-resume.tar.gz",
+  "/tmp/logicbench-full-resume-r1.tar.gz"
+]

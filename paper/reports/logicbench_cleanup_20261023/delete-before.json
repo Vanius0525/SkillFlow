@@ -1,0 +1,278 @@
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "name": "wt-lfull-q8-s0-1022",
+        "status": "CANCELLED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663418000",
+        "finished_at": "1792736449000"
+      },
+      {
+        "name": "wt-lfull-q8-s1-1022",
+        "status": "CANCELLED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663418000",
+        "finished_at": "1792736450000"
+      },
+      {
+        "name": "wt-lfull-mistral-s0-1022",
+        "status": "FAILED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663418000",
+        "finished_at": "1792666280000"
+      },
+      {
+        "name": "wt-lfull-mistral-s1-1022",
+        "status": "FAILED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663418000",
+        "finished_at": "1792666172000"
+      },
+      {
+        "name": "wt-lfull-llama-s0-1022",
+        "status": "CANCELLED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663418000",
+        "finished_at": "1792736451000"
+      },
+      {
+        "name": "wt-lfull-llama-s1-1022",
+        "status": "CANCELLED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663418000",
+        "finished_at": "1792736451000"
+      },
+      {
+        "name": "wt-lfull-deepseek-s0-1022",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663419000",
+        "finished_at": "1792689511000"
+      },
+      {
+        "name": "wt-lfull-deepseek-s1-1022",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792663419000",
+        "finished_at": "1792691529000"
+      },
+      {
+        "name": "wt-lfull-mistral-s0-r1-1022",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792667766000",
+        "finished_at": "1792717069000"
+      },
+      {
+        "name": "wt-lfull-mistral-s1-r1-1022",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792667767000",
+        "finished_at": "1792717633000"
+      },
+      {
+        "name": "wt-logic-q8-1021",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792567719000",
+        "finished_at": "1792609494000"
+      },
+      {
+        "name": "wt-logic-mistral-1021",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792567719000",
+        "finished_at": "1792577038000"
+      },
+      {
+        "name": "wt-logic-llama-1021",
+        "status": "FAILED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792567719000",
+        "finished_at": "1792574478000"
+      },
+      {
+        "name": "wt-logic-deepseek-1021",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792567719000",
+        "finished_at": "1792571979000"
+      },
+      {
+        "name": "wt-logic-llama-1021-r1",
+        "status": "SUCCEEDED",
+        "project": "公共科研项目",
+        "compute_group": "4090-2-cuda12.8",
+        "resource": {
+          "cpu": 10,
+          "memory_gib": 100,
+          "gpu": 1,
+          "nodes": 1,
+          "shared_memory_gib": 32,
+          "gpu_type": "NVIDIA 4090 (48GB)"
+        },
+        "priority": 20,
+        "priority_level": "NORMAL",
+        "created_at": "1792575124000",
+        "finished_at": "1792583898000"
+      }
+    ],
+    "unresolved": []
+  }
+}

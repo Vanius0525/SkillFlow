@@ -1,0 +1,1 @@
+Independent remote scan of personal HDD and SSD roots returned [] after deletion. All six exact paths were also asserted absent by deletion command.

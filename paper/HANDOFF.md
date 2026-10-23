@@ -1,3 +1,12 @@
+## 2026-10-23 晚间恢复观察与独立审计（进行中）
+
+- 处理17:00迟到通知时实际已21:48。原CPU wt-family-prep-1018为timedShutdown STOPPED，两次start均平台InternalError，不再盲重试。通用wt-dev-cpu只读探测未成功，未启动任何其他实验。
+- live Job已确认两份SUCCEEDED：repair0 17:36:15结束、repair1 15:23:34结束。不能再称仍运行/排队；待读取done/hash和独立审计后才确认完整生成及结论。
+- 一次notebook create请求超时，平台留下两个同名wt-state-observe-1023（21:47:43与21:47:08）。新建多余实例已stop成功，保留较早21:47:08、cpu-nat-132运行实例，4CPU/16GiB，8小时auto-stop。平台同名连接的--pick在cached/live两层不一致，CLI exec/scp交互选择失败；改用CLI成功导出的SSH配置/tmp/state-observer-audit.ssh，Host state-observer-audit，直接ssh已验证OBSERVER_READY。
+- watch.py支持observer_ssh_config，watch-config已切新CPU与该SSH配置，原小时timer未恢复depth。CPU仅用于本轮观察/审计，不占GPU；不删除任何实例或数据。
+- 本地新audit_results.py已上传，正在独立CPU进程核验两份完整键网格、源文件SHA、全部正序/逆序评分、gate身份/完整复制、source/other缓存精确写入、截断与按skill整组bootstrap。远端目标SSD v2/independent-audit.json；当前SSH审计进程会话41107待取输出，不重复启动新审计或生成。
+- 下一步：检查审计进程结果，取回小JSON；若检查失败先诊断，不声称已通过。随后watch --no-notify验证完成与timer自停，再给可读结果说明并更新交接。原GPU/已取消depth/其他实验/论文均未操作。
+
 ## 2026-10-22 创新性质疑与最小判别实验（设计完成，未启动）
 
 - 用户要求评估晚层失败是否源于不完整状态复制，以及中性receiver、同协议和cache内容/覆盖对照的必要性与可行性。已审阅当前方法/实现、协议桥接与7篇相关原始论文，报告：`reports/创新性质疑与最小判别实验_20261022.md`。
