@@ -1,0 +1,15 @@
+{
+  "submitted": [
+    "wt-state-depth-s0-1022"
+  ],
+  "status": "gate_failed_no_followups",
+  "started": 1792663300.9249833,
+  "checked_at": "2026-10-22T18:03:08.152646+08:00",
+  "last_error": "[Errno 2] No such file or directory: 'inspire'",
+  "gate": {
+    "failed": {
+      "error": "Command '['/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python', '-u', '/inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1/run.py', '--model', '/inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B', '--mode', 'gate', '--out', '/inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1/outputs/gate-0-of-1.jsonl', '--shard', '0', '--shards', '1']' returned non-zero exit status 1.",
+      "time": 1792663360.5398824
+    }
+  }
+}

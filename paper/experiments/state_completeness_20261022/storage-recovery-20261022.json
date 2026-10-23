@@ -1,0 +1,18 @@
+{
+  "approved_deletion": {
+    "target": "/inspire/ssd/project/project-public/czxs253130660/state-completeness-20261022-v1/write-probe.bin",
+    "removed_bytes": 268435456,
+    "confirmed_removed": true
+  },
+  "preserved_raw": {
+    "path": "/inspire/ssd/project/project-public/czxs253130660/state-completeness-20261022-v1/outputs/gate-0-of-1.jsonl",
+    "sha256": "97c4c1211edd6a670ac55e7f3f1e5afaea643cf01995b9b780727a2cc36fc91f",
+    "bytes": 32836,
+    "valid_records": 1,
+    "invalid_lines": 0
+  },
+  "seeded_compressed_bytes": 1386,
+  "engine_AST_unchanged": true,
+  "local_instrument_tests": 5,
+  "time": "2026-10-22T20:51:26.760571+08:00"
+}

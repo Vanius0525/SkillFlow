@@ -1,0 +1,21 @@
+{
+  "root": "/inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1",
+  "account": "me",
+  "cpu": "wt-family-prep-1018",
+  "submitted": [
+    "wt-state-depth-s0-1022"
+  ],
+  "remaining_submit_after_gate": [
+    "wt-state-depth-s1-1022",
+    "wt-state-repair-s0-1022",
+    "wt-state-repair-s1-1022"
+  ],
+  "status": "first job submitted; gate not yet passed; no formal generation verified",
+  "frozen_ids": 124,
+  "depth_records_per_item": 116,
+  "repair_records_per_item": 49,
+  "total_formal_records": 20460,
+  "gate_records": 14,
+  "max_gpu": 4,
+  "created_at": "2026-10-22T17:58:21.644149+08:00"
+}

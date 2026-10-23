@@ -1,0 +1,33 @@
+{
+  "root": "/inspire/ssd/project/project-public/czxs253130660/state-completeness-20261022-v1",
+  "account": "me",
+  "cpu": "wt-family-prep-1018",
+  "submitted": [
+    "wt-state-depth-s0-1022-r1"
+  ],
+  "remaining_submit_after_gate": [
+    "wt-state-depth-s1-1022-r1",
+    "wt-state-repair-s0-1022-r1",
+    "wt-state-repair-s1-1022-r1"
+  ],
+  "status": "SSD retry submitted; gate pending, followup controller active",
+  "frozen_ids": 124,
+  "depth_records_per_item": 116,
+  "repair_records_per_item": 49,
+  "total_formal_records": 20460,
+  "gate_records": 14,
+  "max_gpu": 4,
+  "created_at": "2026-10-22T17:58:21.644149+08:00",
+  "failed_preserved_root": "/inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1",
+  "last_update": "2026-10-22T18:10:06.256719+08:00",
+  "controller": "state-completeness-launch-1022.service",
+  "source_bundle_sha256": "2bfffaef9fe86eea5d09e39efc6da734d9c63c9481cc27c1183f223f6455e1b4",
+  "validated_prompts": {
+    "items": 124,
+    "groups": 14,
+    "max_prompt_tokens": 3196,
+    "source_min": 365,
+    "source_max": 1630
+  },
+  "ssd_write_probe_bytes": 268435456
+}

@@ -1,0 +1,25 @@
+{
+  "submitted": [
+    "wt-state-repair-s0-1022-r3",
+    "wt-state-repair-s1-1022-r3"
+  ],
+  "status": "complete_independently_audited",
+  "started": 1792673433.5668898,
+  "previous_failed_job": "wt-state-repair-s0-1022-r2",
+  "cancelled_science": "all-layer depth experiment remains cancelled",
+  "checked_at": "2026-10-22T23:22:50.491798+08:00",
+  "gate": {
+    "ready": true,
+    "done": {
+      "records": 14,
+      "items": 2,
+      "raw_sha256": "5ad8596d4a14a4e8d1b002f0377c34740839525ccf23919007918d8c12ee0036",
+      "mode": "gate",
+      "time": 1792682534.7203271
+    }
+  },
+  "last_create_output": "OK Job created: wt-state-repair-s1-1022-r3",
+  "completed_at": "2026-10-23T22:55:39.256637+08:00",
+  "audit": "retrieved/independent-audit.json",
+  "report": "../../reports/状态完整性补实验结果_20261023.md"
+}

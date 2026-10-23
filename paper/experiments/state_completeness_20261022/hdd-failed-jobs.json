@@ -1,0 +1,72 @@
+{
+  "jobs": [
+    {
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "name": "wt-state-depth-s0-1022",
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1/worker.py --mode gate && /inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1/worker.py --mode depth --shard 0 --shards 2"
+    },
+    {
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "name": "wt-state-depth-s1-1022",
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1/worker.py --mode depth --shard 1 --shards 2"
+    },
+    {
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "name": "wt-state-repair-s0-1022",
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1/worker.py --mode repair --shard 0 --shards 2"
+    },
+    {
+      "workspace": "可上网GPU资源",
+      "project": "公共科研项目",
+      "group": "4090-2-cuda12.8",
+      "quota": "1,10,100",
+      "image": "ngc-pytorch:25.02-cuda12.8.0-py3",
+      "priority": 4,
+      "shm_size": 32,
+      "max_time": 48,
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "name": "wt-state-repair-s1-1022",
+      "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u /inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1/worker.py --mode repair --shard 1 --shards 2"
+    }
+  ]
+}

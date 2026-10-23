@@ -1,0 +1,70 @@
+{
+  "checked_at": "2026-10-23T22:37:37.607408+08:00",
+  "launch_status": "all_planned_repair_jobs_submitted_not_completion",
+  "statuses": {
+    "wt-state-repair-s0-1022-r3": "SUCCEEDED",
+    "wt-state-repair-s1-1022-r3": "SUCCEEDED"
+  },
+  "observed": {
+    "progress": {
+      "gate-0-of-1": {
+        "mode": "gate",
+        "shard": 0,
+        "records": 14,
+        "expected": 14,
+        "last_key": [
+          "medcalcbench_00266",
+          "suffix_replay",
+          -1
+        ],
+        "time": 1792682534.7167728
+      },
+      "repair-0-of-2": {
+        "mode": "repair",
+        "shard": 0,
+        "records": 3038,
+        "expected": 3038,
+        "last_key": [
+          "medcalcbench_00879",
+          "neutral_a:C_window_24",
+          -1
+        ],
+        "time": 1792748163.3532534
+      },
+      "repair-1-of-2": {
+        "mode": "repair",
+        "shard": 1,
+        "records": 3038,
+        "expected": 3038,
+        "last_key": [
+          "medcalcbench_00819",
+          "neutral_a:C_window_24",
+          -1
+        ],
+        "time": 1792740207.3436906
+      }
+    },
+    "verified": {
+      "gate-0-of-1": true,
+      "repair-0-of-2": true,
+      "repair-1-of-2": true
+    },
+    "failed": {},
+    "raw": {
+      "gate-0-of-1": {
+        "bytes": 74380,
+        "mtime": 1792682534.7153883
+      },
+      "repair-0-of-2": {
+        "bytes": 17603182,
+        "mtime": 1792748163.3511188
+      },
+      "repair-1-of-2": {
+        "bytes": 17500786,
+        "mtime": 1792740207.341531
+      }
+    }
+  },
+  "generation_complete_verified": true,
+  "supervision_expired": false
+}

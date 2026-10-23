@@ -1,0 +1,18 @@
+{
+  "submitted": [
+    "wt-state-repair-s0-1022-r2"
+  ],
+  "status": "gate_failed_no_followups",
+  "started": 1792667446.8246777,
+  "cancelled_jobs": [
+    "wt-state-depth-s0-1022-r1"
+  ],
+  "cancelled_science": "all-layer depth/neutral robustness experiment 1",
+  "checked_at": "2026-10-22T20:33:32.687414+08:00",
+  "gate": {
+    "failed": {
+      "error": "Command '['/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python', '-u', '/inspire/ssd/project/project-public/czxs253130660/state-completeness-20261022-v1/run.py', '--model', '/inspire/ssd/project/project-public/czxs253130660/models/Qwen3-8B', '--mode', 'gate', '--out', '/inspire/ssd/project/project-public/czxs253130660/state-completeness-20261022-v1/outputs/gate-0-of-1.jsonl', '--shard', '0', '--shards', '1']' returned non-zero exit status 1.",
+      "time": 1792672353.0329075
+    }
+  }
+}

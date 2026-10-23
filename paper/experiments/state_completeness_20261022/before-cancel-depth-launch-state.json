@@ -1,0 +1,12 @@
+{
+  "submitted": [
+    "wt-state-depth-s0-1022-r1"
+  ],
+  "status": "awaiting_ssd_gate",
+  "started": 1792663703.699606,
+  "previous_failed_job": "wt-state-depth-s0-1022",
+  "checked_at": "2026-10-22T19:09:51.720147+08:00",
+  "gate": {
+    "ready": false
+  }
+}

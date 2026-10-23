@@ -1,0 +1,39 @@
+{
+  "root": "/inspire/ssd/project/project-public/czxs253130660/state-completeness-20261022-v2",
+  "account": "me",
+  "cpu": "wt-family-prep-1018",
+  "submitted": [
+    "wt-state-repair-s0-1022-r3"
+  ],
+  "remaining_submit_after_gate": [
+    "wt-state-repair-s1-1022-r3"
+  ],
+  "status": "complete_independently_audited",
+  "frozen_ids": 124,
+  "repair_records_per_item": 49,
+  "total_formal_records": 6076,
+  "gate_records": 14,
+  "max_gpu": 2,
+  "created_at": "2026-10-22T17:58:21.644149+08:00",
+  "failed_preserved_root": "/inspire/hdd/project/project-public/czxs253130660/state-completeness-20261022-v1",
+  "last_update": "2026-10-22T20:53:54.369038+08:00",
+  "controller": "state-completeness-compressed-launch-1022.service",
+  "source_bundle_sha256": "83536271e0c28c5f2a83760481e6e482425ab1a74adadc0a94ceef12080db8d2",
+  "validated_prompts": {
+    "items": 124,
+    "groups": 14,
+    "max_prompt_tokens": 3196,
+    "source_min": 365,
+    "source_max": 1630
+  },
+  "ssd_write_probe_bytes": 268435456,
+  "cancelled_jobs": [
+    "wt-state-depth-s0-1022-r1"
+  ],
+  "cancelled_depth_records": 14384,
+  "output_format": "jsonl.gz; one complete gzip member per record",
+  "reused_gate_records": 1,
+  "completed_at": "2026-10-23T22:55:39.256637+08:00",
+  "audit": "retrieved/independent-audit.json",
+  "report": "../../reports/状态完整性补实验结果_20261023.md"
+}
