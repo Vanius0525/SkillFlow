@@ -1,0 +1,15 @@
+{
+  "status": "all_seven_core24_jobs_submitted_not_completion",
+  "submitted": [
+    "wt-sc24-q8-theoremqa-1024",
+    "wt-sc24-mistral-medcalc-1024",
+    "wt-sc24-mistral-theoremqa-1024",
+    "wt-sc24-llama-medcalc-1024",
+    "wt-sc24-llama-theoremqa-1024",
+    "wt-sc24-deepseek-medcalc-1024",
+    "wt-sc24-deepseek-theoremqa-1024"
+  ],
+  "authorized_at": 1792772072.8523147,
+  "checked_at": 1792772820.733625,
+  "last_create_output": "OK Job created: wt-sc24-deepseek-theoremqa-1024"
+}

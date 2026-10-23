@@ -1,0 +1,57 @@
+{
+  "source": "Platform logs from wt-sc24-q8-theoremqa-1024, 2026-10-24 00:22:23-00:22:33 CST; full cells.json remains remote and hash-pinned",
+  "cells": [
+    {
+      "key": "q8-theoremqa",
+      "items": 63,
+      "groups": 53,
+      "context_exclusions": 0,
+      "formal_records": 1512
+    },
+    {
+      "key": "mistral-medcalc",
+      "items": 46,
+      "groups": 16,
+      "context_exclusions": 0,
+      "formal_records": 1104
+    },
+    {
+      "key": "mistral-theoremqa",
+      "items": 65,
+      "groups": 55,
+      "context_exclusions": 0,
+      "formal_records": 1560
+    },
+    {
+      "key": "llama-medcalc",
+      "items": 112,
+      "groups": 20,
+      "context_exclusions": 0,
+      "formal_records": 2688
+    },
+    {
+      "key": "llama-theoremqa",
+      "items": 92,
+      "groups": 71,
+      "context_exclusions": 0,
+      "formal_records": 2208
+    },
+    {
+      "key": "deepseek-medcalc",
+      "items": 24,
+      "groups": 12,
+      "context_exclusions": 1,
+      "formal_records": 576
+    },
+    {
+      "key": "deepseek-theoremqa",
+      "items": 54,
+      "groups": 45,
+      "context_exclusions": 0,
+      "formal_records": 1296
+    }
+  ],
+  "total_items": 456,
+  "total_formal_records": 10944,
+  "new_identity_gate_records_not_formal": 14
+}

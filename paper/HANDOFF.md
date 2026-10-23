@@ -1,3 +1,7 @@
+## 2026-10-24 核心24条件七组合扩展已启动，七GPU均RUNNING
+
+用户授权直接运行并每3h检查。入口experiments/state_core_matrix_20261024/HANDOFF.md、launch-state.json、monitor-state.json；七个wt-sc24-{cell}-1024任务已唯一提交且00:30均RUNNING，正在各自gate，随后自动正式生成+独立进程审计，不等人工gate许可。Qwen/MedCalc旧结果复用，取消depth及其他实验不恢复。固定历史457候选，输入预检仅DeepSeek/MedCalc排除1题，正式456题×24=10944条；不是每组124或全benchmark。源码约44KB压缩包随GPU命令部署，已有共享输入逐SHA验证，不下载模型、不依赖Notebook，两个专用CPU均已STOPPED。三小时state-core-matrix-3h-01a162f7.timer active，首次约03:16 CST；观察已实测七任务状态与gate进度，无failed。7天监督到期须明确报告，完成停，依赖WSL/systemd/Codex在线。所有生成尚未完成、不提前做科学结论；后续取回小audit、cells/manifest与二值标签，独立核验完整矩阵。论文上一阶段已Overleaf/GitHub同步875119b，本轮不自动改稿。无需新许可，后续按定时消息继续真实监督，绝不重复提交或重跑已有记录。
+
 ## 2026-10-23 状态完整性结果已入稿并同步Overleaf
 
 用户授权最小正文更新、同步Overleaf/GitHub，未启动新实验。两次完整olcli diff确认线上基线未变，以最新23文件为基线。实际正文§4.4新增完整source对照段落与单栏Table3（124题，两背景；C_all/SC8,16,24/其他位置/完整prefix/后续重算），与原114题八组合结果明确分开。附录B加内容/8层窗口、组级区间/截断/审计；coverage改过时BF16句；Discussion更新已完成方向。数学公式、原八组合图表、摘要引言结论均未新改。

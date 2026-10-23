@@ -1,0 +1,13 @@
+{
+  "codex": "/home/vanius/.local/bin/codex",
+  "inspire": "/home/vanius/.local/bin/inspire",
+  "timer": "state-core-matrix-3h-01a162f7.timer",
+  "authorization": "User explicitly requested seven new model/task cells, core24 only, run directly and check every3h. Bound supervision7days, report expiration explicitly.",
+  "remote_python": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python",
+  "remote_root": "/inspire/ssd/project/project-public/czxs253130660/state-core-matrix-20261024-v1",
+  "observer_mode": "platform_logs",
+  "notebook_dependency": false,
+  "note": "Dedicated CPU connection failed; no longer needed. All progress/audits read through platform job logs.",
+  "thread": "SET_CURRENT_THREAD",
+  "expires_at": "SET_UNIX_EXPIRATION"
+}

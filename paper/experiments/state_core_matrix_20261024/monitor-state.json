@@ -1,0 +1,77 @@
+{
+  "checked_at": "2026-10-24T00:30:14.286621+08:00",
+  "scope": "seven new core24 cells; q8-medcalc reused",
+  "supervision_expired": false,
+  "launch_status": "all_seven_core24_jobs_submitted_not_completion",
+  "statuses": {
+    "wt-sc24-q8-theoremqa-1024": "RUNNING",
+    "wt-sc24-mistral-medcalc-1024": "RUNNING",
+    "wt-sc24-mistral-theoremqa-1024": "RUNNING",
+    "wt-sc24-llama-medcalc-1024": "RUNNING",
+    "wt-sc24-llama-theoremqa-1024": "RUNNING",
+    "wt-sc24-deepseek-medcalc-1024": "RUNNING",
+    "wt-sc24-deepseek-theoremqa-1024": "RUNNING"
+  },
+  "observed": {
+    "cells": {
+      "q8-theoremqa": {
+        "gate": {
+          "cell": "q8-theoremqa",
+          "phase": "gate",
+          "records": 31,
+          "expected": 50
+        }
+      },
+      "mistral-medcalc": {
+        "gate": {
+          "cell": "mistral-medcalc",
+          "phase": "gate",
+          "records": 15,
+          "expected": 50
+        }
+      },
+      "mistral-theoremqa": {
+        "gate": {
+          "cell": "mistral-theoremqa",
+          "phase": "gate",
+          "records": 38,
+          "expected": 50
+        }
+      },
+      "llama-medcalc": {
+        "gate": {
+          "cell": "llama-medcalc",
+          "phase": "gate",
+          "records": 10,
+          "expected": 50
+        }
+      },
+      "llama-theoremqa": {
+        "gate": {
+          "cell": "llama-theoremqa",
+          "phase": "gate",
+          "records": 2,
+          "expected": 50
+        }
+      },
+      "deepseek-medcalc": {
+        "gate": {
+          "cell": "deepseek-medcalc",
+          "phase": "gate",
+          "records": 18,
+          "expected": 50
+        }
+      },
+      "deepseek-theoremqa": {
+        "gate": {
+          "cell": "deepseek-theoremqa",
+          "phase": "gate",
+          "records": 1,
+          "expected": 50
+        }
+      }
+    },
+    "channel": "platform job logs; independent audit summaries, no Notebook dependency"
+  },
+  "all_cells_independently_audited": false
+}
