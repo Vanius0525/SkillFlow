@@ -1,0 +1,23 @@
+{
+  "source": "platform logs after initial deployment",
+  "observations": [
+    {
+      "cell": "q8-theoremqa",
+      "checked_log_time_cst": "2026-10-24 00:36:17",
+      "phase": "core",
+      "records": 66,
+      "expected": 1512
+    },
+    {
+      "cell": "mistral-theoremqa",
+      "checked_log_time_cst": "2026-10-24 00:36:11",
+      "phase": "core",
+      "records": 94,
+      "expected": 1560
+    }
+  ],
+  "gate_passed_for_observed_cells": true,
+  "all_generations_complete": false,
+  "startup_code_github_commit": "326b6f2",
+  "github_push_verified": true
+}

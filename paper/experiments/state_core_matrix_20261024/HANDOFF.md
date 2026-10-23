@@ -1,3 +1,7 @@
+## 2026-10-24 00:36 正式生成已开始（覆盖仅gate阶段的旧快照）
+
+平台日志明确显示：Qwen/TheoremQA core 66/1512（00:36:17），Mistral/TheoremQA core94/1560（00:36:11）。两者已通过全部50条gate并复用前两题48条，不再只是加载或gate阶段。其他cell最近00:30均RUNNING，不能用尚未刷新的monitor-state断言还全在gate；后续三小时检查会更新。启动代码与冻结配置已提交326b6f2；push已确认成功。本轮尚未生成全完成、独立审计未完成，不输出科学结论。
+
 ## 2026-10-24 00:30 启动阶段完成：七GPU均RUNNING
 
 七个唯一GPU Job全部提交成功且均RUNNING，generation尚未完成。各cell正在gate（50条=两题×24正式条件+两条身份控制）；通过后前两题48条复用进正式结果，不重复生成，随后自动继续其余题并运行独立进程audit。00:30进度为q8/TQA31、Mistral/MC15、Mistral/TQA38、Llama/MC10、Llama/TQA2、DeepSeek/MC18、DeepSeek/TQA1，均/50，无failed。全部输入预检与源码/数据SHA已通过，正式456题×24=10944条。模型/任务人群不等大；历史候选固定，仅DeepSeek/MC1题因上下文排除，不能表述为全benchmark或每组124题。
