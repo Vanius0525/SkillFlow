@@ -256,7 +256,7 @@ below each cell's donor ($85.2$--$97.6\%$; Table~\ref{tab:state-completeness}).
 \begin{table*}[t]
 \centering
 \caption{Complete-source controls across four models and two benchmarks.
-Entries are accuracy (\%); $n/G$ counts questions/skills in each fixed pool.
+Entries are accuracy (\%).
 MC and TQA denote MedCalc and TheoremQA. Wrong and Neutral are the receiving
 contexts; Base is their unmodified accuracy. $C_{\mathrm{all}}$ copies
 source KV at every layer; $SC$ additionally patches source hidden states
@@ -264,9 +264,8 @@ at the stated layer. $B$ copies only other prefix KV, Full copies the
 complete prefix KV, and Replay copies all source KV then recomputes the
 later prompt. Full also gives donor accuracy. These pools differ from
 Table~\ref{tab:mechanism-contrasts}. Explicit all-layer rewriting after
-$SC$ leaves every generated token unchanged. Bold marks row-wise maxima
-within the $SC$ depths, $C_{\mathrm{all}}/B$, and Full/Replay comparisons
-(ties included); higher accuracy is better.}
+$SC$ leaves every generated token unchanged. Bold marks the highest accuracy among the three $SC$ depths in each row
+(ties included).}
 \label{tab:state-completeness}
 \normalfont\rmfamily\fontsize{9}{11}\selectfont
 \renewcommand{\arraystretch}{1.18}
@@ -276,34 +275,34 @@ within the $SC$ depths, $C_{\mathrm{all}}/B$, and Full/Replay comparisons
 \setlength{\lightrulewidth}{0.3pt}
 \setlength{\aboverulesep}{2pt}
 \setlength{\belowrulesep}{2.5pt}
-\begin{tabularx}{\textwidth}{@{}llc*{8}{>{\centering\arraybackslash}X}@{}}
+\begin{tabularx}{\textwidth}{@{}lc*{8}{>{\centering\arraybackslash}X}@{}}
 \toprule
 \rowcolor[HTML]{E4F4FA}
-Model / task & $n/G$ & Context & Base & $C_{\mathrm{all}}$ & $SC@8$ & $SC@16$ & $SC@24$ & $B$ & Full & Replay \\
+Model / task & Context & Base & $C_{\mathrm{all}}$ & $SC@8$ & $SC@16$ & $SC@24$ & $B$ & Full & Replay \\
 \midrule
-Qwen3-8B / MC & $124/14$ & Wrong & 4.8 & \textbf{29.8} & \textbf{91.9} & 41.9 & 25.8 & 2.4 & \textbf{97.6} & 96.8 \\
- &  & Neutral & 4.0 & \textbf{25.0} & \textbf{91.1} & 28.2 & 26.6 & 8.1 & \textbf{97.6} & 96.8 \\
+Qwen3-8B / MC & Wrong & 4.8 & 29.8 & \textbf{91.9} & 41.9 & 25.8 & 2.4 & 97.6 & 96.8 \\
+ & Neutral & 4.0 & 25.0 & \textbf{91.1} & 28.2 & 26.6 & 8.1 & 97.6 & 96.8 \\
 \addlinespace[2pt]
-Qwen3-8B / TQA & $63/53$ & Wrong & 6.3 & \textbf{58.7} & \textbf{95.2} & 60.3 & 50.8 & 20.6 & 96.8 & \textbf{98.4} \\
- &  & Neutral & 25.4 & \textbf{73.0} & \textbf{84.1} & 65.1 & 71.4 & 34.9 & 96.8 & \textbf{98.4} \\
+Qwen3-8B / TQA & Wrong & 6.3 & 58.7 & \textbf{95.2} & 60.3 & 50.8 & 20.6 & 96.8 & 98.4 \\
+ & Neutral & 25.4 & 73.0 & \textbf{84.1} & 65.1 & 71.4 & 34.9 & 96.8 & 98.4 \\
 \addlinespace[2pt]
-Mistral-7B / MC & $46/16$ & Wrong & 6.5 & \textbf{15.2} & \textbf{56.5} & 15.2 & 13.0 & 4.3 & \textbf{91.3} & 89.1 \\
- &  & Neutral & 6.5 & 17.4 & \textbf{39.1} & 17.4 & 17.4 & \textbf{19.6} & \textbf{91.3} & 89.1 \\
+Mistral-7B / MC & Wrong & 6.5 & 15.2 & \textbf{56.5} & 15.2 & 13.0 & 4.3 & 91.3 & 89.1 \\
+ & Neutral & 6.5 & 17.4 & \textbf{39.1} & 17.4 & 17.4 & 19.6 & 91.3 & 89.1 \\
 \addlinespace[2pt]
-Mistral-7B / TQA & $65/55$ & Wrong & 3.1 & 10.8 & \textbf{49.2} & 9.2 & 13.8 & \textbf{24.6} & \textbf{93.8} & \textbf{93.8} \\
- &  & Neutral & 4.6 & 23.1 & \textbf{43.1} & 21.5 & 21.5 & \textbf{27.7} & \textbf{93.8} & \textbf{93.8} \\
+Mistral-7B / TQA & Wrong & 3.1 & 10.8 & \textbf{49.2} & 9.2 & 13.8 & 24.6 & 93.8 & 93.8 \\
+ & Neutral & 4.6 & 23.1 & \textbf{43.1} & 21.5 & 21.5 & 27.7 & 93.8 & 93.8 \\
 \addlinespace[2pt]
-Llama-3.1-8B / MC & $112/20$ & Wrong & 1.8 & \textbf{16.1} & \textbf{73.2} & 17.0 & 16.1 & 1.8 & \textbf{96.4} & \textbf{96.4} \\
- &  & Neutral & 8.0 & \textbf{27.7} & \textbf{48.2} & 25.9 & 25.9 & 4.5 & \textbf{96.4} & \textbf{96.4} \\
+Llama-3.1-8B / MC & Wrong & 1.8 & 16.1 & \textbf{73.2} & 17.0 & 16.1 & 1.8 & 96.4 & 96.4 \\
+ & Neutral & 8.0 & 27.7 & \textbf{48.2} & 25.9 & 25.9 & 4.5 & 96.4 & 96.4 \\
 \addlinespace[2pt]
-Llama-3.1-8B / TQA & $92/71$ & Wrong & 5.4 & \textbf{43.5} & 45.7 & 46.7 & \textbf{51.1} & 10.9 & \textbf{90.2} & 89.1 \\
- &  & Neutral & 10.9 & \textbf{46.7} & \textbf{57.6} & \textbf{57.6} & 51.1 & 16.3 & \textbf{90.2} & 89.1 \\
+Llama-3.1-8B / TQA & Wrong & 5.4 & 43.5 & 45.7 & 46.7 & \textbf{51.1} & 10.9 & 90.2 & 89.1 \\
+ & Neutral & 10.9 & 46.7 & \textbf{57.6} & \textbf{57.6} & 51.1 & 16.3 & 90.2 & 89.1 \\
 \addlinespace[2pt]
-DeepSeek-7B / MC & $24/12$ & Wrong & 0.0 & \textbf{29.2} & \textbf{41.7} & 29.2 & 33.3 & 20.8 & \textbf{91.7} & 87.5 \\
- &  & Neutral & 8.3 & \textbf{41.7} & 25.0 & 29.2 & \textbf{33.3} & 20.8 & \textbf{91.7} & 87.5 \\
+DeepSeek-7B / MC & Wrong & 0.0 & 29.2 & \textbf{41.7} & 29.2 & 33.3 & 20.8 & 91.7 & 87.5 \\
+ & Neutral & 8.3 & 41.7 & 25.0 & 29.2 & \textbf{33.3} & 20.8 & 91.7 & 87.5 \\
 \addlinespace[2pt]
-DeepSeek-7B / TQA & $54/45$ & Wrong & 0.0 & 9.3 & \textbf{22.2} & 9.3 & 9.3 & \textbf{14.8} & \textbf{85.2} & 83.3 \\
- &  & Neutral & 14.8 & \textbf{31.5} & \textbf{44.4} & 31.5 & 29.6 & 22.2 & \textbf{85.2} & 83.3 \\
+DeepSeek-7B / TQA & Wrong & 0.0 & 9.3 & \textbf{22.2} & 9.3 & 9.3 & 14.8 & 85.2 & 83.3 \\
+ & Neutral & 14.8 & 31.5 & \textbf{44.4} & 31.5 & 29.6 & 22.2 & 85.2 & 83.3 \\
 \bottomrule
 \end{tabularx}
 \end{table*}

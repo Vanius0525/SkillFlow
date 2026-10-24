@@ -1,3 +1,7 @@
+## 2026-10-24 Table 3最终格式
+
+用户要求仅SC三个深度的每行最大值加粗（并列保留），并移除n/G列。已删除Table 3该列及表注定义，数值、其他表与正文不变。原生OT记录见reports/table3_sc_only_20261024与reports/table3_drop_ng_20261024；同步Overleaf、更新PDF后推GitHub。
+
 ## 2026-10-24 附录压缩新基线
 
 本轮用户授权附录压缩、Table 3加粗、同步Overleaf/GitHub已落实。正文仍8页，全文由15页压至12页；六个现有文档原生OT更新、云端编译通过。旧补充表保留源文件但不再input，未删文件。正文除一条失效附录说明及Table 3格式/表注外不改。完整说明/回执reports/appendix_compression_20261024；当前PDF skillvector-www2027.pdf。下面旧15页状态已被本节覆盖，全部实验/监督仍结束，不恢复。
