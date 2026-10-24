@@ -1,0 +1,29 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Potential applications.}
+Our findings suggest a way to evaluate the reuse of contextual skills.
+Consider a Web agent that repeatedly follows the same instructions across
+requests. A reusable internal representation would need to preserve task
+performance in the receiving execution. Our results motivate evaluating
+this transfer separately from the original execution's dependence on the
+skill. If a reuse method also removes access to the original instructions,
+that additional change needs its own evaluation. The observed cache gains
+motivate reuse methods that carry both hidden states and attention caches
+across requests. Deployment studies can evaluate their latency, memory
+use and task performance in interactive Web settings.
+
+\paragraph{Future work.}
+A next step is to investigate which questions benefit from cache
+replacement. The mathematical analysis connects remaining cache
+differences to output stability under explicit assumptions. Measuring
+these differences, their influence on token predictions and the donor's
+prediction margins could test whether this framework helps distinguish
+successful from unsuccessful repairs. The complete-source controls further motivate testing which parts of
+the receiving history must be recomputed, and whether the required budget
+can be predicted on held-out skills. Extending these controls beyond
+Qwen3-8B/MedCalc would test their cross-model and cross-task scope. Separating attention cuts during prompt
+processing from those during answer generation would clarify when continued
+skill access matters. Finally,
+multi-step Web workflows would assess how far the observed separation
+extends beyond the question-answering settings studied here.

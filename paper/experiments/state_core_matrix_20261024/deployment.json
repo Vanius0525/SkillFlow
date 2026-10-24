@@ -1,5 +1,5 @@
 {
-  "status": "all_seven_jobs_running_gate_in_progress",
+  "status": "complete_independently_audited",
   "account": "me",
   "workspace": "可上网GPU资源",
   "project": "公共科研项目",
@@ -20,13 +20,14 @@
   "formal_items": 456,
   "formal_conditions_per_item": 24,
   "formal_records": 10944,
-  "generation_complete": false,
-  "independent_audit_complete": false,
+  "generation_complete": true,
+  "independent_audit_complete": true,
   "notebook_dependency": false,
   "observer_channel": "platform job logs",
   "cpu_prep_instances_both_stopped": true,
   "timer": "state-core-matrix-3h-01a162f7.timer",
   "interval_hours": 3,
   "source_deployment": "immutable compressed command payload saved in jobs.json",
-  "previous_q8_medcalc_reused": true
+  "previous_q8_medcalc_reused": true,
+  "local_artifact_and_matrix_audit_complete": true
 }

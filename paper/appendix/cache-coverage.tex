@@ -57,11 +57,11 @@ induction applies. However, $\mathcal B_{SC+\mathrm{cut}}$ may differ
 from $\mathcal B_S$, and continuation uses a different mask. The contrast
 includes both prefill and decoding effects.
 
-Code inspection confirms the stated write ordering. In the additional
-Qwen3-8B/MedCalc experiment, runtime elementwise checks found zero
-source-cache discrepancies against the donor for $SC$ at $L8$, $L16$
-and $L24$ in both receiving contexts
-(Appendix~\ref{app:state-completeness}). This verifies coverage for those
-BF16 runs; the proposition retains its exact-arithmetic assumptions.
+Code inspection confirms the stated write ordering. Runtime elementwise
+checks found zero source-cache discrepancies against the donor for $SC$
+at $L8$, $L16$ and $L24$ in both receiving contexts across all eight
+model/task cells (Appendix~\ref{app:state-completeness}). This verifies
+coverage for those BF16 runs; the proposition retains its exact-arithmetic
+assumptions.
 
 \input{appendix/behavior-recovery}

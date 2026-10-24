@@ -1,0 +1,19 @@
+{
+  "verified": true,
+  "documents": [
+    "overleaf-skillvector/appendix/b-full-dataset-rerun.tex",
+    "overleaf-skillvector/appendix/cache-coverage.tex",
+    "overleaf-skillvector/sections/00-abstract.tex",
+    "overleaf-skillvector/sections/01-introduction.tex",
+    "overleaf-skillvector/sections/04-experiment.tex",
+    "overleaf-skillvector/sections/05-conclusion.tex",
+    "overleaf-skillvector/sections/05-discussion.tex"
+  ],
+  "operation_count": 11,
+  "version_range": [
+    2444,
+    2454
+  ],
+  "no_whole_file_uploads": true,
+  "unicode_position_bug_repaired": true
+}

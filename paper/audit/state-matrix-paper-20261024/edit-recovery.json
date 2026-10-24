@@ -1,0 +1,13 @@
+{
+  "initial_verified": [
+    "appendix/b-full-dataset-rerun.tex",
+    "appendix/cache-coverage.tex"
+  ],
+  "failure": "abstract read-back mismatch: old UTF-8 byte offsets inserted after Th instead of before These when Unicode curly apostrophe preceded target",
+  "observed_actual": "Th<new sentence>ese",
+  "correction": "ShareJS positions use JavaScript UTF-16 code units. Simulator now checks original decoded text; non-ASCII payloads rejected pending protocol verification.",
+  "tests": "node --test tools/overleaf_text_edits.test.mjs passed",
+  "reconciliation": "read back all seven docs; skip two already correct, repair abstract and complete remaining four; no blind resend",
+  "receipt": "ot-receipt.json",
+  "resume_receipt": "ot-receipt-reconciled.json"
+}

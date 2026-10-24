@@ -1,0 +1,61 @@
+{
+  "verified": true,
+  "formal_records": 10944,
+  "cells": [
+    {
+      "cell": "q8-theoremqa",
+      "records": 1512,
+      "local_label_and_bootstrap_check": true,
+      "full_prefix_token_pairs": 126,
+      "SC_vs_exact_token_pairs": 378
+    },
+    {
+      "cell": "mistral-medcalc",
+      "records": 1104,
+      "local_label_and_bootstrap_check": true,
+      "full_prefix_token_pairs": 92,
+      "SC_vs_exact_token_pairs": 276
+    },
+    {
+      "cell": "mistral-theoremqa",
+      "records": 1560,
+      "local_label_and_bootstrap_check": true,
+      "full_prefix_token_pairs": 130,
+      "SC_vs_exact_token_pairs": 390
+    },
+    {
+      "cell": "llama-medcalc",
+      "records": 2688,
+      "local_label_and_bootstrap_check": true,
+      "full_prefix_token_pairs": 224,
+      "SC_vs_exact_token_pairs": 672
+    },
+    {
+      "cell": "llama-theoremqa",
+      "records": 2208,
+      "local_label_and_bootstrap_check": true,
+      "full_prefix_token_pairs": 184,
+      "SC_vs_exact_token_pairs": 552
+    },
+    {
+      "cell": "deepseek-medcalc",
+      "records": 576,
+      "local_label_and_bootstrap_check": true,
+      "full_prefix_token_pairs": 48,
+      "SC_vs_exact_token_pairs": 144
+    },
+    {
+      "cell": "deepseek-theoremqa",
+      "records": 1296,
+      "local_label_and_bootstrap_check": true,
+      "full_prefix_token_pairs": 108,
+      "SC_vs_exact_token_pairs": 324
+    }
+  ],
+  "inference_rerun": false,
+  "notes": [
+    "Raw gzip hashes were checked by independent remote process and cross-checked between exported done and audit metadata locally.",
+    "No raw answer text or model tensors were downloaded.",
+    "Bootstrap intervals are exploratory and unadjusted for multiple comparisons."
+  ]
+}

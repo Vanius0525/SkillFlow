@@ -1,3 +1,37 @@
+## 2026-10-24 全部科学审计与论文同步完成
+
+核心24条件七新cell10944/10944均SUCCEEDED并完成独立进程审计；46小JSON/60KB归档取回，本地逐题标签/截断/全部新paired bootstrap及完整键/身份/哈希声明核验通过。复用Qwen/MedCalc后八cell580模型—题目配对；SC_exact3480对输出token一致、完整prefix1160对复现donor。六cell两背景早减晚点估计正；Llama/TQA与DeepSeek/MC不稳定，Qwen/TQA neutral CI触0，不能写统一深度规律。原始回答与KV保留远端，无推理重跑。科学任务和只读收集均已结束，专用CPUstop，HPC两失败记录保留；TASK-COMPLETE/SUPERVISION-COMPLETE存在、三小时timer inactive，迟到通知仅去重，绝不恢复旧任务。
+用户授权的新论文任务已完成Overleaf增量同步：§4.4 Table3扩成八cell×两背景，附录Table7基线/身份与Table8区间/截断，abstract/intro/discussion/conclusion最小新增衔接，coverage只更新BF16经验核验范围。共7现有文本文件，旧公式/证明、related work、旧图与旧表数据不变。docID保留、无整文件上传；History2444–2454共11条操作回放重建7份最终稿。摘要Unicode位置偏移已修复为UTF16并添加回归检查；ASCII编辑payload之外提前拒绝未验证编码。
+最终完整olcli diff无差异，云端编译无未定义引用/水平越界，表格列宽与9/11pt/浅蓝表头/线型统一，已目检。正文仍8页、Table3第8页，总15页（旧13页，超仓库12页目标）；为尽量保留原文未删旧内容压页，未声称满足投稿页数。附录仍有1.474pt微小竖向排版告警，无表格裁切。PDF skillvector-www2027.pdf；科学结果/逐节文字修改清单reports/state_core_matrix_20261024；全差异/History/编译证据audit/state-matrix-paper-20261024。本地只同步7文字+PDF，旧版本/tmp/state-matrix-paper-20261024-active-before。Git交付提交以git log为准，仅纳入本轮文件，不含其他线程改动。下一步若用户要求再处理篇幅，不自动开新实验或恢复timer。
+
+## 本轮科学实验与全部小产物核验已完成（2026-10-24）
+
+10944/10944正式记录、七份独立进程审计、46个小JSON（完整cells/冻结source/model资产元数据、逐题正确/截断标签、gate/core done与manifest）全部核验。60257字节归档已逐chunk恢复并校验SHA256=6b37be2734e0413a1f0d79696ab087b43e00754e3fff98102210e3be6b5a440f；本地verify_matrix.py复算所有新准确率、截断计数、全部paired skill bootstrap区间，且核对完整arm键集合/题目ID/身份/SC_exact/fullcopy配对数/原始文件hash声明一致。原始回答与KV未取回，没有重跑推理。
+
+七科学Job均SUCCEEDED，末Llama/TQA于13:33:33完成。CPU收集HPC两同名记录最终均CREATE_FAILED；专用CPUstart曾InternalError后迟到实际RUNNING，已再次stop成功。备用只读wt-sc24-small-artifacts-1024只导出小JSON、不加载模型，已SUCCEEDED并释放。没有删除任何实例/数据，没有操作其他对话实验。watch修复后14:14:35确认7/7完整，SUPERVISION-COMPLETE存在、三小时timer inactive；TASK-COMPLETE存在，迟到通知只去重。
+
+用户随后明确要求将完整新结果更新论文及说明各部分文字修改（覆盖原“不自动改稿”的约束）。正在进行新论文任务，基线与完整diff在audit/state-matrix-paper-20261024；新数据reports/state_core_matrix_20261024/paper-data.json，stage=/tmp/state-matrix-paper-20261024-edited。不要重新启动任何本轮GPU或timer。科学结论：source全覆盖/SC_exact token一致/fullprefix donor一致八cell成立；深度差异六cell两背景点估计正向，Llama/TQA和DeepSeek/MC均有不稳定/反向，Qwen/TQA neutral CI触0，不能写统一早晚规律；内容/窗口仍仅Qwen/MC案例。
+
+## 2026-10-24 术语追问与只读收集备用通道
+
+用户问“完整skill缓存”是residual还是KV。已明确完整指skill位置所有层K/V，不是所有位置/层residual；S复制单层skill residual，C_all只全层skill KV，SC含residual+低层cache且本轮最终全层skillKV精确对齐，SC_exact再显式全覆盖验证。不等于完整执行状态，题目/模板等非source位置KV尚可能不同。
+
+CPU HPC导出一次请求超时留下两个同名记录，pick1排队后stop冲突（提示已不处于可停止态），pick2先前CREATE_FAILED；正在核对终态，不删除。专用CPUstart再次InternalError，未成功启动。为完成必要小产物取回，已提交唯一只读wt-sc24-small-artifacts-1024（原镜像13.2、max15min，完全不加载模型、不推理、不重跑科学记录），现SUCCEEDED。待取SC24_ARTIFACT_HEADER/CHUNK日志，校验归档SHA后只提取小JSON，进行逐题标签/完整键集合与矩阵统计核对。科学七任务及该只读任务均已成功释放GPU。
+
+## 2026-10-24 用户追问反例的界定
+
+已向用户明确：反例只针对新增SC完整source条件的“所有模型/任务早层均优于晚层”推广，不直接反驳原S迁移 vs KO依赖曲线的T<R结论；新实验未重测原完整曲线。八cell有六cell在Wrong/Neutral均正向；Llama/TQA(-5.4,+6.5pp)与DeepSeek/MC(+8.3,-8.3pp)方向混合，四个对应组级CI均跨0，不能宣称统计上晚层更优。Qwen/TQA Neutral+12.7pp的CI下端恰为0，不能将六个方向正例全称稳健显著。这些区间探索性且未多重比较校正。共同证据是全source复制不足、其他位置状态影响；深度规律异质。纸面Qwen/MC局部结论仍兼容，未改稿。
+
+CPU HPC export当前pick1(14:07:08)QUEUEING，pick2(14:06:06)CREATE_FAILED，后者终态不需stop；一次请求超时后CLI/平台留下两条记录，不再提交同名任务。准备恢复仅本轮专用CPU取小文件，若成功则停止排队收集任务，禁止重跑科学推理。七GPU均已成功释放。
+
+## 2026-10-24 14:05 七生成任务全成功，日志限量读取已修复，待取小产物
+
+本次收到03:32迟到通知，实际处理到14点。Live七任务均SUCCEEDED，末任务Llama/TQA13:33:33完成。七份独立audit小摘要均已从结束前10min的完整日志取回retrieved/*.audit.json，总10944正式记录，source_error_SC_items均空。未重跑任何推理。原watch.py以--tail20 --limit50读取会反复得到旧样本：12:52仍显示03:32旧计数。修复仅本地watch.py（不改远端冻结计算代码）：运行任务按最近30min完整窗口；终态按finished_at向前10min取完整无输出cap日志，已缓存audit直接复用，core进度从审计总数填实。CLI --all也可能只返回1000条，因此必须加结束时间窗口，不能凭SUCCEEDED和旧计数认定丢结果。
+
+已发生的统计反例需保留：Llama/TQA Wrong SC8=45.7%、SC24=51.1%（早减晚-5.4pp、组级CI跨0），Neutral57.6%→51.1%（+6.5pp、CI跨0）；DeepSeek/MC中性25.0%→33.3%也反向、n24。不能声称跨模型统一深度规律；原Qwen/MedCalc局部结论未被推翻。仍未自动改稿。
+
+下一步CPU-only HPC只读收集小artifact archive（不跑模型，名称wt-sc24-artifact-export-1024，先查artifact-export-submission.json和平台状态再处理提交歧义），取回cells/source-manifest、七binary-outcomes与done/manifest，整矩阵核对键/身份/截断/统计并记录异常。原七GPU已释放，原始回答与KV不取回。当前还没有TASK-COMPLETE，不能把已取audit小摘要等同于全部收尾完成。timer在最终产物审计后关闭；若监督到期明确报告。
+
 ## 2026-10-24 00:53 七任务全部进入正式core，7张4090
 
 00:50:50 watch --no-notify实测七状态均RUNNING、七cell均出现core（即各自50条gate已通过），无observation_error或failure。正式快照q8/TQA150/1512、Mistral/MC87/1104、Mistral/TQA204/1560、Llama/MC67/2688、Llama/TQA54/2208、DeepSeek/MC213/576、DeepSeek/TQA127/1296；合计902/10944=8.24%。每任务1张4090 48GB，共7卡，不是仍在gate。

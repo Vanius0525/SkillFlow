@@ -1,0 +1,13 @@
+{
+  "name": "wt-sc24-small-artifacts-1024",
+  "status": "SUCCEEDED_read_only_export_verified",
+  "authorized_scope": "Only read small artifacts from existing outputs; zero inference",
+  "reason": "CPU HPC queue has no instances/events; dedicated CPU start InternalError; reuse established Job log transport for bounded read-only export",
+  "submitted_at": 1792822254.6847224,
+  "command": "/inspire/ssd/project/project-public/czxs253130660/venvs/whitebox/bin/python -u -c 'import base64,zlib;exec(zlib.decompress(base64.b64decode('\"'\"'eJx1U11v2jAUfc+vsHhxLJJAKUVTqjwwytZqHyBKpUkIIZPcELeOHdkOhU7777NDxtaq4wX7+vjcc65POp3OAmgWSsGPaDJ/QHCopDJI5kiXlHNUgqEZNbTH6Ra4DpCAPShEhX4GpZFUqJQZcGRAaKl01Ol0PFY2HFuqYTQMCqoLzrYBk8GjliIwVOWMg5crWaKKGneI2itzu/UWs9kycSsf95jQFVPQ0zrrVUo+Qmr+/IdVveUs7aUvBz24ury47I9G/Z421ECYSgVhSY1ih3DQH4wu+oNhuL/AxHOtdbLCKXCuIycIB1jLWqXugmA5aPOfclgpyDnbFWdASkXGsqbhX7q1l9upuAJiArlSxCXNtO87Y71/O5NI2eFvDByMT0grCq9jD9lfoxR1E7TCsjZVbXQPdx1ihZ/giNddbPeCloBcv2Zh+/mY1hk7K9wyQdUxtASpLOFs+K3TnfUQZVLA2Zkd4KvC5/FyGs7H9/fTm1b72qNag300G5PWW04ipjdOuE8aVbmT1Bgh3rbOEyajj0cD+m7mE++ZmQK1aYhkBcJ3K7l9TCw0cLFK8HO8e8EEUY2oSgu2h3Y2r7jj9iyiWdYKCWzJjSTJiefi6yijHZg95bUVdw0itfxZcspotB0NTxXfgUmUQbMh1xVVxsalha9YzLof+v11I4A5AYqKHfj9gFv5LYoEFmLHUykmjI/vJ4PhZrxY3n0aT5ab2+n4ZrpAuNsEI6vLSvs/cWMDx7ydgSb25dycTqVGk41jQQdXIxy3H1R02reKCzhkbGef1LfItKjFU3u5cUB+kSDntS6SpaqBNAllgTtyHkDUJSgbgRYcv6t8cvvw/ctb4UxkcMAxC7CTgWNH8KbXu2TTH/PZwnLOvs2/TpdT/OrGb619it0='\"'\"')))'",
+  "output": "OK Job created: wt-sc24-small-artifacts-1024\n",
+  "returncode": 0,
+  "archive_bytes": 60257,
+  "archive_sha256": "6b37be2734e0413a1f0d79696ab087b43e00754e3fff98102210e3be6b5a440f",
+  "inference_records_generated": 0
+}

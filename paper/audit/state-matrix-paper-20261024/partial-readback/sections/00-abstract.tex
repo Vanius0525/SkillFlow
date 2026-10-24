@@ -1,0 +1,14 @@
+\begin{abstract}
+Language models can adapt to new tasks by following instructions provided in context.
+Reusing the internal states formed from these instructions could allow the resulting task capabilities to be shared across executions.
+However, it remains unclear how the ability to transfer these states relates to the model’s continued dependence on the instructions.
+We study this relationship using skills, sets of instructions that describe how to perform a task.
+At different layers, we transfer states at the instruction positions from an execution using the correct skill into one using an unrelated skill.
+Separately, we block attention to the skill in the original execution.
+Across four models and two benchmarks, all eight comparisons show that transfer weakens at later layers while the original execution remains strongly dependent on the skill.
+We then augment state transfer with key/value caches, the stored information used by attention.
+At layer 16, this joint intervention improves accuracy over state transfer alone by 6.8 to 43.4 percentage points across all eight combinations.
+For Qwen3-8B/MedCalc, accuracy rises from 3.5\% to 42.1\%, and blocking subsequent skill reading reduces it to 7.0\%.
+ThComplete-source controls further show that donor skill-position KV alone does not recover donor performance; the depth dependence of joint repair varies across models and tasks.
+ese findings establish a separation between using contextual skills and reusing their internal states, and demonstrate cache-assisted recovery across models and tasks.
+\end{abstract}

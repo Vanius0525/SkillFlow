@@ -1,0 +1,1067 @@
+{
+  "cell": {
+    "key": "llama-medcalc",
+    "model": "Llama-3.1-8B-Instruct",
+    "dataset": "medcalcbench",
+    "candidate_ids": [
+      "medcalcbench_00003",
+      "medcalcbench_00004",
+      "medcalcbench_00007",
+      "medcalcbench_00014",
+      "medcalcbench_00015",
+      "medcalcbench_00250",
+      "medcalcbench_00257",
+      "medcalcbench_00343",
+      "medcalcbench_00354",
+      "medcalcbench_00700",
+      "medcalcbench_00702",
+      "medcalcbench_00703",
+      "medcalcbench_00704",
+      "medcalcbench_00706",
+      "medcalcbench_00707",
+      "medcalcbench_00708",
+      "medcalcbench_00710",
+      "medcalcbench_00711",
+      "medcalcbench_00712",
+      "medcalcbench_00713",
+      "medcalcbench_00716",
+      "medcalcbench_00717",
+      "medcalcbench_00782",
+      "medcalcbench_00784",
+      "medcalcbench_00786",
+      "medcalcbench_00794",
+      "medcalcbench_00800",
+      "medcalcbench_00801",
+      "medcalcbench_00803",
+      "medcalcbench_00804",
+      "medcalcbench_00805",
+      "medcalcbench_00806",
+      "medcalcbench_00807",
+      "medcalcbench_00808",
+      "medcalcbench_00809",
+      "medcalcbench_00810",
+      "medcalcbench_00811",
+      "medcalcbench_00813",
+      "medcalcbench_00815",
+      "medcalcbench_00816",
+      "medcalcbench_00818",
+      "medcalcbench_00887",
+      "medcalcbench_00888",
+      "medcalcbench_00970",
+      "medcalcbench_01000",
+      "medcalcbench_01001",
+      "medcalcbench_01002",
+      "medcalcbench_01003",
+      "medcalcbench_01005",
+      "medcalcbench_01006",
+      "medcalcbench_01007",
+      "medcalcbench_01009",
+      "medcalcbench_01011",
+      "medcalcbench_01014",
+      "medcalcbench_01018",
+      "medcalcbench_01019",
+      "medcalcbench_01070",
+      "medcalcbench_01073",
+      "medcalcbench_00020",
+      "medcalcbench_00120",
+      "medcalcbench_00124",
+      "medcalcbench_00125",
+      "medcalcbench_00132",
+      "medcalcbench_00201",
+      "medcalcbench_00207",
+      "medcalcbench_00209",
+      "medcalcbench_00218",
+      "medcalcbench_00263",
+      "medcalcbench_00268",
+      "medcalcbench_00284",
+      "medcalcbench_00320",
+      "medcalcbench_00321",
+      "medcalcbench_00322",
+      "medcalcbench_00323",
+      "medcalcbench_00324",
+      "medcalcbench_00328",
+      "medcalcbench_00329",
+      "medcalcbench_00330",
+      "medcalcbench_00332",
+      "medcalcbench_00333",
+      "medcalcbench_00334",
+      "medcalcbench_00335",
+      "medcalcbench_00337",
+      "medcalcbench_00338",
+      "medcalcbench_00510",
+      "medcalcbench_00516",
+      "medcalcbench_00519",
+      "medcalcbench_00841",
+      "medcalcbench_00845",
+      "medcalcbench_00847",
+      "medcalcbench_00852",
+      "medcalcbench_00858",
+      "medcalcbench_00864",
+      "medcalcbench_00870",
+      "medcalcbench_00877",
+      "medcalcbench_01040",
+      "medcalcbench_01041",
+      "medcalcbench_01043",
+      "medcalcbench_01044",
+      "medcalcbench_01045",
+      "medcalcbench_01046",
+      "medcalcbench_01047",
+      "medcalcbench_01048",
+      "medcalcbench_01049",
+      "medcalcbench_01050",
+      "medcalcbench_01051",
+      "medcalcbench_01052",
+      "medcalcbench_01054",
+      "medcalcbench_01055",
+      "medcalcbench_01056",
+      "medcalcbench_01057",
+      "medcalcbench_01059"
+    ],
+    "candidate_count": 112,
+    "historical_selection_source": "experiments/family_depth_20261018/final-new-family-depth-20261019.json",
+    "selection_sha256": "96b15d7f350a9dc1aeab66a6b98c4e70e120f418372ec89b5ed75451591c4fb7",
+    "ids": [
+      "medcalcbench_00003",
+      "medcalcbench_00004",
+      "medcalcbench_00007",
+      "medcalcbench_00014",
+      "medcalcbench_00015",
+      "medcalcbench_00250",
+      "medcalcbench_00257",
+      "medcalcbench_00343",
+      "medcalcbench_00354",
+      "medcalcbench_00700",
+      "medcalcbench_00702",
+      "medcalcbench_00703",
+      "medcalcbench_00704",
+      "medcalcbench_00706",
+      "medcalcbench_00707",
+      "medcalcbench_00708",
+      "medcalcbench_00710",
+      "medcalcbench_00711",
+      "medcalcbench_00712",
+      "medcalcbench_00713",
+      "medcalcbench_00716",
+      "medcalcbench_00717",
+      "medcalcbench_00782",
+      "medcalcbench_00784",
+      "medcalcbench_00786",
+      "medcalcbench_00794",
+      "medcalcbench_00800",
+      "medcalcbench_00801",
+      "medcalcbench_00803",
+      "medcalcbench_00804",
+      "medcalcbench_00805",
+      "medcalcbench_00806",
+      "medcalcbench_00807",
+      "medcalcbench_00808",
+      "medcalcbench_00809",
+      "medcalcbench_00810",
+      "medcalcbench_00811",
+      "medcalcbench_00813",
+      "medcalcbench_00815",
+      "medcalcbench_00816",
+      "medcalcbench_00818",
+      "medcalcbench_00887",
+      "medcalcbench_00888",
+      "medcalcbench_00970",
+      "medcalcbench_01000",
+      "medcalcbench_01001",
+      "medcalcbench_01002",
+      "medcalcbench_01003",
+      "medcalcbench_01005",
+      "medcalcbench_01006",
+      "medcalcbench_01007",
+      "medcalcbench_01009",
+      "medcalcbench_01011",
+      "medcalcbench_01014",
+      "medcalcbench_01018",
+      "medcalcbench_01019",
+      "medcalcbench_01070",
+      "medcalcbench_01073",
+      "medcalcbench_00020",
+      "medcalcbench_00120",
+      "medcalcbench_00124",
+      "medcalcbench_00125",
+      "medcalcbench_00132",
+      "medcalcbench_00201",
+      "medcalcbench_00207",
+      "medcalcbench_00209",
+      "medcalcbench_00218",
+      "medcalcbench_00263",
+      "medcalcbench_00268",
+      "medcalcbench_00284",
+      "medcalcbench_00320",
+      "medcalcbench_00321",
+      "medcalcbench_00322",
+      "medcalcbench_00323",
+      "medcalcbench_00324",
+      "medcalcbench_00328",
+      "medcalcbench_00329",
+      "medcalcbench_00330",
+      "medcalcbench_00332",
+      "medcalcbench_00333",
+      "medcalcbench_00334",
+      "medcalcbench_00335",
+      "medcalcbench_00337",
+      "medcalcbench_00338",
+      "medcalcbench_00510",
+      "medcalcbench_00516",
+      "medcalcbench_00519",
+      "medcalcbench_00841",
+      "medcalcbench_00845",
+      "medcalcbench_00847",
+      "medcalcbench_00852",
+      "medcalcbench_00858",
+      "medcalcbench_00864",
+      "medcalcbench_00870",
+      "medcalcbench_00877",
+      "medcalcbench_01040",
+      "medcalcbench_01041",
+      "medcalcbench_01043",
+      "medcalcbench_01044",
+      "medcalcbench_01045",
+      "medcalcbench_01046",
+      "medcalcbench_01047",
+      "medcalcbench_01048",
+      "medcalcbench_01049",
+      "medcalcbench_01050",
+      "medcalcbench_01051",
+      "medcalcbench_01052",
+      "medcalcbench_01054",
+      "medcalcbench_01055",
+      "medcalcbench_01056",
+      "medcalcbench_01057",
+      "medcalcbench_01059"
+    ],
+    "input_records": [
+      {
+        "id": "medcalcbench_00003",
+        "group": "2",
+        "prompt_tokens": 1341,
+        "source_tokens": 737
+      },
+      {
+        "id": "medcalcbench_00004",
+        "group": "2",
+        "prompt_tokens": 2188,
+        "source_tokens": 737
+      },
+      {
+        "id": "medcalcbench_00007",
+        "group": "2",
+        "prompt_tokens": 2249,
+        "source_tokens": 737
+      },
+      {
+        "id": "medcalcbench_00014",
+        "group": "2",
+        "prompt_tokens": 1564,
+        "source_tokens": 737
+      },
+      {
+        "id": "medcalcbench_00015",
+        "group": "2",
+        "prompt_tokens": 1885,
+        "source_tokens": 737
+      },
+      {
+        "id": "medcalcbench_00250",
+        "group": "17",
+        "prompt_tokens": 2103,
+        "source_tokens": 971
+      },
+      {
+        "id": "medcalcbench_00257",
+        "group": "17",
+        "prompt_tokens": 2380,
+        "source_tokens": 971
+      },
+      {
+        "id": "medcalcbench_00343",
+        "group": "23",
+        "prompt_tokens": 2542,
+        "source_tokens": 976
+      },
+      {
+        "id": "medcalcbench_00354",
+        "group": "23",
+        "prompt_tokens": 2058,
+        "source_tokens": 976
+      },
+      {
+        "id": "medcalcbench_00700",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00702",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00703",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00704",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00706",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00707",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00708",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00710",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00711",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00712",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00713",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00716",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00717",
+        "group": "58",
+        "prompt_tokens": 641,
+        "source_tokens": 468
+      },
+      {
+        "id": "medcalcbench_00782",
+        "group": "63",
+        "prompt_tokens": 1563,
+        "source_tokens": 490
+      },
+      {
+        "id": "medcalcbench_00784",
+        "group": "63",
+        "prompt_tokens": 1505,
+        "source_tokens": 490
+      },
+      {
+        "id": "medcalcbench_00786",
+        "group": "63",
+        "prompt_tokens": 1501,
+        "source_tokens": 490
+      },
+      {
+        "id": "medcalcbench_00794",
+        "group": "63",
+        "prompt_tokens": 2098,
+        "source_tokens": 490
+      },
+      {
+        "id": "medcalcbench_00800",
+        "group": "64",
+        "prompt_tokens": 1860,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00801",
+        "group": "64",
+        "prompt_tokens": 1676,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00803",
+        "group": "64",
+        "prompt_tokens": 1225,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00804",
+        "group": "64",
+        "prompt_tokens": 1399,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00805",
+        "group": "64",
+        "prompt_tokens": 1777,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00806",
+        "group": "64",
+        "prompt_tokens": 1811,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00807",
+        "group": "64",
+        "prompt_tokens": 1526,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00808",
+        "group": "64",
+        "prompt_tokens": 1723,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00809",
+        "group": "64",
+        "prompt_tokens": 1388,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00810",
+        "group": "64",
+        "prompt_tokens": 1404,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00811",
+        "group": "64",
+        "prompt_tokens": 1698,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00813",
+        "group": "64",
+        "prompt_tokens": 1272,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00815",
+        "group": "64",
+        "prompt_tokens": 1499,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00816",
+        "group": "64",
+        "prompt_tokens": 1489,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00818",
+        "group": "64",
+        "prompt_tokens": 1542,
+        "source_tokens": 669
+      },
+      {
+        "id": "medcalcbench_00887",
+        "group": "29",
+        "prompt_tokens": 2465,
+        "source_tokens": 1497
+      },
+      {
+        "id": "medcalcbench_00888",
+        "group": "29",
+        "prompt_tokens": 2431,
+        "source_tokens": 1497
+      },
+      {
+        "id": "medcalcbench_00970",
+        "group": "36",
+        "prompt_tokens": 2441,
+        "source_tokens": 1538
+      },
+      {
+        "id": "medcalcbench_01000",
+        "group": "24",
+        "prompt_tokens": 1022,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01001",
+        "group": "24",
+        "prompt_tokens": 1022,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01002",
+        "group": "24",
+        "prompt_tokens": 1022,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01003",
+        "group": "24",
+        "prompt_tokens": 1018,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01005",
+        "group": "24",
+        "prompt_tokens": 1026,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01006",
+        "group": "24",
+        "prompt_tokens": 1022,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01007",
+        "group": "24",
+        "prompt_tokens": 1018,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01009",
+        "group": "24",
+        "prompt_tokens": 1026,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01011",
+        "group": "24",
+        "prompt_tokens": 1020,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01014",
+        "group": "24",
+        "prompt_tokens": 1020,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01018",
+        "group": "24",
+        "prompt_tokens": 1021,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01019",
+        "group": "24",
+        "prompt_tokens": 1022,
+        "source_tokens": 846
+      },
+      {
+        "id": "medcalcbench_01070",
+        "group": "68",
+        "prompt_tokens": 502,
+        "source_tokens": 297
+      },
+      {
+        "id": "medcalcbench_01073",
+        "group": "68",
+        "prompt_tokens": 502,
+        "source_tokens": 297
+      },
+      {
+        "id": "medcalcbench_00020",
+        "group": "3",
+        "prompt_tokens": 1890,
+        "source_tokens": 628
+      },
+      {
+        "id": "medcalcbench_00120",
+        "group": "8",
+        "prompt_tokens": 1820,
+        "source_tokens": 845
+      },
+      {
+        "id": "medcalcbench_00124",
+        "group": "8",
+        "prompt_tokens": 2648,
+        "source_tokens": 845
+      },
+      {
+        "id": "medcalcbench_00125",
+        "group": "8",
+        "prompt_tokens": 1244,
+        "source_tokens": 845
+      },
+      {
+        "id": "medcalcbench_00132",
+        "group": "8",
+        "prompt_tokens": 1415,
+        "source_tokens": 845
+      },
+      {
+        "id": "medcalcbench_00201",
+        "group": "15",
+        "prompt_tokens": 1823,
+        "source_tokens": 796
+      },
+      {
+        "id": "medcalcbench_00207",
+        "group": "15",
+        "prompt_tokens": 2336,
+        "source_tokens": 796
+      },
+      {
+        "id": "medcalcbench_00209",
+        "group": "15",
+        "prompt_tokens": 1276,
+        "source_tokens": 796
+      },
+      {
+        "id": "medcalcbench_00218",
+        "group": "15",
+        "prompt_tokens": 1604,
+        "source_tokens": 796
+      },
+      {
+        "id": "medcalcbench_00263",
+        "group": "18",
+        "prompt_tokens": 1865,
+        "source_tokens": 992
+      },
+      {
+        "id": "medcalcbench_00268",
+        "group": "18",
+        "prompt_tokens": 1601,
+        "source_tokens": 992
+      },
+      {
+        "id": "medcalcbench_00284",
+        "group": "19",
+        "prompt_tokens": 1356,
+        "source_tokens": 703
+      },
+      {
+        "id": "medcalcbench_00320",
+        "group": "22",
+        "prompt_tokens": 1493,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00321",
+        "group": "22",
+        "prompt_tokens": 1587,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00322",
+        "group": "22",
+        "prompt_tokens": 1701,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00323",
+        "group": "22",
+        "prompt_tokens": 1205,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00324",
+        "group": "22",
+        "prompt_tokens": 1386,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00328",
+        "group": "22",
+        "prompt_tokens": 1060,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00329",
+        "group": "22",
+        "prompt_tokens": 2015,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00330",
+        "group": "22",
+        "prompt_tokens": 1070,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00332",
+        "group": "22",
+        "prompt_tokens": 2458,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00333",
+        "group": "22",
+        "prompt_tokens": 1051,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00334",
+        "group": "22",
+        "prompt_tokens": 1706,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00335",
+        "group": "22",
+        "prompt_tokens": 1758,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00337",
+        "group": "22",
+        "prompt_tokens": 1728,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00338",
+        "group": "22",
+        "prompt_tokens": 1514,
+        "source_tokens": 394
+      },
+      {
+        "id": "medcalcbench_00510",
+        "group": "38",
+        "prompt_tokens": 1442,
+        "source_tokens": 478
+      },
+      {
+        "id": "medcalcbench_00516",
+        "group": "38",
+        "prompt_tokens": 1328,
+        "source_tokens": 478
+      },
+      {
+        "id": "medcalcbench_00519",
+        "group": "38",
+        "prompt_tokens": 2202,
+        "source_tokens": 478
+      },
+      {
+        "id": "medcalcbench_00841",
+        "group": "66",
+        "prompt_tokens": 2029,
+        "source_tokens": 634
+      },
+      {
+        "id": "medcalcbench_00845",
+        "group": "66",
+        "prompt_tokens": 1789,
+        "source_tokens": 634
+      },
+      {
+        "id": "medcalcbench_00847",
+        "group": "66",
+        "prompt_tokens": 2173,
+        "source_tokens": 634
+      },
+      {
+        "id": "medcalcbench_00852",
+        "group": "66",
+        "prompt_tokens": 1501,
+        "source_tokens": 634
+      },
+      {
+        "id": "medcalcbench_00858",
+        "group": "66",
+        "prompt_tokens": 2057,
+        "source_tokens": 634
+      },
+      {
+        "id": "medcalcbench_00864",
+        "group": "67",
+        "prompt_tokens": 2064,
+        "source_tokens": 871
+      },
+      {
+        "id": "medcalcbench_00870",
+        "group": "67",
+        "prompt_tokens": 1864,
+        "source_tokens": 871
+      },
+      {
+        "id": "medcalcbench_00877",
+        "group": "67",
+        "prompt_tokens": 2404,
+        "source_tokens": 871
+      },
+      {
+        "id": "medcalcbench_01040",
+        "group": "49",
+        "prompt_tokens": 910,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01041",
+        "group": "49",
+        "prompt_tokens": 929,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01043",
+        "group": "49",
+        "prompt_tokens": 897,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01044",
+        "group": "49",
+        "prompt_tokens": 929,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01045",
+        "group": "49",
+        "prompt_tokens": 898,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01046",
+        "group": "49",
+        "prompt_tokens": 912,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01047",
+        "group": "49",
+        "prompt_tokens": 911,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01048",
+        "group": "49",
+        "prompt_tokens": 927,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01049",
+        "group": "49",
+        "prompt_tokens": 930,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01050",
+        "group": "49",
+        "prompt_tokens": 897,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01051",
+        "group": "49",
+        "prompt_tokens": 911,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01052",
+        "group": "49",
+        "prompt_tokens": 914,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01054",
+        "group": "49",
+        "prompt_tokens": 898,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01055",
+        "group": "49",
+        "prompt_tokens": 929,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01056",
+        "group": "49",
+        "prompt_tokens": 912,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01057",
+        "group": "49",
+        "prompt_tokens": 925,
+        "source_tokens": 718
+      },
+      {
+        "id": "medcalcbench_01059",
+        "group": "49",
+        "prompt_tokens": 927,
+        "source_tokens": 718
+      }
+    ],
+    "excluded_for_context": [],
+    "depth": 32,
+    "context_limit": 131072,
+    "groups": 20,
+    "expected_records": 2688,
+    "gate_ids": [
+      "medcalcbench_00003",
+      "medcalcbench_00004"
+    ],
+    "model_asset_sha256": {
+      "config.json": "29e4c210b0d6ac178b16b2a255a568bdb23b581e50ca1ef6a6d071dd85704e6e",
+      "tokenizer_config.json": "24e8a6dc2547164b7002e3125f10b415105644fcf02bf9ad8b674c87b1eaaed6",
+      "model.safetensors.index.json": "146776fce3f6db1103aa6f249e65ee5544c5923ce6f971b092eee79aa6e5d37b",
+      "special_tokens_map.json": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec",
+      "tokenizer.json": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+      "generation_config.json": "189fb0c0d7fd8a527db217c0a60a0e013f0394cd8800f9697a666a9e75e5f7fd"
+    }
+  },
+  "sources": {
+    "preflight.py": "4dafbd081819ae478994399e80aec4fb69e0252fa8deaf23caccb869695afe3c",
+    "neutral.json": "3b1d4cdfc8ebc822b7b819238904e097f6af98aa6f24552db55c6c6163f2f3b6",
+    "submit.py": "a2cfd259e1ee53d90c79057c26d0cfe32ddb9a392e0de0643d140f9fdb01c019",
+    "test_core.py": "dc122be6951c1fa21ee02d2be2a943ec985f6f46bcd5021a35c7aa3f169df688",
+    "watch.py": "2939b8eb13429db2b9345c95b5b35cfa256a6140578d6034ebdcf7f2f6875420",
+    "prepare_jobs.py": "1d94e3e7079275efb41779b9ef9244268af0ee57ae9aabbd8704d5a54f7b6c3d",
+    "bootstrap.py": "8be74317fb0495a7790aa020887f3429d454dbcade5028273ff018837ebbdcff",
+    "frozen_run.py": "a5212bfd8690815a5dbc7e0ef59f1436944baa863d51f8037bf3ecb4336d66d8",
+    "grading.py": "d10e841a6f249bbb1735ba30e3448bb8a4695a1b895a68e14001a8e960fe2e04",
+    "candidate-cells.json": "e76dffd90922d863754f0f84f62211132b191fe7056abf2b3c494e1700db3a0e",
+    "plan.py": "082e3e4784fffe337d2d1dc3e3b74fb038e3d0da43a190a3be776e3f97223c73",
+    "observe_remote.py": "9f7c52f5f31a7fdf0c12a2992ca29ee7e9a45d31921cc168b75f440d9cb74206",
+    "worker.py": "33874dd7afd2c3da448e539a5531e1cd2f17c0f661c0c94204c3a5a5af0b2285",
+    "legacy_core.py": "c47b3ce7f5ee5c3e68f65aa9d416c9481babbc3df8c26f765ce470a1f5dc0dea",
+    "audit_core.py": "73c40f90607df42b5643cf41346b9d6163f72486014953f95fe7436ca6aa4240",
+    "run_core.py": "78a25771f93fa71cd2a651467ab9926c652c9ae577858e9f78e862953c9948d0",
+    "snapshot/howskill/data/medcalcbench.json": "814f6b082f56cf89dd9c50be7ab87b5bcb0e41633138951e42b38d6923c3244e",
+    "snapshot/howskill/data/neutral_pairs.json": "5defeb7d353b7a71d67cf3fcffd41a1c1759103a5e21c6c6630b93ab3a43a968",
+    "snapshot/howskill/data/medcalc_skills.json": "36bceb908e8e2a4bbdc21445f18135f33c8b49d2ddd5bb4a99d1877a7980f14b",
+    "snapshot/howskill/howskill/sra_eval.py": "15c168188baefcd90791cf2e303a307757205de3617db18d3ce9ac37c44f07c7",
+    "snapshot/howskill/howskill/prompts.py": "f797c5dd9b45d20ce27846b92093208451d3b5a48779f8e238510a83a84f1bbf",
+    "snapshot/howskill/howskill/arms.py": "ae9c926a1a36b5b141cab75965362108cd7b92496562d7d726239db9dde71593",
+    "snapshot/howskill/howskill/wb_spans.py": "eec84f0fb6bf19b191358f0407325452cb0f1bfa076a3975b9b39d9ec7f90b95",
+    "snapshot/howskill/howskill/grade.py": "2ae3421faea9b9be71c69e0cc1db1735a5b33d7f237fc05cd07f6c876137e8d5",
+    "snapshot/howskill/howskill/sra.py": "2e8a634209f25a435c1dbbbc002755f4a940e3fa767a187ff3bf6f43b8532408",
+    "snapshot/howskill/howskill/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "snapshot/howskill/howskill/modules.py": "8d89fa14e6ed0aa129760d471fa212c2f05e97e3ce96f431047cc2396361fbbd",
+    "snapshot/howskill/data/sra/theoremqa_instances.json": "331b9029c39487d7fe5f07b4c35dc52b8d5b22c85a53323269fbc4c4da6f35eb",
+    "snapshot/howskill/data/sra/theoremqa_skills.json": "2ff81f8ff40097fdc9cc8ab99f7e4bf051d09deb9ef64db71ac6e580037946e7",
+    "snapshot/howskill/data/sra/meta.json": "dd6b9692b452d93489778a32d1a7bd6cbef2918a2e4137ba1c2703107ca3cd59",
+    "snapshot/howskill/data/sra/theoremqa_pairs.json": "02e885aa341c9b6b6313e0034d3e837cb7e8146dc4aa07154e61c73d710614d4",
+    "cells.json": "815e68b62a23e5322628c474e34bdec34fe16c31171a68e20cd4736a9711ba31"
+  },
+  "torch": "2.7.0a0+ecf3bae40a.nv25.02",
+  "transformers": "4.57.6",
+  "cuda": "12.8",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "max_new": 1536,
+  "protocol": "bf16/eager/split/greedy",
+  "conditions": [
+    [
+      "donor",
+      -1
+    ],
+    [
+      "wrong",
+      -1
+    ],
+    [
+      "neutral_a",
+      -1
+    ],
+    [
+      "no_skill",
+      -1
+    ],
+    [
+      "wrong:SC",
+      8
+    ],
+    [
+      "wrong:SC_exact",
+      8
+    ],
+    [
+      "wrong:SC",
+      16
+    ],
+    [
+      "wrong:SC_exact",
+      16
+    ],
+    [
+      "wrong:SC",
+      24
+    ],
+    [
+      "wrong:SC_exact",
+      24
+    ],
+    [
+      "wrong:C_all",
+      -1
+    ],
+    [
+      "wrong:B_only",
+      -1
+    ],
+    [
+      "wrong:full_copy",
+      -1
+    ],
+    [
+      "wrong:suffix_replay",
+      -1
+    ],
+    [
+      "neutral_a:SC",
+      8
+    ],
+    [
+      "neutral_a:SC_exact",
+      8
+    ],
+    [
+      "neutral_a:SC",
+      16
+    ],
+    [
+      "neutral_a:SC_exact",
+      16
+    ],
+    [
+      "neutral_a:SC",
+      24
+    ],
+    [
+      "neutral_a:SC_exact",
+      24
+    ],
+    [
+      "neutral_a:C_all",
+      -1
+    ],
+    [
+      "neutral_a:B_only",
+      -1
+    ],
+    [
+      "neutral_a:full_copy",
+      -1
+    ],
+    [
+      "neutral_a:suffix_replay",
+      -1
+    ]
+  ]
+}

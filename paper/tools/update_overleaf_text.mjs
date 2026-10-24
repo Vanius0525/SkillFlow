@@ -2,6 +2,7 @@
 // No uploads, deletes, credential output, or blind retries after uncertain writes.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import {validateTextEdits} from './overleaf_text_edits.mjs';
 const lib=process.env.OLCLI_LIB || '/home/vanius/.nvm/versions/node/v22.22.1/lib/node_modules/@aloth/olcli/dist';
 const {OverleafClient}=await import(`${lib}/client.js`);
 const {getSessionCookie,getSessionCookieName,getBaseUrl}=await import(`${lib}/config.js`);
@@ -21,13 +22,7 @@ try {
     const doc=docs.find(d=>d.path===e.path); if(!doc) throw Error(`Missing document ${e.path}`);
     const j=await c.joinDocument(session,doc.id);
     if(j.type!=='sharejs-text-ot'||j.content!==e.before) throw Error(`Protocol/base conflict: ${e.path}`);
-    let simulated=Buffer.from(e.before,'utf8').toString('latin1');
-    for(const op of e.ops){
-      if(op.d!==undefined){if(simulated.slice(op.p,op.p+op.d.length)!==op.d) throw Error('Invalid deletion'); simulated=simulated.slice(0,op.p)+simulated.slice(op.p+op.d.length);}
-      else if(op.i!==undefined) simulated=simulated.slice(0,op.p)+op.i+simulated.slice(op.p);
-      else throw Error('Unsupported edit');
-    }
-    if(Buffer.from(simulated,'latin1').toString('utf8')!==e.after) throw Error('Edit simulation mismatch');
+    validateTextEdits(e.before,e.after,e.ops);
     e.docId=doc.id;
   }
   for(const e of edits){

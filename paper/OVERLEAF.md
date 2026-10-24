@@ -1,3 +1,8 @@
+## 2026-10-24 完整矩阵交付与Unicode增量编辑修正
+
+七文件增量更新、History2444–2454回放验证、全文diff一致。完整八cell数据Table3，附录Table7/8，正文8页、总15页，超过12页目标未作删减。用户要求完整结果更新与文字修改清单，已保存reports/state_core_matrix_20261024/论文修改清单.md。
+ShareJS p位置必须按JavaScript UTF-16 code units，不能按UTF8字节；此前ASCII文档未暴露错误，摘要含curly apostrophe时偏移2字符已被回读拦截并修复。tools/overleaf_text_edits.mjs先模拟decoded文本，回归测试覆盖Unicode上下文与旧byte偏移失败；非ASCII插入/删除payload尚未验证，直接拒绝。只读joinDoc后确认实际版本再修复，不能重发已成功文件。仍不是Track Changes接受/拒绝模式。
+
 ## 2026-10-23 原生增量编辑与History文本留痕已实测
 
 正式论文四个现有文本doc已通过tools/update_overleaf_text.mjs走editor socket applyOtUpdate，版本与原文校验后提交具体插入/删除操作，docID保持，逐份回读一致。History2440–2443保存textOperation，独立回放精确重建修改后全文。不是olcli push整文件上传。工具遇超时不盲重发，先核对receipt与线上原文；使用前完整olcli diff并准备逐文件before/after/ops。证据audit/state-paper-update-20261023；Track Changes未启用，网页UI视觉呈现未检查，但历史后台文本操作已直接验证。今后现有正文优先此路径；新文件/二进制另行处理。

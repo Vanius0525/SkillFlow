@@ -1,0 +1,36 @@
+{
+  "project": "6a2cfd49b99635e8e968576a",
+  "changed_text_documents": 7,
+  "new_full_matrix_table": "Table3",
+  "new_baseline_table": "Table7",
+  "new_interval_and_truncation_table": "Table8",
+  "whole_file_uploads": 0,
+  "native_history_reconstruction_passed": true,
+  "native_history_versions": [
+    2444,
+    2454
+  ],
+  "unicode_offset_bug_fixed": true,
+  "equations_and_proofs_unchanged": true,
+  "old_tables_and_figure_assets_unchanged": true,
+  "source_matches_overleaf": true,
+  "all_eight_cells_supported_by_independent_audits": true,
+  "new_formal_records": 10944,
+  "new_inference_rerun": false,
+  "main_text_pages": 8,
+  "pdf_total_pages": 15,
+  "locations": {
+    "main_table": 8,
+    "conclusion": 8,
+    "baseline_and_interval_tables": 15
+  },
+  "pdf_sha256": "c1f327cc27002f95d50870306c331535608041b16d77703d6c8e10fdfb8641ca",
+  "undefined_references": false,
+  "horizontal_overflow": false,
+  "remaining_layout_warning": "Overfull vbox 1.474pt in appendix output; no clipped table content observed.",
+  "page_budget_limit": 12,
+  "page_budget_met": false,
+  "page_budget_note": "Previous draft13 pages, updated full-results draft15. Main remains8. No unrelated old content deleted for compression.",
+  "active_backup": "/tmp/state-matrix-paper-20261024-active-before",
+  "verified_at": "2026-10-24T14:51:50.487493+08:00"
+}

@@ -1,0 +1,19 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Using a contextual skill and reusing its internal states are distinct
+capabilities. Across four models and two benchmarks, state transfer
+weakens before the original execution's dependence on skill attention,
+with half-effect boundaries separated by $8$ to $20$ layers.
+Early content controls establish that the transferred states carry
+skill-relevant information, and the depth comparisons show that this
+information becomes harder to reuse while the skill remains useful.
+
+Source-cache replacement provides a way to recover part of that transfer.
+At layer $16$, adding caches improves accuracy over states alone by
+$6.8$ to $43.4$ percentage points in all eight comparisons, while cutting
+subsequent skill reading reduces the joint-repair accuracy in each.
+The mathematical analysis connects cache alignment to output stability
+under explicit conditions. Together, these findings motivate evaluating
+state reuse separately from continued skill use and including cached
+information in the design of reusable skill representations.

@@ -1,0 +1,675 @@
+{
+  "cell": {
+    "key": "q8-theoremqa",
+    "model": "Qwen3-8B",
+    "dataset": "theoremqa",
+    "candidate_ids": [
+      "theoremqa_00008",
+      "theoremqa_00015",
+      "theoremqa_00023",
+      "theoremqa_00037",
+      "theoremqa_00045",
+      "theoremqa_00055",
+      "theoremqa_00066",
+      "theoremqa_00074",
+      "theoremqa_00078",
+      "theoremqa_00084",
+      "theoremqa_00087",
+      "theoremqa_00094",
+      "theoremqa_00112",
+      "theoremqa_00130",
+      "theoremqa_00135",
+      "theoremqa_00136",
+      "theoremqa_00153",
+      "theoremqa_00157",
+      "theoremqa_00162",
+      "theoremqa_00181",
+      "theoremqa_00193",
+      "theoremqa_00203",
+      "theoremqa_00208",
+      "theoremqa_00228",
+      "theoremqa_00230",
+      "theoremqa_00237",
+      "theoremqa_00242",
+      "theoremqa_00244",
+      "theoremqa_00255",
+      "theoremqa_00257",
+      "theoremqa_00259",
+      "theoremqa_00267",
+      "theoremqa_00287",
+      "theoremqa_00299",
+      "theoremqa_00313",
+      "theoremqa_00315",
+      "theoremqa_00328",
+      "theoremqa_00329",
+      "theoremqa_00337",
+      "theoremqa_00345",
+      "theoremqa_00354",
+      "theoremqa_00373",
+      "theoremqa_00378",
+      "theoremqa_00383",
+      "theoremqa_00391",
+      "theoremqa_00405",
+      "theoremqa_00409",
+      "theoremqa_00418",
+      "theoremqa_00424",
+      "theoremqa_00451",
+      "theoremqa_00478",
+      "theoremqa_00494",
+      "theoremqa_00496",
+      "theoremqa_00499",
+      "theoremqa_00544",
+      "theoremqa_00547",
+      "theoremqa_00573",
+      "theoremqa_00589",
+      "theoremqa_00622",
+      "theoremqa_00635",
+      "theoremqa_00660",
+      "theoremqa_00710",
+      "theoremqa_00721"
+    ],
+    "candidate_count": 63,
+    "historical_selection_source": "experiments/family_depth_20261018/backfill-q8-theoremqa.screen.json",
+    "selection_sha256": "52e67b1c3a652b1cbdb0608567e7b5d62e7d0e1ba9baebd2d9fbf91b610a6365",
+    "ids": [
+      "theoremqa_00008",
+      "theoremqa_00015",
+      "theoremqa_00023",
+      "theoremqa_00037",
+      "theoremqa_00045",
+      "theoremqa_00055",
+      "theoremqa_00066",
+      "theoremqa_00074",
+      "theoremqa_00078",
+      "theoremqa_00084",
+      "theoremqa_00087",
+      "theoremqa_00094",
+      "theoremqa_00112",
+      "theoremqa_00130",
+      "theoremqa_00135",
+      "theoremqa_00136",
+      "theoremqa_00153",
+      "theoremqa_00157",
+      "theoremqa_00162",
+      "theoremqa_00181",
+      "theoremqa_00193",
+      "theoremqa_00203",
+      "theoremqa_00208",
+      "theoremqa_00228",
+      "theoremqa_00230",
+      "theoremqa_00237",
+      "theoremqa_00242",
+      "theoremqa_00244",
+      "theoremqa_00255",
+      "theoremqa_00257",
+      "theoremqa_00259",
+      "theoremqa_00267",
+      "theoremqa_00287",
+      "theoremqa_00299",
+      "theoremqa_00313",
+      "theoremqa_00315",
+      "theoremqa_00328",
+      "theoremqa_00329",
+      "theoremqa_00337",
+      "theoremqa_00345",
+      "theoremqa_00354",
+      "theoremqa_00373",
+      "theoremqa_00378",
+      "theoremqa_00383",
+      "theoremqa_00391",
+      "theoremqa_00405",
+      "theoremqa_00409",
+      "theoremqa_00418",
+      "theoremqa_00424",
+      "theoremqa_00451",
+      "theoremqa_00478",
+      "theoremqa_00494",
+      "theoremqa_00496",
+      "theoremqa_00499",
+      "theoremqa_00544",
+      "theoremqa_00547",
+      "theoremqa_00573",
+      "theoremqa_00589",
+      "theoremqa_00622",
+      "theoremqa_00635",
+      "theoremqa_00660",
+      "theoremqa_00710",
+      "theoremqa_00721"
+    ],
+    "input_records": [
+      {
+        "id": "theoremqa_00008",
+        "group": "theoremqa_142",
+        "prompt_tokens": 1263,
+        "source_tokens": 981
+      },
+      {
+        "id": "theoremqa_00015",
+        "group": "theoremqa_219",
+        "prompt_tokens": 1060,
+        "source_tokens": 889
+      },
+      {
+        "id": "theoremqa_00023",
+        "group": "theoremqa_288",
+        "prompt_tokens": 879,
+        "source_tokens": 715
+      },
+      {
+        "id": "theoremqa_00037",
+        "group": "theoremqa_047",
+        "prompt_tokens": 1039,
+        "source_tokens": 838
+      },
+      {
+        "id": "theoremqa_00045",
+        "group": "theoremqa_197",
+        "prompt_tokens": 1591,
+        "source_tokens": 1417
+      },
+      {
+        "id": "theoremqa_00055",
+        "group": "theoremqa_173",
+        "prompt_tokens": 852,
+        "source_tokens": 711
+      },
+      {
+        "id": "theoremqa_00066",
+        "group": "theoremqa_272",
+        "prompt_tokens": 1307,
+        "source_tokens": 1008
+      },
+      {
+        "id": "theoremqa_00074",
+        "group": "theoremqa_013",
+        "prompt_tokens": 945,
+        "source_tokens": 715
+      },
+      {
+        "id": "theoremqa_00078",
+        "group": "theoremqa_102",
+        "prompt_tokens": 1753,
+        "source_tokens": 1494
+      },
+      {
+        "id": "theoremqa_00084",
+        "group": "theoremqa_235",
+        "prompt_tokens": 1159,
+        "source_tokens": 982
+      },
+      {
+        "id": "theoremqa_00087",
+        "group": "theoremqa_205",
+        "prompt_tokens": 1100,
+        "source_tokens": 900
+      },
+      {
+        "id": "theoremqa_00094",
+        "group": "theoremqa_141",
+        "prompt_tokens": 1031,
+        "source_tokens": 792
+      },
+      {
+        "id": "theoremqa_00112",
+        "group": "theoremqa_079",
+        "prompt_tokens": 1085,
+        "source_tokens": 925
+      },
+      {
+        "id": "theoremqa_00130",
+        "group": "theoremqa_256",
+        "prompt_tokens": 1013,
+        "source_tokens": 773
+      },
+      {
+        "id": "theoremqa_00135",
+        "group": "theoremqa_196",
+        "prompt_tokens": 1700,
+        "source_tokens": 1523
+      },
+      {
+        "id": "theoremqa_00136",
+        "group": "theoremqa_243",
+        "prompt_tokens": 686,
+        "source_tokens": 490
+      },
+      {
+        "id": "theoremqa_00153",
+        "group": "theoremqa_214",
+        "prompt_tokens": 969,
+        "source_tokens": 761
+      },
+      {
+        "id": "theoremqa_00157",
+        "group": "theoremqa_198",
+        "prompt_tokens": 1624,
+        "source_tokens": 1427
+      },
+      {
+        "id": "theoremqa_00162",
+        "group": "theoremqa_149",
+        "prompt_tokens": 833,
+        "source_tokens": 651
+      },
+      {
+        "id": "theoremqa_00181",
+        "group": "theoremqa_268",
+        "prompt_tokens": 798,
+        "source_tokens": 597
+      },
+      {
+        "id": "theoremqa_00193",
+        "group": "theoremqa_226",
+        "prompt_tokens": 777,
+        "source_tokens": 628
+      },
+      {
+        "id": "theoremqa_00203",
+        "group": "theoremqa_161",
+        "prompt_tokens": 1017,
+        "source_tokens": 821
+      },
+      {
+        "id": "theoremqa_00208",
+        "group": "theoremqa_136",
+        "prompt_tokens": 799,
+        "source_tokens": 647
+      },
+      {
+        "id": "theoremqa_00228",
+        "group": "theoremqa_249",
+        "prompt_tokens": 968,
+        "source_tokens": 752
+      },
+      {
+        "id": "theoremqa_00230",
+        "group": "theoremqa_051",
+        "prompt_tokens": 808,
+        "source_tokens": 660
+      },
+      {
+        "id": "theoremqa_00237",
+        "group": "theoremqa_054",
+        "prompt_tokens": 964,
+        "source_tokens": 723
+      },
+      {
+        "id": "theoremqa_00242",
+        "group": "theoremqa_215",
+        "prompt_tokens": 1025,
+        "source_tokens": 832
+      },
+      {
+        "id": "theoremqa_00244",
+        "group": "theoremqa_123",
+        "prompt_tokens": 1177,
+        "source_tokens": 1003
+      },
+      {
+        "id": "theoremqa_00255",
+        "group": "theoremqa_093",
+        "prompt_tokens": 976,
+        "source_tokens": 790
+      },
+      {
+        "id": "theoremqa_00257",
+        "group": "theoremqa_242",
+        "prompt_tokens": 943,
+        "source_tokens": 774
+      },
+      {
+        "id": "theoremqa_00259",
+        "group": "theoremqa_071",
+        "prompt_tokens": 1115,
+        "source_tokens": 941
+      },
+      {
+        "id": "theoremqa_00267",
+        "group": "theoremqa_164",
+        "prompt_tokens": 917,
+        "source_tokens": 771
+      },
+      {
+        "id": "theoremqa_00287",
+        "group": "theoremqa_080",
+        "prompt_tokens": 1270,
+        "source_tokens": 1092
+      },
+      {
+        "id": "theoremqa_00299",
+        "group": "theoremqa_208",
+        "prompt_tokens": 920,
+        "source_tokens": 766
+      },
+      {
+        "id": "theoremqa_00313",
+        "group": "theoremqa_212",
+        "prompt_tokens": 1933,
+        "source_tokens": 1766
+      },
+      {
+        "id": "theoremqa_00315",
+        "group": "theoremqa_197",
+        "prompt_tokens": 1603,
+        "source_tokens": 1417
+      },
+      {
+        "id": "theoremqa_00328",
+        "group": "theoremqa_274",
+        "prompt_tokens": 1223,
+        "source_tokens": 1059
+      },
+      {
+        "id": "theoremqa_00329",
+        "group": "theoremqa_167",
+        "prompt_tokens": 760,
+        "source_tokens": 606
+      },
+      {
+        "id": "theoremqa_00337",
+        "group": "theoremqa_016",
+        "prompt_tokens": 922,
+        "source_tokens": 669
+      },
+      {
+        "id": "theoremqa_00345",
+        "group": "theoremqa_112",
+        "prompt_tokens": 1320,
+        "source_tokens": 1112
+      },
+      {
+        "id": "theoremqa_00354",
+        "group": "theoremqa_052",
+        "prompt_tokens": 1006,
+        "source_tokens": 821
+      },
+      {
+        "id": "theoremqa_00373",
+        "group": "theoremqa_140",
+        "prompt_tokens": 1042,
+        "source_tokens": 841
+      },
+      {
+        "id": "theoremqa_00378",
+        "group": "theoremqa_000",
+        "prompt_tokens": 1261,
+        "source_tokens": 1112
+      },
+      {
+        "id": "theoremqa_00383",
+        "group": "theoremqa_166",
+        "prompt_tokens": 902,
+        "source_tokens": 682
+      },
+      {
+        "id": "theoremqa_00391",
+        "group": "theoremqa_206",
+        "prompt_tokens": 1045,
+        "source_tokens": 855
+      },
+      {
+        "id": "theoremqa_00405",
+        "group": "theoremqa_301",
+        "prompt_tokens": 1326,
+        "source_tokens": 1145
+      },
+      {
+        "id": "theoremqa_00409",
+        "group": "theoremqa_215",
+        "prompt_tokens": 1031,
+        "source_tokens": 832
+      },
+      {
+        "id": "theoremqa_00418",
+        "group": "theoremqa_017",
+        "prompt_tokens": 1049,
+        "source_tokens": 860
+      },
+      {
+        "id": "theoremqa_00424",
+        "group": "theoremqa_199",
+        "prompt_tokens": 1303,
+        "source_tokens": 1142
+      },
+      {
+        "id": "theoremqa_00451",
+        "group": "theoremqa_273",
+        "prompt_tokens": 1159,
+        "source_tokens": 980
+      },
+      {
+        "id": "theoremqa_00478",
+        "group": "theoremqa_219",
+        "prompt_tokens": 1059,
+        "source_tokens": 889
+      },
+      {
+        "id": "theoremqa_00494",
+        "group": "theoremqa_282",
+        "prompt_tokens": 834,
+        "source_tokens": 686
+      },
+      {
+        "id": "theoremqa_00496",
+        "group": "theoremqa_097",
+        "prompt_tokens": 1309,
+        "source_tokens": 1125
+      },
+      {
+        "id": "theoremqa_00499",
+        "group": "theoremqa_303",
+        "prompt_tokens": 1138,
+        "source_tokens": 971
+      },
+      {
+        "id": "theoremqa_00544",
+        "group": "theoremqa_071",
+        "prompt_tokens": 1124,
+        "source_tokens": 941
+      },
+      {
+        "id": "theoremqa_00547",
+        "group": "theoremqa_112",
+        "prompt_tokens": 1317,
+        "source_tokens": 1112
+      },
+      {
+        "id": "theoremqa_00573",
+        "group": "theoremqa_198",
+        "prompt_tokens": 1623,
+        "source_tokens": 1427
+      },
+      {
+        "id": "theoremqa_00589",
+        "group": "theoremqa_000",
+        "prompt_tokens": 1275,
+        "source_tokens": 1112
+      },
+      {
+        "id": "theoremqa_00622",
+        "group": "theoremqa_155",
+        "prompt_tokens": 1027,
+        "source_tokens": 850
+      },
+      {
+        "id": "theoremqa_00635",
+        "group": "theoremqa_223",
+        "prompt_tokens": 1037,
+        "source_tokens": 872
+      },
+      {
+        "id": "theoremqa_00660",
+        "group": "theoremqa_214",
+        "prompt_tokens": 943,
+        "source_tokens": 761
+      },
+      {
+        "id": "theoremqa_00710",
+        "group": "theoremqa_102",
+        "prompt_tokens": 1663,
+        "source_tokens": 1494
+      },
+      {
+        "id": "theoremqa_00721",
+        "group": "theoremqa_161",
+        "prompt_tokens": 969,
+        "source_tokens": 821
+      }
+    ],
+    "excluded_for_context": [],
+    "depth": 36,
+    "context_limit": 40960,
+    "groups": 53,
+    "expected_records": 1512,
+    "gate_ids": [
+      "theoremqa_00008",
+      "theoremqa_00015"
+    ],
+    "model_asset_sha256": {
+      "config.json": "f7c4eadfbbf522470667b797a3c89be2524832d2d599797248dc304fff447c30",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+      "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+      "model.safetensors.index.json": "f9fdbcb91c23971c13ec5d5f2573d2349e8f61f2f049371ec699281748fdb1bc",
+      "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+      "generation_config.json": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+    }
+  },
+  "sources": {
+    "preflight.py": "4dafbd081819ae478994399e80aec4fb69e0252fa8deaf23caccb869695afe3c",
+    "neutral.json": "3b1d4cdfc8ebc822b7b819238904e097f6af98aa6f24552db55c6c6163f2f3b6",
+    "submit.py": "a2cfd259e1ee53d90c79057c26d0cfe32ddb9a392e0de0643d140f9fdb01c019",
+    "test_core.py": "dc122be6951c1fa21ee02d2be2a943ec985f6f46bcd5021a35c7aa3f169df688",
+    "watch.py": "2939b8eb13429db2b9345c95b5b35cfa256a6140578d6034ebdcf7f2f6875420",
+    "prepare_jobs.py": "1d94e3e7079275efb41779b9ef9244268af0ee57ae9aabbd8704d5a54f7b6c3d",
+    "bootstrap.py": "8be74317fb0495a7790aa020887f3429d454dbcade5028273ff018837ebbdcff",
+    "frozen_run.py": "a5212bfd8690815a5dbc7e0ef59f1436944baa863d51f8037bf3ecb4336d66d8",
+    "grading.py": "d10e841a6f249bbb1735ba30e3448bb8a4695a1b895a68e14001a8e960fe2e04",
+    "candidate-cells.json": "e76dffd90922d863754f0f84f62211132b191fe7056abf2b3c494e1700db3a0e",
+    "plan.py": "082e3e4784fffe337d2d1dc3e3b74fb038e3d0da43a190a3be776e3f97223c73",
+    "observe_remote.py": "9f7c52f5f31a7fdf0c12a2992ca29ee7e9a45d31921cc168b75f440d9cb74206",
+    "worker.py": "33874dd7afd2c3da448e539a5531e1cd2f17c0f661c0c94204c3a5a5af0b2285",
+    "legacy_core.py": "c47b3ce7f5ee5c3e68f65aa9d416c9481babbc3df8c26f765ce470a1f5dc0dea",
+    "audit_core.py": "73c40f90607df42b5643cf41346b9d6163f72486014953f95fe7436ca6aa4240",
+    "run_core.py": "78a25771f93fa71cd2a651467ab9926c652c9ae577858e9f78e862953c9948d0",
+    "snapshot/howskill/data/medcalcbench.json": "814f6b082f56cf89dd9c50be7ab87b5bcb0e41633138951e42b38d6923c3244e",
+    "snapshot/howskill/data/neutral_pairs.json": "5defeb7d353b7a71d67cf3fcffd41a1c1759103a5e21c6c6630b93ab3a43a968",
+    "snapshot/howskill/data/medcalc_skills.json": "36bceb908e8e2a4bbdc21445f18135f33c8b49d2ddd5bb4a99d1877a7980f14b",
+    "snapshot/howskill/howskill/sra_eval.py": "15c168188baefcd90791cf2e303a307757205de3617db18d3ce9ac37c44f07c7",
+    "snapshot/howskill/howskill/prompts.py": "f797c5dd9b45d20ce27846b92093208451d3b5a48779f8e238510a83a84f1bbf",
+    "snapshot/howskill/howskill/arms.py": "ae9c926a1a36b5b141cab75965362108cd7b92496562d7d726239db9dde71593",
+    "snapshot/howskill/howskill/wb_spans.py": "eec84f0fb6bf19b191358f0407325452cb0f1bfa076a3975b9b39d9ec7f90b95",
+    "snapshot/howskill/howskill/grade.py": "2ae3421faea9b9be71c69e0cc1db1735a5b33d7f237fc05cd07f6c876137e8d5",
+    "snapshot/howskill/howskill/sra.py": "2e8a634209f25a435c1dbbbc002755f4a940e3fa767a187ff3bf6f43b8532408",
+    "snapshot/howskill/howskill/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "snapshot/howskill/howskill/modules.py": "8d89fa14e6ed0aa129760d471fa212c2f05e97e3ce96f431047cc2396361fbbd",
+    "snapshot/howskill/data/sra/theoremqa_instances.json": "331b9029c39487d7fe5f07b4c35dc52b8d5b22c85a53323269fbc4c4da6f35eb",
+    "snapshot/howskill/data/sra/theoremqa_skills.json": "2ff81f8ff40097fdc9cc8ab99f7e4bf051d09deb9ef64db71ac6e580037946e7",
+    "snapshot/howskill/data/sra/meta.json": "dd6b9692b452d93489778a32d1a7bd6cbef2918a2e4137ba1c2703107ca3cd59",
+    "snapshot/howskill/data/sra/theoremqa_pairs.json": "02e885aa341c9b6b6313e0034d3e837cb7e8146dc4aa07154e61c73d710614d4",
+    "cells.json": "815e68b62a23e5322628c474e34bdec34fe16c31171a68e20cd4736a9711ba31"
+  },
+  "torch": "2.7.0a0+ecf3bae40a.nv25.02",
+  "transformers": "4.57.6",
+  "cuda": "12.8",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "max_new": 1536,
+  "protocol": "bf16/eager/split/greedy",
+  "conditions": [
+    [
+      "donor",
+      -1
+    ],
+    [
+      "wrong",
+      -1
+    ],
+    [
+      "neutral_a",
+      -1
+    ],
+    [
+      "no_skill",
+      -1
+    ],
+    [
+      "wrong:SC",
+      8
+    ],
+    [
+      "wrong:SC_exact",
+      8
+    ],
+    [
+      "wrong:SC",
+      16
+    ],
+    [
+      "wrong:SC_exact",
+      16
+    ],
+    [
+      "wrong:SC",
+      24
+    ],
+    [
+      "wrong:SC_exact",
+      24
+    ],
+    [
+      "wrong:C_all",
+      -1
+    ],
+    [
+      "wrong:B_only",
+      -1
+    ],
+    [
+      "wrong:full_copy",
+      -1
+    ],
+    [
+      "wrong:suffix_replay",
+      -1
+    ],
+    [
+      "neutral_a:SC",
+      8
+    ],
+    [
+      "neutral_a:SC_exact",
+      8
+    ],
+    [
+      "neutral_a:SC",
+      16
+    ],
+    [
+      "neutral_a:SC_exact",
+      16
+    ],
+    [
+      "neutral_a:SC",
+      24
+    ],
+    [
+      "neutral_a:SC_exact",
+      24
+    ],
+    [
+      "neutral_a:C_all",
+      -1
+    ],
+    [
+      "neutral_a:B_only",
+      -1
+    ],
+    [
+      "neutral_a:full_copy",
+      -1
+    ],
+    [
+      "neutral_a:suffix_replay",
+      -1
+    ]
+  ]
+}

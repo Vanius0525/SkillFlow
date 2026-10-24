@@ -1,3 +1,9 @@
+## 2026-10-24 完整八组合结果已入稿，科学实验全部收尾
+
+核心24条件七新cell10944/10944均SUCCEEDED并完成独立进程审计；46小JSON/60KB归档取回，本地逐题标签/截断/全部新paired bootstrap及完整键/身份/哈希声明核验通过。复用Qwen/MedCalc后八cell580模型—题目配对；SC_exact3480对输出token一致、完整prefix1160对复现donor。六cell两背景早减晚点估计正；Llama/TQA与DeepSeek/MC不稳定，Qwen/TQA neutral CI触0，不能写统一深度规律。原始回答与KV保留远端，无推理重跑。科学任务和只读收集均已结束，专用CPUstop，HPC两失败记录保留；TASK-COMPLETE/SUPERVISION-COMPLETE存在、三小时timer inactive，迟到通知仅去重，绝不恢复旧任务。
+用户授权的新论文任务已完成Overleaf增量同步：§4.4 Table3扩成八cell×两背景，附录Table7基线/身份与Table8区间/截断，abstract/intro/discussion/conclusion最小新增衔接，coverage只更新BF16经验核验范围。共7现有文本文件，旧公式/证明、related work、旧图与旧表数据不变。docID保留、无整文件上传；History2444–2454共11条操作回放重建7份最终稿。摘要Unicode位置偏移已修复为UTF16并添加回归检查；ASCII编辑payload之外提前拒绝未验证编码。
+最终完整olcli diff无差异，云端编译无未定义引用/水平越界，表格列宽与9/11pt/浅蓝表头/线型统一，已目检。正文仍8页、Table3第8页，总15页（旧13页，超仓库12页目标）；为尽量保留原文未删旧内容压页，未声称满足投稿页数。附录仍有1.474pt微小竖向排版告警，无表格裁切。PDF skillvector-www2027.pdf；科学结果/逐节文字修改清单reports/state_core_matrix_20261024；全差异/History/编译证据audit/state-matrix-paper-20261024。本地只同步7文字+PDF，旧版本/tmp/state-matrix-paper-20261024-active-before。Git交付提交以git log为准，仅纳入本轮文件，不含其他线程改动。下一步若用户要求再处理篇幅，不自动开新实验或恢复timer。
+
 ## 2026-10-24 核心24条件七组合扩展已启动，七GPU均RUNNING
 
 用户授权直接运行并每3h检查。入口experiments/state_core_matrix_20261024/HANDOFF.md、launch-state.json、monitor-state.json；七个wt-sc24-{cell}-1024任务已唯一提交且00:30均RUNNING，正在各自gate，随后自动正式生成+独立进程审计，不等人工gate许可。Qwen/MedCalc旧结果复用，取消depth及其他实验不恢复。固定历史457候选，输入预检仅DeepSeek/MedCalc排除1题，正式456题×24=10944条；不是每组124或全benchmark。源码约44KB压缩包随GPU命令部署，已有共享输入逐SHA验证，不下载模型、不依赖Notebook，两个专用CPU均已STOPPED。三小时state-core-matrix-3h-01a162f7.timer active，首次约03:16 CST；观察已实测七任务状态与gate进度，无failed。7天监督到期须明确报告，完成停，依赖WSL/systemd/Codex在线。所有生成尚未完成、不提前做科学结论；后续取回小audit、cells/manifest与二值标签，独立核验完整矩阵。论文上一阶段已Overleaf/GitHub同步875119b，本轮不自动改稿。无需新许可，后续按定时消息继续真实监督，绝不重复提交或重跑已有记录。

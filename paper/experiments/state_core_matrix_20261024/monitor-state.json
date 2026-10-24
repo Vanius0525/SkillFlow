@@ -1,77 +1,154 @@
 {
-  "checked_at": "2026-10-24T00:50:50.918335+08:00",
+  "checked_at": "2026-10-24T14:14:35.134518+08:00",
   "scope": "seven new core24 cells; q8-medcalc reused",
   "supervision_expired": false,
   "launch_status": "all_seven_core24_jobs_submitted_not_completion",
   "statuses": {
-    "wt-sc24-q8-theoremqa-1024": "RUNNING",
-    "wt-sc24-mistral-medcalc-1024": "RUNNING",
-    "wt-sc24-mistral-theoremqa-1024": "RUNNING",
-    "wt-sc24-llama-medcalc-1024": "RUNNING",
-    "wt-sc24-llama-theoremqa-1024": "RUNNING",
-    "wt-sc24-deepseek-medcalc-1024": "RUNNING",
-    "wt-sc24-deepseek-theoremqa-1024": "RUNNING"
+    "wt-sc24-q8-theoremqa-1024": "SUCCEEDED",
+    "wt-sc24-mistral-medcalc-1024": "SUCCEEDED",
+    "wt-sc24-mistral-theoremqa-1024": "SUCCEEDED",
+    "wt-sc24-llama-medcalc-1024": "SUCCEEDED",
+    "wt-sc24-llama-theoremqa-1024": "SUCCEEDED",
+    "wt-sc24-deepseek-medcalc-1024": "SUCCEEDED",
+    "wt-sc24-deepseek-theoremqa-1024": "SUCCEEDED"
   },
   "observed": {
     "cells": {
       "q8-theoremqa": {
+        "audit": {
+          "cell": "q8-theoremqa",
+          "n": 63,
+          "groups": 53,
+          "records": 1512,
+          "independent_audit_passed": true,
+          "source_error_SC_items": {},
+          "time": 1792789984.588354
+        },
         "core": {
           "cell": "q8-theoremqa",
           "phase": "core",
-          "records": 150,
+          "records": 1512,
           "expected": 1512
-        }
+        },
+        "core_verified": true,
+        "gate_verified": true
       },
       "mistral-medcalc": {
+        "audit": {
+          "cell": "mistral-medcalc",
+          "n": 46,
+          "groups": 16,
+          "records": 1104,
+          "independent_audit_passed": true,
+          "source_error_SC_items": {},
+          "time": 1792790370.303961
+        },
         "core": {
           "cell": "mistral-medcalc",
           "phase": "core",
-          "records": 87,
+          "records": 1104,
           "expected": 1104
-        }
+        },
+        "core_verified": true,
+        "gate_verified": true
       },
       "mistral-theoremqa": {
+        "audit": {
+          "cell": "mistral-theoremqa",
+          "n": 65,
+          "groups": 55,
+          "records": 1560,
+          "independent_audit_passed": true,
+          "source_error_SC_items": {},
+          "time": 1792782526.005359
+        },
         "core": {
           "cell": "mistral-theoremqa",
           "phase": "core",
-          "records": 204,
+          "records": 1560,
           "expected": 1560
-        }
+        },
+        "core_verified": true,
+        "gate_verified": true
       },
       "llama-medcalc": {
+        "audit": {
+          "cell": "llama-medcalc",
+          "n": 112,
+          "groups": 20,
+          "records": 2688,
+          "independent_audit_passed": true,
+          "source_error_SC_items": {},
+          "time": 1792804230.7044618
+        },
         "core": {
           "cell": "llama-medcalc",
           "phase": "core",
-          "records": 67,
+          "records": 2688,
           "expected": 2688
-        }
+        },
+        "core_verified": true,
+        "gate_verified": true
       },
       "llama-theoremqa": {
+        "audit": {
+          "cell": "llama-theoremqa",
+          "n": 92,
+          "groups": 71,
+          "records": 2208,
+          "independent_audit_passed": true,
+          "source_error_SC_items": {},
+          "time": 1792819988.6982727
+        },
         "core": {
           "cell": "llama-theoremqa",
           "phase": "core",
-          "records": 54,
+          "records": 2208,
           "expected": 2208
-        }
+        },
+        "core_verified": true,
+        "gate_verified": true
       },
       "deepseek-medcalc": {
+        "audit": {
+          "cell": "deepseek-medcalc",
+          "n": 24,
+          "groups": 12,
+          "records": 576,
+          "independent_audit_passed": true,
+          "source_error_SC_items": {},
+          "time": 1792776623.2065227
+        },
         "core": {
           "cell": "deepseek-medcalc",
           "phase": "core",
-          "records": 213,
+          "records": 576,
           "expected": 576
-        }
+        },
+        "core_verified": true,
+        "gate_verified": true
       },
       "deepseek-theoremqa": {
+        "audit": {
+          "cell": "deepseek-theoremqa",
+          "n": 54,
+          "groups": 45,
+          "records": 1296,
+          "independent_audit_passed": true,
+          "source_error_SC_items": {},
+          "time": 1792784200.8037899
+        },
         "core": {
           "cell": "deepseek-theoremqa",
           "phase": "core",
-          "records": 127,
+          "records": 1296,
           "expected": 1296
-        }
+        },
+        "core_verified": true,
+        "gate_verified": true
       }
     },
     "channel": "platform job logs; independent audit summaries, no Notebook dependency"
   },
-  "all_cells_independently_audited": false
+  "all_cells_independently_audited": true
 }

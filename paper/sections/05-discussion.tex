@@ -8,9 +8,9 @@ requests. A reusable internal representation would need to preserve task
 performance in the receiving execution. Our results motivate evaluating
 this transfer separately from the original execution's dependence on the
 skill. If a reuse method also removes access to the original instructions,
-that additional change needs its own evaluation. The observed cache gains
-motivate reuse methods that carry both hidden states and attention caches
-across requests. Deployment studies can evaluate their latency, memory
+that additional change needs its own evaluation. The observed cache gains and receiving-history effects motivate reuse
+methods that account for both source representations and the receiving
+execution's cached state. Deployment studies can evaluate their latency, memory
 use and task performance in interactive Web settings.
 
 \paragraph{Future work.}
@@ -21,8 +21,8 @@ these differences, their influence on token predictions and the donor's
 prediction margins could test whether this framework helps distinguish
 successful from unsuccessful repairs. The complete-source controls further motivate testing which parts of
 the receiving history must be recomputed, and whether the required budget
-can be predicted on held-out skills. Extending these controls beyond
-Qwen3-8B/MedCalc would test their cross-model and cross-task scope. Separating attention cuts during prompt
+can be predicted on held-out skills. The heterogeneous depth effects suggest that a recomputation rule should
+be tested across model/task cells rather than inferred from one depth curve. Separating attention cuts during prompt
 processing from those during answer generation would clarify when continued
 skill access matters. Finally,
 multi-step Web workflows would assess how far the observed separation

@@ -1,5 +1,5 @@
 {
-  "status": "all_seven_core24_jobs_submitted_not_completion",
+  "status": "complete_independently_audited_and_artifacts_verified",
   "submitted": [
     "wt-sc24-q8-theoremqa-1024",
     "wt-sc24-mistral-medcalc-1024",
@@ -11,5 +11,9 @@
   ],
   "authorized_at": 1792772072.8523147,
   "checked_at": 1792772820.733625,
-  "last_create_output": "OK Job created: wt-sc24-deepseek-theoremqa-1024"
+  "last_create_output": "OK Job created: wt-sc24-deepseek-theoremqa-1024",
+  "completed_at": "2026-10-24T14:22:21.602856+08:00",
+  "formal_records": 10944,
+  "local_matrix_audit": "retrieved/matrix-audit.json",
+  "small_artifact_archive": "retrieved/small-artifacts.tar.gz"
 }

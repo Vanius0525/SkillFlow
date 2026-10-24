@@ -1,3 +1,9 @@
+# Completed and independently audited (2026-10-24)
+
+All seven new cells: 10944/10944 formal records, independent remote audits and local binary-label/bootstrap verification complete. Small metadata and labels are in retrieved/export/. TASK-COMPLETE and SUPERVISION-COMPLETE exist; the three-hour timer is inactive. No inference rerun. Do not restart old tasks on delayed notifications.
+
+The full eight-cell manuscript update is synchronized to Overleaf: Table3 plus Appendix Tables7/8. See ../../reports/state_core_matrix_20261024/论文修改清单.md and audit/state-matrix-paper-20261024. Main text remains8 pages; total15 pages exceeds the12-page repository target and is not submission-ready for that budget. The prior launch description follows as historical protocol.
+
 # Seven-cell expansion of the 24 core state-completeness controls
 
 User authorization: 2026-10-24, execute directly on Inspire and check every three hours. No new paper edits in this task.

@@ -9,5 +9,6 @@ Across four models and two benchmarks, all eight comparisons show that transfer 
 We then augment state transfer with key/value caches, the stored information used by attention.
 At layer 16, this joint intervention improves accuracy over state transfer alone by 6.8 to 43.4 percentage points across all eight combinations.
 For Qwen3-8B/MedCalc, accuracy rises from 3.5\% to 42.1\%, and blocking subsequent skill reading reduces it to 7.0\%.
+Complete-source controls further show that donor skill-position KV alone does not recover donor performance; the depth dependence of joint repair varies across models and tasks.
 These findings establish a separation between using contextual skills and reusing their internal states, and demonstrate cache-assisted recovery across models and tasks.
 \end{abstract}

@@ -1,0 +1,440 @@
+--- before/appendix/b-full-dataset-rerun.tex
++++ after/appendix/b-full-dataset-rerun.tex
+@@ -168,51 +168,147 @@
+ \label{app:state-completeness}
+ 
+ \paragraph{Population and protocol.}
+-The additional Qwen3-8B/MedCalc study uses a frozen $124$-question pool
+-from $14$ calculator skills, selected using historical outcomes before
+-these interventions. No item is removed based on the new repair outcome.
+-The correct-skill donor answers $121/124$ correctly; the no-skill baseline
+-answers $4/124$. Wrong uses the original unrelated skill; Neutral uses a
+-predeclared unrelated natural-language document, not a guarantee of zero
+-influence. Source positions and prompt lengths are aligned. The protocol
+-uses BF16, eager attention, split prefill, greedy decoding and a $1536$
+-new-token limit. All $49$ conditions per item share this protocol.
+-Fresh screening for a correct donor and incorrect Wrong and no-skill
+-baselines retains $114$ questions, reproducing the earlier $L16$
+-$S/C/SC$ accuracies of $3.5/7.0/42.1\%$. Table~\ref{tab:state-completeness}
+-instead reports all $124$ items, including donor and receiver errors.
+-
+-\paragraph{Source coverage and receiving history.}
+-Before continuation, $SC$ source K/V matches the donor elementwise at all
+-$36$ layers for both receivers and $L\in\{8,16,24\}$. A further explicit
+-all-layer source write leaves all $744$ paired generated token sequences
+-unchanged. Other prefix K/V need not match the donor and can vary with
+-intervention depth. Copying only those other positions gives $3/124$
+-and $10/124$ correct answers (Wrong/Neutral); copying the complete prefix
+-cache gives $121/124$ in both contexts and reproduces all donor tokens
+-($248/248$ pairs). This is a positive control using same-question donor
+-computation. Replacing all source KV and replaying the prompt after the
+-skill gives $120/124$ in both contexts. Only $48/124$ outputs per context
+-are token-identical to the donor, so replay is not an exact numerical
+-identity under BF16 and different prefill computation shapes.
+-
+-\paragraph{Paired uncertainty and truncation.}
+-The $SC@8-SC@24$ accuracy difference is $66.1$ percentage points in Wrong
+-and $64.5$ in Neutral. Resampling whole skill groups with replacement
+-$10{,}000$ times gives exploratory $95\%$ percentile intervals of
+-$[49.3,78.5]$ and $[40.5,82.8]$ points. The signs are positive/tied/negative
+-in $12/2/0$ and $11/2/1$ of the $14$ groups, respectively.
+-No $SC@8$ output reaches the token cap; $SC@24$ has three capped outputs
+-in Wrong and none in Neutral. Assigning capped outcomes adversarially
+-against the difference still leaves gaps of $63.7$ and $64.5$ points.
+-These intervals are not adjusted for multiple comparisons. The small
+-number of groups and single model/task limit extrapolation.
+-
+-\paragraph{Cache content and layer windows.}
+-Holding all-layer source coverage fixed, correct-skill KV yields
+-$29.8/25.0\%$ accuracy in Wrong/Neutral, versus $4.8/6.5\%$ for
+-unrelated-skill KV and $1.6/4.0\%$ for a second predeclared neutral
+-text's KV. The Wrong-to-Wrong source write is also a token-exact identity
++We evaluate $24$ matched conditions in each of the eight model/task cells
++(Table~\ref{tab:state-completeness}). Qwen3-8B/MedCalc reuses its frozen pool of $124$ questions from $14$
++skills and its broader $49$-condition experiment.
++For the other seven cells, candidate IDs are fixed from pre-existing
++historical baseline pools, using the first $124$ in their original order
++when necessary. Input-length preflight excludes only one DeepSeek/MedCalc
++question because prompt plus $1536$ output tokens exceed the model's
++context limit. This leaves $456$ new model--question pairs. No item is
++removed based on a new repair result, and the table retains fresh donor
++and receiver baseline errors. These are selected populations, not full
++benchmark estimates or $580$ independent unique questions across models.
++
++Wrong uses the original unrelated skill; Neutral uses the same predeclared
++unrelated natural-language document in every cell, truncated or repeated
++to align source positions and prompt lengths. It is not guaranteed to
++have zero influence. All within-cell conditions use BF16, eager attention,
++split prefill, greedy decoding and a $1536$ new-token limit. The seven new
++cells use RTX 4090 GPUs and the same container image; the Qwen3-8B/MedCalc
++results are reused from its earlier run. TheoremQA resets the official
++parser globals before every answer. Layer numbers index each model's
++blocks, with $36$ layers for Qwen, $32$ for Mistral and Llama, and $30$ for DeepSeek. The fixed integer layers are not equal fractions of
++model depth.
++Fresh screening of the original Qwen3-8B/MedCalc pool retains $114$ items
++and reproduces $L16$ $S/C/SC$ at $3.5/7.0/42.1\%$; the complete-source
++tables instead retain all $124$ candidates. The other cells likewise use
++their own fixed pools, so their denominators differ from the older repair
++and path-cut screen in Table~\ref{tab:mechanism-contrasts}.
++
++\paragraph{Conditions and numerical identities.}
++The $24$ conditions comprise four baselines (donor, Wrong, Neutral,
++no skill), $SC$ and $SC_{\mathrm{exact}}$ at $L8/L16/L24$ in both
++receivers, and four further conditions per receiver: all-layer source-KV
++copying, other-position KV copying, complete-prefix KV copying, and
++all-layer source copying followed by replay of the later prompt.
++$SC_{\mathrm{exact}}$ explicitly rewrites every source K/V tensor after
++$SC$. Runtime elementwise checks find zero source discrepancies at all
++layers in every measured $SC$ condition. The explicit rewrite preserves
++all $3{,}480$ generated sequences across the eight cells. These identities
++concern KV at skill positions, not all residual states or all prefix KV.
++Other-position KV can still encode effects of earlier skill processing.
++
++Complete-prefix copying reproduces every donor sequence in both contexts
++($1{,}160/1{,}160$ pairs). It is a positive control using same-question
++donor computation, not an efficient reuse method. Replay also uses donor
++source KV and recomputes all prompt positions after the skill. It restores
++accuracy close to the donor but is not a numerical identity
++(Table~\ref{tab:state-baselines}). On Qwen/TheoremQA it gives $62/63$
++correct versus the donor's $61/63$; this one-item improvement does not
++make replay equivalent to the donor. Different BF16 prefill computation
++shapes can change individual token predictions.
++
++\begin{table*}[t]
++\centering
++\caption{Baselines and numerical identity checks for the complete-source
++study. Accuracy columns are percentages. $n/G$ counts questions/skills.
++Replay equality counts token-identical sequences against the donor in
++each receiving context; the counts are the same for Wrong and Neutral.
++Complete-prefix copying is token-identical on all $2n$ receiver pairs
++per cell, and $SC$ versus explicit all-layer rewriting is token-identical
++on all $6n$ pairs.}
++\label{tab:state-baselines}
++\normalfont\rmfamily\fontsize{9}{11}\selectfont
++\renewcommand{\arraystretch}{1.18}
++\setlength{\tabcolsep}{2.5pt}
++\arrayrulecolor{TableInk}
++\setlength{\heavyrulewidth}{0.7pt}
++\setlength{\lightrulewidth}{0.3pt}
++\setlength{\aboverulesep}{2pt}
++\setlength{\belowrulesep}{2.5pt}
++\begin{tabularx}{\textwidth}{@{}ll*{4}{>{\centering\arraybackslash}X}@{}}
++\toprule
++\rowcolor[HTML]{E4F4FA}
++Model / task & $n/G$ & Donor & No skill & Full copy & Replay tokens equal \\
++\midrule
++Qwen3-8B / MC & $124/14$ & 97.6 & 3.2 & 97.6 & $48/124$ \\
++Qwen3-8B / TQA & $63/53$ & 96.8 & 7.9 & 96.8 & $33/63$ \\
++Mistral-7B / MC & $46/16$ & 91.3 & 2.2 & 91.3 & $28/46$ \\
++Mistral-7B / TQA & $65/55$ & 93.8 & 0.0 & 93.8 & $53/65$ \\
++Llama-3.1-8B / MC & $112/20$ & 96.4 & 1.8 & 96.4 & $55/112$ \\
++Llama-3.1-8B / TQA & $92/71$ & 90.2 & 6.5 & 90.2 & $42/92$ \\
++DeepSeek-7B / MC & $24/12$ & 91.7 & 4.2 & 91.7 & $12/24$ \\
++DeepSeek-7B / TQA & $54/45$ & 85.2 & 0.0 & 85.2 & $34/54$ \\
++\bottomrule
++\end{tabularx}
++\end{table*}
++
++\begin{table*}[t]
++\centering
++\caption{Paired depth effects with complete source KV. Entries give
++$SC@8-SC@24$ in accuracy points and exploratory $95\%$ skill-group
++bootstrap intervals. Positive values favor $L8$. Cap columns count
++outputs reaching the generation limit at $L8/L24$. Intervals are not
++adjusted for multiple comparisons.}
++\label{tab:state-depth-uncertainty}
++\normalfont\rmfamily\fontsize{9}{11}\selectfont
++\renewcommand{\arraystretch}{1.18}
++\setlength{\tabcolsep}{2.5pt}
++\arrayrulecolor{TableInk}
++\setlength{\heavyrulewidth}{0.7pt}
++\setlength{\lightrulewidth}{0.3pt}
++\setlength{\aboverulesep}{2pt}
++\setlength{\belowrulesep}{2.5pt}
++\begin{tabularx}{\textwidth}{@{}l*{2}{>{\centering\arraybackslash}X}cc@{}}
++\toprule
++\rowcolor[HTML]{E4F4FA}
++Model / task & Wrong: gap [interval] & Neutral: gap [interval] & Wrong cap & Neutral cap \\
++\midrule
++Qwen3-8B / MC & $+66.1\;[49.3,78.5]$ & $+64.5\;[40.5,82.8]$ & $0/3$ & $0/0$ \\
++Qwen3-8B / TQA & $+44.4\;[32.2,56.7]$ & $+12.7\;[0.0,24.6]$ & $0/0$ & $0/1$ \\
++Mistral-7B / MC & $+43.5\;[29.4,61.1]$ & $+21.7\;[9.1,35.3]$ & $0/0$ & $0/0$ \\
++Mistral-7B / TQA & $+35.4\;[20.3,50.0]$ & $+21.5\;[10.3,33.3]$ & $0/5$ & $2/1$ \\
++Llama-3.1-8B / MC & $+57.1\;[38.1,72.5]$ & $+22.3\;[13.3,29.5]$ & $4/12$ & $12/12$ \\
++Llama-3.1-8B / TQA & $-5.4\;[-17.2,7.2]$ & $+6.5\;[-4.8,19.1]$ & $8/3$ & $4/5$ \\
++DeepSeek-7B / MC & $+8.3\;[-6.9,27.8]$ & $-8.3\;[-25.0,16.7]$ & $0/0$ & $0/0$ \\
++DeepSeek-7B / TQA & $+13.0\;[5.2,22.6]$ & $+14.8\;[3.5,26.9]$ & $9/6$ & $1/0$ \\
++\bottomrule
++\end{tabularx}
++\end{table*}
++
++\paragraph{Paired uncertainty and depth heterogeneity.}
++We resample whole skill groups with replacement $10{,}000$ times and
++report percentile intervals for paired accuracy differences
++(Table~\ref{tab:state-depth-uncertainty}). The Qwen3-8B/MedCalc intervals
++reuse the independently audited analysis; the other cells use a fixed
++seed of $20261024$. Five cells have positive intervals in both contexts;
++Qwen/TheoremQA's Neutral lower endpoint is zero. Llama/TheoremQA and
++DeepSeek/MedCalc have mixed point-estimate directions and intervals
++including zero in both receivers. Thus these data do not establish either
++consistent late-layer superiority in those cells or a universal early-layer
++advantage under joint repair. The Qwen3-8B/MedCalc early-minus-late gap
++remains $66.1/64.5$ points. Even adversarially scoring its capped outputs
++against this contrast leaves $63.7/64.5$ points. Cap counts in the other
++cells are reported rather than silently treated as unobserved continuations.
++The intervals are exploratory, unadjusted for multiple comparisons, and
++some cells have few skill groups.
++
++\paragraph{Additional Qwen3-8B/MedCalc content and layer controls.}
++With all-layer source coverage fixed, correct-skill KV gives
++$29.8\%$ in Wrong and $25.0\%$ in Neutral. Unrelated-skill KV gives
++$4.8/6.5\%$ and a second predeclared neutral text's KV gives
++$1.6/4.0\%$, respectively. The Wrong-to-Wrong source write is also a token-exact identity
+ control. Four equally sized eight-layer source writes, at layers
+ $0$--$7$, $8$--$15$, $16$--$23$ and $24$--$31$, yield
+ $3.2/3.2/1.6/4.0\%$ in Wrong and $0.8/4.0/4.8/5.6\%$ in Neutral.
+@@ -221,11 +317,19 @@
+ budgets differ. Late $SC$ need not improve on $C_{\mathrm{all}}$:
+ at $L24$ in Wrong, accuracy is $25.8\%$ versus $29.8\%$.
+ 
++
+ \paragraph{Audit and scope.}
+-All $6076$ formal records and $14$ implementation-check records passed
+-full key-set, identity, source-write and file-hash checks. An independent
+-process regraded answers, with identical labels in forward and reverse
+-order. Cache-coverage claims use saved runtime elementwise checks, not
+-an offline re-execution of the model. The study does not repeat the full
+-transfer/knockout depth sweep, identify a unique semantic variable in
+-other-position caches, or validate the margin sufficient condition.
++The seven new cells contain $10{,}944$ formal records. Each cell first
++checks two predetermined questions under the $24$ conditions plus a
++receiver self-state identity control ($50$ gate records). Its $48$ formal
++gate records are reused, not regenerated, in the full output. An independent
++CPU-only process checks raw-file hashes, complete unique key sets, saved
++cache writes, token identities and official scores in forward and reverse
++order. The original Qwen3-8B/MedCalc $6076$ formal and $14$ implementation
++checks were audited separately. A local audit of the exported small
++metadata and binary labels reproduces every new accuracy, truncation count
++and paired interval, without downloading answer text or rerunning inference.
++The matrix establishes receiving-history effects with complete source KV;
++it does not repeat the full transfer/knockout sweep, identify a unique
++semantic variable in other-position caches, validate the margin sufficient
++condition, or predict a minimal recomputation budget on held-out skills.
+--- before/appendix/cache-coverage.tex
++++ after/appendix/cache-coverage.tex
+@@ -57,11 +57,11 @@
+ from $\mathcal B_S$, and continuation uses a different mask. The contrast
+ includes both prefill and decoding effects.
+ 
+-Code inspection confirms the stated write ordering. In the additional
+-Qwen3-8B/MedCalc experiment, runtime elementwise checks found zero
+-source-cache discrepancies against the donor for $SC$ at $L8$, $L16$
+-and $L24$ in both receiving contexts
+-(Appendix~\ref{app:state-completeness}). This verifies coverage for those
+-BF16 runs; the proposition retains its exact-arithmetic assumptions.
++Code inspection confirms the stated write ordering. Runtime elementwise
++checks found zero source-cache discrepancies against the donor for $SC$
++at $L8$, $L16$ and $L24$ in both receiving contexts across all eight
++model/task cells (Appendix~\ref{app:state-completeness}). This verifies
++coverage for those BF16 runs; the proposition retains its exact-arithmetic
++assumptions.
+ 
+ \input{appendix/behavior-recovery}
+--- before/sections/00-abstract.tex
++++ after/sections/00-abstract.tex
+@@ -9,5 +9,6 @@
+ We then augment state transfer with key/value caches, the stored information used by attention.
+ At layer 16, this joint intervention improves accuracy over state transfer alone by 6.8 to 43.4 percentage points across all eight combinations.
+ For Qwen3-8B/MedCalc, accuracy rises from 3.5\% to 42.1\%, and blocking subsequent skill reading reduces it to 7.0\%.
++Complete-source controls further show that donor skill-position KV alone does not recover donor performance; the depth dependence of joint repair varies across models and tasks.
+ These findings establish a separation between using contextual skills and reusing their internal states, and demonstrate cache-assisted recovery across models and tasks.
+ \end{abstract}
+--- before/sections/01-introduction.tex
++++ after/sections/01-introduction.tex
+@@ -73,6 +73,8 @@
+ The shared direction across models and tasks establishes cache-assisted
+ partial restoration alongside continued use of the skill.
+ 
++Additional complete-source controls show that copying every layer of skill-position KV is still insufficient to reproduce the donor. Copying the complete prefix KV reproduces donor outputs, while the early-versus-late joint-repair pattern varies across models and tasks.
++
+ The paper follows three steps: validate early transfer
+ (\S\ref{sec:battery}), establish its separation from continued skill use
+ (\S\ref{sec:depth}), and test the extent of cache-assisted restoration
+--- before/sections/04-experiment.tex
++++ after/sections/04-experiment.tex
+@@ -240,62 +240,93 @@
+ $\Gamma=-7.9$ points. Table~\ref{tab:mechanism-contrasts} reports all
+ individual conditions and contrasts.
+ 
+-\paragraph{Is complete source state sufficient?}
+-We test this on a fixed pool of $124$ Qwen3-8B/MedCalc questions from
+-$14$ skills, using both an unrelated-skill receiver and a fixed unrelated
+-text receiver (Neutral). All conditions share BF16, eager attention,
+-split prefill and greedy decoding. This pool retains fresh donor failures;
+-it differs from the $114$-item repair screen above.
+-For $SC$ at $L8$, $L16$ and $L24$, every source-position K/V tensor at
+-every layer exactly matches the donor before continuation. Explicitly
+-rewriting all source layers changes none of the $744$ paired outputs.
+-Yet accuracy drops from $91.9\%$ to $25.8\%$ between $L8$ and $L24$
+-in the unrelated-skill receiver, and from $91.1\%$ to $26.6\%$ in Neutral
+-(Table~\ref{tab:state-completeness}). Thus missing source-cache layers
+-alone cannot account for the late deficit.
+-
+-\begin{table}[t]
+-\centering
+-\caption{Complete-source controls on the same $124$ Qwen3-8B/MedCalc
+-questions. Entries are accuracy (\%). Wrong and Neutral denote the two
+-receiving contexts. $C_{\mathrm{all}}$ copies source KV at every layer;
+-it differs from $C$, which copies only through the intervention layer.
+-The correct-skill donor scores $97.6\%$.}
++\paragraph{Complete source KV and receiving history.}
++We extend the complete-source controls to all eight model/task combinations,
++using fixed historical pools totaling $580$ model--question pairs.
++Qwen3-8B/MedCalc reuses the $124$-item experiment; the other seven cells
++add $456$ items. Each cell uses matched BF16, eager attention, split prefill
++and greedy decoding in unrelated-skill and fixed unrelated-text receivers
++(Wrong/Neutral). These pools retain fresh baseline failures and differ
++from the repair screen above.
++Across all eight cells, every source-position K/V tensor at every layer
++matches the donor under $SC$ at $L8$, $L16$ and $L24$ before continuation.
++An additional explicit all-layer write changes none of the $3{,}480$
++paired generated sequences. Nevertheless, copying only all source KV
++reaches $9.3$--$58.7\%$ in Wrong and $17.4$--$73.0\%$ in Neutral,
++below each cell's donor ($85.2$--$97.6\%$; Table~\ref{tab:state-completeness}).
++
++\begin{table*}[t]
++\centering
++\caption{Complete-source controls across four models and two benchmarks.
++Entries are accuracy (\%); $n/G$ counts questions/skills in each fixed pool.
++MC and TQA denote MedCalc and TheoremQA. Wrong and Neutral are the receiving
++contexts; Base is their unmodified accuracy. $C_{\mathrm{all}}$ copies
++source KV at every layer; $SC$ additionally patches source hidden states
++at the stated layer. $B$ copies only other prefix KV, Full copies the
++complete prefix KV, and Replay copies all source KV then recomputes the
++later prompt. Full also gives donor accuracy. These pools differ from
++Table~\ref{tab:mechanism-contrasts}. Explicit all-layer rewriting after
++$SC$ leaves every generated token unchanged.}
+ \label{tab:state-completeness}
+ \normalfont\rmfamily\fontsize{9}{11}\selectfont
+ \renewcommand{\arraystretch}{1.18}
+-\setlength{\tabcolsep}{5pt}
++\setlength{\tabcolsep}{2.5pt}
+ \arrayrulecolor{TableInk}
+ \setlength{\heavyrulewidth}{0.7pt}
+ \setlength{\lightrulewidth}{0.3pt}
+ \setlength{\aboverulesep}{2pt}
+ \setlength{\belowrulesep}{2.5pt}
+-\begin{tabularx}{\columnwidth}{@{}Xrr@{}}
++\begin{tabularx}{\textwidth}{@{}llc*{8}{>{\centering\arraybackslash}X}@{}}
+ \toprule
+ \rowcolor[HTML]{E4F4FA}
+-Intervention & Wrong & Neutral \\
++Model / task & $n/G$ & Context & Base & $C_{\mathrm{all}}$ & $SC@8$ & $SC@16$ & $SC@24$ & $B$ & Full & Replay \\
+ \midrule
+-Receiver & 4.8 & 4.0 \\
+-$C_{\mathrm{all}}$ & 29.8 & 25.0 \\
+-$SC$ at $L8$ & 91.9 & 91.1 \\
+-$SC$ at $L16$ & 41.9 & 28.2 \\
+-$SC$ at $L24$ & 25.8 & 26.6 \\
+-Copy other prefix KV only & 2.4 & 8.1 \\
+-Copy complete prefix KV & 97.6 & 97.6 \\
+-$C_{\mathrm{all}}$ + replay later prompt & 96.8 & 96.8 \\
++Qwen3-8B / MC & $124/14$ & Wrong & 4.8 & 29.8 & 91.9 & 41.9 & 25.8 & 2.4 & 97.6 & 96.8 \\
++ &  & Neutral & 4.0 & 25.0 & 91.1 & 28.2 & 26.6 & 8.1 & 97.6 & 96.8 \\
++\addlinespace[2pt]
++Qwen3-8B / TQA & $63/53$ & Wrong & 6.3 & 58.7 & 95.2 & 60.3 & 50.8 & 20.6 & 96.8 & 98.4 \\
++ &  & Neutral & 25.4 & 73.0 & 84.1 & 65.1 & 71.4 & 34.9 & 96.8 & 98.4 \\
++\addlinespace[2pt]
++Mistral-7B / MC & $46/16$ & Wrong & 6.5 & 15.2 & 56.5 & 15.2 & 13.0 & 4.3 & 91.3 & 89.1 \\
++ &  & Neutral & 6.5 & 17.4 & 39.1 & 17.4 & 17.4 & 19.6 & 91.3 & 89.1 \\
++\addlinespace[2pt]
++Mistral-7B / TQA & $65/55$ & Wrong & 3.1 & 10.8 & 49.2 & 9.2 & 13.8 & 24.6 & 93.8 & 93.8 \\
++ &  & Neutral & 4.6 & 23.1 & 43.1 & 21.5 & 21.5 & 27.7 & 93.8 & 93.8 \\
++\addlinespace[2pt]
++Llama-3.1-8B / MC & $112/20$ & Wrong & 1.8 & 16.1 & 73.2 & 17.0 & 16.1 & 1.8 & 96.4 & 96.4 \\
++ &  & Neutral & 8.0 & 27.7 & 48.2 & 25.9 & 25.9 & 4.5 & 96.4 & 96.4 \\
++\addlinespace[2pt]
++Llama-3.1-8B / TQA & $92/71$ & Wrong & 5.4 & 43.5 & 45.7 & 46.7 & 51.1 & 10.9 & 90.2 & 89.1 \\
++ &  & Neutral & 10.9 & 46.7 & 57.6 & 57.6 & 51.1 & 16.3 & 90.2 & 89.1 \\
++\addlinespace[2pt]
++DeepSeek-7B / MC & $24/12$ & Wrong & 0.0 & 29.2 & 41.7 & 29.2 & 33.3 & 20.8 & 91.7 & 87.5 \\
++ &  & Neutral & 8.3 & 41.7 & 25.0 & 29.2 & 33.3 & 20.8 & 91.7 & 87.5 \\
++\addlinespace[2pt]
++DeepSeek-7B / TQA & $54/45$ & Wrong & 0.0 & 9.3 & 22.2 & 9.3 & 9.3 & 14.8 & 85.2 & 83.3 \\
++ &  & Neutral & 14.8 & 31.5 & 44.4 & 31.5 & 29.6 & 22.2 & 85.2 & 83.3 \\
+ \bottomrule
+ \end{tabularx}
+-\end{table}
+-
+-Copying the complete prefix cache reproduces the donor tokens on every
+-question in both contexts. Copying source KV and recomputing the prompt
+-positions after the skill instead reaches $96.8\%$, although its tokens
+-match the donor on only $48/124$ questions per context. The remaining
+-state therefore matters: caches at question and template positions can
+-retain consequences of earlier skill processing. These controls establish
+-neither a minimal state to copy nor a low-cost reuse method.
+-Appendix~\ref{app:state-completeness} gives content and layer-window
+-controls, paired uncertainty estimates and implementation checks.
++\end{table*}
++
++\paragraph{Depth effects depend on the receiving execution.}
++With the same complete source KV, $SC@8$ exceeds $SC@24$ in both contexts
++in six of eight cells. The direction is mixed for Llama/TheoremQA
++($-5.4/+6.5$ points in Wrong/Neutral) and DeepSeek/MedCalc
++($+8.3/-8.3$); all four corresponding skill-group intervals include zero.
++Five cells have positive exploratory $95\%$ intervals in both contexts;
++Qwen/TheoremQA's Neutral interval touches zero
++(Appendix~\ref{app:state-completeness}). Thus the large Qwen3-8B/MedCalc
++depth gap is not a uniform cross-model rule.
++
++Copying the complete prefix KV instead reproduces donor tokens in all
++$1{,}160$ receiver--question pairs. Copying all source KV and recomputing
++the later prompt reaches within $4.2$ accuracy points of the donor in
++every cell, although it is not a token-level identity. Together, these
++controls identify receiving state outside the skill positions as a factor
++in recovery after source KV is complete. They establish neither a minimal
++state to copy nor a low-cost reuse method. Content and layer-window
++controls remain a Qwen3-8B/MedCalc case study
++(Appendix~\ref{app:state-completeness}).
+ 
+ \paragraph{Reading under joint repair.}
+ Reading cuts reduce joint-repair accuracy by $2.2$ to $37.7$ points
+--- before/sections/05-conclusion.tex
++++ after/sections/05-conclusion.tex
+@@ -13,6 +13,10 @@
+ At layer $16$, adding caches improves accuracy over states alone by
+ $6.8$ to $43.4$ percentage points in all eight comparisons, while cutting
+ subsequent skill reading reduces the joint-repair accuracy in each.
++Complete-source controls further show that skill-position KV alone is
++insufficient to recover donor performance. Full-prefix copying reproduces
++the donor, while the depth effect of joint repair varies across models
++and tasks.
+ The mathematical analysis connects cache alignment to output stability
+ under explicit conditions. Together, these findings motivate evaluating
+ state reuse separately from continued skill use and including cached
+--- before/sections/05-discussion.tex
++++ after/sections/05-discussion.tex
+@@ -8,9 +8,9 @@
+ performance in the receiving execution. Our results motivate evaluating
+ this transfer separately from the original execution's dependence on the
+ skill. If a reuse method also removes access to the original instructions,
+-that additional change needs its own evaluation. The observed cache gains
+-motivate reuse methods that carry both hidden states and attention caches
+-across requests. Deployment studies can evaluate their latency, memory
++that additional change needs its own evaluation. The observed cache gains and receiving-history effects motivate reuse
++methods that account for both source representations and the receiving
++execution's cached state. Deployment studies can evaluate their latency, memory
+ use and task performance in interactive Web settings.
+ 
+ \paragraph{Future work.}
+@@ -21,8 +21,8 @@
+ prediction margins could test whether this framework helps distinguish
+ successful from unsuccessful repairs. The complete-source controls further motivate testing which parts of
+ the receiving history must be recomputed, and whether the required budget
+-can be predicted on held-out skills. Extending these controls beyond
+-Qwen3-8B/MedCalc would test their cross-model and cross-task scope. Separating attention cuts during prompt
++can be predicted on held-out skills. The heterogeneous depth effects suggest that a recomputation rule should
++be tested across model/task cells rather than inferred from one depth curve. Separating attention cuts during prompt
+ processing from those during answer generation would clarify when continued
+ skill access matters. Finally,
+ multi-step Web workflows would assess how far the observed separation

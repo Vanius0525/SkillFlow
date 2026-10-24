@@ -22,26 +22,35 @@ def main():
             names=launch.get('submitted',[])
             if names:
                 result=json.loads(call([cfg['inspire'],'--account','me','--json','job','status',*names,'--workspace','可上网GPU资源']))
-                assert result['success'] and not result['data'].get('unresolved');data=result['data'];items=data.get('items',[data]);state['statuses']={x['name']:x['status'] for x in items}
+                assert result['success'] and not result['data'].get('unresolved');data=result['data'];items=data.get('items',[data]);state['statuses']={x['name']:x['status'] for x in items};status_details={x['name']:x for x in items}
             if cfg.get('observer_mode')=='platform_logs' and names:
                 keys={j['name']:j['cell'] for j in json.loads((ROOT/'jobs.json').read_text())['jobs']}
                 def read_log(name):
-                    text=call([cfg['inspire'],'--account','me','job','logs',name,'--workspace','可上网GPU资源','--tail','20','--limit','50'])
-                    v={};cell=keys[name]
+                    cell=keys[name];v={};cached=ROOT/'retrieved'/(cell+'.audit.json')
+                    detail=status_details[name];terminal=detail['status']=='SUCCEEDED'
+                    if terminal and cached.exists():text=''
+                    else:
+                        # Platform bounds are applied before tailing and can return an old slice.
+                        # Query a narrow timestamp window, with no CLI output cap, to include the end.
+                        end=detail.get('finished_at')
+                        minutes=max(30,int((time.time()-int(end)/1000)/60)+10) if terminal and end else 30
+                        text=call([cfg['inspire'],'--account','me','job','logs',name,'--workspace','可上网GPU资源','--window',str(minutes)+'m','--all'])
+                    def brief(audit):return {k:audit[k] for k in ('cell','n','groups','records','independent_audit_passed','source_error_SC_items','time')}
                     for line in text.splitlines():
                         marker='AUDIT_SUMMARY '
                         if marker in line:
                             audit=json.JSONDecoder().raw_decode(line.split(marker,1)[1])[0]
                             assert audit['cell']==cell and audit['independent_audit_passed']
                             target=ROOT/'retrieved';target.mkdir(exist_ok=True);(target/(cell+'.audit.json')).write_text(json.dumps(audit,indent=2)+'\n')
-                            v.update(audit=audit,core_verified=True,gate_verified=True)
+                            v.update(audit=brief(audit),core={'cell':cell,'phase':'core','records':audit['records'],'expected':audit['records']},core_verified=True,gate_verified=True)
                         elif '{' in line:
                             try:
                                 progress=json.JSONDecoder().raw_decode(line[line.index('{'):])[0]
                                 if progress.get('cell')==cell and 'phase' in progress:v[progress['phase']]=progress
                             except (ValueError,AttributeError):pass
                     old=ROOT/'retrieved'/(cell+'.audit.json')
-                    if old.exists() and 'audit' not in v:v.update(audit=json.loads(old.read_text()),core_verified=True,gate_verified=True)
+                    if old.exists() and 'audit' not in v:
+                        audit=json.loads(old.read_text());v.update(audit=brief(audit),core={'cell':cell,'phase':'core','records':audit['records'],'expected':audit['records']},core_verified=True,gate_verified=True)
                     if state.get('statuses',{}).get(name)=='FAILED':v['failure']='Job FAILED; inspect platform logs before any retry.'
                     return cell,v
                 with ThreadPoolExecutor(max_workers=3) as pool:cells=dict(pool.map(read_log,names))
