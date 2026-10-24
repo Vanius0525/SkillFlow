@@ -34,11 +34,10 @@ Induction proves the upper-layer case.
 Equation~\eqref{eq:cache} supplies the lower layers for $SC$.
 \hfill$\square$
 
-\input{tables/tab-cache-coverage}
 
 \paragraph{Remaining execution state.}
-The post-prefill write preserves the other caches
-(Table~\ref{tab:cache-coverage}). Under these assumptions,
+The post-prefill write preserves other-position caches: $S$ and $SC$
+retain $\mathcal B_S$, while $C$ retains $\mathcal B_R$. Thus,
 \begin{equation}
 \begin{aligned}
 \hat y_{SC}&=\mathcal G_{\theta,M_0}

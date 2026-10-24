@@ -1,3 +1,8 @@
+## 2026-10-24 附录压缩及Table 3美化已完成
+
+用户授权压缩附录、同步Overleaf/GitHub，并明确新增Table 3最佳值加粗。正文只删除一条指向已移出dose/rank附录内容的说明及修改Table 3。附录4092→2509词，旧fullscale与coverage表移出活动稿但原文件保留；保留八cell全部核心数据、区间/截断及两项证明。Overleaf六文档原生OT逐份回读成功，云端编译12页、正文8页；本地无错误/未定义引用/水平或竖向越界。已目检Table 3、末页。完整diff仅两份未引用remote-only表（未删除），活动源码一致。报告与操作回执reports/appendix_compression_20261024，当前PDF skillvector-www2027.pdf。未启动任何实验或监督。Git提交只纳入本任务文件，不纳入其他线程脏文件。
+
+
 ## 2026-10-24 用户明确取消周期检查；新对话交接已整理
 
 两轮状态完整性实验与完整八cell论文更新均完成，实质交付提交721274e。15:00核验本对话三小时/旧小时timer与service均inactive或已卸载；两实验目录写入SUPERVISION-CANCELLED，禁止由迟到通知恢复。取消证据experiments/state_core_matrix_20261024/supervision-cancellation.json；其他对话任务未操作。当前无待继续实验或观察任务。

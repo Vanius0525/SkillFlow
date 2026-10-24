@@ -1,58 +1,33 @@
 \subsection{A sufficient condition for behavioral recovery}
 \label{app:behavior-recovery}
 
-We apply margin-based stability reasoning \citep{tsuzuku2018lipschitz}
-to cached decoding, adding a sensitivity assumption to Eq.~\eqref{eq:cache-distance}.
-
-\paragraph{One-step guarantee.}
-Fix the model, last prompt token $u_*$, positions and original mask $M_0$.
-For vocabulary $\mathcal V$, let $F(\mathbf z)\in\mathbb R^{|\mathcal V|}$
-map initial prefix caches to next-token logits. Assume finite sensitivity
-$\kappa$ over the compared states in $\Omega$. The infinity norm is the
-largest absolute change in any token score:
+For fixed model, positions, last prompt token and mask, let $F_t^D(\mathbf z)$
+map initial prefix caches to token-$t$ logits after processing the donor
+history $y_{D,<t}$, including all intervening cache updates.
+Assume, over the compared states,
 \begin{equation}
-\|F(\mathbf z)-F(\mathbf z')\|_\infty
-\le\kappa\|\mathbf z-\mathbf z'\|_2,\qquad
-\mathbf z,\mathbf z'\in\Omega.
+\|F_t^D(\mathbf z)-F_t^D(\mathbf z')\|_\infty
+\le\kappa_t\|\mathbf z-\mathbf z'\|_2.
 \label{eq:cache-lipschitz}
 \end{equation}
-For the donor's unique greedy choice $y_D$, define its positive margin
+The infinity norm bounds the largest absolute logit change. Let
+$m_{D,t}>0$ be the donor's highest logit minus its second-highest.
+Margin stability \citep{tsuzuku2018lipschitz} gives
 \begin{equation}
-m_D=F_{y_D}(\mathbf z_D)-\max_{v\ne y_D}F_v(\mathbf z_D)>0.
-\label{eq:donor-margin}
-\end{equation}
-\emph{Proposition.} If $2\kappa\varepsilon_{SC}<m_D$, then greedy
-decoding from $\mathbf z_{SC}$ selects $y_D$.
-\emph{Proof.} Each logit changes by at most
-$\kappa\varepsilon_{SC}$. Thus, for every $v\ne y_D$,
-\begin{equation}
-F_{y_D}(\mathbf z_{SC})-F_v(\mathbf z_{SC})
-\ge m_D-2\kappa\varepsilon_{SC}>0.
-\label{eq:margin-preservation}
-\end{equation}
-The factor $2$ allows the winning logit to decrease and a competitor
-to increase. Strict inequality excludes ties. \hfill$\square$
-
-\paragraph{Complete generation.}
-Let the donor produce $N$ tokens including its stopping token.
-$F_t^D(\mathbf z)$ processes $u_*$ and fixed donor history $y_{D,<t}$
-from initial cache $\mathbf z$, recomputing all new caches.
-Assume Eq.~\eqref{eq:cache-lipschitz} for $F_t^D$ with bound $\kappa_t$
-and donor margin $m_{D,t}>0$. The bound includes all intervening cache updates:
-\begin{equation}
-\bigl[\ \forall t\le N:\ 2\kappa_t\varepsilon_{SC}<m_{D,t}\ \bigr]
-\quad\Longrightarrow\quad \hat y_{SC}=\hat y_D.
+[\ \forall t\le N:\ 2\kappa_t\varepsilon_{SC}<m_{D,t}\ ]
+\quad\Longrightarrow\quad \hat y_{SC}=\hat y_D,
 \label{eq:sequence-recovery}
 \end{equation}
-The first token agrees by the one-step result. If earlier tokens agree,
-decoding follows the history defining $F_t^D$, so token $t$ agrees.
-Induction under the common stopping rule gives an identical sequence,
-which is correct whenever the donor's answer is correct.
+where $N$ includes the stopping token and $\varepsilon_{SC}$ is defined
+in Eq.~\eqref{eq:cache-distance}.
+\emph{Proof.} Each logit changes by at most $\kappa_t\varepsilon_{SC}$,
+so the donor's winning logit remains ahead by at least
+$m_{D,t}-2\kappa_t\varepsilon_{SC}>0$. Induction over the shared greedy
+history, including the common stopping rule, proves sequence equality.
+\hfill$\square$
 
-\paragraph{Scope.}
-Common valid $\kappa_t$ over $D$, $S$ and $SC$ give $SC$ no larger error
-bounds (Eq.~\eqref{eq:cache-distance}). Losing cancellation can increase
-actual errors, so accuracy gains are not guaranteed. Different sequences
-may answer correctly, making this condition only sufficient.
-$SC+\mathrm{cut}$ changes the mask and prefix and is excluded.
-Sensitivity bounds and itemwise margins remain unverified.
+This is only sufficient: different sequences may also answer correctly.
+Common sensitivity bounds give $SC$ no larger error bound than $S$,
+but losing cancellation can increase actual logit errors, so accuracy need
+not improve. Sensitivities and itemwise margins remain unverified.
+$SC+\mathrm{cut}$ changes the mask and is excluded.

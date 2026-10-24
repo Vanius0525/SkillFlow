@@ -1,0 +1,14 @@
+{
+  "cloud_pages": 12,
+  "main_pages": 8,
+  "undefined_references_local": 0,
+  "overfull_local": 0,
+  "method": "editor-socket/applyOtUpdate",
+  "documents": 6,
+  "table3": "row maxima within SC depths, C_all/B, Full/Replay; ties included",
+  "source_words_before": 4092,
+  "source_words_after": 2509,
+  "cloud_compile_issues": [],
+  "final_full_diff": "No differences; retained both unused legacy table files",
+  "cloud_pdf": "skillvector-www2027.pdf"
+}

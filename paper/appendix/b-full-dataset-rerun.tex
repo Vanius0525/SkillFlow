@@ -4,47 +4,9 @@
 
 \input{tables/tab-mechanism-contrasts}
 
-The original Qwen3-8B/MedCalc controls sampled four rescued questions
-from each of $40$ calculators ($160$ items). The group screen retained
-$60$ from $15$ calculators. The rerun used all $467$ eligible questions
-from $48$ calculators with the same interventions. Screening whole
-groups now requires failure on up to $20$ questions instead of four,
-retaining $135$ from $14$ calculators. Screening each item separately
-retains $369$ from $45$ calculators (Table~\ref{tab:fullscale}).
-
-For the dose and rank controls in Table~\ref{tab:fullscale}, the state
-difference is $\delta^L=H_D^L[\mathcal I]-H_R^L[\mathcal I]$.
-The rank implementation preserves the mean over source positions.
-Let $\bar\delta^L$ repeat that mean at every row, and define
-$\delta_k^L=\bar\delta^L+(\delta^L-\bar\delta^L)_k$, where
-$(\cdot)_k$ retains the leading $k$ components of a singular value
-decomposition, which ranks directions by how much matrix variation they capture.
-The dose and rank controls share the notation
-\begin{equation}
-H_R^L[\mathcal I]\leftarrow H_R^L[\mathcal I]+\alpha\delta_k^L.
-\label{eq:dose-rank}
-\end{equation}
-Full rank with $\alpha=1$ is full replacement, and $\alpha=0.5$ is half
-the state difference. Rank controls use $\alpha=1$.
-Increasing $k$ from $32$ to $64$ restores much of the recovery.
-A bottom-$k$ control instead retains the least prominent directions of
-the centered variation, with the same mean retained.
-The second of four equal portions of the skill, containing its formula,
-gives the largest recovery when copied alone in both samples.
-The same-category mean donor changes from $0.05$ to $0.12$, on the $41$
-full-rerun items where it is available. Here category refers to a calculator
-group derived from skill-title keywords (for example, related fluid calculations). The intervention averages
-donor-minus-receiver state differences from other calculators in that group.
-
-\paragraph{The depth sweep at one-layer resolution.} The subset sweep measured
-layers $0,4,8,12,14,15,16,20$ and placed the collapse somewhere after $12$.
-At full scale we added $13$ and $17$ to $19$:
-recovery is $0.98,0.98,0.89,0.74$ at layers $0,4,8,12$, then
-$0.16,0.16,0.06,0.06,0.07,0.03,0.02,0.03$ at $13$ through $20$ under the group screen.
-The item screen gives $1.00,0.98,0.94,0.79$ then
-$0.32,0.34,0.25,0.25,0.23,0.19,0.14,0.17$.
-Both screens show their largest local decline
-between layers $12$ and $13$.
+The corrected Qwen3-8B/MedCalc rerun uses all $467$ eligible questions
+from $48$ calculators. Whole-group and individual-item receiver-failure
+screens retain $135/14$ and $369/45$ questions/calculators, respectively.
 
 \paragraph{Broader screening and boundary sensitivity.}
 The item-level screen retains the transfer decline. Paired knockout
@@ -64,94 +26,33 @@ on $14$ and $15$ MedCalc skill groups. These sets differ from
 Table~\ref{tab:paireddepth}. Four items in each pass the transfer
 no-skill baseline despite failing it under knockout.
 
-\paragraph{Repeated replacement as a consistency check.}
-\label{app:repeated}
-On the $135$ screened MedCalc items, replacing source states at layers
-$8$ to $11$, $12$ to $15$, $14$ to $19$ and $16$ to $35$ recovers
-$0.89,0.74,0.16,0.06$. Starting at the first layer recovers $0.98$.
-Repeated and single writes produce identical tokens from each starting
-layer, consistent with Appendix~\ref{app:cache-coverage}'s causal argument.
-
-\paragraph{A continuous readout at the same boundary.}
-We generate correct-skill reasoning once per item, then score that fixed
-sequence under each intervention. This is teacher forcing: recorded
-preceding tokens replace newly generated ones. Mean token log-probability
-uses natural logarithms, measured in nats. Higher values indicate stronger
-predictions of the recorded sequence. We normalize it as
-$z=(\ell_L-\ell_{\mathrm{recv}})/(\ell_{\mathrm{gold}}-\ell_{\mathrm{recv}})$,
-where $\ell$ is the mean log-probability for the patched, receiver or
-donor condition. This $z$ differs from knockout retention $q$.
-
-On $442$ donor-correct items from $48$ calculators, $z$ is
-$0.999,0.989,0.960,0.831,0.598,0.595,0.340,0.201,0.129$ at layers
-$0,4,8,12,13,14,16,20,24$. The $0.233$ drop from $12$ to $13$ is near
-the accuracy boundary in the separate $134$-item depth set.
-The decline spans all four quarters of the reasoning sequence
-($0.20,0.26,0.31,0.21$). After supplying the reasoning, all conditions
-predict the final number closely: median log-probabilities lie between
-$-0.001$ and $-0.005$. Their donor-minus-receiver denominator has median
-$0.0014$ and is below $0.01$ on $59\%$ of items, limiting this readout.
-
-\paragraph{Distributed reading and receiver state.}
-The attention output contributed by skill positions,
-normalized by the length of the hidden-state vector, concentrates in
-layers $12$ to $21$. Blocking the $32$ highest-ranked
-heads costs $0.39$ of the skill's effect, versus $0.23$ for random heads at the
-same layers (calculators not used to rank the heads, paired difference $0.154$). Reading uses many heads rather than a small subset. After late span replacement, the attention output from skill positions remains
-$0.86$ to $0.99$ of the donor's despite weak behavioural recovery. Earlier receiver question-state updates remain unchanged, motivating
-the interaction tests in \S\ref{sec:mechanism}.
-
-
 \subsection{Source-cache repair and attention-path experiments}
 \label{app:mechanism}
 
-The focused Qwen3-8B/MedCalc experiments fix $\mathcal Q_0$, comprising
-$124$ historical IDs from $14$ calculators, before inference. Four NVIDIA
-RTX 4090 graphics processors each receive every fourth ID, using the
-$1{,}536$-token protocol in Appendix~\ref{app:detail}.
-Let $e_i^X$ be binary correctness for item $i$ in condition $X$, with
-$0$ denoting no skill. Selection uses only fresh baselines:
-\begin{equation}
-\mathcal Q_{\mathrm{rep}}
-=\{i\in\mathcal Q_0:e_i^D=1,\ e_i^R=e_i^0=0\}.
-\label{eq:repair-set}
-\end{equation}
-Of $116$ donor-correct, receiver-incorrect items, $114$ also fail without
-a skill. On these same $114$ items, every condition uses
-$a_X(L)=|\mathcal Q_{\mathrm{rep}}|^{-1}
-\sum_{i\in\mathcal Q_{\mathrm{rep}}}e_i^X(L)$.
-All $372$ baseline generations agree
-token-for-token between the two suites. The complete repair grid contains
-$2{,}356$ generations, the path grid $1{,}488$, and worker identity checks
-$100$. All $48$ own-state writebacks are token-exact.
-
-Figure~\ref{fig:mechanism} and Table~\ref{tab:mechanism-contrasts} use this
-rule for eight comparisons with separate candidates. Repair and path tests
-share item IDs and baseline tokens within each row. Repair is measured
-at $L8$, $L12$, $L16$ and $L24$, and path cuts at $L8$, $L16$ and $L24$.
-Writes, masks and contrasts follow
-Eqs.~\eqref{eq:cache}, \eqref{eq:reading-cut} and \eqref{eq:repair-effects}.
+Repair and path cuts use fresh donor-correct, receiver-incorrect and
+no-skill-incorrect items, shared within each model/task row of
+Table~\ref{tab:mechanism-contrasts}. For Qwen3-8B/MedCalc, this retains
+$114$ of $124$ frozen candidates from $14$ calculators ($116$ pass the
+first two criteria). All $372$ baseline generations agree token-for-token
+between suites, and all $48$ receiver-state writebacks are token-exact.
+Repair uses $L8/L12/L16/L24$; path cuts use $L8/L16/L24$.
+Writes, masks and contrasts follow Eqs.~\eqref{eq:cache},
+\eqref{eq:reading-cut} and \eqref{eq:repair-effects}.
 
 \paragraph{Qwen3-8B/MedCalc truncation sensitivity.}
-We retain all intervention outcomes, including outputs stopped at the
-generation limit, which we call truncated outputs. For the
-prespecified difference between $SC$ and $S$ at layer $16$, the gain is $38.6$ percentage
-points.
-The corresponding accuracy interaction $\Gamma$ is $31.6$ points. $SC-(SC+\mathrm{cut})$ is $35.1$ points.
-On the $96$ items with all three baselines untruncated, the $SC$ gain over $S$ is
-$38.5$ points.
-At layer $16$, $S$, $SC$ and $SC+\mathrm{cut}$ truncate $4$, $4$ and $3$ of $114$ outputs.
-Scoring truncated $S$ answers as correct and truncated $SC$ answers as
-incorrect still leaves a
-$35.1$-point repair advantage. At layer $24$, $SC$ and $SC+\mathrm{cut}$ truncate $3$ and $28$
-outputs and show no additional loss in measured accuracy.
+All outcomes are retained, including generation-limit truncations.
+At $L16$, $S$, $SC$ and $SC+\mathrm{cut}$ truncate $4$, $4$ and $3$
+of $114$ outputs.
+The $SC-S$ gain is $38.6$ points, $38.5$ on the $96$ items with untruncated
+baselines, and at least $35.1$ under adversarial scoring of truncated
+$S/SC$ answers. At $L24$, $SC/(SC+\mathrm{cut})$ truncate $3/28$
+outputs without an additional measured accuracy loss.
 
 At layer $24$, reader and source-self cuts retain $29/114$ and $110/114$
 correct answers. Their loss difference is $71.1$ points.
 Reader cuts truncate $21$ outputs. Counting all as correct still leaves
 retention at $50/114$, below source-self retention $110/114$ (no truncation).
-Both contrasts survive this worst-case reassignment. Experiment records retain counts for each condition, file checksums
-and these sensitivity calculations.
+Both contrasts survive worst-case reassignment.
 
 \paragraph{Redundant combined cut.}
 With causal attention and otherwise positionwise operations, earlier
@@ -160,64 +61,6 @@ changed states from reaching later tokens. Adding a within-skill cut
 therefore leaves outputs unchanged by induction over layers and generated
 tokens. We omit this redundant condition. The argument does not apply
 when later reading is allowed.
-
-\input{appendix/cache-coverage}
-
-
-\subsection{Complete-source and receiving-history controls}
-\label{app:state-completeness}
-
-\paragraph{Population and protocol.}
-We evaluate $24$ matched conditions in each of the eight model/task cells
-(Table~\ref{tab:state-completeness}). Qwen3-8B/MedCalc reuses its frozen pool of $124$ questions from $14$
-skills and its broader $49$-condition experiment.
-For the other seven cells, candidate IDs are fixed from pre-existing
-historical baseline pools, using the first $124$ in their original order
-when necessary. Input-length preflight excludes only one DeepSeek/MedCalc
-question because prompt plus $1536$ output tokens exceed the model's
-context limit. This leaves $456$ new model--question pairs. No item is
-removed based on a new repair result, and the table retains fresh donor
-and receiver baseline errors. These are selected populations, not full
-benchmark estimates or $580$ independent unique questions across models.
-
-Wrong uses the original unrelated skill; Neutral uses the same predeclared
-unrelated natural-language document in every cell, truncated or repeated
-to align source positions and prompt lengths. It is not guaranteed to
-have zero influence. All within-cell conditions use BF16, eager attention,
-split prefill, greedy decoding and a $1536$ new-token limit. The seven new
-cells use RTX 4090 GPUs and the same container image; the Qwen3-8B/MedCalc
-results are reused from its earlier run. TheoremQA resets the official
-parser globals before every answer. Layer numbers index each model's
-blocks, with $36$ layers for Qwen, $32$ for Mistral and Llama, and $30$ for DeepSeek. The fixed integer layers are not equal fractions of
-model depth.
-Fresh screening of the original Qwen3-8B/MedCalc pool retains $114$ items
-and reproduces $L16$ $S/C/SC$ at $3.5/7.0/42.1\%$; the complete-source
-tables instead retain all $124$ candidates. The other cells likewise use
-their own fixed pools, so their denominators differ from the older repair
-and path-cut screen in Table~\ref{tab:mechanism-contrasts}.
-
-\paragraph{Conditions and numerical identities.}
-The $24$ conditions comprise four baselines (donor, Wrong, Neutral,
-no skill), $SC$ and $SC_{\mathrm{exact}}$ at $L8/L16/L24$ in both
-receivers, and four further conditions per receiver: all-layer source-KV
-copying, other-position KV copying, complete-prefix KV copying, and
-all-layer source copying followed by replay of the later prompt.
-$SC_{\mathrm{exact}}$ explicitly rewrites every source K/V tensor after
-$SC$. Runtime elementwise checks find zero source discrepancies at all
-layers in every measured $SC$ condition. The explicit rewrite preserves
-all $3{,}480$ generated sequences across the eight cells. These identities
-concern KV at skill positions, not all residual states or all prefix KV.
-Other-position KV can still encode effects of earlier skill processing.
-
-Complete-prefix copying reproduces every donor sequence in both contexts
-($1{,}160/1{,}160$ pairs). It is a positive control using same-question
-donor computation, not an efficient reuse method. Replay also uses donor
-source KV and recomputes all prompt positions after the skill. It restores
-accuracy close to the donor but is not a numerical identity
-(Table~\ref{tab:state-baselines}). On Qwen/TheoremQA it gives $62/63$
-correct versus the donor's $61/63$; this one-item improvement does not
-make replay equivalent to the donor. Different BF16 prefill computation
-shapes can change individual token predictions.
 
 \begin{table*}[t]
 \centering
@@ -287,49 +130,68 @@ DeepSeek-7B / TQA & $+13.0\;[5.2,22.6]$ & $+14.8\;[3.5,26.9]$ & $9/6$ & $1/0$ \\
 \end{tabularx}
 \end{table*}
 
-\paragraph{Paired uncertainty and depth heterogeneity.}
-We resample whole skill groups with replacement $10{,}000$ times and
-report percentile intervals for paired accuracy differences
-(Table~\ref{tab:state-depth-uncertainty}). The Qwen3-8B/MedCalc intervals
-reuse the independently audited analysis; the other cells use a fixed
-seed of $20261024$. Five cells have positive intervals in both contexts;
-Qwen/TheoremQA's Neutral lower endpoint is zero. Llama/TheoremQA and
-DeepSeek/MedCalc have mixed point-estimate directions and intervals
-including zero in both receivers. Thus these data do not establish either
-consistent late-layer superiority in those cells or a universal early-layer
-advantage under joint repair. The Qwen3-8B/MedCalc early-minus-late gap
-remains $66.1/64.5$ points. Even adversarially scoring its capped outputs
-against this contrast leaves $63.7/64.5$ points. Cap counts in the other
-cells are reported rather than silently treated as unobserved continuations.
-The intervals are exploratory, unadjusted for multiple comparisons, and
-some cells have few skill groups.
+
+\input{appendix/cache-coverage}
+
+
+\subsection{Complete-source and receiving-history controls}
+\label{app:state-completeness}
+
+\paragraph{Population and protocol.}
+The eight cells use $580$ model--question pairs, retaining fresh baseline
+errors (Table~\ref{tab:state-baselines}). Qwen3-8B/MedCalc reuses all $124$
+frozen candidates from its $49$-condition study. The other seven cells use
+pre-existing historical pools, capped at the first $124$ IDs in their original
+order; one DeepSeek/MedCalc item fails input-length preflight, leaving $456$
+new pairs. Selection precedes repair outcomes. These are selected pools,
+not full-benchmark estimates or $580$ independent questions across models;
+they differ from Table~\ref{tab:mechanism-contrasts}'s screened populations.
+Wrong uses the original distractor. Neutral repeats or truncates one fixed
+unrelated document to match source positions; it may still influence answers.
+All conditions use BF16, eager attention, split prefill, greedy decoding and
+$1536$ new tokens. TheoremQA resets parser globals per answer.
+Layers $8/16/24$ are block indices, not matched fractions of model depth.
+
+\paragraph{Conditions and numerical identities.}
+The $24$ conditions comprise four baselines (donor, Wrong, Neutral,
+no skill), $SC$ and $SC_{\mathrm{exact}}$ at $L8/L16/L24$ in both
+receivers, and four further conditions per receiver: all-layer source-KV
+copying, other-position KV copying, complete-prefix KV copying, and
+all-layer source copying followed by replay of the later prompt.
+$SC_{\mathrm{exact}}$ explicitly rewrites every source K/V tensor after
+$SC$. Runtime elementwise checks find zero source discrepancies at all
+layers in every measured $SC$ condition. The explicit rewrite preserves
+all $3{,}480$ generated sequences across the eight cells. These identities
+concern KV at skill positions, not all residual states or all prefix KV.
+Other-position KV can still encode effects of earlier skill processing.
+
+Complete-prefix copying reproduces all $1{,}160$ donor sequences.
+Replay uses donor source KV and recomputes the later prompt; both require
+same-question donor computation. Replay is not exact: Qwen3-8B/TheoremQA
+scores $62/63$ versus the donor's $61/63$.
+
+\paragraph{Paired uncertainty.}
+Table~\ref{tab:state-depth-uncertainty} uses $10{,}000$ whole-skill-group
+bootstrap resamples and percentile intervals (seed $20261024$ for the seven
+new cells; Qwen3-8B/MedCalc reuses its audited analysis). Intervals are
+exploratory, unadjusted for multiple comparisons, and some cells contain
+few groups. Qwen3-8B/MedCalc's early-minus-late gap remains $63.7/64.5$
+points under adversarial scoring of capped outputs in Wrong/Neutral.
 
 \paragraph{Additional Qwen3-8B/MedCalc content and layer controls.}
 With all-layer source coverage fixed, correct-skill KV gives
 $29.8\%$ in Wrong and $25.0\%$ in Neutral. Unrelated-skill KV gives
 $4.8/6.5\%$ and a second predeclared neutral text's KV gives
-$1.6/4.0\%$, respectively. The Wrong-to-Wrong source write is also a token-exact identity
-control. Four equally sized eight-layer source writes, at layers
+$1.6/4.0\%$, respectively. Four equally sized eight-layer source writes, at layers
 $0$--$7$, $8$--$15$, $16$--$23$ and $24$--$31$, yield
 $3.2/3.2/1.6/4.0\%$ in Wrong and $0.8/4.0/4.8/5.6\%$ in Neutral.
 These windows individually recover little; comparison with all $36$
 layers does not identify the minimum required coverage because the write
-budgets differ. Late $SC$ need not improve on $C_{\mathrm{all}}$:
-at $L24$ in Wrong, accuracy is $25.8\%$ versus $29.8\%$.
+budgets differ.
 
 
-\paragraph{Audit and scope.}
-The seven new cells contain $10{,}944$ formal records. Each cell first
-checks two predetermined questions under the $24$ conditions plus a
-receiver self-state identity control ($50$ gate records). Its $48$ formal
-gate records are reused, not regenerated, in the full output. An independent
-CPU-only process checks raw-file hashes, complete unique key sets, saved
-cache writes, token identities and official scores in forward and reverse
-order. The original Qwen3-8B/MedCalc $6076$ formal and $14$ implementation
-checks were audited separately. A local audit of the exported small
-metadata and binary labels reproduces every new accuracy, truncation count
-and paired interval, without downloading answer text or rerunning inference.
-The matrix establishes receiving-history effects with complete source KV;
-it does not repeat the full transfer/knockout sweep, identify a unique
-semantic variable in other-position caches, validate the margin sufficient
-condition, or predict a minimal recomputation budget on held-out skills.
+\paragraph{Audit.}
+Independent processes verify hashes, condition keys, cache writes, token
+identities and official scores in both orders. Exported labels reproduce
+all accuracies, cap counts and intervals for $10{,}944$ new and $6076$
+reused formal records. Gate records are reused without regeneration.

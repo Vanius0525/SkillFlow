@@ -1,0 +1,68 @@
+{
+  "projectId": "6a2cfd49b99635e8e968576a",
+  "method": "editor-socket/applyOtUpdate",
+  "started_at": "2026-10-24T07:11:54.687Z",
+  "documents": [
+    {
+      "path": "overleaf-skillvector/main.tex",
+      "docId": "6ada253fcf1580aed0899ae4",
+      "before_version": 1,
+      "before_sha256": "1490d5353a8d5b756f7079afa61a896627fc9c470be6e7fcc67c1ecc05ba4aa3",
+      "after_sha256": "56572f74eebf01f7387df965095ec359f06db9a7529d3b48301452f9f8728be8",
+      "operations": 1,
+      "status": "verified",
+      "after_version": 2
+    },
+    {
+      "path": "overleaf-skillvector/sections/04-experiment.tex",
+      "docId": "6ada255ff0e9637a959732ac",
+      "before_version": 3,
+      "before_sha256": "e2026370b6613135c869ca41c6a66e86054045b94166d23ac28e73564a1f0e2b",
+      "after_sha256": "ff5a6152364e8d135a81af713497ee025f7895da911d70b8af190ee4dd7b6caa",
+      "operations": 108,
+      "status": "verified",
+      "after_version": 4
+    },
+    {
+      "path": "overleaf-skillvector/appendix/a-setup.tex",
+      "docId": "6ada256b173781e4eb1fa536",
+      "before_version": 0,
+      "before_sha256": "5fbbfbd18b48c391f7608279df2fed2f96211b0811db1d4eeaecd41ee23b2698",
+      "after_sha256": "da4cc3fc87d49ea282a4fcaa675147a28c543f98aa12343b81774d4e11d5de80",
+      "operations": 322,
+      "status": "verified",
+      "after_version": 1
+    },
+    {
+      "path": "overleaf-skillvector/appendix/b-full-dataset-rerun.tex",
+      "docId": "6ada2569148298048ca0e203",
+      "before_version": 4,
+      "before_sha256": "bbf18c2a98c2041dfa084dbb1eda89bbaa9f42039837e0161ea9959ce7352eee",
+      "after_sha256": "b4b4388e2ac66ac2c3c19c86c0c0ea2c748243e3ed6335263baf1b8b3db06b68",
+      "operations": 239,
+      "status": "verified",
+      "after_version": 5
+    },
+    {
+      "path": "overleaf-skillvector/appendix/cache-coverage.tex",
+      "docId": "6ada2563173781e4eb1f9fbd",
+      "before_version": 2,
+      "before_sha256": "4e5747f82f7ca682c8e1f709755e6d3389bc8d2b5a20cd8ff46d018483d8616f",
+      "after_sha256": "655eb956d976ea674c0712fec4a5f0fd74d98258d6c01b296d5dd1aad732f870",
+      "operations": 19,
+      "status": "verified",
+      "after_version": 3
+    },
+    {
+      "path": "overleaf-skillvector/appendix/behavior-recovery.tex",
+      "docId": "6ada256781b64a080d5ed046",
+      "before_version": 0,
+      "before_sha256": "4ac664ee6c9878b593f97960666dc596e20b81f1193031392b4b7eee1392e29b",
+      "after_sha256": "d815a6bbc68573c78f6c9f410247c99ae10dbdabff3494a30d283d4c5c82c75d",
+      "operations": 94,
+      "status": "verified",
+      "after_version": 1
+    }
+  ],
+  "completed_at": "2026-10-24T07:12:11.713Z"
+}
