@@ -1,3 +1,7 @@
+## 2026-10-24 周期检查已由用户明确取消（最高优先级）
+
+15:00核验本对话三小时及旧小时timer/service均inactive或已卸载，两轮SUPERVISION-CANCELLED已写入。七新cell10944条与所有小产物审计完成，完整结果已入稿并同步721274e；TASK-COMPLETE与SUPERVISION-COMPLETE保留。不要重新提交、重跑、恢复任何timer/CPU/GPU或旧depth；迟到通知仅去重。新对话完整接管入口为paper/HANDOFF-NEXT-CONVERSATION.md最上方，当前无待续接实验。
+
 ## 2026-10-24 全部科学审计与论文同步完成
 
 核心24条件七新cell10944/10944均SUCCEEDED并完成独立进程审计；46小JSON/60KB归档取回，本地逐题标签/截断/全部新paired bootstrap及完整键/身份/哈希声明核验通过。复用Qwen/MedCalc后八cell580模型—题目配对；SC_exact3480对输出token一致、完整prefix1160对复现donor。六cell两背景早减晚点估计正；Llama/TQA与DeepSeek/MC不稳定，Qwen/TQA neutral CI触0，不能写统一深度规律。原始回答与KV保留远端，无推理重跑。科学任务和只读收集均已结束，专用CPUstop，HPC两失败记录保留；TASK-COMPLETE/SUPERVISION-COMPLETE存在、三小时timer inactive，迟到通知仅去重，绝不恢复旧任务。

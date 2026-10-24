@@ -1,3 +1,8 @@
+## 2026-10-24 用户明确取消周期检查；新对话交接已整理
+
+两轮状态完整性实验与完整八cell论文更新均完成，实质交付提交721274e。15:00核验本对话三小时/旧小时timer与service均inactive或已卸载；两实验目录写入SUPERVISION-CANCELLED，禁止由迟到通知恢复。取消证据experiments/state_core_matrix_20261024/supervision-cancellation.json；其他对话任务未操作。当前无待继续实验或观察任务。
+新对话首先读HANDOFF-NEXT-CONVERSATION.md最上方2026-10-24接管节：已汇总结果、术语/异质性边界、Overleaf/Git基线、产物路径、Unicode增量编辑修复及剩余篇幅问题（正文8、总15，超12页目标）。未自动启动压页或补实验，等待用户新指令。下方旧排队/运行/自动续接段落仅作历史，不可照着执行。
+
 ## 2026-10-24 完整八组合结果已入稿，科学实验全部收尾
 
 核心24条件七新cell10944/10944均SUCCEEDED并完成独立进程审计；46小JSON/60KB归档取回，本地逐题标签/截断/全部新paired bootstrap及完整键/身份/哈希声明核验通过。复用Qwen/MedCalc后八cell580模型—题目配对；SC_exact3480对输出token一致、完整prefix1160对复现donor。六cell两背景早减晚点估计正；Llama/TQA与DeepSeek/MC不稳定，Qwen/TQA neutral CI触0，不能写统一深度规律。原始回答与KV保留远端，无推理重跑。科学任务和只读收集均已结束，专用CPUstop，HPC两失败记录保留；TASK-COMPLETE/SUPERVISION-COMPLETE存在、三小时timer inactive，迟到通知仅去重，绝不恢复旧任务。

@@ -1,3 +1,38 @@
+## 2026-10-24 新对话接管入口：周期检查已由用户明确取消
+
+本节为最新状态，覆盖下方全部历史运行/排队/自动续接描述。用户当前只要求取消周期检查并整理交接；本次不再修改论文或启动实验。
+
+### 运行与取消状态
+
+- 两轮科学实验均已完成：初轮Qwen3-8B/MedCalc为6076条正式结果+14条gate；扩展轮为七组合10944条正式结果，复用原Qwen/MedCalc组成4模型×2benchmark。八cell共580个模型—题目配对，不是580道独立题或全benchmark。
+- 两轮均有独立进程重判与完整性审计；七新cell的逐题二值标签、截断数、完整条件键集合及全部新bootstrap区间还在本地再次核验。小产物46个JSON/60257字节归档已取回；原始回答/模型张量留远端，不需重跑。
+- 2026-10-24 15:00确认本对话三小时与旧小时timer/service均不存在或inactive。两实验目录均写入SUPERVISION-CANCELLED；TASK-COMPLETE和SUPERVISION-COMPLETE保留。取消证据：experiments/state_core_matrix_20261024/supervision-cancellation.json。旧watch配置本地已标cancelled_by_user，不提交运行时配置。
+- 迟到通知只去重，不恢复CPU/GPU、timer或旧控制器；旧depth①仍取消，不操作LogicBench或其他对话family任务。科学七Job和备用只读产物导出均SUCCEEDED并释放，两个专用CPU已stop；CPU HPC两失败记录保留不删。没有待继续的实验或观察任务。
+
+### 论文与Git当前基线
+
+- 完整八cell结果已同步Overleaf和GitHub，实质交付提交721274e（master）。Overleaf项目6a2cfd49b99635e8e968576a，根文档overleaf-skillvector/main.tex；本地活动稿为paper/main.tex，PDF为paper/skillvector-www2027.pdf。
+- §4.4正文Table3覆盖八cell×Wrong/Neutral的接收基线、C_all、SC8/16/24、其他prefix KV、完整prefix KV和后续prompt重算。附录Table7列基线与token身份，Table8列层间差值/95%CI/截断。字体9/11pt、浅蓝表头、线型与原表统一。
+- 共七现有文本文件有新增/更新：Experiments、appendix/b-full-dataset-rerun、appendix/cache-coverage、Abstract、Introduction、Discussion、Conclusion。旧公式/证明、Related Work、旧图/表数据保留；原S迁移/KO依赖结果未被新SC结果替换。
+- 云端编译通过，全文diff一致，无未定义引用或水平越界；正文8页、总15页（旧13页），超仓库12页目标。附录仍有1.474pt微小竖向排版告警，目检无裁切。当前是结果完整草稿，不是满足篇幅的最终投稿稿。
+- 首选阅读：reports/state_core_matrix_20261024/论文修改清单.md、完整结果与解释.md、paper-data.json；核验入口audit/state-matrix-paper-20261024/delivery.json及manuscript.patch；逐题/矩阵证据experiments/state_core_matrix_20261024/retrieved/matrix-audit.json与export/。
+
+### 结论边界与术语（不可在续接中丢失）
+
+- 完整skill缓存指所有skill token位置、所有层的KV，不是全层/全位置residual。SC包含单层source residual与低层KV补写；本轮全source KV精确对齐，SC_exact再次覆盖不改变3480对输出。题目/模板等其他位置KV仍可能编码之前处理skill的历史；不能称为“与skill无关的信息”。
+- 八cell的C_all均低于donor，完整prefix KV复制1160/1160对token复现donor；后续prompt重算准确率距donor不超过4.2pp，但不是token身份，也不是廉价可部署方法。Qwen/TQA replay62/63略高于donor61/63，已保留该数值反事实。
+- SC8−SC24在六cell的两背景点估计均正；Llama/TQA为−5.4/+6.5pp、DeepSeek/MC为+8.3/−8.3pp，这四项CI都跨0；Qwen/TQA中性CI下端为0。只有五cell两背景区间均严格正，区间探索性且未多重比较校正。不得写普遍早层更优，也不能据小幅反向声称晚层更优。
+- 这些边界限制的是新增SC深度效应的推广，不是原文S迁移vsKO依赖曲线T<R的直接反例。本轮没有重测原完整曲线（①已取消）。内容与等层窗口控制仍仅Qwen/MedCalc；margin充分条件、未见skill预算预测和最小必要状态均未验证。各cell历史题池不同，不可把差异直接归因于模型架构。
+
+### 后续操作约定
+
+- 等待新对话的具体用户指令。最明显剩余问题是15→12页篇幅与微小排版告警；本次没有授权自动压页、再开实验或重启监视，不把候选工作当已启动任务。
+- 每次改稿先完整olcli diff，保留协作者修改；不要从旧/tmp快照盲目上传。当前文本使用tools/update_overleaf_text.mjs原生增量编辑，保留doc ID；History2444–2454的11条操作已回放重建七最终文件，不是整文件上传或Track Changes逐条接受/拒绝。
+- 工具位置按JavaScript UTF-16 code units，不能按UTF8字节。已修复curly apostrophe导致的偏移；tools/overleaf_text_edits.test.mjs覆盖此回归。只允许已验证的ASCII编辑payload，原文Unicode上下文可定位；未验证中文插入/删除会提前拒绝。遇回读失败先查实际版本和receipt，不盲重发。
+- 工作区仍有其他对话的未提交改动，不能整仓git add、reset或覆盖；本轮只提交自身交接前缀/取消标记。遵守删除/较大下载需确认、只推master且不用force。临时备份在/tmp/state-matrix-paper-20261024-active-before，不能把/tmp当唯一持久基线。
+
+以下保留历史交接，仅供溯源，不构成运行指令。
+
 ## 2026-10-24 完整八组合结果已入稿，科学实验全部收尾
 
 核心24条件七新cell10944/10944均SUCCEEDED并完成独立进程审计；46小JSON/60KB归档取回，本地逐题标签/截断/全部新paired bootstrap及完整键/身份/哈希声明核验通过。复用Qwen/MedCalc后八cell580模型—题目配对；SC_exact3480对输出token一致、完整prefix1160对复现donor。六cell两背景早减晚点估计正；Llama/TQA与DeepSeek/MC不稳定，Qwen/TQA neutral CI触0，不能写统一深度规律。原始回答与KV保留远端，无推理重跑。科学任务和只读收集均已结束，专用CPUstop，HPC两失败记录保留；TASK-COMPLETE/SUPERVISION-COMPLETE存在、三小时timer inactive，迟到通知仅去重，绝不恢复旧任务。

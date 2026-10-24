@@ -1,0 +1,33 @@
+{
+  "cancelled_at": "2026-10-24T15:00:06.425416+08:00",
+  "user_request": "取消周期性检查，更新交接便于新对话接管",
+  "scope": "Only the two state-completeness timers from this conversation; other conversations untouched",
+  "units": [
+    {
+      "unit": "state-core-matrix-3h-01a162f7.timer",
+      "stop_returncode": 5,
+      "state": "inactive",
+      "detail": "Failed to stop state-core-matrix-3h-01a162f7.timer: Unit state-core-matrix-3h-01a162f7.timer not loaded."
+    },
+    {
+      "unit": "state-core-matrix-3h-01a162f7.service",
+      "stop_returncode": 5,
+      "state": "inactive",
+      "detail": "Failed to stop state-core-matrix-3h-01a162f7.service: Unit state-core-matrix-3h-01a162f7.service not loaded."
+    },
+    {
+      "unit": "state-completeness-hourly-01a162f7.timer",
+      "stop_returncode": 5,
+      "state": "inactive",
+      "detail": "Failed to stop state-completeness-hourly-01a162f7.timer: Unit state-completeness-hourly-01a162f7.timer not loaded."
+    },
+    {
+      "unit": "state-completeness-hourly-01a162f7.service",
+      "stop_returncode": 5,
+      "state": "inactive",
+      "detail": "Failed to stop state-completeness-hourly-01a162f7.service: Unit state-completeness-hourly-01a162f7.service not loaded."
+    }
+  ],
+  "cancellation_markers_written": true,
+  "note": "Transient units were already unloaded/not found; none active. Historical queued notifications may be delayed and must not restart checks."
+}
