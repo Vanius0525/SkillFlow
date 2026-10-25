@@ -1,0 +1,372 @@
+{
+  "1": {
+    "ComicSansMS-Bold": [
+      {
+        "size": 6.41,
+        "text": "Tokens"
+      },
+      {
+        "size": 6.41,
+        "text": "Hidden states"
+      },
+      {
+        "size": 5.68,
+        "text": "Input"
+      },
+      {
+        "size": 5.68,
+        "text": "Output"
+      },
+      {
+        "size": 6.41,
+        "text": "Early layer"
+      },
+      {
+        "size": 6.41,
+        "text": "Later layer"
+      },
+      {
+        "size": 5.68,
+        "text": "Transformer layer depth"
+      },
+      {
+        "size": 5.68,
+        "text": "Original "
+      },
+      {
+        "size": 5.68,
+        "text": "run"
+      },
+      {
+        "size": 5.68,
+        "text": "Patched "
+      },
+      {
+        "size": 5.68,
+        "text": "run"
+      },
+      {
+        "size": 6.41,
+        "text": "Strong recovery"
+      },
+      {
+        "size": 6.41,
+        "text": "Weak recovery"
+      },
+      {
+        "size": 5.68,
+        "text": "Skill access "
+      },
+      {
+        "size": 5.68,
+        "text": "still needed"
+      },
+      {
+        "size": 5.01,
+        "text": "S"
+      },
+      {
+        "size": 5.01,
+        "text": "S"
+      },
+      {
+        "size": 4.28,
+        "text": "Q"
+      },
+      {
+        "size": 5.68,
+        "text": "Original run"
+      },
+      {
+        "size": 4.28,
+        "text": "(same later layer)"
+      },
+      {
+        "size": 5.01,
+        "text": "S: skill"
+      },
+      {
+        "size": 5.01,
+        "text": "Q: question"
+      },
+      {
+        "size": 5.01,
+        "text": "Access"
+      },
+      {
+        "size": 5.01,
+        "text": "kept"
+      },
+      {
+        "size": 5.01,
+        "text": "Access"
+      },
+      {
+        "size": 5.01,
+        "text": "cut"
+      },
+      {
+        "size": 3.54,
+        "text": "Accuracy"
+      },
+      {
+        "size": 4.28,
+        "text": "S"
+      },
+      {
+        "size": 4.28,
+        "text": "Q"
+      },
+      {
+        "size": 5.68,
+        "text": "No longer "
+      },
+      {
+        "size": 5.68,
+        "text": "needed ?"
+      },
+      {
+        "size": 5.01,
+        "text": "Replace"
+      },
+      {
+        "size": 5.68,
+        "text": "Original "
+      },
+      {
+        "size": 5.68,
+        "text": "run"
+      },
+      {
+        "size": 5.68,
+        "text": "Patched "
+      },
+      {
+        "size": 5.68,
+        "text": "run"
+      },
+      {
+        "size": 5.01,
+        "text": "S"
+      },
+      {
+        "size": 5.01,
+        "text": "S"
+      },
+      {
+        "size": 4.28,
+        "text": "Q"
+      },
+      {
+        "size": 5.01,
+        "text": "Replace"
+      }
+    ]
+  },
+  "3": {
+    "ComicSansMS-Bold": [
+      {
+        "size": 8.55,
+        "text": "Block L"
+      },
+      {
+        "size": 8.55,
+        "text": "Block L"
+      },
+      {
+        "size": 8.55,
+        "text": "Block L+1"
+      },
+      {
+        "size": 8.55,
+        "text": "Block L+1"
+      },
+      {
+        "size": 8.55,
+        "text": "SC = S + C"
+      },
+      {
+        "size": 7.53,
+        "text": "Source self-attention kept"
+      },
+      {
+        "size": 7.53,
+        "text": "during prefill"
+      },
+      {
+        "size": 8.55,
+        "text": "Source"
+      },
+      {
+        "size": 8.55,
+        "text": "Reader"
+      },
+      {
+        "size": 8.55,
+        "text": "Direct replacement"
+      },
+      {
+        "size": 9.65,
+        "text": "Reader states and KV entries are not directly replaced"
+      },
+      {
+        "size": 8.55,
+        "text": "(a) S: source states"
+      },
+      {
+        "size": 8.55,
+        "text": "(b) C: source KV"
+      },
+      {
+        "size": 7.53,
+        "text": "Source entries only"
+      },
+      {
+        "size": 7.53,
+        "text": "Reader "
+      },
+      {
+        "size": 7.53,
+        "text": "queries"
+      },
+      {
+        "size": 7.53,
+        "text": "Source"
+      },
+      {
+        "size": 7.53,
+        "text": "Keys / values"
+      },
+      {
+        "size": 8.55,
+        "text": "(c) SC + cut"
+      },
+      {
+        "size": 7.53,
+        "text": "Block L output"
+      },
+      {
+        "size": 8.55,
+        "text": "0"
+      },
+      {
+        "size": 8.55,
+        "text": "0"
+      },
+      {
+        "size": 8.55,
+        "text": "L"
+      },
+      {
+        "size": 8.55,
+        "text": "L"
+      },
+      {
+        "size": 7.53,
+        "text": "Replace source only"
+      },
+      {
+        "size": 7.53,
+        "text": "After prefix prefill,"
+      },
+      {
+        "size": 7.53,
+        "text": "before the final prompt token"
+      },
+      {
+        "size": 7.53,
+        "text": "Donor"
+      },
+      {
+        "size": 7.53,
+        "text": "correct skill"
+      },
+      {
+        "size": 7.53,
+        "text": "Receiver"
+      },
+      {
+        "size": 7.53,
+        "text": "wrong skill"
+      },
+      {
+        "size": 7.53,
+        "text": "Donor"
+      },
+      {
+        "size": 7.53,
+        "text": "correct skill"
+      },
+      {
+        "size": 7.53,
+        "text": "Receiver"
+      },
+      {
+        "size": 7.53,
+        "text": "wrong skill"
+      },
+      {
+        "size": 8.55,
+        "text": "Layers L + 1 onward"
+      },
+      {
+        "size": 7.53,
+        "text": "Reader-to-source cut"
+      },
+      {
+        "size": 7.53,
+        "text": "Prefill + decoding"
+      },
+      {
+        "size": 8.55,
+        "text": "K"
+      },
+      {
+        "size": 8.55,
+        "text": "V"
+      },
+      {
+        "size": 8.55,
+        "text": "K"
+      },
+      {
+        "size": 8.55,
+        "text": "V"
+      },
+      {
+        "size": 8.55,
+        "text": "K"
+      },
+      {
+        "size": 8.55,
+        "text": "V"
+      },
+      {
+        "size": 8.55,
+        "text": "K"
+      },
+      {
+        "size": 8.55,
+        "text": "V"
+      },
+      {
+        "size": 8.55,
+        "text": "K"
+      },
+      {
+        "size": 8.55,
+        "text": "V"
+      }
+    ],
+    "PingFangSC-Semibold": [
+      {
+        "size": 10.74,
+        "text": ". . ."
+      },
+      {
+        "size": 10.74,
+        "text": ". . ."
+      }
+    ]
+  }
+}

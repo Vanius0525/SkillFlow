@@ -1,0 +1,34 @@
+\begin{table*}[tbp]
+\caption{Screening and full-pool rerun for Qwen3-8B/MedCalc at layer $8$.
+Entries show recovery
+(Eq.~\ref{eq:rho}). The group screen keeps calculators whose receiver
+solves no sampled question. The item screen keeps individual receiver
+failures. Category means related calculator functions. Direction and
+quarter controls are defined in Appendix~\ref{app:fullscale}.
+Each condition uses its own matched baselines. ``Not run'' marks an
+unmeasured condition.}
+\label{tab:fullscale}
+\centering
+\small
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{lccc}
+\toprule
+Intervention & Full, group screen ($n=135$) & Subset ($n=60$) & Full, item screen ($n=369$) \\
+\midrule
+Correct skill span & $\mathbf{0.89}$ & $0.87$ & $0.94$ \\
+same skill, matched prefix & $0.65$ & $0.73$ & $0.84$ \\
+\midrule
+Half-strength change $\alpha=0.5$ & $0.04$ & $0.06$ & $0.11$ \\
+positions permuted & $0.05$ & $0.08$ & $0.21$ \\
+norm-matched noise & $0.02$ & $0.10$ & $0.18$ \\
+other calculator & $0.05$ & Not run & $0.25$ \\
+other calculator category, mean & $0.05$ & $0.06$ & $0.16$ \\
+same calculator category, mean & $0.12$ & $0.05$ & $0.24$ \\
+identity patch & $0.00$ & $0.00$ & $0.00$ \\
+\midrule
+Leading directions: $128/64/32/16$ & $0.77/0.63/0.12/0.05$ & $0.77/0.54/0.13/0.06$ & $0.88/0.70/0.22/0.18$ \\
+Least prominent directions: $64/16$ & $0.03/0.04$ & $0.00/0.06$ & $0.11/0.12$ \\
+Skill quarters: $1/2/3/4$ & $0.09/\mathbf{0.56}/0.12/0.05$ & $0.12/0.56/0.12/0.12$ & $0.18/0.64/0.22/0.19$ \\
+\bottomrule
+\end{tabular}
+\end{table*}

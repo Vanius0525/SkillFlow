@@ -1,0 +1,209 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{zhang2025agentskills}
+\citation{wang2024awm,wang2026webxskill}
+\citation{hendel2023taskvectors,todd2024functionvectors}
+\citation{heimersheim2024patching}
+\@writefile{toc}{\contentsline {section}{Abstract}{1}{section*.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Weak transfer and continued skill use at the same later depth. Copying skill-position states from a correct-skill run into an unrelated-skill run gives strong early recovery (left) and weak late recovery (middle). At that same later depth, the original run still needs skill access: retaining access preserves performance, while cutting it reduces accuracy (right). S and Q label skill and question tokens. Figure\nonbreakingspace \ref {fig:transferreading} gives the measured depth profiles.}}{1}{figure.caption.5}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:teaser}{{1}{1}{Weak transfer and continued skill use at the same later depth. Copying skill-position states from a correct-skill run into an unrelated-skill run gives strong early recovery (left) and weak late recovery (middle). At that same later depth, the original run still needs skill access: retaining access preserves performance, while cutting it reduces accuracy (right). S and Q label skill and question tokens. Figure~\ref {fig:transferreading} gives the measured depth profiles}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\citation{hendel2023taskvectors}
+\citation{todd2024functionvectors}
+\citation{davidson2025prompting,bigoulaeva2026instructionvectors}
+\citation{jit2025taskrepr}
+\citation{zhang2023bestpractices,heimersheim2024patching}
+\citation{vaidyanathan2026mediators}
+\citation{onset2025instruction}
+\citation{sia2024incontexttranslation}
+\citation{yang2025internalcot}
+\citation{li2026prefillnotes}
+\citation{zhang2025agentskills}
+\citation{su2026srabench,skillsbench2026,sweskills2026}
+\citation{hajimiri2026budgetskills}
+\citation{ardoin2026promptcompression}
+\citation{mu2023gist}
+\citation{ge2024icae}
+\citation{doc2lora2026,deepcontextdistill2025}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{State transfer and its interpretation.}{2}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Depth, source access and context caches.}{2}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Skills and reusable context.}{2}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Problem Formulation}{2}{section.3}\protected@file@percent }
+\newlabel{sec:formulation}{{3}{2}{Problem Formulation}{section.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Skills, executions and token positions.}{2}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Hidden-state transfer.}{2}{section*.11}\protected@file@percent }
+\newlabel{eq:inject}{{1}{2}{Hidden-state transfer}{equation.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Blocking attention to the skill.}{2}{section*.12}\protected@file@percent }
+\citation{shazeer2019fast}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Timing of state repair, cache repair and the reading cut in the receiver. The prefix contains all prompt tokens except the last. (a) $S$ copies donor source states at block $L$'s output during prefix prefill. (b) $C$ copies source-position key/value (KV) entries at layers $0$ through $L$ after prefix prefill, before final-token recomputation. $SC$ combines these two writes, then recomputes the final prompt token and generates. (c) $SC+\mathrm  {cut}$ installs a reading mask before prefill, blocking reader-to-source attention from $L+1$ onward during prefill and decoding. Source-to-source attention remains unmasked. Reader states and caches evolve through computation rather than direct replacement. Figure\nonbreakingspace \ref {fig:mechanism}(b) separately tests cuts in the original correct-skill run.}}{3}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:design}{{2}{3}{Timing of state repair, cache repair and the reading cut in the receiver. The prefix contains all prompt tokens except the last. (a) $S$ copies donor source states at block $L$'s output during prefix prefill. (b) $C$ copies source-position key/value (KV) entries at layers $0$ through $L$ after prefix prefill, before final-token recomputation. $SC$ combines these two writes, then recomputes the final prompt token and generates. (c) $SC+\mathrm {cut}$ installs a reading mask before prefill, blocking reader-to-source attention from $L+1$ onward during prefill and decoding. Source-to-source attention remains unmasked. Reader states and caches evolve through computation rather than direct replacement. Figure~\ref {fig:mechanism}(b) separately tests cuts in the original correct-skill run}{figure.caption.10}{}}
+\newlabel{eq:knockout}{{2}{3}{Blocking attention to the skill}{equation.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Recovery and dependence.}{3}{section*.13}\protected@file@percent }
+\newlabel{eq:rho}{{3}{3}{Recovery and dependence}{equation.3}{}}
+\newlabel{eq:dependence}{{4}{3}{Recovery and dependence}{equation.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Depth boundaries.}{3}{section*.14}\protected@file@percent }
+\newlabel{eq:boundaries}{{5}{3}{Depth boundaries}{equation.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{The execution state before generation.}{3}{section*.15}\protected@file@percent }
+\citation{khandekar2024medcalc}
+\citation{su2026srabench}
+\citation{chen2023theoremqa}
+\citation{yang2025qwen3}
+\citation{jiang2023mistral}
+\citation{grattafiori2024llama3}
+\citation{deepseek2024llm}
+\newlabel{eq:continuation}{{6}{4}{The execution state before generation}{equation.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cache replacement and joint repair.}{4}{section*.16}\protected@file@percent }
+\newlabel{eq:cache}{{7}{4}{Cache replacement and joint repair}{equation.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{From cache repair to output recovery.}{4}{section*.17}\protected@file@percent }
+\newlabel{eq:cache-distance}{{8}{4}{From cache repair to output recovery}{equation.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Reading cuts and their timing.}{4}{section*.18}\protected@file@percent }
+\newlabel{eq:reading-cut}{{9}{4}{Reading cuts and their timing}{equation.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Three repair contrasts.}{4}{section*.19}\protected@file@percent }
+\newlabel{eq:repair-effects}{{10}{4}{Three repair contrasts}{equation.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{4}{section.4}\protected@file@percent }
+\newlabel{sec:experiments}{{4}{4}{Experiments}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental setup}{4}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:setup}{{4.1}{4}{Experimental setup}{subsection.4.1}{}}
+\newlabel{sec:cells}{{4.1}{4}{Experimental setup}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Tasks and models.}{4}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Analysis populations.}{4}{section*.22}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces State-transfer controls at layer $8$ across four models and two benchmarks. Entries are accuracy (\%). $n/G$ counts questions and skills. Qwen3-8B/MedCalc retains re-evaluated donor failures. The other cells additionally require a correct donor and incorrect no-skill baseline. The two matched-prefix rows replace the same number of leading skill positions with correct or unrelated content. Final-token controls replace fewer positions. Layer $8$ is already beyond the transfer boundary for some models (Table\nonbreakingspace \ref {tab:paireddepth}).}}{5}{table.caption.21}\protected@file@percent }
+\newlabel{tab:probe}{{1}{5}{State-transfer controls at layer $8$ across four models and two benchmarks. Entries are accuracy (\%). $n/G$ counts questions and skills. Qwen3-8B/MedCalc retains re-evaluated donor failures. The other cells additionally require a correct donor and incorrect no-skill baseline. The two matched-prefix rows replace the same number of leading skill positions with correct or unrelated content. Final-token controls replace fewer positions. Layer $8$ is already beyond the transfer boundary for some models (Table~\ref {tab:paireddepth})}{table.caption.21}{}}
+\@writefile{toc}{\contentsline {paragraph}{Protocol consistency.}{5}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Validation of skill-state transfer}{5}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:battery}{{4.2}{5}{Validation of skill-state transfer}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Early transfer recovery.}{5}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Content and position controls.}{5}{section*.27}\protected@file@percent }
+\newlabel{sec:whose}{{4.2}{5}{Cross-question transfer}{section*.28}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cross-question transfer.}{5}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Weak transfer with persistent source dependence}{5}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:where}{{4.3}{5}{Weak transfer with persistent source dependence}{subsection.4.3}{}}
+\newlabel{sec:depth}{{4.3}{5}{Weak transfer with persistent source dependence}{subsection.4.3}{}}
+\newlabel{sec:ladder}{{4.3}{5}{Weak transfer with persistent source dependence}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Depth separation.}{5}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A representative depth profile.}{5}{section*.31}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces State transfer weakens before source-attention dependence across eight combinations of model and task. Rows show MedCalc (top) and TheoremQA (bottom), with models aligned by column. Mint: recovery $\rho (L)$ in the wrong-skill receiver. Pink dash-dotted: dependence $d(L)$ in the original correct-skill run. Each panel uses common eligible questions with each protocol's own baselines. $G$ counts skills. Shading spans the first half-effect boundaries (Table\nonbreakingspace \ref {tab:paireddepth}). Later threshold crossings remain visible. Knockout blocks both skill reading and within-skill attention. Every layer is measured.}}{6}{figure.caption.25}\protected@file@percent }
+\newlabel{fig:transferreading}{{3}{6}{State transfer weakens before source-attention dependence across eight combinations of model and task. Rows show MedCalc (top) and TheoremQA (bottom), with models aligned by column. Mint: recovery $\rho (L)$ in the wrong-skill receiver. Pink dash-dotted: dependence $d(L)$ in the original correct-skill run. Each panel uses common eligible questions with each protocol's own baselines. $G$ counts skills. Shading spans the first half-effect boundaries (Table~\ref {tab:paireddepth}). Later threshold crossings remain visible. Knockout blocks both skill reading and within-skill attention. Every layer is measured}{figure.caption.25}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Main depth comparison across four open-weight models and two benchmarks. $n/G$ gives common eligible questions/skill groups. $T$ and $R$ are the first half-effect crossings for transfer ($\rho <0.5$) and aggregate source dependence ($d\le 0.5$). $\Delta =R-T$ is in layers. $\Delta /D$ normalizes the gap by the model's layer count. All eight cells use audited common-item populations.}}{6}{table.caption.26}\protected@file@percent }
+\newlabel{tab:paireddepth}{{2}{6}{Main depth comparison across four open-weight models and two benchmarks. $n/G$ gives common eligible questions/skill groups. $T$ and $R$ are the first half-effect crossings for transfer ($\rho <0.5$) and aggregate source dependence ($d\le 0.5$). $\Delta =R-T$ is in layers. $\Delta /D$ normalizes the gap by the model's layer count. All eight cells use audited common-item populations}{table.caption.26}{}}
+\@writefile{toc}{\contentsline {paragraph}{Paired outcomes and robustness.}{6}{section*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Partial restoration with source-cache replacement}{6}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:mechanism}{{4.4}{6}{Partial restoration with source-cache replacement}{subsection.4.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Testing an omitted source component.}{6}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Repair gains in the receiver.}{6}{section*.34}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Repair and attention cuts across four models and two benchmarks. MC denotes MedCalc and TQA denotes TheoremQA. (a) Receiver accuracy at $L16$ for state replacement ($S$), cache replacement ($C$), joint repair ($SC$), and joint repair with a reading cut from $L17$ onward ($SC+\mathrm  {cut}$). (b) Correct answers lost in the original correct-skill run under cuts from $L8$, $L16$ or $L24$ onward during prefill and decoding. Skill reading blocks reader-to-source attention. Within-skill attention blocks source-to-source attention. Each row uses the same questions in both panels, with counts in Table\nonbreakingspace \ref {tab:mechanism-contrasts}. Layer numbers index each model's blocks.}}{7}{figure.caption.29}\protected@file@percent }
+\newlabel{fig:mechanism}{{4}{7}{Repair and attention cuts across four models and two benchmarks. MC denotes MedCalc and TQA denotes TheoremQA. (a) Receiver accuracy at $L16$ for state replacement ($S$), cache replacement ($C$), joint repair ($SC$), and joint repair with a reading cut from $L17$ onward ($SC+\mathrm {cut}$). (b) Correct answers lost in the original correct-skill run under cuts from $L8$, $L16$ or $L24$ onward during prefill and decoding. Skill reading blocks reader-to-source attention. Within-skill attention blocks source-to-source attention. Each row uses the same questions in both panels, with counts in Table~\ref {tab:mechanism-contrasts}. Layer numbers index each model's blocks}{figure.caption.29}{}}
+\@writefile{toc}{\contentsline {paragraph}{Complete source KV and receiving history.}{7}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Depth effects depend on the receiving execution.}{7}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Reading under joint repair.}{7}{section*.38}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Attention paths in the original run.}{7}{section*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{7}{section.5}\protected@file@percent }
+\newlabel{sec:discussion}{{5}{7}{Discussion}{section.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Potential applications.}{7}{section*.40}\protected@file@percent }
+\bibstyle{ACM-Reference-Format}
+\bibdata{skillvector}
+\bibcite{ardoin2026promptcompression}{{1}{2026}{{Ardoin et~al\mbox  {.}}}{{}}}
+\bibcite{bigoulaeva2026instructionvectors}{{2}{2026}{{Bigoulaeva et~al\mbox  {.}}}{{}}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Complete-source controls across four models and two benchmarks. Entries are accuracy (\%). MC and TQA denote MedCalc and TheoremQA. Wrong and Neutral are the receiving contexts; Base is their unmodified accuracy. $C_{\mathrm  {all}}$ copies source KV at every layer; $SC$ additionally patches source hidden states at the stated layer. $B$ copies only other prefix KV, Full copies the complete prefix KV, and Replay copies all source KV then recomputes the later prompt. Full also gives donor accuracy. These pools differ from Table\nonbreakingspace \ref {tab:mechanism-contrasts}. Explicit all-layer rewriting after $SC$ leaves every generated token unchanged. Bold marks the highest accuracy among the three $SC$ depths in each row (ties included).}}{8}{table.caption.36}\protected@file@percent }
+\newlabel{tab:state-completeness}{{3}{8}{Complete-source controls across four models and two benchmarks. Entries are accuracy (\%). MC and TQA denote MedCalc and TheoremQA. Wrong and Neutral are the receiving contexts; Base is their unmodified accuracy. $C_{\mathrm {all}}$ copies source KV at every layer; $SC$ additionally patches source hidden states at the stated layer. $B$ copies only other prefix KV, Full copies the complete prefix KV, and Replay copies all source KV then recomputes the later prompt. Full also gives donor accuracy. These pools differ from Table~\ref {tab:mechanism-contrasts}. Explicit all-layer rewriting after $SC$ leaves every generated token unchanged. Bold marks the highest accuracy among the three $SC$ depths in each row (ties included)}{table.caption.36}{}}
+\@writefile{toc}{\contentsline {paragraph}{Future work.}{8}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{8}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{8}{Conclusion}{section.6}{}}
+\newlabel{endmain}{{6}{8}{Conclusion}{section.6}{}}
+\@writefile{toc}{\contentsline {section}{References}{8}{section*.43}\protected@file@percent }
+\bibcite{deepcontextdistill2025}{{3}{2025}{{Caccia et~al\mbox  {.}}}{{}}}
+\bibcite{doc2lora2026}{{4}{2026}{{Charakorn et~al\mbox  {.}}}{{}}}
+\bibcite{chen2023theoremqa}{{5}{2023}{{Chen et~al\mbox  {.}}}{{}}}
+\bibcite{davidson2025prompting}{{6}{2025}{{Davidson et~al\mbox  {.}}}{{}}}
+\bibcite{deepseek2024llm}{{7}{2024}{{DeepSeek-AI}}{{}}}
+\bibcite{ge2024icae}{{8}{2024}{{Ge et~al\mbox  {.}}}{{}}}
+\bibcite{grattafiori2024llama3}{{9}{2024}{{Grattafiori et~al\mbox  {.}}}{{}}}
+\bibcite{hajimiri2026budgetskills}{{10}{2026}{{Hajimiri et~al\mbox  {.}}}{{}}}
+\bibcite{sweskills2026}{{11}{2026}{{Han et~al\mbox  {.}}}{{}}}
+\bibcite{heimersheim2024patching}{{12}{2024}{{Heimersheim and Nanda}}{{}}}
+\bibcite{hendel2023taskvectors}{{13}{2023}{{Hendel et~al\mbox  {.}}}{{}}}
+\bibcite{jiang2023mistral}{{14}{2023}{{Jiang et~al\mbox  {.}}}{{}}}
+\bibcite{khandekar2024medcalc}{{15}{2024}{{Khandekar et~al\mbox  {.}}}{{}}}
+\bibcite{li2026prefillnotes}{{16}{2026}{{Li}}{{}}}
+\bibcite{skillsbench2026}{{17}{2026}{{Li et~al\mbox  {.}}}{{}}}
+\bibcite{jit2025taskrepr}{{18}{2025}{{Li et~al\mbox  {.}}}{{}}}
+\bibcite{mu2023gist}{{19}{2023}{{Mu et~al\mbox  {.}}}{{}}}
+\bibcite{onset2025instruction}{{20}{2025}{{Pola and Balasubramanian}}{{}}}
+\bibcite{shazeer2019fast}{{21}{2019}{{Shazeer}}{{}}}
+\bibcite{sia2024incontexttranslation}{{22}{2024}{{Sia et~al\mbox  {.}}}{{}}}
+\bibcite{su2026srabench}{{23}{2026}{{Su et~al\mbox  {.}}}{{}}}
+\bibcite{todd2024functionvectors}{{24}{2024}{{Todd et~al\mbox  {.}}}{{}}}
+\bibcite{tsuzuku2018lipschitz}{{25}{2018}{{Tsuzuku et~al\mbox  {.}}}{{}}}
+\bibcite{vaidyanathan2026mediators}{{26}{2026}{{Vaidyanathan et~al\mbox  {.}}}{{}}}
+\bibcite{vaswani2017attention}{{27}{2017}{{Vaswani et~al\mbox  {.}}}{{}}}
+\bibcite{wang2026webxskill}{{28}{2026}{{Wang et~al\mbox  {.}}}{{}}}
+\bibcite{wang2024awm}{{29}{2025}{{Wang et~al\mbox  {.}}}{{}}}
+\bibcite{yang2025qwen3}{{30}{2025a}{{Yang et~al\mbox  {.}}}{{}}}
+\bibcite{yang2025internalcot}{{31}{2025b}{{Yang et~al\mbox  {.}}}{{}}}
+\bibcite{zhang2025agentskills}{{32}{2025}{{Zhang et~al\mbox  {.}}}{{}}}
+\bibcite{zhang2023bestpractices}{{33}{2024}{{Zhang and Nanda}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Experimental protocols and provenance}{9}{appendix.A}\protected@file@percent }
+\newlabel{app:setup}{{A}{9}{Experimental protocols and provenance}{appendix.A}{}}
+\@writefile{toc}{\contentsline {paragraph}{Tasks and scoring.}{9}{section*.44}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation populations.}{9}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Implementation details}{9}{subsection.A.1}\protected@file@percent }
+\newlabel{app:detail}{{A.1}{9}{Implementation details}{subsection.A.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Wrong-skill selection and token matching.}{9}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Prompt and source boundaries.}{9}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Models and decoding.}{10}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Position and state checks.}{10}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Split-prefill check.}{10}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Evaluation scope and intervention provenance}{10}{subsection.A.2}\protected@file@percent }
+\newlabel{app:limits}{{A.2}{10}{Evaluation scope and intervention provenance}{subsection.A.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Attention-mask correction.}{10}{section*.51}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Extension pools and grading checks.}{10}{section*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Artifact availability.}{10}{section*.53}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Additional transfer and source-dependence analyses}{10}{appendix.B}\protected@file@percent }
+\newlabel{app:fullscale}{{B}{10}{Additional transfer and source-dependence analyses}{appendix.B}{}}
+\@writefile{toc}{\contentsline {paragraph}{Broader screening and boundary sensitivity.}{10}{section*.55}\protected@file@percent }
+\newlabel{app:joint-failure}{{B}{10}{Same-question joint failures}{section*.56}{}}
+\@writefile{toc}{\contentsline {paragraph}{Same-question joint failures.}{10}{section*.56}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Source-cache repair and attention-path experiments}{10}{subsection.B.1}\protected@file@percent }
+\newlabel{app:mechanism}{{B.1}{10}{Source-cache repair and attention-path experiments}{subsection.B.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Qwen3-8B/MedCalc truncation sensitivity.}{10}{section*.57}\protected@file@percent }
+\citation{vaswani2017attention}
+\citation{tsuzuku2018lipschitz}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Source-cache repair at layer $16$ across four models and two benchmarks. $n/G$ counts questions and skills retained using fresh baselines. $S$, $C$, $SC$ and $SC+\mathrm  {cut}$ show accuracy (\%). The last three columns show cache benefit $\Delta _{\mathrm  {cache}}$, accuracy interaction $\Gamma $ and reading-cut loss $\Delta _{\mathrm  {read}}$ in percentage points (Eq.\nonbreakingspace \eqref  {eq:repair-effects}). Each row uses the same questions for all conditions, with donor accuracy $100\%$ and receiver accuracy $0\%$. These populations differ from Table\nonbreakingspace \ref {tab:paireddepth}.}}{11}{table.caption.54}\protected@file@percent }
+\newlabel{tab:mechanism-contrasts}{{4}{11}{Source-cache repair at layer $16$ across four models and two benchmarks. $n/G$ counts questions and skills retained using fresh baselines. $S$, $C$, $SC$ and $SC+\mathrm {cut}$ show accuracy (\%). The last three columns show cache benefit $\Delta _{\mathrm {cache}}$, accuracy interaction $\Gamma $ and reading-cut loss $\Delta _{\mathrm {read}}$ in percentage points (Eq.~\eqref {eq:repair-effects}). Each row uses the same questions for all conditions, with donor accuracy $100\%$ and receiver accuracy $0\%$. These populations differ from Table~\ref {tab:paireddepth}}{table.caption.54}{}}
+\@writefile{toc}{\contentsline {paragraph}{Redundant combined cut.}{11}{section*.58}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Cache coverage under causal prefill}{11}{subsection.B.2}\protected@file@percent }
+\newlabel{app:cache-coverage}{{B.2}{11}{Cache coverage under causal prefill}{subsection.B.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Proposition (source-cache coverage).}{11}{section*.61}\protected@file@percent }
+\newlabel{eq:source-coverage}{{11}{11}{Proposition (source-cache coverage)}{equation.11}{}}
+\@writefile{toc}{\contentsline {paragraph}{Remaining execution state.}{11}{section*.62}\protected@file@percent }
+\newlabel{eq:source-not-full}{{12}{11}{Remaining execution state}{equation.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}A sufficient condition for behavioral recovery}{11}{subsection.B.3}\protected@file@percent }
+\newlabel{app:behavior-recovery}{{B.3}{11}{A sufficient condition for behavioral recovery}{subsection.B.3}{}}
+\newlabel{eq:cache-lipschitz}{{13}{11}{A sufficient condition for behavioral recovery}{equation.13}{}}
+\newlabel{eq:sequence-recovery}{{14}{11}{A sufficient condition for behavioral recovery}{equation.14}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Baselines and numerical identity checks for the complete-source study. Accuracy columns are percentages. $n/G$ counts questions/skills. Replay equality counts token-identical sequences against the donor in each receiving context; the counts are the same for Wrong and Neutral. Complete-prefix copying is token-identical on all $2n$ receiver pairs per cell, and $SC$ versus explicit all-layer rewriting is token-identical on all $6n$ pairs.}}{12}{table.caption.59}\protected@file@percent }
+\newlabel{tab:state-baselines}{{5}{12}{Baselines and numerical identity checks for the complete-source study. Accuracy columns are percentages. $n/G$ counts questions/skills. Replay equality counts token-identical sequences against the donor in each receiving context; the counts are the same for Wrong and Neutral. Complete-prefix copying is token-identical on all $2n$ receiver pairs per cell, and $SC$ versus explicit all-layer rewriting is token-identical on all $6n$ pairs}{table.caption.59}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Paired depth effects with complete source KV. Entries give $SC@8-SC@24$ in accuracy points and exploratory $95\%$ skill-group bootstrap intervals. Positive values favor $L8$. Cap columns count outputs reaching the generation limit at $L8/L24$. Intervals are not adjusted for multiple comparisons.}}{12}{table.caption.60}\protected@file@percent }
+\newlabel{tab:state-depth-uncertainty}{{6}{12}{Paired depth effects with complete source KV. Entries give $SC@8-SC@24$ in accuracy points and exploratory $95\%$ skill-group bootstrap intervals. Positive values favor $L8$. Cap columns count outputs reaching the generation limit at $L8/L24$. Intervals are not adjusted for multiple comparisons}{table.caption.60}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Complete-source and receiving-history controls}{12}{subsection.B.4}\protected@file@percent }
+\newlabel{app:state-completeness}{{B.4}{12}{Complete-source and receiving-history controls}{subsection.B.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Population and protocol.}{12}{section*.63}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Conditions and numerical identities.}{12}{section*.64}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Paired uncertainty.}{12}{section*.65}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Additional Qwen3-8B/MedCalc content and layer controls.}{12}{section*.66}\protected@file@percent }
+\newlabel{tocindent-1}{0pt}
+\newlabel{tocindent0}{0pt}
+\newlabel{tocindent1}{6.25499pt}
+\newlabel{tocindent2}{12.41998pt}
+\newlabel{tocindent3}{0pt}
+\newlabel{tocindent4}{0pt}
+\newlabel{tocindent5}{0pt}
+\@writefile{toc}{\contentsline {paragraph}{Audit.}{13}{section*.67}\protected@file@percent }
+\newlabel{TotPages}{{13}{13}{}{page.13}{}}
+\gdef \@abspage@last{13}

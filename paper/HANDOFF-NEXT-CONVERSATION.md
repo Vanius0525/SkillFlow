@@ -1,3 +1,7 @@
+## 2026-10-25 最新Overleaf投稿审查已完成
+
+用户强调先拉最新Overleaf再查格式与引文；已下载23文件到独立快照，未改线上稿或覆盖本地活动稿。线上新增首页Relevance Statement，编译后全文13页（正文仍8页），所以旧12页合规判断已失效。最新PDF/source/log/aux/bbl在audit/www2027-review-20261025，报告reports/www2027_compliance_20261025/审查报告.md。33实际参考文献均找到原始来源，未发现伪造/ID错配；至少Davidson2025/WebXSkill/Tsuzuku需更新正式出版信息，Hajimiri已确认EMNLP但单篇元数据待取。全30字体嵌入、48标签/62引用无断链/重复。图1最小3.54pt字、图1/2 ComicSans/PingFang混用为可读性/一致性风险，不直接等同WWW硬性禁用；printacmref=false触发模板告警。正文113/124指向附录但该段未列L16，是内容对应缺口。检查末尾13:13:06Z完整diff零差异。当前仅审查交付，未压页/改图/改bib，未启动实验或监督。
+
 ## 2026-10-24 Table 3最终格式
 
 用户要求仅SC三个深度的每行最大值加粗（并列保留），并移除n/G列。已删除Table 3该列及表注定义，数值、其他表与正文不变。原生OT记录见reports/table3_sc_only_20261024与reports/table3_drop_ng_20261024；同步Overleaf、更新PDF后推GitHub。

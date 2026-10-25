@@ -1,0 +1,19 @@
+--- local/sections/00-abstract.tex
++++ overleaf/sections/00-abstract.tex
+@@ -12,3 +12,4 @@
+ Complete-source controls further show that donor skill-position KV alone does not recover donor performance; the depth dependence of joint repair varies across models and tasks.
+ These findings establish a separation between using contextual skills and reusing their internal states, and demonstrate cache-assisted recovery across models and tasks.
+ \end{abstract}
++
+--- local/sections/01-introduction.tex
++++ overleaf/sections/01-introduction.tex
+@@ -1,5 +1,9 @@
+ % Insert early so the single-column float can occupy the first page's
+ % right-column top, alongside the abstract, using standard ACM float placement.
++\noindent\textbf{Relevance Statement.}
++This work is relevant to the Web Infrastructure and Agentic Systems track. Web agents use reusable task instructions, or skills, to guide actions across requests and services. Reusing the internal states formed from these instructions could help carry task capabilities across executions. We examine when such transfer weakens despite the original execution's continued dependence on the skill, and how the key/value caches used by attention can partly restore transfer. These findings inform the design and evaluation of reusable skill representations and context management for Web agents.
++
++
+ \begin{figure}[t]
+ \centering
+ \includegraphics[width=\columnwidth]{fig-teaser.pdf}

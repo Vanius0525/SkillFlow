@@ -1,0 +1,299 @@
+[
+  {
+    "number": 1,
+    "key": "ardoin2026promptcompression",
+    "title": "Prompt Compression via Activation Aggregation",
+    "source": "https://arxiv.org/abs/2607.08399",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 2,
+    "key": "bigoulaeva2026instructionvectors",
+    "title": "Patches of Nonlinearity: Instruction Vectors in Large Language Models",
+    "source": "https://aclanthology.org/2026.acl-long.559/",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 3,
+    "key": "deepcontextdistill2025",
+    "title": "Training Plug-n-Play Knowledge Modules with Deep Context Distillation",
+    "source": "https://arxiv.org/abs/2503.08727",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 4,
+    "key": "doc2lora2026",
+    "title": "Doc-to-{L}o{RA}: Learning to Instantly Internalize Contexts",
+    "source": "https://arxiv.org/abs/2602.15902",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 5,
+    "key": "chen2023theoremqa",
+    "title": "{TheoremQA}: A Theorem-driven Question Answering Dataset",
+    "source": "https://arxiv.org/abs/2305.12524",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 6,
+    "key": "davidson2025prompting",
+    "title": "Do different prompting methods yield a common task representation in language models?",
+    "source": "https://arxiv.org/abs/2505.12075",
+    "status": "应更新出版信息",
+    "note": "正式NeurIPS 2025已核实；当前仍为arXiv。",
+    "additional_source": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/66b35d2e8d524706f39cc21f5337b002-Abstract-Conference.html"
+  },
+  {
+    "number": 7,
+    "key": "deepseek2024llm",
+    "title": "{DeepSeek LLM}: Scaling Open-Source Language Models with Longtermism",
+    "source": "https://arxiv.org/abs/2401.02954",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 8,
+    "key": "ge2024icae",
+    "title": "In-context Autoencoder for Context Compression in a Large Language Model",
+    "source": "https://arxiv.org/abs/2307.06945",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 9,
+    "key": "grattafiori2024llama3",
+    "title": "The {Llama} 3 Herd of Models",
+    "source": "https://arxiv.org/abs/2407.21783",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。 当前作者列表手工and others截断，建议从官方BibTeX导入完整列表后由样式决定显示。",
+    "additional_source": null
+  },
+  {
+    "number": 10,
+    "key": "hajimiri2026budgetskills",
+    "title": "Are Online Skill and Memory Modules Always Worth Their Tokens? A Budget-Constrained Study of Web Agents",
+    "source": "https://arxiv.org/abs/2606.15017",
+    "status": "应更新出版信息，具体页码待取",
+    "note": "arXiv明确Accepted to EMNLP 2026，ACL作者目录也有正式记录；单篇2026.emnlp-main.1657网页/BibTeX本轮不可获取，不猜页码。",
+    "additional_source": "https://aclanthology.org/people/nicolas-gontier/"
+  },
+  {
+    "number": 11,
+    "key": "sweskills2026",
+    "title": "SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?",
+    "source": "https://arxiv.org/abs/2603.15401",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 12,
+    "key": "heimersheim2024patching",
+    "title": "How to use and interpret activation patching",
+    "source": "https://arxiv.org/abs/2404.15255",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 13,
+    "key": "hendel2023taskvectors",
+    "title": "In-Context Learning Creates Task Vectors",
+    "source": "https://arxiv.org/abs/2310.15916",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 14,
+    "key": "jiang2023mistral",
+    "title": "Mistral {7B}",
+    "source": "https://arxiv.org/abs/2310.06825",
+    "status": "条目真实；模型版本定位宜补充",
+    "note": "2023报告描述v0.1；论文实际用v0.3，应另给准确模型卡/版本，原引用不删除。 当前作者列表手工and others截断，建议从官方BibTeX导入完整列表后由样式决定显示。",
+    "additional_source": null
+  },
+  {
+    "number": 15,
+    "key": "khandekar2024medcalc",
+    "title": "{MedCalc-Bench}: Evaluating Large Language Models for Medical Calculations",
+    "source": "https://arxiv.org/abs/2406.12036",
+    "status": "核对一致，可补DOI",
+    "note": "NeurIPS 2024 Datasets and Benchmarks track；DOI 10.52202/079017-2690。",
+    "additional_source": "https://papers.nips.cc/paper_files/paper/2024/hash/99e81750f3fdfcaf9613db2dbf4bd623-Abstract-Datasets_and_Benchmarks_Track.html"
+  },
+  {
+    "number": 16,
+    "key": "li2026prefillnotes",
+    "title": "Models Take Notes at Prefill: {KV} Cache Can Be Editable and Composable",
+    "source": "https://arxiv.org/abs/2606.17107",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 17,
+    "key": "skillsbench2026",
+    "title": "SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks",
+    "source": "https://arxiv.org/abs/2602.12670",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。 当前作者列表手工and others截断，建议从官方BibTeX导入完整列表后由样式决定显示。",
+    "additional_source": null
+  },
+  {
+    "number": 18,
+    "key": "jit2025taskrepr",
+    "title": "Just-in-time and distributed task representations in language models",
+    "source": "https://arxiv.org/abs/2509.04466",
+    "status": "可保留预印本；可补workshop",
+    "note": "已核实NeurIPS 2025 Mechanistic Interpretability Workshop spotlight；未据第三方ICLR字样冒称ICLR正式录用。",
+    "additional_source": "https://mechinterpworkshop.com/neurips2025/posters-1/"
+  },
+  {
+    "number": 19,
+    "key": "mu2023gist",
+    "title": "Learning to Compress Prompts with Gist Tokens",
+    "source": "https://arxiv.org/abs/2304.08467",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 20,
+    "key": "onset2025instruction",
+    "title": "Where does an {LLM} begin computing an instruction?",
+    "source": "https://arxiv.org/abs/2511.10694",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 21,
+    "key": "shazeer2019fast",
+    "title": "Fast Transformer Decoding: One Write-Head is All You Need",
+    "source": "https://arxiv.org/abs/1911.02150",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 22,
+    "key": "sia2024incontexttranslation",
+    "title": "Where does In-context Learning Happen in Large Language Models?",
+    "source": "https://proceedings.nips.cc/paper_files/paper/2024/hash/3979818cdc7bc8dbeec87170c11ee340-Abstract-Conference.html",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 23,
+    "key": "su2026srabench",
+    "title": "Skill Retrieval Augmentation for Agentic {AI}",
+    "source": "https://arxiv.org/abs/2604.24594",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 24,
+    "key": "todd2024functionvectors",
+    "title": "Function Vectors in Large Language Models",
+    "source": "https://arxiv.org/abs/2310.15213",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 25,
+    "key": "tsuzuku2018lipschitz",
+    "title": "Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance for Deep Neural Networks",
+    "source": "https://arxiv.org/abs/1802.04034",
+    "status": "应更新出版信息",
+    "note": "正式NeurIPS 2018已核实；当前仍为arXiv。",
+    "additional_source": "https://proceedings.neurips.cc/paper_files/paper/2018/hash/485843481a7edacbfce101ecb1e4d2a8-Abstract.html"
+  },
+  {
+    "number": 26,
+    "key": "vaidyanathan2026mediators",
+    "title": "The Curse of Multiple Mediators: Hidden Interaction Effects in Activation Patching",
+    "source": "https://arxiv.org/abs/2606.27510",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 27,
+    "key": "vaswani2017attention",
+    "title": "Attention Is All You Need",
+    "source": "https://arxiv.org/abs/1706.03762",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 28,
+    "key": "wang2026webxskill",
+    "title": "{WebXSkill}: Skill Learning for Autonomous Web Agents",
+    "source": "https://arxiv.org/abs/2604.13318",
+    "status": "应更新出版信息",
+    "note": "已为Findings EMNLP 2026，11837–11852；当前仍为arXiv。",
+    "additional_source": "https://aclanthology.org/2026.findings-emnlp.561/"
+  },
+  {
+    "number": 29,
+    "key": "wang2024awm",
+    "title": "Agent Workflow Memory",
+    "source": "https://proceedings.mlr.press/v267/wang25bx.html",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 30,
+    "key": "yang2025qwen3",
+    "title": "Qwen3 Technical Report",
+    "source": "https://arxiv.org/abs/2505.09388",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。 当前作者列表手工and others截断，建议从官方BibTeX导入完整列表后由样式决定显示。",
+    "additional_source": null
+  },
+  {
+    "number": 31,
+    "key": "yang2025internalcot",
+    "title": "Internal Chain-of-Thought: Empirical Evidence for Layer-wise Subtask Scheduling in {LLMs}",
+    "source": "https://aclanthology.org/2025.emnlp-main.1147/",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  },
+  {
+    "number": 32,
+    "key": "zhang2025agentskills",
+    "title": "Equipping agents for the real world with {Agent Skills}",
+    "source": "https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills",
+    "status": "核对一致",
+    "note": "官方文章标题、2025-10-16、三作者一致；原engineering URL可正常跳转research。",
+    "additional_source": null
+  },
+  {
+    "number": 33,
+    "key": "zhang2023bestpractices",
+    "title": "Towards Best Practices of Activation Patching in Language Models: Metrics and Methods",
+    "source": "https://arxiv.org/abs/2309.16042",
+    "status": "核对一致",
+    "note": "标题、当前列出作者、年份与原始来源相符；不等于逐项复现其科学结论。",
+    "additional_source": null
+  }
+]

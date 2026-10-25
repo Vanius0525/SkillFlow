@@ -1,0 +1,33 @@
+\subsection{A sufficient condition for behavioral recovery}
+\label{app:behavior-recovery}
+
+For fixed model, positions, last prompt token and mask, let $F_t^D(\mathbf z)$
+map initial prefix caches to token-$t$ logits after processing the donor
+history $y_{D,<t}$, including all intervening cache updates.
+Assume, over the compared states,
+\begin{equation}
+\|F_t^D(\mathbf z)-F_t^D(\mathbf z')\|_\infty
+\le\kappa_t\|\mathbf z-\mathbf z'\|_2.
+\label{eq:cache-lipschitz}
+\end{equation}
+The infinity norm bounds the largest absolute logit change. Let
+$m_{D,t}>0$ be the donor's highest logit minus its second-highest.
+Margin stability \citep{tsuzuku2018lipschitz} gives
+\begin{equation}
+[\ \forall t\le N:\ 2\kappa_t\varepsilon_{SC}<m_{D,t}\ ]
+\quad\Longrightarrow\quad \hat y_{SC}=\hat y_D,
+\label{eq:sequence-recovery}
+\end{equation}
+where $N$ includes the stopping token and $\varepsilon_{SC}$ is defined
+in Eq.~\eqref{eq:cache-distance}.
+\emph{Proof.} Each logit changes by at most $\kappa_t\varepsilon_{SC}$,
+so the donor's winning logit remains ahead by at least
+$m_{D,t}-2\kappa_t\varepsilon_{SC}>0$. Induction over the shared greedy
+history, including the common stopping rule, proves sequence equality.
+\hfill$\square$
+
+This is only sufficient: different sequences may also answer correctly.
+Common sensitivity bounds give $SC$ no larger error bound than $S$,
+but losing cancellation can increase actual logit errors, so accuracy need
+not improve. Sensitivities and itemwise margins remain unverified.
+$SC+\mathrm{cut}$ changes the mask and is excluded.

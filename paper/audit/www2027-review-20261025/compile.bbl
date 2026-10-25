@@ -1,0 +1,354 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{33}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Ardoin et~al\mbox{.}(2026)]%
+        {ardoin2026promptcompression}
+\bibfield{author}{\bibinfo{person}{Thibaud Ardoin}, \bibinfo{person}{Semira Einsele}, \bibinfo{person}{Evis Bregu}, {and} \bibinfo{person}{Gerhard Wunder}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Prompt Compression via Activation Aggregation}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2607.08399}} (\bibinfo{year}{2026}).
+\newblock
+
+
+\bibitem[Bigoulaeva et~al\mbox{.}(2026)]%
+        {bigoulaeva2026instructionvectors}
+\bibfield{author}{\bibinfo{person}{Irina Bigoulaeva}, \bibinfo{person}{Jonas Rohweder}, \bibinfo{person}{Subhabrata Dutta}, {and} \bibinfo{person}{Iryna Gurevych}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Patches of Nonlinearity: Instruction Vectors in Large Language Models}. In \bibinfo{booktitle}{\emph{Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)}}. \bibinfo{publisher}{Association for Computational Linguistics}, \bibinfo{address}{San Diego, California, United States}, \bibinfo{pages}{12209--12262}.
+\newblock
+\href{https://doi.org/10.18653/v1/2026.acl-long.559}{doi:\nolinkurl{10.18653/v1/2026.acl-long.559}}
+
+
+\bibitem[Caccia et~al\mbox{.}(2025)]%
+        {deepcontextdistill2025}
+\bibfield{author}{\bibinfo{person}{Lucas Caccia}, \bibinfo{person}{Alan Ansell}, \bibinfo{person}{Edoardo Ponti}, \bibinfo{person}{Ivan Vuli{\'c}}, {and} \bibinfo{person}{Alessandro Sordoni}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Training Plug-n-Play Knowledge Modules with Deep Context Distillation}. In \bibinfo{booktitle}{\emph{Conference on Language Modeling (COLM)}}.
+\newblock
+\newblock
+\shownote{arXiv:2503.08727}.
+
+
+\bibitem[Charakorn et~al\mbox{.}(2026)]%
+        {doc2lora2026}
+\bibfield{author}{\bibinfo{person}{Rujikorn Charakorn}, \bibinfo{person}{Edoardo Cetin}, \bibinfo{person}{Shinnosuke Uesaka}, {and} \bibinfo{person}{Robert~Tjarko Lange}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Doc-to-{L}o{RA}: Learning to Instantly Internalize Contexts}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2602.15902}} (\bibinfo{year}{2026}).
+\newblock
+
+
+\bibitem[Chen et~al\mbox{.}(2023)]%
+        {chen2023theoremqa}
+\bibfield{author}{\bibinfo{person}{Wenhu Chen}, \bibinfo{person}{Ming Yin}, \bibinfo{person}{Max Ku}, \bibinfo{person}{Pan Lu}, \bibinfo{person}{Yixin Wan}, \bibinfo{person}{Xueguang Ma}, \bibinfo{person}{Jianyu Xu}, \bibinfo{person}{Xinyi Wang}, {and} \bibinfo{person}{Tony Xia}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{{TheoremQA}: A Theorem-driven Question Answering Dataset}. In \bibinfo{booktitle}{\emph{Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing}}.
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2305.12524}
+\showURL{%
+\tempurl}
+\newblock
+\shownote{arXiv:2305.12524}.
+
+
+\bibitem[Davidson et~al\mbox{.}(2025)]%
+        {davidson2025prompting}
+\bibfield{author}{\bibinfo{person}{Guy Davidson}, \bibinfo{person}{Todd~M. Gureckis}, \bibinfo{person}{Brenden~M. Lake}, {and} \bibinfo{person}{Adina Williams}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Do different prompting methods yield a common task representation in language models?}
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2505.12075}} (\bibinfo{year}{2025}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2505.12075}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{DeepSeek-AI}(2024)]%
+        {deepseek2024llm}
+\bibfield{author}{\bibinfo{person}{{DeepSeek-AI}}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{{DeepSeek LLM}: Scaling Open-Source Language Models with Longtermism}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2401.02954}} (\bibinfo{year}{2024}).
+\newblock
+
+
+\bibitem[Ge et~al\mbox{.}(2024)]%
+        {ge2024icae}
+\bibfield{author}{\bibinfo{person}{Tao Ge}, \bibinfo{person}{Jing Hu}, \bibinfo{person}{Lei Wang}, \bibinfo{person}{Xun Wang}, \bibinfo{person}{Si-Qing Chen}, {and} \bibinfo{person}{Furu Wei}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{In-context Autoencoder for Context Compression in a Large Language Model}. In \bibinfo{booktitle}{\emph{International Conference on Learning Representations (ICLR)}}.
+\newblock
+\newblock
+\shownote{arXiv:2307.06945}.
+
+
+\bibitem[Grattafiori et~al\mbox{.}(2024)]%
+        {grattafiori2024llama3}
+\bibfield{author}{\bibinfo{person}{Aaron Grattafiori}, \bibinfo{person}{Abhimanyu Dubey}, \bibinfo{person}{Abhinav Jauhri}, {et~al\mbox{.}}} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{The {Llama} 3 Herd of Models}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2407.21783}} (\bibinfo{year}{2024}).
+\newblock
+
+
+\bibitem[Hajimiri et~al\mbox{.}(2026)]%
+        {hajimiri2026budgetskills}
+\bibfield{author}{\bibinfo{person}{Sina Hajimiri}, \bibinfo{person}{Masih Aminbeidokhti}, \bibinfo{person}{Jose Dolz}, \bibinfo{person}{Ismail Ben~Ayed}, \bibinfo{person}{Issam~H. Laradji}, \bibinfo{person}{Spandana Gella}, {and} \bibinfo{person}{Nicolas Gontier}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Are Online Skill and Memory Modules Always Worth Their Tokens? A Budget-Constrained Study of Web Agents}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2606.15017}} (\bibinfo{year}{2026}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2606.15017}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Han et~al\mbox{.}(2026)]%
+        {sweskills2026}
+\bibfield{author}{\bibinfo{person}{Tingxu Han}, \bibinfo{person}{Yi Zhang}, \bibinfo{person}{Wei Song}, \bibinfo{person}{Chunrong Fang}, \bibinfo{person}{Zhenyu Chen}, \bibinfo{person}{Youcheng Sun}, {and} \bibinfo{person}{Lijie Hu}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?}
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2603.15401}} (\bibinfo{year}{2026}).
+\newblock
+
+
+\bibitem[Heimersheim and Nanda(2024)]%
+        {heimersheim2024patching}
+\bibfield{author}{\bibinfo{person}{Stefan Heimersheim} {and} \bibinfo{person}{Neel Nanda}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{How to use and interpret activation patching}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2404.15255}} (\bibinfo{year}{2024}).
+\newblock
+
+
+\bibitem[Hendel et~al\mbox{.}(2023)]%
+        {hendel2023taskvectors}
+\bibfield{author}{\bibinfo{person}{Roee Hendel}, \bibinfo{person}{Mor Geva}, {and} \bibinfo{person}{Amir Globerson}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{In-Context Learning Creates Task Vectors}. In \bibinfo{booktitle}{\emph{Findings of the Association for Computational Linguistics: EMNLP 2023}}.
+\newblock
+\newblock
+\shownote{arXiv:2310.15916}.
+
+
+\bibitem[Jiang et~al\mbox{.}(2023)]%
+        {jiang2023mistral}
+\bibfield{author}{\bibinfo{person}{Albert~Q. Jiang}, \bibinfo{person}{Alexandre Sablayrolles}, \bibinfo{person}{Arthur Mensch}, \bibinfo{person}{Chris Bamford}, \bibinfo{person}{Devendra~Singh Chaplot}, {et~al\mbox{.}}} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Mistral {7B}}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2310.06825}} (\bibinfo{year}{2023}).
+\newblock
+
+
+\bibitem[Khandekar et~al\mbox{.}(2024)]%
+        {khandekar2024medcalc}
+\bibfield{author}{\bibinfo{person}{Nikhil Khandekar}, \bibinfo{person}{Qiao Jin}, \bibinfo{person}{Guangzhi Xiong}, \bibinfo{person}{Soren Dunn}, \bibinfo{person}{Serina~S. Applebaum}, \bibinfo{person}{Zain Anwar}, \bibinfo{person}{Maame Sarfo-Gyamfi}, \bibinfo{person}{Conrad~W. Safranek}, \bibinfo{person}{Abid~A. Anwar}, \bibinfo{person}{Andrew Zhang}, \bibinfo{person}{Aidan Gilson}, \bibinfo{person}{Maxwell~B. Singer}, \bibinfo{person}{Amisha Dave}, \bibinfo{person}{Andrew Taylor}, \bibinfo{person}{Aidong Zhang}, \bibinfo{person}{Qingyu Chen}, {and} \bibinfo{person}{Zhiyong Lu}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{{MedCalc-Bench}: Evaluating Large Language Models for Medical Calculations}. In \bibinfo{booktitle}{\emph{Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track}}.
+\newblock
+\newblock
+\shownote{arXiv:2406.12036}.
+
+
+\bibitem[Li(2026)]%
+        {li2026prefillnotes}
+\bibfield{author}{\bibinfo{person}{Bojie Li}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Models Take Notes at Prefill: {KV} Cache Can Be Editable and Composable}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2606.17107}} (\bibinfo{year}{2026}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2606.17107}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Li et~al\mbox{.}(2026)]%
+        {skillsbench2026}
+\bibfield{author}{\bibinfo{person}{Xiangyi Li}, \bibinfo{person}{Yimin Liu}, \bibinfo{person}{Wenbo Chen}, {et~al\mbox{.}}} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2602.12670}} (\bibinfo{year}{2026}).
+\newblock
+
+
+\bibitem[Li et~al\mbox{.}(2025)]%
+        {jit2025taskrepr}
+\bibfield{author}{\bibinfo{person}{Yuxuan Li}, \bibinfo{person}{Declan Campbell}, \bibinfo{person}{Stephanie C.~Y. Chan}, {and} \bibinfo{person}{Andrew~Kyle Lampinen}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Just-in-time and distributed task representations in language models}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2509.04466}} (\bibinfo{year}{2025}).
+\newblock
+
+
+\bibitem[Mu et~al\mbox{.}(2023)]%
+        {mu2023gist}
+\bibfield{author}{\bibinfo{person}{Jesse Mu}, \bibinfo{person}{Xiang~Lisa Li}, {and} \bibinfo{person}{Noah Goodman}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Learning to Compress Prompts with Gist Tokens}. In \bibinfo{booktitle}{\emph{Advances in Neural Information Processing Systems (NeurIPS)}}.
+\newblock
+\newblock
+\shownote{arXiv:2304.08467}.
+
+
+\bibitem[Pola and Balasubramanian(2025)]%
+        {onset2025instruction}
+\bibfield{author}{\bibinfo{person}{Aditya Pola} {and} \bibinfo{person}{Vineeth~N. Balasubramanian}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Where does an {LLM} begin computing an instruction?}. In \bibinfo{booktitle}{\emph{UniReps Workshop}}.
+\newblock
+\newblock
+\shownote{extended abstract. arXiv:2511.10694}.
+
+
+\bibitem[Shazeer(2019)]%
+        {shazeer2019fast}
+\bibfield{author}{\bibinfo{person}{Noam Shazeer}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Fast Transformer Decoding: One Write-Head is All You Need}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:1911.02150}} (\bibinfo{year}{2019}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/1911.02150}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Sia et~al\mbox{.}(2024)]%
+        {sia2024incontexttranslation}
+\bibfield{author}{\bibinfo{person}{Suzanna Sia}, \bibinfo{person}{David Mueller}, {and} \bibinfo{person}{Kevin Duh}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Where does In-context Learning Happen in Large Language Models?}. In \bibinfo{booktitle}{\emph{Advances in Neural Information Processing Systems (NeurIPS)}}.
+\newblock
+\href{https://doi.org/10.52202/079017-1030}{doi:\nolinkurl{10.52202/079017-1030}}
+
+
+\bibitem[Su et~al\mbox{.}(2026)]%
+        {su2026srabench}
+\bibfield{author}{\bibinfo{person}{Weihang Su}, \bibinfo{person}{Jianming Long}, \bibinfo{person}{Qingyao Ai}, \bibinfo{person}{Qiaozhi He}, \bibinfo{person}{Yichen Tang}, \bibinfo{person}{Changyue Wang}, \bibinfo{person}{Yiteng Tu}, \bibinfo{person}{Yingbo Wang}, {and} \bibinfo{person}{Yiqun Liu}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Skill Retrieval Augmentation for Agentic {AI}}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2604.24594}} (\bibinfo{year}{2026}).
+\newblock
+
+
+\bibitem[Todd et~al\mbox{.}(2024)]%
+        {todd2024functionvectors}
+\bibfield{author}{\bibinfo{person}{Eric Todd}, \bibinfo{person}{Millicent~L. Li}, \bibinfo{person}{Arnab~Sen Sharma}, \bibinfo{person}{Aaron Mueller}, \bibinfo{person}{Byron~C. Wallace}, {and} \bibinfo{person}{David Bau}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Function Vectors in Large Language Models}. In \bibinfo{booktitle}{\emph{International Conference on Learning Representations (ICLR)}}.
+\newblock
+\newblock
+\shownote{arXiv:2310.15213}.
+
+
+\bibitem[Tsuzuku et~al\mbox{.}(2018)]%
+        {tsuzuku2018lipschitz}
+\bibfield{author}{\bibinfo{person}{Yusuke Tsuzuku}, \bibinfo{person}{Issei Sato}, {and} \bibinfo{person}{Masashi Sugiyama}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance for Deep Neural Networks}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:1802.04034}} (\bibinfo{year}{2018}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/1802.04034}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Vaidyanathan et~al\mbox{.}(2026)]%
+        {vaidyanathan2026mediators}
+\bibfield{author}{\bibinfo{person}{Sankaran Vaidyanathan}, \bibinfo{person}{David Arbour}, \bibinfo{person}{Aaron Mueller}, \bibinfo{person}{Scott Niekum}, {and} \bibinfo{person}{David Jensen}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{The Curse of Multiple Mediators: Hidden Interaction Effects in Activation Patching}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2606.27510}} (\bibinfo{year}{2026}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2606.27510}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Vaswani et~al\mbox{.}(2017)]%
+        {vaswani2017attention}
+\bibfield{author}{\bibinfo{person}{Ashish Vaswani}, \bibinfo{person}{Noam Shazeer}, \bibinfo{person}{Niki Parmar}, \bibinfo{person}{Jakob Uszkoreit}, \bibinfo{person}{Llion Jones}, \bibinfo{person}{Aidan~N. Gomez}, \bibinfo{person}{Lukasz Kaiser}, {and} \bibinfo{person}{Illia Polosukhin}.} \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{Attention Is All You Need}. In \bibinfo{booktitle}{\emph{Advances in Neural Information Processing Systems}}, Vol.~\bibinfo{volume}{30}.
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/1706.03762}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Wang et~al\mbox{.}(2026)]%
+        {wang2026webxskill}
+\bibfield{author}{\bibinfo{person}{Zhaoyang Wang}, \bibinfo{person}{Qianhui Wu}, \bibinfo{person}{Xuchao Zhang}, \bibinfo{person}{Chaoyun Zhang}, \bibinfo{person}{Wenlin Yao}, \bibinfo{person}{Fazle~Elahi Faisal}, \bibinfo{person}{Baolin Peng}, \bibinfo{person}{Si Qin}, \bibinfo{person}{Suman Nath}, \bibinfo{person}{Qingwei Lin}, \bibinfo{person}{Chetan Bansal}, \bibinfo{person}{Dongmei Zhang}, \bibinfo{person}{Saravan Rajmohan}, \bibinfo{person}{Jianfeng Gao}, {and} \bibinfo{person}{Huaxiu Yao}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{{WebXSkill}: Skill Learning for Autonomous Web Agents}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2604.13318}} (\bibinfo{year}{2026}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2604.13318}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Wang et~al\mbox{.}(2025)]%
+        {wang2024awm}
+\bibfield{author}{\bibinfo{person}{Zora~Zhiruo Wang}, \bibinfo{person}{Jiayuan Mao}, \bibinfo{person}{Daniel Fried}, {and} \bibinfo{person}{Graham Neubig}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Agent Workflow Memory}. In \bibinfo{booktitle}{\emph{Proceedings of the 42nd International Conference on Machine Learning}} \emph{(\bibinfo{series}{Proceedings of Machine Learning Research}, Vol.~\bibinfo{volume}{267})}. \bibinfo{publisher}{PMLR}, \bibinfo{pages}{63897--63911}.
+\newblock
+\urldef\tempurl%
+\url{https://proceedings.mlr.press/v267/wang25bx.html}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Yang et~al\mbox{.}(2025a)]%
+        {yang2025qwen3}
+\bibfield{author}{\bibinfo{person}{An Yang}, \bibinfo{person}{Anfeng Li}, {et~al\mbox{.}}} \bibinfo{year}{2025}\natexlab{a}.
+\newblock \showarticletitle{Qwen3 Technical Report}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2505.09388}} (\bibinfo{year}{2025}).
+\newblock
+
+
+\bibitem[Yang et~al\mbox{.}(2025b)]%
+        {yang2025internalcot}
+\bibfield{author}{\bibinfo{person}{Zhipeng Yang}, \bibinfo{person}{Junzhuo Li}, \bibinfo{person}{Siyu Xia}, {and} \bibinfo{person}{Xuming Hu}.} \bibinfo{year}{2025}\natexlab{b}.
+\newblock \showarticletitle{Internal Chain-of-Thought: Empirical Evidence for Layer-wise Subtask Scheduling in {LLMs}}. In \bibinfo{booktitle}{\emph{Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing}}. \bibinfo{pages}{22536--22564}.
+\newblock
+\href{https://doi.org/10.18653/v1/2025.emnlp-main.1147}{doi:\nolinkurl{10.18653/v1/2025.emnlp-main.1147}}
+
+
+\bibitem[Zhang et~al\mbox{.}(2025)]%
+        {zhang2025agentskills}
+\bibfield{author}{\bibinfo{person}{Barry Zhang}, \bibinfo{person}{Keith Lazuka}, {and} \bibinfo{person}{Mahesh Murag}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{Equipping agents for the real world with {Agent Skills}}.
+\newblock \bibinfo{howpublished}{Anthropic Engineering}.
+\newblock
+\urldef\tempurl%
+\url{https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Zhang and Nanda(2024)]%
+        {zhang2023bestpractices}
+\bibfield{author}{\bibinfo{person}{Fred Zhang} {and} \bibinfo{person}{Neel Nanda}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Towards Best Practices of Activation Patching in Language Models: Metrics and Methods}. In \bibinfo{booktitle}{\emph{International Conference on Learning Representations (ICLR)}}.
+\newblock
+\newblock
+\shownote{arXiv:2309.16042}.
+
+
+\end{thebibliography}

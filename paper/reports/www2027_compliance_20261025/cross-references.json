@@ -1,0 +1,422 @@
+[
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 8,
+    "target": "app:detail",
+    "number": "A.1",
+    "page": "9"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 37,
+    "target": "fig:mechanism",
+    "number": "4",
+    "page": "7"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 84,
+    "target": "fig:design",
+    "number": "2",
+    "page": "3"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 100,
+    "target": "sec:setup",
+    "number": "4.1",
+    "page": "4"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 128,
+    "target": "fig:transferreading",
+    "number": "3",
+    "page": "6"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 163,
+    "target": "app:cache-coverage",
+    "number": "B.2",
+    "page": "11"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 167,
+    "target": "fig:design",
+    "number": "2",
+    "page": "3"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 191,
+    "target": "app:behavior-recovery",
+    "number": "B.3",
+    "page": "11"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 214,
+    "target": "eq:continuation",
+    "number": "6",
+    "page": "4"
+  },
+  {
+    "file": "sections/03-problem-formulation.tex",
+    "line": 217,
+    "target": "app:mechanism",
+    "number": "B.1",
+    "page": "10"
+  },
+  {
+    "file": "sections/01-introduction.tex",
+    "line": 16,
+    "target": "fig:transferreading",
+    "number": "3",
+    "page": "6"
+  },
+  {
+    "file": "sections/01-introduction.tex",
+    "line": 67,
+    "target": "fig:teaser",
+    "number": "1",
+    "page": "1"
+  },
+  {
+    "file": "sections/01-introduction.tex",
+    "line": 83,
+    "target": "sec:battery",
+    "number": "4.2",
+    "page": "5"
+  },
+  {
+    "file": "sections/01-introduction.tex",
+    "line": 84,
+    "target": "sec:depth",
+    "number": "4.3",
+    "page": "5"
+  },
+  {
+    "file": "sections/01-introduction.tex",
+    "line": 85,
+    "target": "sec:mechanism",
+    "number": "4.4",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 28,
+    "target": "tab:paireddepth",
+    "number": "2",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 30,
+    "target": "app:limits",
+    "number": "A.2",
+    "page": "10"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 46,
+    "target": "tab:paireddepth",
+    "number": "2",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 66,
+    "target": "tab:probe",
+    "number": "1",
+    "page": "5"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 67,
+    "target": "fig:transferreading",
+    "number": "3",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 68,
+    "target": "sec:depth",
+    "number": "4.3",
+    "page": "5"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 69,
+    "target": "fig:mechanism",
+    "number": "4",
+    "page": "7"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 81,
+    "target": "app:setup",
+    "number": "A",
+    "page": "9"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 91,
+    "target": "app:setup",
+    "number": "A",
+    "page": "9"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 101,
+    "target": "tab:probe",
+    "number": "1",
+    "page": "5"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 118,
+    "target": "tab:paireddepth",
+    "number": "2",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 150,
+    "target": "fig:transferreading",
+    "number": "3",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 153,
+    "target": "app:limits",
+    "number": "A.2",
+    "page": "10"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 179,
+    "target": "tab:mechanism-contrasts",
+    "number": "4",
+    "page": "11"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 193,
+    "target": "fig:transferreading",
+    "number": "3",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 194,
+    "target": "tab:paireddepth",
+    "number": "2",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 199,
+    "target": "tab:paireddepth",
+    "number": "2",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 208,
+    "target": "fig:transferreading",
+    "number": "3",
+    "page": "6"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 214,
+    "target": "app:joint-failure",
+    "number": "B",
+    "page": "10"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 216,
+    "target": "app:fullscale",
+    "number": "B",
+    "page": "10"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 222,
+    "target": "fig:mechanism",
+    "number": "4",
+    "page": "7"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 229,
+    "target": "fig:mechanism",
+    "number": "4",
+    "page": "7"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 234,
+    "target": "eq:repair-effects",
+    "number": "10",
+    "page": "4"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 238,
+    "target": "tab:mechanism-contrasts",
+    "number": "4",
+    "page": "11"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 254,
+    "target": "tab:state-completeness",
+    "number": "3",
+    "page": "8"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 266,
+    "target": "tab:mechanism-contrasts",
+    "number": "4",
+    "page": "11"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 317,
+    "target": "app:state-completeness",
+    "number": "B.4",
+    "page": "12"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 328,
+    "target": "app:state-completeness",
+    "number": "B.4",
+    "page": "12"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 337,
+    "target": "app:mechanism",
+    "number": "B.1",
+    "page": "10"
+  },
+  {
+    "file": "sections/04-experiment.tex",
+    "line": 341,
+    "target": "fig:mechanism",
+    "number": "4",
+    "page": "7"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 26,
+    "target": "tab:paireddepth",
+    "number": "2",
+    "page": "6"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 34,
+    "target": "tab:mechanism-contrasts",
+    "number": "4",
+    "page": "11"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 39,
+    "target": "eq:cache",
+    "number": "7",
+    "page": "4"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 40,
+    "target": "eq:reading-cut",
+    "number": "9",
+    "page": "4"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 40,
+    "target": "eq:repair-effects",
+    "number": "10",
+    "page": "4"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 142,
+    "target": "tab:state-baselines",
+    "number": "5",
+    "page": "12"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 148,
+    "target": "tab:mechanism-contrasts",
+    "number": "4",
+    "page": "11"
+  },
+  {
+    "file": "appendix/b-full-dataset-rerun.tex",
+    "line": 174,
+    "target": "tab:state-depth-uncertainty",
+    "number": "6",
+    "page": "12"
+  },
+  {
+    "file": "appendix/a-setup.tex",
+    "line": 20,
+    "target": "app:mechanism",
+    "number": "B.1",
+    "page": "10"
+  },
+  {
+    "file": "appendix/a-setup.tex",
+    "line": 22,
+    "target": "app:state-completeness",
+    "number": "B.4",
+    "page": "12"
+  },
+  {
+    "file": "appendix/a-setup.tex",
+    "line": 101,
+    "target": "tab:probe",
+    "number": "1",
+    "page": "5"
+  },
+  {
+    "file": "appendix/behavior-recovery.tex",
+    "line": 22,
+    "target": "eq:cache-distance",
+    "number": "8",
+    "page": "4"
+  },
+  {
+    "file": "appendix/cache-coverage.tex",
+    "line": 14,
+    "target": "eq:continuation",
+    "number": "6",
+    "page": "4"
+  },
+  {
+    "file": "appendix/cache-coverage.tex",
+    "line": 34,
+    "target": "eq:cache",
+    "number": "7",
+    "page": "4"
+  },
+  {
+    "file": "appendix/cache-coverage.tex",
+    "line": 62,
+    "target": "app:state-completeness",
+    "number": "B.4",
+    "page": "12"
+  }
+]

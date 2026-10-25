@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\caption{Prefix-cache coverage before the final prompt token, assuming
+deterministic causal computation in exact arithmetic and a complete,
+contiguous source span with aligned positions and identical preceding
+tokens. $D$ and $R$
+denote donor and receiver source KV. $\mathcal B_R$ and $\mathcal B_S$
+are all other prefix caches from the unpatched and state-patched runs.
+The entries are identities derived under these assumptions.}
+\label{tab:cache-coverage}
+\small
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Condition & \multicolumn{2}{c}{Source KV} & Other KV \\
+\cmidrule(lr){2-3}
+ & $\ell\le L$ & $\ell>L$ & All layers \\
+\midrule
+Receiver & $R$ & $R$ & $\mathcal B_R$ \\
+$S$ & $R$ & $D$ & $\mathcal B_S$ \\
+$C$ & $D$ & $R$ & $\mathcal B_R$ \\
+$SC$ & $D$ & $D$ & $\mathcal B_S$ \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,20 @@
+{
+  "project": "6a2cfd49b99635e8e968576a",
+  "snapshot": "audit/www2027-review-20261025/remote-source",
+  "pdf": "audit/www2027-review-20261025/latest-overleaf.pdf",
+  "pdf_sha256": "33138dc9cd7cd07e84ca8685953bff4afdb2d96dc6b05655a51fa34347e3eb65",
+  "total_pages": 13,
+  "main_end_page": 8,
+  "cited_references": 33,
+  "labels": 48,
+  "cross_references": 62,
+  "missing_or_duplicate_labels": 0,
+  "all_fonts_embedded": true,
+  "font_resources": 30,
+  "cloud_warnings": [
+    "acmart printacmref=false",
+    "Overfull vbox 1.374pt"
+  ],
+  "final_diff": "No differences at 2026-10-25T13:13:06Z",
+  "manuscript_changes": false
+}

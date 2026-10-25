@@ -1,0 +1,198 @@
+{
+  "fig:teaser": {
+    "number": "1",
+    "page": "1"
+  },
+  "sec:intro": {
+    "number": "1",
+    "page": "1"
+  },
+  "sec:related": {
+    "number": "2",
+    "page": "2"
+  },
+  "sec:formulation": {
+    "number": "3",
+    "page": "2"
+  },
+  "eq:inject": {
+    "number": "1",
+    "page": "2"
+  },
+  "fig:design": {
+    "number": "2",
+    "page": "3"
+  },
+  "eq:knockout": {
+    "number": "2",
+    "page": "3"
+  },
+  "eq:rho": {
+    "number": "3",
+    "page": "3"
+  },
+  "eq:dependence": {
+    "number": "4",
+    "page": "3"
+  },
+  "eq:boundaries": {
+    "number": "5",
+    "page": "3"
+  },
+  "eq:continuation": {
+    "number": "6",
+    "page": "4"
+  },
+  "eq:cache": {
+    "number": "7",
+    "page": "4"
+  },
+  "eq:cache-distance": {
+    "number": "8",
+    "page": "4"
+  },
+  "eq:reading-cut": {
+    "number": "9",
+    "page": "4"
+  },
+  "eq:repair-effects": {
+    "number": "10",
+    "page": "4"
+  },
+  "sec:experiments": {
+    "number": "4",
+    "page": "4"
+  },
+  "sec:setup": {
+    "number": "4.1",
+    "page": "4"
+  },
+  "sec:cells": {
+    "number": "4.1",
+    "page": "4"
+  },
+  "tab:probe": {
+    "number": "1",
+    "page": "5"
+  },
+  "sec:battery": {
+    "number": "4.2",
+    "page": "5"
+  },
+  "sec:whose": {
+    "number": "4.2",
+    "page": "5"
+  },
+  "sec:where": {
+    "number": "4.3",
+    "page": "5"
+  },
+  "sec:depth": {
+    "number": "4.3",
+    "page": "5"
+  },
+  "sec:ladder": {
+    "number": "4.3",
+    "page": "5"
+  },
+  "fig:transferreading": {
+    "number": "3",
+    "page": "6"
+  },
+  "tab:paireddepth": {
+    "number": "2",
+    "page": "6"
+  },
+  "sec:mechanism": {
+    "number": "4.4",
+    "page": "6"
+  },
+  "fig:mechanism": {
+    "number": "4",
+    "page": "7"
+  },
+  "sec:discussion": {
+    "number": "5",
+    "page": "7"
+  },
+  "tab:state-completeness": {
+    "number": "3",
+    "page": "8"
+  },
+  "sec:conclusion": {
+    "number": "6",
+    "page": "8"
+  },
+  "endmain": {
+    "number": "6",
+    "page": "8"
+  },
+  "app:setup": {
+    "number": "A",
+    "page": "9"
+  },
+  "app:detail": {
+    "number": "A.1",
+    "page": "9"
+  },
+  "app:limits": {
+    "number": "A.2",
+    "page": "10"
+  },
+  "app:fullscale": {
+    "number": "B",
+    "page": "10"
+  },
+  "app:joint-failure": {
+    "number": "B",
+    "page": "10"
+  },
+  "app:mechanism": {
+    "number": "B.1",
+    "page": "10"
+  },
+  "tab:mechanism-contrasts": {
+    "number": "4",
+    "page": "11"
+  },
+  "app:cache-coverage": {
+    "number": "B.2",
+    "page": "11"
+  },
+  "eq:source-coverage": {
+    "number": "11",
+    "page": "11"
+  },
+  "eq:source-not-full": {
+    "number": "12",
+    "page": "11"
+  },
+  "app:behavior-recovery": {
+    "number": "B.3",
+    "page": "11"
+  },
+  "eq:cache-lipschitz": {
+    "number": "13",
+    "page": "11"
+  },
+  "eq:sequence-recovery": {
+    "number": "14",
+    "page": "11"
+  },
+  "tab:state-baselines": {
+    "number": "5",
+    "page": "12"
+  },
+  "tab:state-depth-uncertainty": {
+    "number": "6",
+    "page": "12"
+  },
+  "app:state-completeness": {
+    "number": "B.4",
+    "page": "12"
+  },
+  "TotPages": {
+    "number": "13",
+    "page": "13"
+  }
+}
