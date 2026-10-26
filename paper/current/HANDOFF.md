@@ -31,3 +31,9 @@
 完整同步前diff：09:11:46 UTC返回0，线上没有新增改动。仅skillvector.bib通过原生editor socket提交276个文本操作，docID保持，v0→v1，逐字回读通过。同步后09:13:08 UTC完整diff返回0；云端编译下载12页PDF，12页提取文字全部与current/paper.pdf一致。证据../audit/bib-overleaf-sync-20261026/。current/provenance.json及CURRENT-PAPER.md已更新，论文正文/PDF未改，无未同步源码差异。
 
 云端compile.log检查：编译错误0、undefined0、Overfull0。全部验证完成，无待执行任务。
+
+## 2026-10-26 桌面下载PDF重命名及投稿材料核查
+
+用户指定的桌面WWW_2027__Skillflow__Long_Horizon_Agent_Execution_With_Residual_Context.pdf已重命名为Still Needed, Hard to Transfer - Using and Reusing Contextual Skills.pdf（Windows不允许冒号，用短横线）。内容未改，SHA256 16745f035c44c23947de420bdcb86b85ce51ec00e510bec6cf510a4cddbbe73d；PDF正文与元数据标题本已正确。该下载件编译时间09:06 UTC，尚缺后续书目修订：与当前稿差异仅第9–10页，第1–8及11–12页文字相同；不能当成同步后的最终书目版。桌面WWW2027-current.pdf仍为已验证本地最终稿。
+
+重新读取官方CFP https://www2027.thewebconf.org/research-track-papers/ ：审稿投稿为单一匿名PDF，正文8页、总12页，附录并入同一PDF；CFP未要求LaTeX源包、实验代码数据或单独补充文件。还需OpenReview信息及作者profile/COI。代码数据在评审后强烈鼓励公开，artifact badge可选；录用后的camera-ready制作要求另行提供，不混为初投要求。本轮OpenReview网页仅Loading，未声称核实登录后表单全部必填项。官方全文截止2026-10-25 AoE，折北京时间2026-10-26 20:00；摘要截止10月18日AoE且作者顺序此时冻结。无论文/线上修改，无运行中任务。
