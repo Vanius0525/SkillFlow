@@ -1,0 +1,14 @@
+{
+  "main_eight_pixels_identical": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "underfull": 4,
+  "bib_warnings": 70
+}

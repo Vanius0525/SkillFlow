@@ -1,0 +1,35 @@
+--- before/skillvector.bib
++++ after/skillvector.bib
+@@ -474,17 +474,25 @@
+   pages={63897--63911}, publisher={PMLR}, year={2025},
+   url={https://proceedings.mlr.press/v267/wang25bx.html}
+ }
+-@article{wang2026webxskill,
++@inproceedings{wang2026webxskill,
+   title={{WebXSkill}: Skill Learning for Autonomous Web Agents},
+   author={Wang, Zhaoyang and Wu, Qianhui and Zhang, Xuchao and Zhang, Chaoyun and Yao, Wenlin and Faisal, Fazle Elahi and Peng, Baolin and Qin, Si and Nath, Suman and Lin, Qingwei and Bansal, Chetan and Zhang, Dongmei and Rajmohan, Saravan and Gao, Jianfeng and Yao, Huaxiu},
+-  journal={arXiv preprint arXiv:2604.13318}, year={2026},
+-  url={https://arxiv.org/abs/2604.13318}
+-}
+-@article{hajimiri2026budgetskills,
++  booktitle={Findings of the Association for Computational Linguistics: EMNLP 2026},
++  year={2026},
++  pages={11837--11852},
++  address={Budapest, Hungary},
++  publisher={Association for Computational Linguistics},
++  url={https://aclanthology.org/2026.findings-emnlp.561/}
++}
++@inproceedings{hajimiri2026budgetskills,
+   title={Are Online Skill and Memory Modules Always Worth Their Tokens? A Budget-Constrained Study of Web Agents},
+   author={Hajimiri, Sina and Aminbeidokhti, Masih and Dolz, Jose and Ben Ayed, Ismail and Laradji, Issam H. and Gella, Spandana and Gontier, Nicolas},
+-  journal={arXiv preprint arXiv:2606.15017}, year={2026},
+-  url={https://arxiv.org/abs/2606.15017}
++  booktitle={Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing},
++  year={2026},
++  pages={37676--37693},
++  address={Budapest, Hungary},
++  publisher={Association for Computational Linguistics},
++  url={https://aclanthology.org/2026.emnlp-main.1657/}
+ }
+ 
+ @inproceedings{yang2025internalcot,

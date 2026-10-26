@@ -13,3 +13,7 @@
 ## 2026-10-26 完整再审计
 
 本轮重新核对线上（07:34:59 UTC）、重新编译current/source，验证与paper.pdf的12页文字/像素一致。正文8页/全文12页，33引用，0错误/undefined/Overfull，全字体嵌入。论文未改。待修：Figure1文字最小3.22pt、两条正式EMNLP/Findings出处、113/124附录对应及书目缺字段。完整报告：../reports/current-review-20261026/完整检查报告.md；33篇逐项一手链接、机器结果及编译证据同目录。后续只从current/source修订，未上传Overleaf。
+
+## 2026-10-26 两条正式出处修订完成（最新）
+
+用户明确忽略上轮1/3/5，只修2，问4是否需要修。Hajimiri与WebXSkill已改用正式EMNLP2026/Findings2026出处并补页码/出版社/地址/链接。正文不变，重新编译8/12页、33引用、0错误/undefined/Overfull，前8页像素一致；警告74→70。正式出版条目缺字段建议补齐，预印本不虚构卷期页码；未扩大修订。current/paper.pdf、provenance及桌面唯一副本已更新，未上传Overleaf。记录../reports/formal-bib-fix-20261026/修订结果.md。上轮1/3/5不再作为待执行事项。
