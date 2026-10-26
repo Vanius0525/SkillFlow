@@ -1,3 +1,7 @@
+## 2026-10-26 唯一论文基线（覆盖下方历史入口）
+
+用户明确要求：只考虑Overleaf最新稿及基于它的修订版本。唯一活动源码为 `current/source/main.tex`，唯一当前PDF为 `current/paper.pdf`，入口见 `CURRENT-PAPER.md`。本次07:24:21 UTC完整olcli diff确认线上未变化；当前修订版相对线上仅skillvector.bib不同。旧根目录main.tex、skillvector-www2027.pdf、submission-audit-20261026/main.pdf均为历史版本，不再作为编辑/构建/交付基线。后续先核对Overleaf新修改，以current/source为本地修订入口，不运行旧根目录build.sh覆盖当前稿。未上传Overleaf。
+
 # Still Needed, Hard to Transfer — WWW 2027 submission
 
 Title: **Still Needed, Hard to Transfer: Using and Reusing Contextual Skills**.

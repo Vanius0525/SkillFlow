@@ -1,0 +1,190 @@
+% Full-data rerun; its wide table is queued at the appendix entrance.
+\section{Additional transfer and source-dependence analyses}
+\label{app:fullscale}
+
+\input{tables/tab-mechanism-contrasts}
+
+% Queue the related appendix tables together to avoid splitting the proofs.
+\begin{table*}[t]
+\centering
+\caption{Complete-source baselines (accuracy, \%) and sequence checks.
+$n/G$ counts questions/skills. Replay equality counts match across
+Wrong/Neutral. Full matches all $2n$ donor sequences per row.
+Explicit all-layer rewriting preserves all $6n$ $SC$ sequences.}
+\label{tab:state-baselines}
+\normalfont\rmfamily\fontsize{9}{11}\selectfont
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{2.5pt}
+\arrayrulecolor{TableInk}
+\setlength{\heavyrulewidth}{0.7pt}
+\setlength{\lightrulewidth}{0.3pt}
+\setlength{\aboverulesep}{2pt}
+\setlength{\belowrulesep}{2.5pt}
+\begin{tabularx}{\textwidth}{@{}ll*{4}{>{\centering\arraybackslash}X}@{}}
+\toprule
+\rowcolor[HTML]{E4F4FA}
+Model / task & $n/G$ & Donor & No skill & Full copy & Replay tokens equal \\
+\midrule
+Qwen3-8B / MC & $124/14$ & 97.6 & 3.2 & 97.6 & $48/124$ \\
+Qwen3-8B / TQA & $63/53$ & 96.8 & 7.9 & 96.8 & $33/63$ \\
+Mistral-7B / MC & $46/16$ & 91.3 & 2.2 & 91.3 & $28/46$ \\
+Mistral-7B / TQA & $65/55$ & 93.8 & 0.0 & 93.8 & $53/65$ \\
+Llama-3.1-8B / MC & $112/20$ & 96.4 & 1.8 & 96.4 & $55/112$ \\
+Llama-3.1-8B / TQA & $92/71$ & 90.2 & 6.5 & 90.2 & $42/92$ \\
+DeepSeek-7B / MC & $24/12$ & 91.7 & 4.2 & 91.7 & $12/24$ \\
+DeepSeek-7B / TQA & $54/45$ & 85.2 & 0.0 & 85.2 & $34/54$ \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Paired $SC@8-SC@24$ accuracy differences (points) with complete
+source KV. Positive values favor $L8$. Intervals are exploratory $95\%$
+skill-group bootstrap intervals, unadjusted for multiple comparisons.
+Cap columns count generation-limit outputs at $L8/L24$.}
+\label{tab:state-depth-uncertainty}
+\normalfont\rmfamily\fontsize{9}{11}\selectfont
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{2.5pt}
+\arrayrulecolor{TableInk}
+\setlength{\heavyrulewidth}{0.7pt}
+\setlength{\lightrulewidth}{0.3pt}
+\setlength{\aboverulesep}{2pt}
+\setlength{\belowrulesep}{2.5pt}
+\begin{tabularx}{\textwidth}{@{}l*{2}{>{\centering\arraybackslash}X}cc@{}}
+\toprule
+\rowcolor[HTML]{E4F4FA}
+Model / task & Wrong: gap [interval] & Neutral: gap [interval] & Wrong cap & Neutral cap \\
+\midrule
+Qwen3-8B / MC & $+66.1\;[49.3,78.5]$ & $+64.5\;[40.5,82.8]$ & $0/3$ & $0/0$ \\
+Qwen3-8B / TQA & $+44.4\;[32.2,56.7]$ & $+12.7\;[0.0,24.6]$ & $0/0$ & $0/1$ \\
+Mistral-7B / MC & $+43.5\;[29.4,61.1]$ & $+21.7\;[9.1,35.3]$ & $0/0$ & $0/0$ \\
+Mistral-7B / TQA & $+35.4\;[20.3,50.0]$ & $+21.5\;[10.3,33.3]$ & $0/5$ & $2/1$ \\
+Llama-3.1-8B / MC & $+57.1\;[38.1,72.5]$ & $+22.3\;[13.3,29.5]$ & $4/12$ & $12/12$ \\
+Llama-3.1-8B / TQA & $-5.4\;[-17.2,7.2]$ & $+6.5\;[-4.8,19.1]$ & $8/3$ & $4/5$ \\
+DeepSeek-7B / MC & $+8.3\;[-6.9,27.8]$ & $-8.3\;[-25.0,16.7]$ & $0/0$ & $0/0$ \\
+DeepSeek-7B / TQA & $+13.0\;[5.2,22.6]$ & $+14.8\;[3.5,26.9]$ & $9/6$ & $1/0$ \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+On the $467$ corrected Qwen3-8B/MedCalc questions from $48$ calculators,
+group/item receiver screens retain $135/14$ and $369/45$
+questions/calculators, respectively.
+
+\paragraph{Broader screening and boundary sensitivity.}
+The item-level screen retains the transfer decline. Boundary ordering
+also holds on common questions at transfer thresholds $\tau=0.4/0.6$
+and dependence thresholds $1-\tau$. Qwen3-8B/MedCalc dependence first
+falls to at most half at layer $25$, exceeds half at $26$, and stays
+below half from $27$ onward. The curves retain these recrossings.
+
+\paragraph{Same-question joint failures.}
+\label{app:joint-failure}
+With correct donors under both protocols and incorrect transfer-receiver
+and no-skill knockout baselines, joint failures are $100/124$ ($80.6\%$)
+for Qwen3-8B at $T=13$ and $25/43$ ($58.1\%$) for Mistral-7B at $T=7$,
+on $14/15$ MedCalc groups. These sets differ from Table~\ref{tab:paireddepth}.
+Four items in each pass the transfer no-skill baseline despite failing
+it under knockout.
+
+\subsection{Source-cache repair and attention-path experiments}
+\label{app:mechanism}
+
+Repair/path tests share fresh donor-correct, receiver-incorrect and
+no-skill-incorrect items within each row of Table~\ref{tab:mechanism-contrasts}.
+Qwen3-8B/MedCalc retains $114/124$ candidates from $14$ calculators
+($116$ pass the first two criteria). All $372$ baseline generations match
+across suites, and all $48$ receiver-state writebacks are token-exact.
+Repair layers are $8/12/16/24$, path-cut layers $8/16/24$, with writes,
+masks and contrasts in Eqs.~\eqref{eq:cache}, \eqref{eq:reading-cut}
+and \eqref{eq:repair-effects}.
+
+\paragraph{Three repair contrasts.}
+On one fixed evaluation set under one protocol, let $a_X(L)$ denote
+accuracy for condition $X$. Suppressing $L$ on the right, define
+\begin{equation}
+\begin{aligned}
+\Delta_{\mathrm{cache}}(L)&=a_{SC}-a_S,\\
+\Gamma(L)&=(a_{SC}-a_S)-(a_C-a_R),\\
+\Delta_{\mathrm{read}}(L)&=a_{SC}-a_{SC+\mathrm{cut}}.
+\end{aligned}
+\label{eq:repair-effects}
+\end{equation}
+These accuracy contrasts measure cache benefit, interaction and reading
+dependence. Positive $\Gamma$ means the joint gain exceeds the sum of
+individual gains. Multiply by $100$ for percentage points.
+
+\paragraph{Qwen3-8B/MedCalc truncation sensitivity.}
+All outcomes are retained. At $L16$, $S$, $SC$ and $SC+\mathrm{cut}$
+truncate $4$, $4$ and $3$ of $114$ outputs, respectively. The $SC-S$ gain is $38.6$
+points, $38.5$ on $96$ items with untruncated baselines, and at least
+$35.1$ under adversarial scoring of truncated $S/SC$ answers.
+At $L24$, $SC/(SC+\mathrm{cut})$ truncate $3/28$ outputs without an
+additional measured accuracy loss.
+
+At $L24$, reader/source-self cuts retain $29/114$ and $110/114$ correct
+answers, a $71.1$-point gap. Counting all $21$ truncated reader-cut
+outputs as correct gives $50/114$, still below $110/114$ for source-self
+cuts, which have no truncations. Both contrasts survive this reassignment.
+
+\paragraph{Redundant combined cut.}
+Under causal attention and positionwise operations, earlier tokens cannot
+read the skill. Persistent reading cuts prevent altered skill states from
+reaching later tokens. Induction over layers and generated tokens then
+makes the combined cut redundant. This requires blocking all later reading.
+
+\input{appendix/cache-coverage}
+
+
+\subsection{Complete-source and receiving-history controls}
+\label{app:state-completeness}
+
+\paragraph{Population and protocol.}
+The $580$ model/question pairs retain fresh baseline errors
+(Table~\ref{tab:state-baselines}). Qwen3-8B/MedCalc reuses $124$ frozen
+candidates from its $49$-condition study. The seven other pools use at
+most $124$ IDs in original order. One DeepSeek/MedCalc item
+fails input-length preflight, leaving $456$ new pairs. These pools precede
+repair outcomes and differ from Table~\ref{tab:mechanism-contrasts}'s
+screened sets. They are neither full-benchmark samples nor independent
+questions across models. Wrong uses the original distractor. Neutral
+length-matches a fixed unrelated document by repetition or truncation.
+It may still influence answers. All conditions use the repair settings
+and evaluator checks in Appendix~\ref{app:detail}. Layers $8/16/24$
+are block indices.
+
+\paragraph{Conditions and numerical identities.}
+The $24$ conditions are four baselines (donor, Wrong, Neutral, no skill),
+$SC/SC_{\mathrm{exact}}$ at $L8/L16/L24$ in both receivers, and
+$C_{\mathrm{all}}$, $B$, Full and Replay in each receiver
+(Section~\ref{sec:mechanism}). $SC_{\mathrm{exact}}$ rewrites every source
+K/V tensor after $SC$. Elementwise checks find zero source discrepancies.
+Table~\ref{tab:state-baselines} records the sequence identities discussed
+in Section~\ref{sec:mechanism}. They concern skill-position KV, not all
+residual states. Replay can answer differently: Qwen3-8B/TheoremQA scores
+$62/63$ versus the donor's $61/63$.
+
+\paragraph{Paired uncertainty.}
+Table~\ref{tab:state-depth-uncertainty} uses $10{,}000$ whole-skill-group
+bootstrap resamples with percentile intervals. The seed is $20261024$
+for the seven new cells. Qwen3-8B/MedCalc reuses its audited analysis.
+Intervals are exploratory and unadjusted for multiple comparisons, with
+few groups in some cells. Adversarial scoring of capped outputs leaves
+Qwen3-8B/MedCalc's early-minus-late gap at $63.7/64.5$ points in Wrong/Neutral.
+
+\paragraph{Additional Qwen3-8B/MedCalc content and layer controls.}
+With all-layer source coverage, correct-skill KV gives $29.8/25.0\%$
+accuracy in Wrong/Neutral, unrelated-skill KV gives $4.8/6.5\%$, and a
+second predeclared neutral text's KV gives $1.6/4.0\%$. Eight-layer
+writes at $0$--$7$, $8$--$15$, $16$--$23$ and $24$--$31$ give
+$3.2/3.2/1.6/4.0\%$ in Wrong and $0.8/4.0/4.8/5.6\%$ in Neutral.
+These limited recoveries cannot identify minimum coverage by comparison
+with all $36$ layers because the write budgets differ.
+
+
+\paragraph{Audit.}
+Independent processes verify hashes, conditions, cache writes, token
+identities and both scoring orders. Labels reproduce accuracies, cap counts
+and intervals for $10{,}944$ new and $6076$ reused records. Gates are reused.

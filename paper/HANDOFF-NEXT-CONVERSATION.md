@@ -1,3 +1,7 @@
+## 2026-10-26 唯一论文基线（覆盖下方历史入口）
+
+用户明确要求：只考虑Overleaf最新稿及基于它的修订版本。唯一活动源码为 `current/source/main.tex`，唯一当前PDF为 `current/paper.pdf`，入口见 `CURRENT-PAPER.md`。本次07:24:21 UTC完整olcli diff确认线上未变化；当前修订版相对线上仅skillvector.bib不同。旧根目录main.tex、skillvector-www2027.pdf、submission-audit-20261026/main.pdf均为历史版本，不再作为编辑/构建/交付基线。后续先核对Overleaf新修改，以current/source为本地修订入口，不运行旧根目录build.sh覆盖当前稿。未上传Overleaf。
+
 ## 2026-10-25 等待合作者新版：复查后再修正
 
 用户要求把问题记录下来，等其他人上传新版Overleaf后再检查并修正；本轮只记清单，不改论文、不上传旧稿、不自动轮询。执行入口reports/www2027_compliance_20261025/待修正清单.md：新版先完整diff+独立下载，以线上为基线保留协作修改，再复查并修仍存在的问题。参考文献保留原论文，主要补正式venue/页码/DOI/URL/作者；Mistral补v0.3版本来源。还需复查全文13→≤12页、printacmref告警、图1小字/图字体、113/124与附录对应及broader-screening证据。保持首页Relevance Statement与Table3仅SC最大值加粗/无n/G列。最终原生OT增量同步、回读/云端编译/全diff核验后推GitHub，不开实验或恢复监督。

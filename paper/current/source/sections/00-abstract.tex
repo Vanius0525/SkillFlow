@@ -1,0 +1,11 @@
+\begin{abstract}
+Language models can adapt to new tasks by following instructions provided in context.
+Such instructions can be organized as reusable skills, raising the possibility of sharing the internal states they produce across executions.
+It remains unclear how the transferability of these states relates to continued dependence on a skill across model layers.
+We compare two interventions across layers: transferring hidden states at skill positions from a correct-skill run into an unrelated-skill run, and blocking attention to the skill in the original run.
+We also test whether copying skill-position key/value caches, which store information used by attention, can improve transfer.
+Across four models and two benchmarks, transfer weakens before dependence on the skill does in all eight settings.
+At layer 16, adding caches improves accuracy over state transfer alone by 6.8 to 43.4 percentage points.
+Blocking skill reading in subsequent layers reduces the recovered accuracy in each setting, while copying only skill-position caches, even across all layers, falls short of correct-skill accuracy.
+These findings distinguish continued skill use from state reuse and show that cached attention information supports partial recovery.
+\end{abstract}

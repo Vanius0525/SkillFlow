@@ -1,0 +1,30 @@
+\begin{tabularx}{\textwidth}{@{}l*{8}{>{\centering\arraybackslash}X}@{}}
+\toprule
+\rowcolor[HTML]{E4F4FA}
+Intervention & \multicolumn{2}{c}{\textbf{Qwen3-8B}} & \multicolumn{2}{c}{\textbf{Mistral-7B}} & \multicolumn{2}{c}{\textbf{Llama-3.1-8B}} & \multicolumn{2}{c}{\textbf{DeepSeek-7B}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(l){8-9}
+ & MedCalc & TheoremQA & MedCalc & TheoremQA & MedCalc & TheoremQA & MedCalc & TheoremQA \\
+\midrule
+\multicolumn{9}{l}{\textit{Early validation at $L2$}} \\
+$n/G$ & $97/11$ & $61/51$ & $35/13$ & $61/51$ & $112/20$ & $92/71$ & $25/13$ & $54/45$ \\
+\rowcolor[HTML]{E4F4FA}
+\textbf{Correct skill span} & \textbf{89.7} & \textbf{93.4} & \textbf{68.6} & \textbf{85.2} & \textbf{90.2} & \textbf{76.1} & \textbf{56.0} & \textbf{57.4} \\
+Correct span, permuted & 2.1 & 14.8 & 5.7 & 11.5 & 6.2 & 8.7 & 12.0 & 1.9 \\
+Norm-matched noise & 4.1 & 14.8 & 5.7 & 6.6 & 1.8 & 6.5 & 4.0 & 1.9 \\
+\midrule
+\multicolumn{9}{l}{\textit{Fixed-layer controls at $L8$}} \\
+$n/G$ & $135/14$ & $57/49$ & $35/13$ & $61/51$ & $112/20$ & $92/71$ & $25/13$ & $54/45$ \\
+Correct skill donor & 91.9 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+Wrong skill receiver & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+Correct skill span & 81.5 & 78.9 & 20.0 & 37.7 & 33.0 & 23.9 & 8.0 & 11.1 \\
+Last prompt token & 3.0 & 10.5 & 5.7 & 1.6 & 2.7 & 12.0 & 0.0 & 1.9 \\
+Last 16 prompt tokens & 5.9 & 12.3 & 8.6 & 6.6 & 2.7 & 4.3 & 4.0 & 11.1 \\
+\addlinespace[2pt]
+Correct matched prefix & 59.3 & 71.9 & 17.1 & 37.7 & 35.7 & 22.8 & 12.0 & 7.4 \\
+Other-skill matched prefix & 4.4 & 14.0 & 2.9 & 8.2 & 8.0 & 9.8 & 8.0 & 5.6 \\
+\addlinespace[2pt]
+Correct span, permuted & 4.4 & 22.8 & 14.3 & 14.8 & 4.5 & 14.1 & 4.0 & 5.6 \\
+Norm-matched noise & 2.2 & 19.3 & 8.6 & 4.9 & 4.5 & 9.8 & 4.0 & 0.0 \\
+Identity patch & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+\bottomrule
+\end{tabularx}

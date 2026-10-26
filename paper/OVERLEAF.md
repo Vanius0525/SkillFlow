@@ -1,3 +1,7 @@
+## 2026-10-26 唯一论文基线（覆盖下方历史入口）
+
+用户明确要求：只考虑Overleaf最新稿及基于它的修订版本。唯一活动源码为 `current/source/main.tex`，唯一当前PDF为 `current/paper.pdf`，入口见 `CURRENT-PAPER.md`。本次07:24:21 UTC完整olcli diff确认线上未变化；当前修订版相对线上仅skillvector.bib不同。旧根目录main.tex、skillvector-www2027.pdf、submission-audit-20261026/main.pdf均为历史版本，不再作为编辑/构建/交付基线。后续先核对Overleaf新修改，以current/source为本地修订入口，不运行旧根目录build.sh覆盖当前稿。未上传Overleaf。
+
 ## 2026-10-24 完整矩阵交付与Unicode增量编辑修正
 
 七文件增量更新、History2444–2454回放验证、全文diff一致。完整八cell数据Table3，附录Table7/8，正文8页、总15页，超过12页目标未作删减。用户要求完整结果更新与文字修改清单，已保存reports/state_core_matrix_20261024/论文修改清单.md。
