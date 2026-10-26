@@ -37,3 +37,7 @@
 用户指定的桌面WWW_2027__Skillflow__Long_Horizon_Agent_Execution_With_Residual_Context.pdf已重命名为Still Needed, Hard to Transfer - Using and Reusing Contextual Skills.pdf（Windows不允许冒号，用短横线）。内容未改，SHA256 16745f035c44c23947de420bdcb86b85ce51ec00e510bec6cf510a4cddbbe73d；PDF正文与元数据标题本已正确。该下载件编译时间09:06 UTC，尚缺后续书目修订：与当前稿差异仅第9–10页，第1–8及11–12页文字相同；不能当成同步后的最终书目版。桌面WWW2027-current.pdf仍为已验证本地最终稿。
 
 重新读取官方CFP https://www2027.thewebconf.org/research-track-papers/ ：审稿投稿为单一匿名PDF，正文8页、总12页，附录并入同一PDF；CFP未要求LaTeX源包、实验代码数据或单独补充文件。还需OpenReview信息及作者profile/COI。代码数据在评审后强烈鼓励公开，artifact badge可选；录用后的camera-ready制作要求另行提供，不混为初投要求。本轮OpenReview网页仅Loading，未声称核实登录后表单全部必填项。官方全文截止2026-10-25 AoE，折北京时间2026-10-26 20:00；摘要截止10月18日AoE且作者顺序此时冻结。无论文/线上修改，无运行中任务。
+
+## 2026-10-26 17:24重新下载件核对与覆盖完成
+
+新桌面下载件WWW_2027__Skillflow__Long_Horizon_Agent_Execution_With_Residual_Context.pdf已核验：12页，创建09:22:43 UTC，全部12页提取文字与current/paper.pdf及已验证的云端同步PDF一致，包含最新书目。按用户明确授权重命名并覆盖桌面Still Needed, Hard to Transfer - Using and Reusing Contextual Skills.pdf；新SHA256 ba4311d08d2de13e019c1df894fdcf86542335c9d6a1650e448590ba53a36534，替换后复核一致。此前该同名桌面文件缺最新书目的记录已由本条覆盖。未改论文源码或线上内容，无运行中任务。
