@@ -1,0 +1,518 @@
+{
+  "tex_files": 15,
+  "bib_entries": 64,
+  "cited_count": 33,
+  "missing_cites": [],
+  "duplicate_bibkeys": [],
+  "missing_refs": [],
+  "duplicate_labels": {},
+  "cited": {
+    "ardoin2026promptcompression": {
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2607.08399",
+      "author": "Ardoin, Thibaud and Einsele, Semira and Bregu, Evis and\nWunder, Gerhard",
+      "title": "Prompt Compression via Activation Aggregation",
+      "ENTRYTYPE": "article",
+      "ID": "ardoin2026promptcompression"
+    },
+    "bigoulaeva2026instructionvectors": {
+      "url": "https://aclanthology.org/2026.acl-long.559/",
+      "doi": "10.18653/v1/2026.acl-long.559",
+      "pages": "12209--12262",
+      "address": "San Diego, California, United States",
+      "publisher": "Association for Computational Linguistics",
+      "year": "2026",
+      "booktitle": "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "author": "Bigoulaeva, Irina and Rohweder, Jonas and Dutta, Subhabrata and Gurevych, Iryna",
+      "title": "Patches of Nonlinearity: Instruction Vectors in Large Language Models",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "bigoulaeva2026instructionvectors"
+    },
+    "chen2023theoremqa": {
+      "url": "https://arxiv.org/abs/2305.12524",
+      "note": "arXiv:2305.12524",
+      "year": "2023",
+      "booktitle": "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+      "author": "Chen, Wenhu and Yin, Ming and Ku, Max and Lu, Pan and Wan, Yixin\nand Ma, Xueguang and Xu, Jianyu and Wang, Xinyi and Xia, Tony",
+      "title": "{TheoremQA}: A Theorem-driven Question Answering Dataset",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "chen2023theoremqa"
+    },
+    "davidson2025prompting": {
+      "url": "https://arxiv.org/abs/2505.12075",
+      "year": "2025",
+      "journal": "arXiv preprint arXiv:2505.12075",
+      "author": "Davidson, Guy and Gureckis, Todd M. and Lake, Brenden M. and Williams, Adina",
+      "title": "Do different prompting methods yield a common task representation in language models?",
+      "ENTRYTYPE": "article",
+      "ID": "davidson2025prompting"
+    },
+    "deepcontextdistill2025": {
+      "note": "arXiv:2503.08727",
+      "year": "2025",
+      "booktitle": "Conference on Language Modeling (COLM)",
+      "author": "Caccia, Lucas and Ansell, Alan and Ponti, Edoardo and\nVuli{\\'c}, Ivan and Sordoni, Alessandro",
+      "title": "Training Plug-n-Play Knowledge Modules with Deep Context\nDistillation",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "deepcontextdistill2025"
+    },
+    "deepseek2024llm": {
+      "year": "2024",
+      "journal": "arXiv preprint arXiv:2401.02954",
+      "author": "{DeepSeek-AI}",
+      "title": "{DeepSeek LLM}: Scaling Open-Source Language Models with Longtermism",
+      "ENTRYTYPE": "article",
+      "ID": "deepseek2024llm"
+    },
+    "doc2lora2026": {
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2602.15902",
+      "author": "Charakorn, Rujikorn and Cetin, Edoardo and Uesaka, Shinnosuke and\nLange, Robert Tjarko",
+      "title": "Doc-to-{L}o{RA}: Learning to Instantly Internalize Contexts",
+      "ENTRYTYPE": "article",
+      "ID": "doc2lora2026"
+    },
+    "ge2024icae": {
+      "note": "arXiv:2307.06945",
+      "year": "2024",
+      "booktitle": "International Conference on Learning Representations (ICLR)",
+      "author": "Ge, Tao and Hu, Jing and Wang, Lei and Wang, Xun and Chen, Si-Qing and\nWei, Furu",
+      "title": "In-context Autoencoder for Context Compression in a Large Language\nModel",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "ge2024icae"
+    },
+    "grattafiori2024llama3": {
+      "year": "2024",
+      "journal": "arXiv preprint arXiv:2407.21783",
+      "author": "Grattafiori, Aaron and Dubey, Abhimanyu and Jauhri, Abhinav and others",
+      "title": "The {Llama} 3 Herd of Models",
+      "ENTRYTYPE": "article",
+      "ID": "grattafiori2024llama3"
+    },
+    "hajimiri2026budgetskills": {
+      "url": "https://arxiv.org/abs/2606.15017",
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2606.15017",
+      "author": "Hajimiri, Sina and Aminbeidokhti, Masih and Dolz, Jose and Ben Ayed, Ismail and Laradji, Issam H. and Gella, Spandana and Gontier, Nicolas",
+      "title": "Are Online Skill and Memory Modules Always Worth Their Tokens? A Budget-Constrained Study of Web Agents",
+      "ENTRYTYPE": "article",
+      "ID": "hajimiri2026budgetskills"
+    },
+    "heimersheim2024patching": {
+      "year": "2024",
+      "journal": "arXiv preprint arXiv:2404.15255",
+      "author": "Heimersheim, Stefan and Nanda, Neel",
+      "title": "How to use and interpret activation patching",
+      "ENTRYTYPE": "article",
+      "ID": "heimersheim2024patching"
+    },
+    "hendel2023taskvectors": {
+      "note": "arXiv:2310.15916",
+      "year": "2023",
+      "booktitle": "Findings of the Association for Computational Linguistics: EMNLP 2023",
+      "author": "Hendel, Roee and Geva, Mor and Globerson, Amir",
+      "title": "In-Context Learning Creates Task Vectors",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "hendel2023taskvectors"
+    },
+    "jiang2023mistral": {
+      "year": "2023",
+      "journal": "arXiv preprint arXiv:2310.06825",
+      "author": "Jiang, Albert Q. and Sablayrolles, Alexandre and Mensch, Arthur and\nBamford, Chris and Chaplot, Devendra Singh and others",
+      "title": "Mistral {7B}",
+      "ENTRYTYPE": "article",
+      "ID": "jiang2023mistral"
+    },
+    "jit2025taskrepr": {
+      "year": "2025",
+      "journal": "arXiv preprint arXiv:2509.04466",
+      "author": "Li, Yuxuan and Campbell, Declan and Chan, Stephanie C. Y. and Lampinen, Andrew Kyle",
+      "title": "Just-in-time and distributed task representations in language models",
+      "ENTRYTYPE": "article",
+      "ID": "jit2025taskrepr"
+    },
+    "khandekar2024medcalc": {
+      "note": "arXiv:2406.12036",
+      "year": "2024",
+      "booktitle": "Advances in Neural Information Processing Systems (NeurIPS),\nDatasets and Benchmarks Track",
+      "author": "Khandekar, Nikhil and Jin, Qiao and Xiong, Guangzhi and Dunn, Soren and\nApplebaum, Serina S. and Anwar, Zain and Sarfo-Gyamfi, Maame and\nSafranek, Conrad W. and Anwar, Abid A. and Zhang, Andrew and\nGilson, Aidan and Singer, Maxwell B. and Dave, Amisha and Taylor, Andrew and\nZhang, Aidong and Chen, Qingyu and Lu, Zhiyong",
+      "title": "{MedCalc-Bench}: Evaluating Large Language Models for Medical\nCalculations",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "khandekar2024medcalc"
+    },
+    "li2026prefillnotes": {
+      "url": "https://arxiv.org/abs/2606.17107",
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2606.17107",
+      "author": "Li, Bojie",
+      "title": "Models Take Notes at Prefill: {KV} Cache Can Be Editable and Composable",
+      "ENTRYTYPE": "article",
+      "ID": "li2026prefillnotes"
+    },
+    "mu2023gist": {
+      "note": "arXiv:2304.08467",
+      "year": "2023",
+      "booktitle": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "author": "Mu, Jesse and Li, Xiang Lisa and Goodman, Noah",
+      "title": "Learning to Compress Prompts with Gist Tokens",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "mu2023gist"
+    },
+    "onset2025instruction": {
+      "note": "extended abstract. arXiv:2511.10694",
+      "year": "2025",
+      "booktitle": "UniReps Workshop",
+      "author": "Pola, Aditya and Balasubramanian, Vineeth N.",
+      "title": "Where does an {LLM} begin computing an instruction?",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "onset2025instruction"
+    },
+    "shazeer2019fast": {
+      "url": "https://arxiv.org/abs/1911.02150",
+      "year": "2019",
+      "journal": "arXiv preprint arXiv:1911.02150",
+      "author": "Shazeer, Noam",
+      "title": "Fast Transformer Decoding: One Write-Head is All You Need",
+      "ENTRYTYPE": "article",
+      "ID": "shazeer2019fast"
+    },
+    "sia2024incontexttranslation": {
+      "url": "https://proceedings.nips.cc/paper_files/paper/2024/hash/3979818cdc7bc8dbeec87170c11ee340-Abstract-Conference.html",
+      "doi": "10.52202/079017-1030",
+      "year": "2024",
+      "booktitle": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "author": "Sia, Suzanna and Mueller, David and Duh, Kevin",
+      "title": "Where does In-context Learning Happen in Large Language Models?",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "sia2024incontexttranslation"
+    },
+    "skillsbench2026": {
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2602.12670",
+      "author": "Li, Xiangyi and Liu, Yimin and Chen, Wenbo and others",
+      "title": "SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks",
+      "ENTRYTYPE": "article",
+      "ID": "skillsbench2026"
+    },
+    "su2026srabench": {
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2604.24594",
+      "author": "Su, Weihang and Long, Jianming and Ai, Qingyao and He, Qiaozhi and\nTang, Yichen and Wang, Changyue and Tu, Yiteng and Wang, Yingbo and Liu, Yiqun",
+      "title": "Skill Retrieval Augmentation for Agentic {AI}",
+      "ENTRYTYPE": "article",
+      "ID": "su2026srabench"
+    },
+    "sweskills2026": {
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2603.15401",
+      "author": "Han, Tingxu and Zhang, Yi and Song, Wei and Fang, Chunrong and Chen, Zhenyu and Sun, Youcheng and Hu, Lijie",
+      "title": "SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?",
+      "ENTRYTYPE": "article",
+      "ID": "sweskills2026"
+    },
+    "todd2024functionvectors": {
+      "note": "arXiv:2310.15213",
+      "year": "2024",
+      "booktitle": "International Conference on Learning Representations (ICLR)",
+      "author": "Todd, Eric and Li, Millicent L. and Sharma, Arnab Sen and\nMueller, Aaron and Wallace, Byron C. and Bau, David",
+      "title": "Function Vectors in Large Language Models",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "todd2024functionvectors"
+    },
+    "tsuzuku2018lipschitz": {
+      "url": "https://arxiv.org/abs/1802.04034",
+      "year": "2018",
+      "journal": "arXiv preprint arXiv:1802.04034",
+      "author": "Tsuzuku, Yusuke and Sato, Issei and Sugiyama, Masashi",
+      "title": "Lipschitz-Margin Training: Scalable Certification of\nPerturbation Invariance for Deep Neural Networks",
+      "ENTRYTYPE": "article",
+      "ID": "tsuzuku2018lipschitz"
+    },
+    "vaidyanathan2026mediators": {
+      "url": "https://arxiv.org/abs/2606.27510",
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2606.27510",
+      "author": "Vaidyanathan, Sankaran and Arbour, David and Mueller, Aaron and Niekum, Scott and Jensen, David",
+      "title": "The Curse of Multiple Mediators: Hidden Interaction Effects in Activation Patching",
+      "ENTRYTYPE": "article",
+      "ID": "vaidyanathan2026mediators"
+    },
+    "vaswani2017attention": {
+      "url": "https://arxiv.org/abs/1706.03762",
+      "year": "2017",
+      "volume": "30",
+      "booktitle": "Advances in Neural Information Processing Systems",
+      "author": "Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and\nUszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and\nKaiser, Lukasz and Polosukhin, Illia",
+      "title": "Attention Is All You Need",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "vaswani2017attention"
+    },
+    "wang2024awm": {
+      "url": "https://proceedings.mlr.press/v267/wang25bx.html",
+      "year": "2025",
+      "publisher": "PMLR",
+      "pages": "63897--63911",
+      "volume": "267",
+      "series": "Proceedings of Machine Learning Research",
+      "booktitle": "Proceedings of the 42nd International Conference on Machine Learning",
+      "author": "Wang, Zora Zhiruo and Mao, Jiayuan and Fried, Daniel and Neubig, Graham",
+      "title": "Agent Workflow Memory",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "wang2024awm"
+    },
+    "wang2026webxskill": {
+      "url": "https://arxiv.org/abs/2604.13318",
+      "year": "2026",
+      "journal": "arXiv preprint arXiv:2604.13318",
+      "author": "Wang, Zhaoyang and Wu, Qianhui and Zhang, Xuchao and Zhang, Chaoyun and Yao, Wenlin and Faisal, Fazle Elahi and Peng, Baolin and Qin, Si and Nath, Suman and Lin, Qingwei and Bansal, Chetan and Zhang, Dongmei and Rajmohan, Saravan and Gao, Jianfeng and Yao, Huaxiu",
+      "title": "{WebXSkill}: Skill Learning for Autonomous Web Agents",
+      "ENTRYTYPE": "article",
+      "ID": "wang2026webxskill"
+    },
+    "yang2025internalcot": {
+      "url": "https://aclanthology.org/2025.emnlp-main.1147/",
+      "doi": "10.18653/v1/2025.emnlp-main.1147",
+      "pages": "22536--22564",
+      "year": "2025",
+      "booktitle": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing",
+      "author": "Yang, Zhipeng and Li, Junzhuo and Xia, Siyu and Hu, Xuming",
+      "title": "Internal Chain-of-Thought: Empirical Evidence for Layer-wise Subtask Scheduling in {LLMs}",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "yang2025internalcot"
+    },
+    "yang2025qwen3": {
+      "year": "2025",
+      "journal": "arXiv preprint arXiv:2505.09388",
+      "author": "Yang, An and Li, Anfeng and others",
+      "title": "Qwen3 Technical Report",
+      "ENTRYTYPE": "article",
+      "ID": "yang2025qwen3"
+    },
+    "zhang2023bestpractices": {
+      "note": "arXiv:2309.16042",
+      "year": "2024",
+      "booktitle": "International Conference on Learning Representations (ICLR)",
+      "author": "Zhang, Fred and Nanda, Neel",
+      "title": "Towards Best Practices of Activation Patching in Language Models:\nMetrics and Methods",
+      "ENTRYTYPE": "inproceedings",
+      "ID": "zhang2023bestpractices"
+    },
+    "zhang2025agentskills": {
+      "url": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills",
+      "howpublished": "Anthropic Engineering",
+      "month": "October",
+      "year": "2025",
+      "author": "Zhang, Barry and Lazuka, Keith and Murag, Mahesh",
+      "title": "Equipping agents for the real world with {Agent Skills}",
+      "ENTRYTYPE": "misc",
+      "ID": "zhang2025agentskills"
+    }
+  },
+  "unused": [
+    "balepur2024artifacts",
+    "contextreturns2026",
+    "dasilva2025steeringoff",
+    "dong2025planning",
+    "dong2026taskvectorlimits",
+    "dura2026sequentialpatching",
+    "feng2024binding",
+    "fernando2026residualspectral",
+    "geva2023dissecting",
+    "he2025nondeterminism",
+    "ilharco2023taskarithmetic",
+    "kovaleva2021bertbusters",
+    "liu2024icv",
+    "makelov2024illusion",
+    "mehrafarin2026cothidden",
+    "meng2022rome",
+    "min2022rethinking",
+    "panickssery2024caa",
+    "ragcite2026",
+    "sarkar2026causaldim",
+    "semanticconflicts2026",
+    "shi2026melayer",
+    "skillsinjector2026",
+    "skilltolora2026",
+    "stolfo2025instruction",
+    "sun2024massive",
+    "tan2025htmlrag",
+    "timkey2021rogue",
+    "valeriani2023geometry",
+    "wang2023labelwords",
+    "wiegreffe2025mcq"
+  ],
+  "pages": 12,
+  "page_sizes": [
+    [
+      0.0,
+      0.0,
+      612.0,
+      792.0
+    ]
+  ],
+  "fonts": [
+    {
+      "name": "QUOZGE+PingFangSC-Semibold",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "ZAAZSU+ComicSansMS-Bold",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "GTDKCV+LinLibertineO",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "BATANL+LinLibertineOB",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "DRPUYF+LinLibertineOB",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "BZMWIU+LinLibertineOI",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "EXTEPC+LinLibertineO",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "EHSLWT+LinLibertineO",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "EXQYPV+LinLibertineOB",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "GUCKFU+LinLibertineOI",
+      "embedded": true,
+      "type": "Type0"
+    },
+    {
+      "name": "HKQEOZ+LinLibertineT",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "ADVMCA+LinBiolinumTB",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "ZECEOO+LinLibertineTB",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "HKQEOZ+LinLibertineT",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "CQSXCR+txsys",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "AYXLQJ+LinLibertineTI",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "CTNURX+LinBiolinumT",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "HKQEOZ+LinLibertineT",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "GBWSEM+LibertineMathMI",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "KNZSWR+LibertineMathMI7",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "DOKOCD+txexs",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "WNKDKQ+txmiaX",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "ZMKHJD+NewTXMI",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "ODQWKZ+LibertineMathRM",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "IWVNXF+LibertineMathMI5",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "LBDPFK+Inconsolatazi4-Regular",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "TMHVPV+MSAM10",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "JBPVFV+LinLibertineTZ",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "PCSSPC+NewTXMI7",
+      "embedded": true,
+      "type": "Type1"
+    },
+    {
+      "name": "ZAAZSU+ComicSansMS-Bold",
+      "embedded": true,
+      "type": "Type0"
+    }
+  ],
+  "metadata": {
+    "format": "PDF 1.5",
+    "title": "Still Needed, Hard to Transfer: Using and Reusing Contextual Skills",
+    "author": "",
+    "subject": "-  Computing methodologies  ->  Natural language processing.Knowledge representation and reasoning.",
+    "keywords": "",
+    "creator": "LaTeX with acmart 2025/05/30 v2.14 Typesetting articles for the Association for Computing Machinery and hyperref 2025-05-20 v7.01m Hypertext links for LaTeX",
+    "producer": "pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) kpathsea version 6.4.1",
+    "creationDate": "D:20261026062339Z",
+    "modDate": "D:20261026062339Z",
+    "trapped": "",
+    "encryption": null
+  }
+}
