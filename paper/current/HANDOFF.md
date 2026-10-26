@@ -9,3 +9,7 @@
 ## Open Ideas / 值得深挖的问题
 
 本轮只收敛版本，不新增科研结论或实验。
+
+## 2026-10-26 完整再审计
+
+本轮重新核对线上（07:34:59 UTC）、重新编译current/source，验证与paper.pdf的12页文字/像素一致。正文8页/全文12页，33引用，0错误/undefined/Overfull，全字体嵌入。论文未改。待修：Figure1文字最小3.22pt、两条正式EMNLP/Findings出处、113/124附录对应及书目缺字段。完整报告：../reports/current-review-20261026/完整检查报告.md；33篇逐项一手链接、机器结果及编译证据同目录。后续只从current/source修订，未上传Overleaf。

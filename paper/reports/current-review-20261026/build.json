@@ -1,0 +1,29 @@
+{
+  "stage": "/mnt/c/Users/12970/AppData/Local/Temp/WWW2027/root-audit-rkfsv77_",
+  "runs": [
+    {
+      "command": "pdflatex",
+      "returncode": 0
+    },
+    {
+      "command": "bibtex",
+      "returncode": 0
+    },
+    {
+      "command": "pdflatex",
+      "returncode": 0
+    },
+    {
+      "command": "bibtex",
+      "returncode": 0
+    },
+    {
+      "command": "pdflatex",
+      "returncode": 0
+    },
+    {
+      "command": "pdflatex",
+      "returncode": 0
+    }
+  ]
+}

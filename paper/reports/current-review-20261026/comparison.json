@@ -1,0 +1,33 @@
+{
+  "pdf_page_text_identical": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "pdf_page_pixels_identical": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "source_changes": [
+    "skillvector.bib"
+  ]
+}

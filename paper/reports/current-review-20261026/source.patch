@@ -1,0 +1,82 @@
+--- Overleaf/skillvector.bib
++++ current/source/skillvector.bib
+@@ -79,7 +79,7 @@
+ }
+ 
+ @article{skillsbench2026,
+-  title   = {SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks},
++  title   = {{SkillsBench}: Benchmarking How Well Agent Skills Work Across Diverse Tasks},
+   author  = {Li, Xiangyi and Liu, Yimin and Chen, Wenbo and others},
+   journal = {arXiv preprint arXiv:2602.12670},
+   year    = {2026}
+@@ -93,7 +93,7 @@
+ }
+ 
+ @article{sweskills2026,
+-  title   = {SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?},
++  title   = {{SWE-Skills-Bench}: Do Agent Skills Actually Help in Real-World Software Engineering?},
+   author  = {Han, Tingxu and Zhang, Yi and Song, Wei and Fang, Chunrong and Chen, Zhenyu and Sun, Youcheng and Hu, Lijie},
+   journal = {arXiv preprint arXiv:2603.15401},
+   year    = {2026}
+@@ -181,7 +181,7 @@
+ }
+ 
+ @article{doc2lora2026,
+-  title   = {Doc-to-{L}o{RA}: Learning to Instantly Internalize Contexts},
++  title   = {{Doc-to-LoRA}: Learning to Instantly Internalize Contexts},
+   author  = {Charakorn, Rujikorn and Cetin, Edoardo and Uesaka, Shinnosuke and
+              Lange, Robert Tjarko},
+   journal = {arXiv preprint arXiv:2602.15902},
+@@ -254,7 +254,7 @@
+ }
+ 
+ @article{yang2025qwen3,
+-  title   = {Qwen3 Technical Report},
++  title   = {{Qwen3} Technical Report},
+   author  = {Yang, An and Li, Anfeng and others},
+   journal = {arXiv preprint arXiv:2505.09388},
+   year    = {2025}
+@@ -432,12 +432,14 @@
+ }
+ 
+ 
+-@article{davidson2025prompting,
++@inproceedings{davidson2025prompting,
+   title   = {Do different prompting methods yield a common task representation in language models?},
+   author  = {Davidson, Guy and Gureckis, Todd M. and Lake, Brenden M. and Williams, Adina},
+-  journal = {arXiv preprint arXiv:2505.12075},
++  booktitle = {Advances in Neural Information Processing Systems},
++  volume = {38},
++  doi = {10.52202/085713-2380},
+   year    = {2025},
+-  url     = {https://arxiv.org/abs/2505.12075}
++  url = {https://proceedings.neurips.cc/paper_files/paper/2025/hash/66b35d2e8d524706f39cc21f5337b002-Abstract-Conference.html}
+ }
+ 
+ @inproceedings{bigoulaeva2026instructionvectors,
+@@ -533,7 +535,7 @@
+ 
+ 
+ @article{shazeer2019fast,
+-  title     = {Fast Transformer Decoding: One Write-Head is All You Need},
++  title     = {Fast {Transformer} Decoding: One Write-Head is All You Need},
+   author    = {Shazeer, Noam},
+   journal   = {arXiv preprint arXiv:1911.02150},
+   year      = {2019},
+@@ -561,11 +563,12 @@
+   url       = {https://arxiv.org/abs/2305.12524}
+ }
+ 
+-@article{tsuzuku2018lipschitz,
++@inproceedings{tsuzuku2018lipschitz,
+   title     = {Lipschitz-Margin Training: Scalable Certification of
+                Perturbation Invariance for Deep Neural Networks},
+   author    = {Tsuzuku, Yusuke and Sato, Issei and Sugiyama, Masashi},
+-  journal   = {arXiv preprint arXiv:1802.04034},
++  booktitle = {Advances in Neural Information Processing Systems},
++  volume = {31},
+   year      = {2018},
+-  url       = {https://arxiv.org/abs/1802.04034}
+-}
++  url = {https://arxiv.org/abs/1802.04034}
++}
