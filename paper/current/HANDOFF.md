@@ -25,3 +25,9 @@
 ## 2026-10-26 当前稿与线上再核对（08:07 UTC）
 
 本轮只读审阅，完整olcli diff返回0（remote fetched 08:07:27.649Z）。当前源码仅bib与线上不同；当前PDF第1–8及11–12页文字与线上快照一致，变化为9–10页书目；跨云端/本地构建并非前8页像素全部一致，不扩大此前同环境像素验证结论。正文8页/总12页，官方CFP重新读取，模板和页数符合可核验条件；系统投稿状态未检查。具体书目修改及格式判断见../reports/current-vs-overleaf-20261026/核查结果.md。未修改论文、未上传Overleaf，无运行中任务；用户此前忽略事项仅记录不执行。
+
+## 2026-10-26 用户授权同步Overleaf完成
+
+完整同步前diff：09:11:46 UTC返回0，线上没有新增改动。仅skillvector.bib通过原生editor socket提交276个文本操作，docID保持，v0→v1，逐字回读通过。同步后09:13:08 UTC完整diff返回0；云端编译下载12页PDF，12页提取文字全部与current/paper.pdf一致。证据../audit/bib-overleaf-sync-20261026/。current/provenance.json及CURRENT-PAPER.md已更新，论文正文/PDF未改，无未同步源码差异。
+
+云端compile.log检查：编译错误0、undefined0、Overfull0。全部验证完成，无待执行任务。

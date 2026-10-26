@@ -1,0 +1,23 @@
+{
+  "local_pages": 12,
+  "overleaf_pages": 12,
+  "all_page_text_equal": true,
+  "page_text_equal": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "overleaf_pdf_author": "",
+  "compile_errors": [],
+  "undefined": [],
+  "overfull": []
+}

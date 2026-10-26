@@ -1,12 +1,10 @@
 {
   "overleaf_project": "6a2cfd49b99635e8e968576a",
   "overleaf_root": "overleaf-skillvector/main.tex",
-  "latest_remote_check_utc": "2026-10-26T07:47:12.350Z",
+  "latest_remote_check_utc": "2026-10-26T09:13:08.407Z",
   "full_diff_exit_code": 0,
-  "source_baseline": "Overleaf latest snapshot plus bibliography-only revision",
-  "changed_from_overleaf": [
-    "skillvector.bib"
-  ],
+  "source_baseline": "Overleaf latest; bibliography revisions synchronized and read back",
+  "changed_from_overleaf": [],
   "pdf_sha256": "1b4a1f23351bd61de9b387016ed457505cebd409b52cc3a26f5d8f52184738a9",
   "source_sha256": {
     "README.md": "8fab24023ce8a8db7bb472244242225981371d5df155390c74e1bb705b7edc9a",
@@ -31,5 +29,6 @@
     "tables/tab-paired-depth.tex": "b34f70b5b63f0bc5b8fb8fea29efaf98b2c9687043b4d81a1146653d63bddfbe",
     "tables/tab-transfer-controls.tex": "9775af3371610b95d8ed70d31034ec341e7aa9184d85158e53f27289d5cfa7af"
   },
-  "bibliography_revision": "Formal publication revisions plus verified metadata completion and redundant bibliography text cleanup, 2026-10-26"
+  "bibliography_revision": "Formal publication revisions plus verified metadata completion and redundant bibliography text cleanup, 2026-10-26",
+  "overleaf_sync_receipt": "audit/bib-overleaf-sync-20261026/receipt.json"
 }

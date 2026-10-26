@@ -1,0 +1,18 @@
+{
+  "projectId": "6a2cfd49b99635e8e968576a",
+  "method": "editor-socket/applyOtUpdate",
+  "started_at": "2026-10-26T09:12:28.551Z",
+  "documents": [
+    {
+      "path": "overleaf-skillvector/skillvector.bib",
+      "docId": "6aded7ce3f96e54f5bab8001",
+      "before_version": 0,
+      "before_sha256": "3e0f1ee5192f3b716f1a5cf5ba352b4888a404d36e8ca753cbd47b87cd391bdc",
+      "after_sha256": "d496408398f0c5c336ee4bc0e4dd6dbb66f7109996921364626f7ff64860480f",
+      "operations": 276,
+      "status": "verified",
+      "after_version": 1
+    }
+  ],
+  "completed_at": "2026-10-26T09:12:34.383Z"
+}
