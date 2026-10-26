@@ -1,0 +1,348 @@
+--- Overleaf
++++ current
+@@ -7,16 +7,18 @@
+   author    = {Hendel, Roee and Geva, Mor and Globerson, Amir},
+   booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2023},
+   year      = {2023},
+-  note      = {arXiv:2310.15916}
++  publisher = {Association for Computational Linguistics},
++  address = {Singapore},
++  pages = {9318--9333}
+ }
+ 
+ @inproceedings{todd2024functionvectors,
+   title     = {Function Vectors in Large Language Models},
+   author    = {Todd, Eric and Li, Millicent L. and Sharma, Arnab Sen and
+                Mueller, Aaron and Wallace, Byron C. and Bau, David},
+-  booktitle = {International Conference on Learning Representations (ICLR)},
+-  year      = {2024},
+-  note      = {arXiv:2310.15213}
++  booktitle = {International Conference on Learning Representations},
++  year      = {2024},
++  address = {Vienna, Austria}
+ }
+ 
+ @inproceedings{ilharco2023taskarithmetic,
+@@ -33,22 +35,22 @@
+   title     = {Towards Best Practices of Activation Patching in Language Models:
+                Metrics and Methods},
+   author    = {Zhang, Fred and Nanda, Neel},
+-  booktitle = {International Conference on Learning Representations (ICLR)},
+-  year      = {2024},
+-  note      = {arXiv:2309.16042}
++  booktitle = {International Conference on Learning Representations},
++  year      = {2024},
++  address = {Vienna, Austria}
+ }
+ 
+ @article{heimersheim2024patching,
+   title   = {How to use and interpret activation patching},
+   author  = {Heimersheim, Stefan and Nanda, Neel},
+-  journal = {arXiv preprint arXiv:2404.15255},
++  journal = {arXiv:2404.15255},
+   year    = {2024}
+ }
+ 
+ @article{jit2025taskrepr,
+   title   = {Just-in-time and distributed task representations in language models},
+   author  = {Li, Yuxuan and Campbell, Declan and Chan, Stephanie C. Y. and Lampinen, Andrew Kyle},
+-  journal = {arXiv preprint arXiv:2509.04466},
++  journal = {arXiv:2509.04466},
+   year    = {2025}
+ }
+ 
+@@ -79,9 +81,9 @@
+ }
+ 
+ @article{skillsbench2026,
+-  title   = {SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks},
++  title   = {{SkillsBench}: Benchmarking How Well Agent Skills Work Across Diverse Tasks},
+   author  = {Li, Xiangyi and Liu, Yimin and Chen, Wenbo and others},
+-  journal = {arXiv preprint arXiv:2602.12670},
++  journal = {arXiv:2602.12670},
+   year    = {2026}
+ }
+ 
+@@ -93,9 +95,9 @@
+ }
+ 
+ @article{sweskills2026,
+-  title   = {SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?},
++  title   = {{SWE-Skills-Bench}: Do Agent Skills Actually Help in Real-World Software Engineering?},
+   author  = {Han, Tingxu and Zhang, Yi and Song, Wei and Fang, Chunrong and Chen, Zhenyu and Sun, Youcheng and Hu, Lijie},
+-  journal = {arXiv preprint arXiv:2603.15401},
++  journal = {arXiv:2603.15401},
+   year    = {2026}
+ }
+ 
+@@ -160,7 +162,7 @@
+   title   = {Prompt Compression via Activation Aggregation},
+   author  = {Ardoin, Thibaud and Einsele, Semira and Bregu, Evis and
+              Wunder, Gerhard},
+-  journal = {arXiv preprint arXiv:2607.08399},
++  journal = {arXiv:2607.08399},
+   year    = {2026}
+ }
+ 
+@@ -181,10 +183,10 @@
+ }
+ 
+ @article{doc2lora2026,
+-  title   = {Doc-to-{L}o{RA}: Learning to Instantly Internalize Contexts},
++  title   = {{Doc-to-LoRA}: Learning to Instantly Internalize Contexts},
+   author  = {Charakorn, Rujikorn and Cetin, Edoardo and Uesaka, Shinnosuke and
+              Lange, Robert Tjarko},
+-  journal = {arXiv preprint arXiv:2602.15902},
++  journal = {arXiv:2602.15902},
+   year    = {2026}
+ }
+ 
+@@ -193,9 +195,9 @@
+                Distillation},
+   author    = {Caccia, Lucas and Ansell, Alan and Ponti, Edoardo and
+                Vuli{\'c}, Ivan and Sordoni, Alessandro},
+-  booktitle = {Conference on Language Modeling (COLM)},
++  booktitle = {Conference on Language Modeling},
+   year      = {2025},
+-  note      = {arXiv:2503.08727}
++  address = {Montreal, Canada}
+ }
+ 
+ @article{contextreturns2026,
+@@ -239,24 +241,26 @@
+                Safranek, Conrad W. and Anwar, Abid A. and Zhang, Andrew and
+                Gilson, Aidan and Singer, Maxwell B. and Dave, Amisha and Taylor, Andrew and
+                Zhang, Aidong and Chen, Qingyu and Lu, Zhiyong},
+-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS),
+-               Datasets and Benchmarks Track},
+-  year      = {2024},
+-  note      = {arXiv:2406.12036}
++  booktitle = {Advances in Neural Information Processing Systems},
++  year      = {2024},
++  publisher = {Curran Associates},
++  pages = {84730--84745},
++  volume = {37},
++  address = {Red Hook, NY}
+ }
+ 
+ @article{su2026srabench,
+   title   = {Skill Retrieval Augmentation for Agentic {AI}},
+   author  = {Su, Weihang and Long, Jianming and Ai, Qingyao and He, Qiaozhi and
+              Tang, Yichen and Wang, Changyue and Tu, Yiteng and Wang, Yingbo and Liu, Yiqun},
+-  journal = {arXiv preprint arXiv:2604.24594},
++  journal = {arXiv:2604.24594},
+   year    = {2026}
+ }
+ 
+ @article{yang2025qwen3,
+-  title   = {Qwen3 Technical Report},
++  title   = {{Qwen3} Technical Report},
+   author  = {Yang, An and Li, Anfeng and others},
+-  journal = {arXiv preprint arXiv:2505.09388},
++  journal = {arXiv:2505.09388},
+   year    = {2025}
+ }
+ 
+@@ -264,7 +268,7 @@
+   title   = {Mistral {7B}},
+   author  = {Jiang, Albert Q. and Sablayrolles, Alexandre and Mensch, Arthur and
+              Bamford, Chris and Chaplot, Devendra Singh and others},
+-  journal = {arXiv preprint arXiv:2310.06825},
++  journal = {arXiv:2310.06825},
+   year    = {2023}
+ }
+ 
+@@ -289,10 +293,13 @@
+ @inproceedings{sia2024incontexttranslation,
+   title     = {Where does In-context Learning Happen in Large Language Models?},
+   author    = {Sia, Suzanna and Mueller, David and Duh, Kevin},
+-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
++  booktitle = {Advances in Neural Information Processing Systems},
+   year      = {2024},
+   doi       = {10.52202/079017-1030},
+-  url       = {https://proceedings.nips.cc/paper_files/paper/2024/hash/3979818cdc7bc8dbeec87170c11ee340-Abstract-Conference.html}
++  publisher = {Curran Associates},
++  pages = {32761--32786},
++  volume = {37},
++  address = {Red Hook, NY}
+ }
+ 
+ @inproceedings{wang2023labelwords,
+@@ -326,9 +333,12 @@
+ @inproceedings{mu2023gist,
+   title     = {Learning to Compress Prompts with Gist Tokens},
+   author    = {Mu, Jesse and Li, Xiang Lisa and Goodman, Noah},
+-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
++  booktitle = {Advances in Neural Information Processing Systems},
+   year      = {2023},
+-  note      = {arXiv:2304.08467}
++  publisher = {Curran Associates},
++  pages = {19327--19352},
++  volume = {36},
++  address = {Red Hook, NY}
+ }
+ 
+ @inproceedings{ge2024icae,
+@@ -336,9 +346,9 @@
+                Model},
+   author    = {Ge, Tao and Hu, Jing and Wang, Lei and Wang, Xun and Chen, Si-Qing and
+                Wei, Furu},
+-  booktitle = {International Conference on Learning Representations (ICLR)},
+-  year      = {2024},
+-  note      = {arXiv:2307.06945}
++  booktitle = {International Conference on Learning Representations},
++  year      = {2024},
++  address = {Vienna, Austria}
+ }
+ 
+ @inproceedings{liu2024icv,
+@@ -432,12 +442,16 @@
+ }
+ 
+ 
+-@article{davidson2025prompting,
++@inproceedings{davidson2025prompting,
+   title   = {Do different prompting methods yield a common task representation in language models?},
+   author  = {Davidson, Guy and Gureckis, Todd M. and Lake, Brenden M. and Williams, Adina},
+-  journal = {arXiv preprint arXiv:2505.12075},
++  booktitle = {Advances in Neural Information Processing Systems},
++  volume = {38},
++  doi = {10.52202/085713-2380},
+   year    = {2025},
+-  url     = {https://arxiv.org/abs/2505.12075}
++  publisher = {Curran Associates},
++  pages = {70782--70822},
++  address = {Red Hook, NY}
+ }
+ 
+ @inproceedings{bigoulaeva2026instructionvectors,
+@@ -470,19 +484,28 @@
+   booktitle={Proceedings of the 42nd International Conference on Machine Learning},
+   series={Proceedings of Machine Learning Research}, volume={267},
+   pages={63897--63911}, publisher={PMLR}, year={2025},
+-  url={https://proceedings.mlr.press/v267/wang25bx.html}
+-}
+-@article{wang2026webxskill,
++  url={https://proceedings.mlr.press/v267/wang25bx.html},
++  address = {Vancouver, Canada}
++}
++@inproceedings{wang2026webxskill,
+   title={{WebXSkill}: Skill Learning for Autonomous Web Agents},
+   author={Wang, Zhaoyang and Wu, Qianhui and Zhang, Xuchao and Zhang, Chaoyun and Yao, Wenlin and Faisal, Fazle Elahi and Peng, Baolin and Qin, Si and Nath, Suman and Lin, Qingwei and Bansal, Chetan and Zhang, Dongmei and Rajmohan, Saravan and Gao, Jianfeng and Yao, Huaxiu},
+-  journal={arXiv preprint arXiv:2604.13318}, year={2026},
+-  url={https://arxiv.org/abs/2604.13318}
+-}
+-@article{hajimiri2026budgetskills,
++  booktitle={Findings of the Association for Computational Linguistics: EMNLP 2026},
++  year={2026},
++  pages={11837--11852},
++  address={Budapest, Hungary},
++  publisher={Association for Computational Linguistics},
++  url={https://aclanthology.org/2026.findings-emnlp.561/}
++}
++@inproceedings{hajimiri2026budgetskills,
+   title={Are Online Skill and Memory Modules Always Worth Their Tokens? A Budget-Constrained Study of Web Agents},
+   author={Hajimiri, Sina and Aminbeidokhti, Masih and Dolz, Jose and Ben Ayed, Ismail and Laradji, Issam H. and Gella, Spandana and Gontier, Nicolas},
+-  journal={arXiv preprint arXiv:2606.15017}, year={2026},
+-  url={https://arxiv.org/abs/2606.15017}
++  booktitle={Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing},
++  year={2026},
++  pages={37676--37693},
++  address={Budapest, Hungary},
++  publisher={Association for Computational Linguistics},
++  url={https://aclanthology.org/2026.emnlp-main.1657/}
+ }
+ 
+ @inproceedings{yang2025internalcot,
+@@ -490,13 +513,14 @@
+   author={Yang, Zhipeng and Li, Junzhuo and Xia, Siyu and Hu, Xuming},
+   booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
+   year={2025}, pages={22536--22564}, doi={10.18653/v1/2025.emnlp-main.1147},
+-  url={https://aclanthology.org/2025.emnlp-main.1147/}
++  publisher = {Association for Computational Linguistics},
++  address = {Suzhou, China}
+ }
+ 
+ @article{li2026prefillnotes,
+   title={Models Take Notes at Prefill: {KV} Cache Can Be Editable and Composable},
+   author={Li, Bojie},
+-  journal={arXiv preprint arXiv:2606.17107},
++  journal={arXiv:2606.17107},
+   year={2026},
+   url={https://arxiv.org/abs/2606.17107}
+ }
+@@ -504,7 +528,7 @@
+ @article{vaidyanathan2026mediators,
+   title={The Curse of Multiple Mediators: Hidden Interaction Effects in Activation Patching},
+   author={Vaidyanathan, Sankaran and Arbour, David and Mueller, Aaron and Niekum, Scott and Jensen, David},
+-  journal={arXiv preprint arXiv:2606.27510},
++  journal={arXiv:2606.27510},
+   year={2026},
+   url={https://arxiv.org/abs/2606.27510}
+ }
+@@ -521,21 +545,21 @@
+ @article{grattafiori2024llama3,
+   title={The {Llama} 3 Herd of Models},
+   author={Grattafiori, Aaron and Dubey, Abhimanyu and Jauhri, Abhinav and others},
+-  journal={arXiv preprint arXiv:2407.21783},
++  journal={arXiv:2407.21783},
+   year={2024}
+ }
+ @article{deepseek2024llm,
+   title={{DeepSeek LLM}: Scaling Open-Source Language Models with Longtermism},
+   author={{DeepSeek-AI}},
+-  journal={arXiv preprint arXiv:2401.02954},
++  journal={arXiv:2401.02954},
+   year={2024}
+ }
+ 
+ 
+ @article{shazeer2019fast,
+-  title     = {Fast Transformer Decoding: One Write-Head is All You Need},
++  title     = {Fast {Transformer} Decoding: One Write-Head is All You Need},
+   author    = {Shazeer, Noam},
+-  journal   = {arXiv preprint arXiv:1911.02150},
++  journal   = {arXiv:1911.02150},
+   year      = {2019},
+   url       = {https://arxiv.org/abs/1911.02150}
+ }
+@@ -548,7 +572,9 @@
+   booktitle = {Advances in Neural Information Processing Systems},
+   volume    = {30},
+   year      = {2017},
+-  url       = {https://arxiv.org/abs/1706.03762}
++  url       = {https://arxiv.org/abs/1706.03762},
++  publisher = {Curran Associates},
++  address = {Red Hook, NY}
+ }
+ 
+ @inproceedings{chen2023theoremqa,
+@@ -557,15 +583,20 @@
+                and Ma, Xueguang and Xu, Jianyu and Wang, Xinyi and Xia, Tony},
+   booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
+   year      = {2023},
+-  note      = {arXiv:2305.12524},
+-  url       = {https://arxiv.org/abs/2305.12524}
+-}
+-
+-@article{tsuzuku2018lipschitz,
++  publisher = {Association for Computational Linguistics},
++  address = {Singapore},
++  pages = {7889--7901},
++  doi = {10.18653/v1/2023.emnlp-main.489}
++}
++
++@inproceedings{tsuzuku2018lipschitz,
+   title     = {Lipschitz-Margin Training: Scalable Certification of
+                Perturbation Invariance for Deep Neural Networks},
+   author    = {Tsuzuku, Yusuke and Sato, Issei and Sugiyama, Masashi},
+-  journal   = {arXiv preprint arXiv:1802.04034},
++  booktitle = {Advances in Neural Information Processing Systems},
++  volume = {31},
+   year      = {2018},
+-  url       = {https://arxiv.org/abs/1802.04034}
+-}
++  url = {https://arxiv.org/abs/1802.04034},
++  publisher = {Curran Associates},
++  address = {Red Hook, NY}
++}
