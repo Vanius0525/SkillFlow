@@ -1,0 +1,32 @@
+{
+  "davidson2025prompting": {
+    "page": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/66b35d2e8d524706f39cc21f5337b002-Abstract-Conference.html",
+    "bibtex": "https://proceedings.neurips.cc/paper_files/paper/30279-/bibtex",
+    "text": "@inproceedings{NEURIPS2025_66b35d2e,\n author = {Davidson, Guy and Gureckis, Todd and Lake, Brenden and Williams, Adina},\n booktitle = {Advances in Neural Information Processing Systems},\n doi = {10.52202/085713-2380},\n editor = {D. Belgrave and C. Zhang and H. Lin and R. Pascanu and P. Koniusz and M. Ghassemi and N. Chen},\n pages = {70782--70822},\n publisher = {Curran Associates, Inc.},\n title = {Do different prompting methods yield a common task representation in language models?},\n url = {https://proceedings.neurips.cc/paper_files/paper/2025/file/66b35d2e8d524706f39cc21f5337b002-Paper-Conference.pdf},\n volume = {38, Main Conference},\n year = {2025}\n}\n"
+  },
+  "vaswani2017attention": {
+    "page": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+    "bibtex": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Bibtex.bib",
+    "text": "@inproceedings{NIPS2017_3f5ee243,\n author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, \\L ukasz and Polosukhin, Illia},\n booktitle = {Advances in Neural Information Processing Systems},\n editor = {I. Guyon and U. Von Luxburg and S. Bengio and H. Wallach and R. Fergus and S. Vishwanathan and R. Garnett},\n pages = {},\n publisher = {Curran Associates, Inc.},\n title = {Attention is All you Need},\n url = {https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf},\n volume = {30},\n year = {2017}\n}\n"
+  },
+  "sia2024incontexttranslation": {
+    "page": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/3979818cdc7bc8dbeec87170c11ee340-Abstract-Conference.html",
+    "bibtex": "https://proceedings.neurips.cc/paper_files/paper/24310-/bibtex",
+    "text": "@inproceedings{NEURIPS2024_3979818c,\n author = {Sia, Suzanna and Mueller, David and Duh, Kevin},\n booktitle = {Advances in Neural Information Processing Systems},\n doi = {10.52202/079017-1030},\n editor = {A. Globerson and L. Mackey and D. Belgrave and A. Fan and U. Paquet and J. Tomczak and C. Zhang},\n pages = {32761--32786},\n publisher = {Curran Associates, Inc.},\n title = {Where does In-context Learning Happen in Large Language Models?},\n url = {https://proceedings.neurips.cc/paper_files/paper/2024/file/3979818cdc7bc8dbeec87170c11ee340-Paper-Conference.pdf},\n volume = {37},\n year = {2024}\n}\n"
+  },
+  "tsuzuku2018lipschitz": {
+    "page": "https://papers.nips.cc/paper_files/paper/2018/hash/485843481a7edacbfce101ecb1e4d2a8-Abstract.html",
+    "bibtex": "https://papers.nips.cc/paper_files/paper/2018/file/485843481a7edacbfce101ecb1e4d2a8-Bibtex.bib",
+    "text": "@inproceedings{NEURIPS2018_48584348,\n author = {Tsuzuku, Yusuke and Sato, Issei and Sugiyama, Masashi},\n booktitle = {Advances in Neural Information Processing Systems},\n editor = {S. Bengio and H. Wallach and H. Larochelle and K. Grauman and N. Cesa-Bianchi and R. Garnett},\n pages = {},\n publisher = {Curran Associates, Inc.},\n title = {Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance for Deep Neural Networks},\n url = {https://proceedings.neurips.cc/paper_files/paper/2018/file/485843481a7edacbfce101ecb1e4d2a8-Paper.pdf},\n volume = {31},\n year = {2018}\n}\n"
+  },
+  "mu2023gist": {
+    "page": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/3d77c6dcc7f143aa2154e7f4d5e22d68-Abstract-Conference.html",
+    "bibtex": "https://proceedings.neurips.cc/paper_files/paper/20285-/bibtex",
+    "text": "@inproceedings{NEURIPS2023_3d77c6dc,\n author = {Mu, Jesse and Li, Xiang and Goodman, Noah},\n booktitle = {Advances in Neural Information Processing Systems},\n doi = {10.52202/075280-0848},\n editor = {A. Oh and T. Naumann and A. Globerson and K. Saenko and M. Hardt and S. Levine},\n pages = {19327--19352},\n publisher = {Curran Associates, Inc.},\n title = {Learning to Compress Prompts with Gist Tokens},\n url = {https://proceedings.neurips.cc/paper_files/paper/2023/file/3d77c6dcc7f143aa2154e7f4d5e22d68-Paper-Conference.pdf},\n volume = {36},\n year = {2023}\n}\n"
+  },
+  "khandekar2024medcalc": {
+    "page": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/99e81750f3fdfcaf9613db2dbf4bd623-Abstract-Datasets_and_Benchmarks_Track.html",
+    "bibtex": "https://proceedings.neurips.cc/paper_files/paper/26736-/bibtex",
+    "text": "@inproceedings{NEURIPS2024_99e81750,\n author = {Khandekar, Nikhil and Jin, Qiao and Xiong, Guangzhi and Dunn, Soren and Applebaum, Serina S and Anwar, Zain and Sarfo-Gyamfi, Maame and Safranek, Conrad W and Anwar, Abid A and Zhang, Andrew and Gilson, Aidan and Singer, Maxwell B and Dave, Amisha and Taylor, Andrew and Zhang, Aidong and Chen, Qingyu and Lu, Zhiyong},\n booktitle = {Advances in Neural Information Processing Systems},\n doi = {10.52202/079017-2690},\n editor = {A. Globerson and L. Mackey and D. Belgrave and A. Fan and U. Paquet and J. Tomczak and C. Zhang},\n pages = {84730--84745},\n publisher = {Curran Associates, Inc.},\n title = {MedCalc-Bench: Evaluating Large Language Models for Medical Calculations},\n url = {https://proceedings.neurips.cc/paper_files/paper/2024/file/99e81750f3fdfcaf9613db2dbf4bd623-Paper-Datasets_and_Benchmarks_Track.pdf},\n volume = {37},\n year = {2024}\n}\n"
+  }
+}

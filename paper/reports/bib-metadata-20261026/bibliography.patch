@@ -1,0 +1,137 @@
+--- before/skillvector.bib
++++ after/skillvector.bib
+@@ -10 +10,3 @@
+-  note      = {arXiv:2310.15916}
++  publisher = {Association for Computational Linguistics},
++  address = {Singapore},
++  pages = {9318--9333}
+@@ -17,3 +19,3 @@
+-  booktitle = {International Conference on Learning Representations (ICLR)},
+-  year      = {2024},
+-  note      = {arXiv:2310.15213}
++  booktitle = {International Conference on Learning Representations},
++  year      = {2024},
++  address = {Vienna, Austria}
+@@ -36,3 +38,3 @@
+-  booktitle = {International Conference on Learning Representations (ICLR)},
+-  year      = {2024},
+-  note      = {arXiv:2309.16042}
++  booktitle = {International Conference on Learning Representations},
++  year      = {2024},
++  address = {Vienna, Austria}
+@@ -44 +46 @@
+-  journal = {arXiv preprint arXiv:2404.15255},
++  journal = {arXiv:2404.15255},
+@@ -51 +53 @@
+-  journal = {arXiv preprint arXiv:2509.04466},
++  journal = {arXiv:2509.04466},
+@@ -84 +86 @@
+-  journal = {arXiv preprint arXiv:2602.12670},
++  journal = {arXiv:2602.12670},
+@@ -98 +100 @@
+-  journal = {arXiv preprint arXiv:2603.15401},
++  journal = {arXiv:2603.15401},
+@@ -163 +165 @@
+-  journal = {arXiv preprint arXiv:2607.08399},
++  journal = {arXiv:2607.08399},
+@@ -187 +189 @@
+-  journal = {arXiv preprint arXiv:2602.15902},
++  journal = {arXiv:2602.15902},
+@@ -196 +198 @@
+-  booktitle = {Conference on Language Modeling (COLM)},
++  booktitle = {Conference on Language Modeling},
+@@ -198 +200 @@
+-  note      = {arXiv:2503.08727}
++  address = {Montreal, Canada}
+@@ -242,4 +244,6 @@
+-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS),
+-               Datasets and Benchmarks Track},
+-  year      = {2024},
+-  note      = {arXiv:2406.12036}
++  booktitle = {Advances in Neural Information Processing Systems},
++  year      = {2024},
++  publisher = {Curran Associates},
++  pages = {84730--84745},
++  volume = {37},
++  address = {Red Hook, NY}
+@@ -252 +256 @@
+-  journal = {arXiv preprint arXiv:2604.24594},
++  journal = {arXiv:2604.24594},
+@@ -259 +263 @@
+-  journal = {arXiv preprint arXiv:2505.09388},
++  journal = {arXiv:2505.09388},
+@@ -267 +271 @@
+-  journal = {arXiv preprint arXiv:2310.06825},
++  journal = {arXiv:2310.06825},
+@@ -292 +296 @@
+-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
++  booktitle = {Advances in Neural Information Processing Systems},
+@@ -295 +299,4 @@
+-  url       = {https://proceedings.nips.cc/paper_files/paper/2024/hash/3979818cdc7bc8dbeec87170c11ee340-Abstract-Conference.html}
++  publisher = {Curran Associates},
++  pages = {32761--32786},
++  volume = {37},
++  address = {Red Hook, NY}
+@@ -329 +336 @@
+-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
++  booktitle = {Advances in Neural Information Processing Systems},
+@@ -331 +338,4 @@
+-  note      = {arXiv:2304.08467}
++  publisher = {Curran Associates},
++  pages = {19327--19352},
++  volume = {36},
++  address = {Red Hook, NY}
+@@ -339,3 +349,3 @@
+-  booktitle = {International Conference on Learning Representations (ICLR)},
+-  year      = {2024},
+-  note      = {arXiv:2307.06945}
++  booktitle = {International Conference on Learning Representations},
++  year      = {2024},
++  address = {Vienna, Austria}
+@@ -442 +452,3 @@
+-  url = {https://proceedings.neurips.cc/paper_files/paper/2025/hash/66b35d2e8d524706f39cc21f5337b002-Abstract-Conference.html}
++  publisher = {Curran Associates},
++  pages = {70782--70822},
++  address = {Red Hook, NY}
+@@ -475 +487,2 @@
+-  url={https://proceedings.mlr.press/v267/wang25bx.html}
++  url={https://proceedings.mlr.press/v267/wang25bx.html},
++  address = {Vancouver, Canada}
+@@ -503 +516,2 @@
+-  url={https://aclanthology.org/2025.emnlp-main.1147/}
++  publisher = {Association for Computational Linguistics},
++  address = {Suzhou, China}
+@@ -509 +523 @@
+-  journal={arXiv preprint arXiv:2606.17107},
++  journal={arXiv:2606.17107},
+@@ -517 +531 @@
+-  journal={arXiv preprint arXiv:2606.27510},
++  journal={arXiv:2606.27510},
+@@ -534 +548 @@
+-  journal={arXiv preprint arXiv:2407.21783},
++  journal={arXiv:2407.21783},
+@@ -540 +554 @@
+-  journal={arXiv preprint arXiv:2401.02954},
++  journal={arXiv:2401.02954},
+@@ -548 +562 @@
+-  journal   = {arXiv preprint arXiv:1911.02150},
++  journal   = {arXiv:1911.02150},
+@@ -561 +575,3 @@
+-  url       = {https://arxiv.org/abs/1706.03762}
++  url       = {https://arxiv.org/abs/1706.03762},
++  publisher = {Curran Associates},
++  address = {Red Hook, NY}
+@@ -570,2 +586,4 @@
+-  note      = {arXiv:2305.12524},
+-  url       = {https://arxiv.org/abs/2305.12524}
++  publisher = {Association for Computational Linguistics},
++  address = {Singapore},
++  pages = {7889--7901},
++  doi = {10.18653/v1/2023.emnlp-main.489}
+@@ -581,2 +599,4 @@
+-  url = {https://arxiv.org/abs/1802.04034}
+-}
++  url = {https://arxiv.org/abs/1802.04034},
++  publisher = {Curran Associates},
++  address = {Red Hook, NY}
++}

@@ -1,0 +1,15 @@
+{
+  "main_eight_pixels_identical": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "bib_warnings_before": 70,
+  "bib_warnings_after": 41,
+  "underfull": 5
+}

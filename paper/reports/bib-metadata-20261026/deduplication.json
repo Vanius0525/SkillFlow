@@ -1,0 +1,36 @@
+{
+  "hendel2023taskvectors": [
+    "redundant arXiv note"
+  ],
+  "todd2024functionvectors": [
+    "redundant arXiv note"
+  ],
+  "zhang2023bestpractices": [
+    "redundant arXiv note"
+  ],
+  "deepcontextdistill2025": [
+    "redundant arXiv note"
+  ],
+  "khandekar2024medcalc": [
+    "redundant arXiv note"
+  ],
+  "mu2023gist": [
+    "redundant arXiv note"
+  ],
+  "ge2024icae": [
+    "redundant arXiv note"
+  ],
+  "chen2023theoremqa": [
+    "redundant arXiv note",
+    "redundant URL; DOI retained"
+  ],
+  "davidson2025prompting": [
+    "redundant URL; DOI retained"
+  ],
+  "sia2024incontexttranslation": [
+    "redundant URL; DOI retained"
+  ],
+  "yang2025internalcot": [
+    "redundant URL; DOI retained"
+  ]
+}

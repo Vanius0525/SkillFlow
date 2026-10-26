@@ -17,3 +17,7 @@
 ## 2026-10-26 两条正式出处修订完成（最新）
 
 用户明确忽略上轮1/3/5，只修2，问4是否需要修。Hajimiri与WebXSkill已改用正式EMNLP2026/Findings2026出处并补页码/出版社/地址/链接。正文不变，重新编译8/12页、33引用、0错误/undefined/Overfull，前8页像素一致；警告74→70。正式出版条目缺字段建议补齐，预印本不虚构卷期页码；未扩大修订。current/paper.pdf、provenance及桌面唯一副本已更新，未上传Overleaf。记录../reports/formal-bib-fix-20261026/修订结果.md。上轮1/3/5不再作为待执行事项。
+
+## 2026-10-26 第4项可修复书目字段已完成（最新）
+
+14条补齐可核验出版社/地点/卷号/页码，另整理重复arXiv/DOI/URL/会议缩写；不改正文/图表或用户忽略事项。中间13页尝试未交付，最终仍正文8页/全文12页、33引用、0错误/undefined/Overfull，前8页像素一致；警告70→41，未知或本不存在字段留空。current/paper.pdf、provenance及桌面WWW2027-current.pdf均已更新，未上传Overleaf，无运行中任务。来源和验证：../reports/bib-metadata-20261026/修订结果.md。

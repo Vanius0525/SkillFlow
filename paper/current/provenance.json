@@ -1,13 +1,13 @@
 {
   "overleaf_project": "6a2cfd49b99635e8e968576a",
   "overleaf_root": "overleaf-skillvector/main.tex",
-  "latest_remote_check_utc": "2026-10-26T07:43:09.289Z",
+  "latest_remote_check_utc": "2026-10-26T07:47:12.350Z",
   "full_diff_exit_code": 0,
   "source_baseline": "Overleaf latest snapshot plus bibliography-only revision",
   "changed_from_overleaf": [
     "skillvector.bib"
   ],
-  "pdf_sha256": "93e1bbd5297006af690118d257465fbae971f65cdea17d34b93bcb19f479d2af",
+  "pdf_sha256": "1b4a1f23351bd61de9b387016ed457505cebd409b52cc3a26f5d8f52184738a9",
   "source_sha256": {
     "README.md": "8fab24023ce8a8db7bb472244242225981371d5df155390c74e1bb705b7edc9a",
     "appendix/a-setup.tex": "bce3258324dbfcb0b90030ff8f521141df3289ef2f0bdcaccb3c863431eb46e5",
@@ -26,10 +26,10 @@
     "sections/04-experiment.tex": "878f4c1fc15b5ae6ae390c90a33d7cfe194423660c3267d6b25915a5857f7323",
     "sections/05-conclusion.tex": "9324943b64069c14cecc9e8a196c1c0f8194bbb1e4f63e5551401fed43ca91d2",
     "sections/05-discussion.tex": "1f5cfd4018859d563f5f8421629efa9ee2197e7408c6430a2b388547bbfdc8e5",
-    "skillvector.bib": "1d807d65ae70cfe4f1712d41a634ee1e89f7d093ca42b4e5152c745405a8728e",
+    "skillvector.bib": "d496408398f0c5c336ee4bc0e4dd6dbb66f7109996921364626f7ff64860480f",
     "tables/tab-mechanism-contrasts.tex": "3cb0cf3f165c89750e6537f8ec379050631baad9f31d72142f7c5fca79b4dd81",
     "tables/tab-paired-depth.tex": "b34f70b5b63f0bc5b8fb8fea29efaf98b2c9687043b4d81a1146653d63bddfbe",
     "tables/tab-transfer-controls.tex": "9775af3371610b95d8ed70d31034ec341e7aa9184d85158e53f27289d5cfa7af"
   },
-  "bibliography_revision": "Original seven-entry revision plus formal EMNLP2026/Findings2026 records for Hajimiri and WebXSkill"
+  "bibliography_revision": "Formal publication revisions plus verified metadata completion and redundant bibliography text cleanup, 2026-10-26"
 }

@@ -1,0 +1,123 @@
+{
+  "updates": {
+    "davidson2025prompting": {
+      "publisher": "Curran Associates, Inc.",
+      "pages": "70782--70822",
+      "volume": "38",
+      "address": "Red Hook, NY, USA",
+      "doi": "10.52202/085713-2380"
+    },
+    "vaswani2017attention": {
+      "publisher": "Curran Associates, Inc.",
+      "volume": "30",
+      "address": "Red Hook, NY, USA"
+    },
+    "sia2024incontexttranslation": {
+      "publisher": "Curran Associates, Inc.",
+      "pages": "32761--32786",
+      "volume": "37",
+      "address": "Red Hook, NY, USA",
+      "doi": "10.52202/079017-1030"
+    },
+    "tsuzuku2018lipschitz": {
+      "publisher": "Curran Associates, Inc.",
+      "volume": "31",
+      "address": "Red Hook, NY, USA"
+    },
+    "mu2023gist": {
+      "publisher": "Curran Associates, Inc.",
+      "pages": "19327--19352",
+      "volume": "36",
+      "address": "Red Hook, NY, USA",
+      "doi": "10.52202/075280-0848"
+    },
+    "khandekar2024medcalc": {
+      "publisher": "Curran Associates, Inc.",
+      "pages": "84730--84745",
+      "volume": "37",
+      "address": "Red Hook, NY, USA",
+      "doi": "10.52202/079017-2690"
+    },
+    "hendel2023taskvectors": {
+      "publisher": "Association for Computational Linguistics",
+      "address": "Singapore",
+      "pages": "9318--9333",
+      "doi": "10.18653/v1/2023.findings-emnlp.624"
+    },
+    "chen2023theoremqa": {
+      "publisher": "Association for Computational Linguistics",
+      "address": "Singapore",
+      "pages": "7889--7901",
+      "doi": "10.18653/v1/2023.emnlp-main.489"
+    },
+    "yang2025internalcot": {
+      "publisher": "Association for Computational Linguistics",
+      "address": "Suzhou, China"
+    },
+    "todd2024functionvectors": {
+      "address": "Vienna, Austria"
+    },
+    "ge2024icae": {
+      "address": "Vienna, Austria"
+    },
+    "zhang2023bestpractices": {
+      "address": "Vienna, Austria"
+    },
+    "deepcontextdistill2025": {
+      "address": "Montreal, Canada"
+    },
+    "wang2024awm": {
+      "address": "Vancouver, Canada"
+    }
+  },
+  "sources": {
+    "davidson2025prompting": {
+      "primary": "https://proceedings.neurips.cc/paper_files/paper/30279-/bibtex",
+      "publisher_address": "https://www.proceedings.com/content/catalog/CatNewMay26.pdf"
+    },
+    "vaswani2017attention": {
+      "primary": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Bibtex.bib",
+      "publisher_address": "https://www.proceedings.com/content/catalog/CatNewMay26.pdf"
+    },
+    "sia2024incontexttranslation": {
+      "primary": "https://proceedings.neurips.cc/paper_files/paper/24310-/bibtex",
+      "publisher_address": "https://www.proceedings.com/content/catalog/CatNewMay26.pdf"
+    },
+    "tsuzuku2018lipschitz": {
+      "primary": "https://papers.nips.cc/paper_files/paper/2018/file/485843481a7edacbfce101ecb1e4d2a8-Bibtex.bib",
+      "publisher_address": "https://www.proceedings.com/content/catalog/CatNewMay26.pdf"
+    },
+    "mu2023gist": {
+      "primary": "https://proceedings.neurips.cc/paper_files/paper/20285-/bibtex",
+      "publisher_address": "https://www.proceedings.com/content/catalog/CatNewMay26.pdf"
+    },
+    "khandekar2024medcalc": {
+      "primary": "https://proceedings.neurips.cc/paper_files/paper/26736-/bibtex",
+      "publisher_address": "https://www.proceedings.com/content/catalog/CatNewMay26.pdf"
+    },
+    "hendel2023taskvectors": {
+      "primary": "https://aclanthology.org/2023.findings-emnlp.624/"
+    },
+    "chen2023theoremqa": {
+      "primary": "https://aclanthology.org/2023.emnlp-main.489/"
+    },
+    "yang2025internalcot": {
+      "primary": "https://aclanthology.org/2025.emnlp-main.1147/"
+    },
+    "todd2024functionvectors": {
+      "conference_address": "https://iclr.cc/Conferences/2024"
+    },
+    "ge2024icae": {
+      "conference_address": "https://iclr.cc/Conferences/2024"
+    },
+    "zhang2023bestpractices": {
+      "conference_address": "https://iclr.cc/Conferences/2024"
+    },
+    "deepcontextdistill2025": {
+      "conference_address": "https://colmweb.org/2025/"
+    },
+    "wang2024awm": {
+      "conference_address": "https://proceedings.mlr.press/v267/"
+    }
+  }
+}

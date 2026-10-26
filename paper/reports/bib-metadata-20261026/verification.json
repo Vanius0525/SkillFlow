@@ -1,0 +1,50 @@
+{
+  "main_pages": 8,
+  "total_pages": 12,
+  "cited": 33,
+  "bib_entries": 64,
+  "missing_cites": [],
+  "duplicate_keys": [],
+  "missing_refs": [],
+  "duplicate_labels": [],
+  "errors": [],
+  "undefined": [],
+  "overfull": [],
+  "warnings": [
+    "Package balance Warning: You have called \\balance in second column"
+  ],
+  "bib_warnings": 41,
+  "bibitems": 33,
+  "fonts_not_embedded": [],
+  "page_sizes": [
+    [
+      0.0,
+      0.0,
+      612.0,
+      792.0
+    ]
+  ],
+  "pdf_author": "",
+  "source_sha256": {
+    "appendix/a-setup.tex": "bce3258324dbfcb0b90030ff8f521141df3289ef2f0bdcaccb3c863431eb46e5",
+    "appendix/b-full-dataset-rerun.tex": "e7756e0f243b406244ece4100e9f178ac8cecf1993526d84949aecc09b022bbb",
+    "appendix/behavior-recovery.tex": "3783c74130ae2da6ea8271006730a28e6d0a38d51a3e324af10471e55bcc86ef",
+    "appendix/cache-coverage.tex": "94f6839d8b3c4ebf10273fb854ee10cee9f691e96b194e5a427d2c607dd01ee7",
+    "figures/fig-intervention-design.pdf": "696cdc73a050a4d65d6f95d898e613fa019e7088e5470473210cf44c9fdc419d",
+    "figures/fig-mechanism-results.pdf": "6f7acbd60264450a7c34cf0d150f1a4ec3f96ba0dd9a4222a8fc2c02ca39134c",
+    "figures/fig-teaser.pdf": "a2aeb82ff31062707b98c6dd9db3d07ce6537bcb723ec790551d38dfc7911c69",
+    "figures/fig-transfer-reading.pdf": "a36fe060c7d116481bac84562160878c68d8e855fef3bdbe696678d86f90ce4e",
+    "main.tex": "039ad6da91ea90e3eb24c26ac58018fc008763d539c526e7624454180206fece",
+    "sections/00-abstract.tex": "16ed23cb5e3bbf48ed88b596b28661560aecdf61a2918410df433102f14e510c",
+    "sections/01-introduction.tex": "74ab7beb170d3622ce3edeb274c862fc1c529fae3a7c929293e36ee34ee005e2",
+    "sections/02-related-work.tex": "3310a188dfc54b453c1f19d6f4be9d64f6f105390e52547185d9e8944a4e2650",
+    "sections/03-problem-formulation.tex": "39f7739be7133961bdfc2ee755d8059a30ddad3677fbd963adeb6b28fec6b6da",
+    "sections/04-experiment.tex": "878f4c1fc15b5ae6ae390c90a33d7cfe194423660c3267d6b25915a5857f7323",
+    "sections/05-conclusion.tex": "9324943b64069c14cecc9e8a196c1c0f8194bbb1e4f63e5551401fed43ca91d2",
+    "sections/05-discussion.tex": "1f5cfd4018859d563f5f8421629efa9ee2197e7408c6430a2b388547bbfdc8e5",
+    "skillvector.bib": "d496408398f0c5c336ee4bc0e4dd6dbb66f7109996921364626f7ff64860480f",
+    "tables/tab-mechanism-contrasts.tex": "3cb0cf3f165c89750e6537f8ec379050631baad9f31d72142f7c5fca79b4dd81",
+    "tables/tab-paired-depth.tex": "b34f70b5b63f0bc5b8fb8fea29efaf98b2c9687043b4d81a1146653d63bddfbe",
+    "tables/tab-transfer-controls.tex": "9775af3371610b95d8ed70d31034ec341e7aa9184d85158e53f27289d5cfa7af"
+  }
+}
