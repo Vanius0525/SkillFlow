@@ -1,0 +1,98 @@
+% Appendix A: protocol, implementation and scope.
+\section{Experimental protocols and provenance}
+\label{app:setup}
+
+\paragraph{Tasks and scoring.}
+MedCalc has $20$ questions for each of $55$ SRA-Bench calculators, scored
+with prescribed numerical tolerances. TheoremQA uses released prompts,
+skills and grading. Groups denote calculators or TheoremQA skills.
+Skills are supplied directly, without tools.
+
+\paragraph{Evaluation populations.}
+The corrected Qwen3-8B/MedCalc pool contains $467/470$ historically rescued
+items from $48$ calculators. Whole-group screening retains $135/14$
+items/calculators, including donor failures. Correct counts are $124$ for
+donors and $110$ for layer-$8$ span patches. The common depth set has $134$
+items with separate intervention baselines. Section~\ref{sec:setup}
+distinguishes these populations from the added controls, item-screened
+repair sets and fixed complete-source pools. The common DeepSeek/MedCalc
+set has $25$ items. Threshold sensitivity does not test sample-composition
+robustness.
+
+\subsection{Implementation details}
+\label{app:detail}
+
+\paragraph{Wrong-skill selection and token matching.}
+MedCalc's fixed distractor is APACHE II, a clinical severity score
+(\texttt{medcalcbench\_043}) outside the selected calculators. TheoremQA
+uses \texttt{theoremqa\_148}, on representation theorems and differential
+equations, selected by fewest assigned questions then greatest length.
+Its assigned items are excluded. We repeat distractor tokens as needed
+and copy the first $m$ into the $m$-token source span, without padding
+or changing other tokens and positions.
+
+\paragraph{Prompt and source boundaries.}
+The user turn orders \texttt{Relevant Skill:}, skill text, a blank line
+and the question. MedCalc requests calculations ending with
+\texttt{ANSWER: <your answer>}, under a system instruction to calculate
+a score step by step from a patient note. TheoremQA retains its
+science-teacher system message, \texttt{Problem:<question>} and
+\texttt{Solution:} format, and ``Therefore, the answer is ...'' ending.
+Tokenization applies the chat template's role labels and generation prompt.
+Character offsets locate the skill tokens, excluding header and separator.
+We replace IDs in $[\mathrm{lo},\mathrm{hi})$, including the start but
+excluding the end, without retokenization.
+
+\paragraph{Models and decoding.}
+Qwen3-8B has $36$ layers and width $4096$, Mistral-7B has $32$ layers and
+width $4096$, Llama-3.1-8B has $32$ layers, and DeepSeek-7B has $30$.
+Transfer/knockout use greedy decoding with $900$ new tokens and Qwen's
+extended reasoning disabled. Llama and DeepSeek use BF16 (16-bit
+floating point) and eager attention (explicit attention scores).
+Regenerated Qwen/Mistral TheoremQA uses PyTorch scaled dot-product
+attention (SDPA) for transfer and eager attention for knockout.
+DeepSeek/Mistral merge system instructions into the user turn. Llama
+retains original weights, configuration and vocabulary with the public
+distribution's chat template. Repair/path runs use BF16, eager attention
+and $1{,}536$ new tokens, splitting prefill before the final prompt token
+for cache writes. Cuts span prefill and decoding. Layer indices denote
+blocks, not matched computational stages across models.
+
+\paragraph{Position and state checks.}
+Length matching preserves question positions. Patches target prefill block
+outputs, separate from scored answer tokens. Identity controls restore
+receiver states, and final-layer patches reproduce donor next-token scores.
+Cuts preserve causality. Split-prefill checks on one item from each of $14$
+calculators reproduce tokens in all $84$ receiver-state tests. Splitting
+changes one donor's and one receiver's correctness, motivating fresh
+matched repair baselines.
+
+\subsection{Evaluation scope and intervention provenance}
+\label{app:limits}
+
+\paragraph{Attention-mask correction.}
+Capture and decoding masks match in all main state interventions.
+An earlier omission failed identity checks. Correction restores exact
+agreement, including all $467$ MedCalc items. Knockout has no donor capture.
+
+\paragraph{Extension pools and grading checks.}
+Llama/DeepSeek rescreen frozen pools of $446$ MedCalc and $255$ TheoremQA
+items from earlier eligible transfer sets. One DeepSeek/MedCalc prompt
+cannot reserve $900$ answer tokens and is excluded before inference.
+Qwen/Mistral TheoremQA uses $168/142$ candidates, yielding $82/66$ and
+$72/58$ common questions/skills. Official grading resets parser state
+per answer. Reverse-order and separate-process checks agree before
+eligibility is recomputed.
+
+Layer-$2$ controls use their own screened sets. In the model order of
+Table~\ref{tab:probe}, the MedCalc question counts are $97,35,112,25$ and
+correct-span counts are $87,24,101,14$. TheoremQA counts are $61,61,92,54$,
+with $57,52,70,31$ correct. The DeepSeek/TheoremQA cells use the final
+$54$-item grading correction.
+
+\paragraph{Artifact availability.}
+Stored artifacts contain configurations, question IDs, answers and token
+sequences. An anonymous review archive is not yet linked.
+
+
+

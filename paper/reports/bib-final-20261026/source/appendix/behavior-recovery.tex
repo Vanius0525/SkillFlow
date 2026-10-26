@@ -1,0 +1,53 @@
+\subsection{A sufficient condition for behavioral recovery}
+\label{app:behavior-recovery}
+
+After prefix prefill, flatten caches as $\mathbf z_X=(\mathbf c_X,\mathbf b_X)$.
+Here $\mathbf c_X$ contains source KV at layers $0,\ldots,L$, and
+$\mathbf b_X$ contains higher-layer source KV and $\mathcal B_X$.
+The cache write gives $\mathbf z_{SC}=(\mathbf c_D,\mathbf b_S)$,
+preserving $\mathbf b_S$. For $\varepsilon_X=\|\mathbf z_X-\mathbf z_D\|_2$,
+\begin{equation}
+\begin{aligned}
+\varepsilon_S^2
+ &=\|\mathbf c_S-\mathbf c_D\|_2^2+\|\mathbf b_S-\mathbf b_D\|_2^2,\\
+\varepsilon_{SC}^2&=\|\mathbf b_S-\mathbf b_D\|_2^2,\\
+\varepsilon_S^2-\varepsilon_{SC}^2
+ &=\|\mathbf c_S-\mathbf c_D\|_2^2\ge0.
+\end{aligned}
+\label{eq:cache-distance}
+\end{equation}
+Here $\|\cdot\|_2$ is Euclidean length. Exact copying removes the replaced
+entries' squared error from the cache distance, independently of causal
+reconstruction.
+
+\paragraph{Output stability.}
+Fix the model, positions, last prompt token and mask. Let $F_t^D(\mathbf z)$
+map initial caches to token-$t$ logits (unnormalized token scores) after
+donor history $y_{D,<t}$ and its cache updates. For the compared states, assume
+\begin{equation}
+\|F_t^D(\mathbf z)-F_t^D(\mathbf z')\|_\infty
+\le\kappa_t\|\mathbf z-\mathbf z'\|_2.
+\label{eq:cache-lipschitz}
+\end{equation}
+The infinity norm bounds the largest absolute logit change. Let
+$m_{D,t}>0$ be the donor's highest logit minus its second-highest.
+Margin stability \citep{tsuzuku2018lipschitz} gives
+\begin{equation}
+[\ \forall t\le N:\ 2\kappa_t\varepsilon_{SC}<m_{D,t}\ ]
+\quad\Longrightarrow\quad \hat y_{SC}=\hat y_D,
+\label{eq:sequence-recovery}
+\end{equation}
+where $N$ includes the stopping token and $\varepsilon_{SC}$ is defined
+in Eq.~\eqref{eq:cache-distance}.
+\emph{Proof.} Each logit changes by at most $\kappa_t\varepsilon_{SC}$,
+so the donor's winning logit remains ahead by at least
+$m_{D,t}-2\kappa_t\varepsilon_{SC}>0$. Induction over the shared greedy
+history, including the common stopping rule, proves sequence equality.
+\hfill$\square$
+
+Different sequences may also answer correctly. A common sensitivity bound
+gives $SC$ no larger error bound than $S$. Errors from different cache
+components can offset one another, so replacing one component can remove
+that offset and increase actual logit error. Accuracy need not improve. Sensitivities and
+margins remain unverified. The guarantee excludes $SC+\mathrm{cut}$,
+which changes the mask.

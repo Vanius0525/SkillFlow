@@ -1,0 +1,49 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Potential applications.}
+Our findings suggest a way to evaluate the reuse of contextual skills.
+Consider a Web agent that follows the same instructions to extract
+specified information from different pages. The instructions stay the
+same, while the page content and the user's request change. Reusing the
+states formed from those instructions would need to preserve the agent's
+ability to answer the new request. The separation observed here motivates
+testing that ability directly, alongside the benefit of providing the
+original instructions for each request.
+
+An evaluation can first compare a receiving execution that uses the stored
+states with an execution that processes the correct skill for that request.
+This measures how much task performance survives reuse. It can then hold
+the copied skill information fixed and compare retaining the receiving
+execution's existing caches with recomputing the later prompt. That
+comparison checks whether the copied information works with the history
+already stored by the receiving execution. The complete-source controls
+motivate this second check: matching all skill-position KV still leaves
+performance sensitive to the state of other positions. When task inputs
+change, the amount of prompt processing that can be reused therefore
+needs to be assessed together with the skill representation.
+
+Continued access to the skill is a further part of the evaluation.
+A method that preserves accuracy after copying states may still require
+attention to the skill positions. Comparing runs with and without this
+access distinguishes reuse that depends on continued skill reading from
+reuse that does not. This distinction matters when the intended
+benefit is to reduce repeated instruction processing. Studies in
+interactive Web settings can evaluate task performance, latency and
+memory use together, counting both the copied cache and any later prompt
+computation required to make use of it.
+
+\paragraph{Future work.}
+A next step is to investigate which questions benefit from cache
+replacement. The mathematical analysis connects remaining cache
+differences to output stability under explicit assumptions. Measuring
+these differences, their influence on token predictions and the donor's
+prediction margins could test whether this framework helps distinguish
+successful from unsuccessful repairs. The complete-source controls further motivate testing which parts of
+the receiving history must be recomputed, and whether the required budget
+can be predicted on held-out skills. The heterogeneous depth effects suggest that a recomputation rule should
+be tested across model/task cells rather than inferred from one depth curve. Separating attention cuts during prompt
+processing from those during answer generation would clarify when continued
+skill access matters. Finally,
+multi-step Web workflows would assess how far the observed separation
+extends beyond the question-answering settings studied here.

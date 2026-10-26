@@ -1,0 +1,132 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+Reallocating 'name_of_file' (item size: 1) to 21 items.
+The style file: ACM-Reference-Format.bst
+Reallocating 'name_of_file' (item size: 1) to 12 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Database file #1: skillvector.bib
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 9000 items.
+Reallocating 'glb_str_end' (item size: 4) to 20 items.
+Reallocating 'glb_str_ptr' (item size: 4) to 20 items.
+Reallocating 'global_strs' (item size: 1) to 4000000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Warning--no number and no volume in ardoin2026promptcompression
+Warning--page numbers missing in both pages and numpages fields in ardoin2026promptcompression
+Warning--empty publisher in deepcontextdistill2025
+Warning--empty address in deepcontextdistill2025
+Warning--page numbers missing in both pages and numpages fields in deepcontextdistill2025
+Warning--no number and no volume in doc2lora2026
+Warning--page numbers missing in both pages and numpages fields in doc2lora2026
+Warning--empty publisher in chen2023theoremqa
+Warning--empty address in chen2023theoremqa
+Warning--page numbers missing in both pages and numpages fields in chen2023theoremqa
+Warning--empty publisher in davidson2025prompting
+Warning--empty address in davidson2025prompting
+Warning--page numbers missing in both pages and numpages fields in davidson2025prompting
+Warning--no number and no volume in deepseek2024llm
+Warning--page numbers missing in both pages and numpages fields in deepseek2024llm
+Warning--empty publisher in ge2024icae
+Warning--empty address in ge2024icae
+Warning--page numbers missing in both pages and numpages fields in ge2024icae
+Warning--no number and no volume in grattafiori2024llama3
+Warning--page numbers missing in both pages and numpages fields in grattafiori2024llama3
+Warning--no number and no volume in hajimiri2026budgetskills
+Warning--page numbers missing in both pages and numpages fields in hajimiri2026budgetskills
+Warning--no number and no volume in sweskills2026
+Warning--page numbers missing in both pages and numpages fields in sweskills2026
+Warning--no number and no volume in heimersheim2024patching
+Warning--page numbers missing in both pages and numpages fields in heimersheim2024patching
+Warning--empty publisher in hendel2023taskvectors
+Warning--empty address in hendel2023taskvectors
+Warning--page numbers missing in both pages and numpages fields in hendel2023taskvectors
+Warning--no number and no volume in jiang2023mistral
+Warning--page numbers missing in both pages and numpages fields in jiang2023mistral
+Warning--empty publisher in khandekar2024medcalc
+Warning--empty address in khandekar2024medcalc
+Warning--page numbers missing in both pages and numpages fields in khandekar2024medcalc
+Warning--no number and no volume in li2026prefillnotes
+Warning--page numbers missing in both pages and numpages fields in li2026prefillnotes
+Warning--no number and no volume in skillsbench2026
+Warning--page numbers missing in both pages and numpages fields in skillsbench2026
+Warning--no number and no volume in jit2025taskrepr
+Warning--page numbers missing in both pages and numpages fields in jit2025taskrepr
+Warning--empty publisher in mu2023gist
+Warning--empty address in mu2023gist
+Warning--page numbers missing in both pages and numpages fields in mu2023gist
+Warning--empty publisher in onset2025instruction
+Warning--empty address in onset2025instruction
+Warning--page numbers missing in both pages and numpages fields in onset2025instruction
+Warning--no number and no volume in shazeer2019fast
+Warning--page numbers missing in both pages and numpages fields in shazeer2019fast
+Warning--empty publisher in sia2024incontexttranslation
+Warning--empty address in sia2024incontexttranslation
+Warning--page numbers missing in both pages and numpages fields in sia2024incontexttranslation
+Warning--no number and no volume in su2026srabench
+Warning--page numbers missing in both pages and numpages fields in su2026srabench
+Warning--empty publisher in todd2024functionvectors
+Warning--empty address in todd2024functionvectors
+Warning--page numbers missing in both pages and numpages fields in todd2024functionvectors
+Warning--empty publisher in tsuzuku2018lipschitz
+Warning--empty address in tsuzuku2018lipschitz
+Warning--page numbers missing in both pages and numpages fields in tsuzuku2018lipschitz
+Warning--no number and no volume in vaidyanathan2026mediators
+Warning--page numbers missing in both pages and numpages fields in vaidyanathan2026mediators
+Warning--empty publisher in vaswani2017attention
+Warning--empty address in vaswani2017attention
+Warning--page numbers missing in both pages and numpages fields in vaswani2017attention
+Warning--no number and no volume in wang2026webxskill
+Warning--page numbers missing in both pages and numpages fields in wang2026webxskill
+Warning--empty address in wang2024awm
+Warning--no number and no volume in yang2025qwen3
+Warning--page numbers missing in both pages and numpages fields in yang2025qwen3
+Warning--empty publisher in yang2025internalcot
+Warning--empty address in yang2025internalcot
+Warning--empty publisher in zhang2023bestpractices
+Warning--empty address in zhang2023bestpractices
+Warning--page numbers missing in both pages and numpages fields in zhang2023bestpractices
+You've used 33 entries,
+            6335 wiz_defined-function locations,
+            1701 strings with 26332 characters,
+and the built_in function-call counts, 37826 in all, are:
+= -- 4629
+> -- 1564
+< -- 0
++ -- 539
+- -- 525
+* -- 2910
+:= -- 3687
+add.period$ -- 161
+call.type$ -- 33
+change.case$ -- 291
+chr.to.int$ -- 32
+cite$ -- 107
+duplicate$ -- 3240
+empty$ -- 2340
+format.name$ -- 644
+if$ -- 9288
+int.to.chr$ -- 3
+int.to.str$ -- 1
+missing$ -- 144
+newline$ -- 353
+num.names$ -- 230
+pop$ -- 1576
+preamble$ -- 1
+purify$ -- 553
+quote$ -- 0
+skip$ -- 1042
+stack$ -- 0
+substring$ -- 2088
+swap$ -- 187
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 760
+warning$ -- 74
+while$ -- 132
+width$ -- 0
+write$ -- 692
+(There were 74 warnings)

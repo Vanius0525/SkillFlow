@@ -1,0 +1,76 @@
+{
+  "skillsbench2026": {
+    "title": [
+      "SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks",
+      "{SkillsBench}: Benchmarking How Well Agent Skills Work Across Diverse Tasks"
+    ]
+  },
+  "sweskills2026": {
+    "title": [
+      "SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?",
+      "{SWE-Skills-Bench}: Do Agent Skills Actually Help in Real-World Software Engineering?"
+    ]
+  },
+  "doc2lora2026": {
+    "title": [
+      "Doc-to-{L}o{RA}: Learning to Instantly Internalize Contexts",
+      "{Doc-to-LoRA}: Learning to Instantly Internalize Contexts"
+    ]
+  },
+  "yang2025qwen3": {
+    "title": [
+      "Qwen3 Technical Report",
+      "{Qwen3} Technical Report"
+    ]
+  },
+  "davidson2025prompting": {
+    "ENTRYTYPE": [
+      "article",
+      "inproceedings"
+    ],
+    "volume": [
+      null,
+      "38"
+    ],
+    "booktitle": [
+      null,
+      "Advances in Neural Information Processing Systems"
+    ],
+    "journal": [
+      "arXiv preprint arXiv:2505.12075",
+      null
+    ],
+    "url": [
+      "https://arxiv.org/abs/2505.12075",
+      "https://proceedings.neurips.cc/paper_files/paper/2025/hash/66b35d2e8d524706f39cc21f5337b002-Abstract-Conference.html"
+    ],
+    "doi": [
+      null,
+      "10.52202/085713-2380"
+    ]
+  },
+  "shazeer2019fast": {
+    "title": [
+      "Fast Transformer Decoding: One Write-Head is All You Need",
+      "Fast {Transformer} Decoding: One Write-Head is All You Need"
+    ]
+  },
+  "tsuzuku2018lipschitz": {
+    "ENTRYTYPE": [
+      "article",
+      "inproceedings"
+    ],
+    "volume": [
+      null,
+      "31"
+    ],
+    "booktitle": [
+      null,
+      "Advances in Neural Information Processing Systems"
+    ],
+    "journal": [
+      "arXiv preprint arXiv:1802.04034",
+      null
+    ]
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "baseline": {
+    "stage": "/mnt/c/Users/12970/AppData/Local/Temp/WWW2027/bib-final-baseline-2_y2m95z",
+    "runs": [
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "bibtex.exe",
+          "main"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "bibtex.exe",
+          "main"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      }
+    ]
+  },
+  "revised": {
+    "stage": "/mnt/c/Users/12970/AppData/Local/Temp/WWW2027/bib-final-revised-yd431jf5",
+    "runs": [
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "bibtex.exe",
+          "main"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "bibtex.exe",
+          "main"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "pdflatex.exe",
+          "-interaction=nonstopmode",
+          "-halt-on-error",
+          "main.tex"
+        ],
+        "returncode": 0
+      }
+    ]
+  }
+}
